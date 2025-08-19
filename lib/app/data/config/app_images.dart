@@ -44,4 +44,25 @@ class AppImages {
 
   /// Pen icon
   static const String penIcon = '$_path/pen_icon.svg';
+
+  /// Profile bg image
+  static const String profileBg = '$_path/profile_bg.png';
+
+  /// Share icon
+  static const String shareIcon = '$_svgPath/share_icon.svg';
+
+  /// Profile image bg
+  static const String profileImgBg = '$_path/profile_img_bg.png';
+
+  /// Trophy Icon
+  static const String trophyIcon = '$_svgPath/trophy_icon.svg';
+
+  /// Fire Icon
+  static const String fireIcon = '$_svgPath/fire_icon.svg';
+
+  /// Emoji Icon
+  static const String emojiIcon = '$_svgPath/emoji_icon.svg';
+
+  /// Close Icon
+  static const String closeIcon = '$_svgPath/close_icon.svg';
 }

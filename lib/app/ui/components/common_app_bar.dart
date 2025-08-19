@@ -11,6 +11,8 @@ class CommonAppBar extends StatelessWidget {
     super.key,
     this.actions,
     this.onBack,
+    this.leadingIconColor,
+    this.leadingIcon,
   });
 
   /// Actions to display in the app bar.
@@ -18,6 +20,12 @@ class CommonAppBar extends StatelessWidget {
 
   /// On Back
   final void Function()? onBack;
+
+  /// leadingIconColor
+  final Color? leadingIconColor;
+
+  /// leadingIcon
+  final String? leadingIcon;
 
   @override
   Widget build(BuildContext context) => Container(
@@ -30,9 +38,10 @@ class CommonAppBar extends StatelessWidget {
             GestureDetector(
               onTap: onBack ?? () => Get.back(),
               child: SvgPicture.asset(
-                AppImages.backIcon,
+                leadingIcon ?? AppImages.backIcon,
                 width: 24.w,
                 height: 24.h,
+                color: leadingIconColor,
               ),
             ),
             40.horizontalSpace,

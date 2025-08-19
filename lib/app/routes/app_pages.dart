@@ -6,6 +6,8 @@ import '../modules/create_bet/bindings/create_bet_binding.dart';
 import '../modules/create_bet/views/create_bet_view.dart';
 import '../modules/pick_crew/bindings/pick_crew_binding.dart';
 import '../modules/pick_crew/views/pick_crew_view.dart';
+import '../modules/pick_friends/bindings/pick_friends_binding.dart';
+import '../modules/pick_friends/views/pick_friends_view.dart';
 import '../modules/splash/bindings/splash_binding.dart';
 import '../modules/splash/views/splash_view.dart';
 
@@ -36,6 +38,11 @@ class AppPages {
       name: _Paths.PICK_CREW,
       page: () => const PickCrewView(),
       binding: PickCrewBinding(),
+    ),
+    GetPage(
+      name: _Paths.PICK_FRIENDS,
+      page: () => const PickFriendsView(),
+      binding: PickFriendsBinding(),
     ),
   ];
 }

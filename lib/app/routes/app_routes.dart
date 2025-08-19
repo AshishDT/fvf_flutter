@@ -9,6 +9,7 @@ abstract class Routes {
   static const AUTH = _Paths.AUTH;
   static const CREATE_BET = _Paths.CREATE_BET;
   static const PICK_CREW = _Paths.PICK_CREW;
+  static const PICK_FRIENDS = _Paths.PICK_FRIENDS;
 }
 
 abstract class _Paths {
@@ -16,4 +17,5 @@ abstract class _Paths {
   static const AUTH = '/auth';
   static const CREATE_BET = '/create-bet';
   static const PICK_CREW = '/pick-crew';
+  static const PICK_FRIENDS = '/pick-friends';
 }

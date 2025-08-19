@@ -13,11 +13,6 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
       },
     );
 
-    chatInputController.addListener(
-      () {
-        isMessageEntered(chatInputController.text.trim().isNotEmpty);
-      },
-    );
     super.onInit();
   }
 
@@ -31,8 +26,7 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
   @override
   void onClose() {
     WidgetsBinding.instance.removeObserver(this);
-    chatInputController.dispose();
-    chatInputFocusNode.dispose();
+    messageInputFocusNode.dispose();
     super.onClose();
   }
 
@@ -50,15 +44,12 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
   /// Observable to track keyboard visibility
   RxBool isKeyboardVisible = false.obs;
 
+  /// Entered bet
+  RxString enteredBet = ''.obs;
+
   /// Previous bottom inset for keyboard
   final RxDouble _prevBottomInset = 0.0.obs;
 
-  /// Is message entered state
-  RxBool isMessageEntered = false.obs;
-
-  /// Chat input controller
-  final TextEditingController chatInputController = TextEditingController();
-
   /// Focus node for chat input field
-  final FocusNode chatInputFocusNode = FocusNode();
+  final FocusNode messageInputFocusNode = FocusNode();
 }

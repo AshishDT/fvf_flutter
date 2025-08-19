@@ -1,0 +1,10 @@
+{
+  "app_name": "My Application",
+  "dashboard": "Dashboard",
+  "dialog": {
+    "title": "Confirmation",
+    "message": "Are you sure you want to proceed?",
+    "confirm_button": "Yes",
+    "cancel_button": "No"
+  }
+}

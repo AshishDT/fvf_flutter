@@ -1,0 +1,10 @@
+{
+  "app_name": "मेरा एप्लिकेशन",
+  "dashboard": "डैशबोर्ड",
+  "dialog": {
+    "title": "पुष्टि",
+    "message": "क्या आप वाकई आगे बढ़ना चाहते हैं?",
+    "confirm_button": "हाँ",
+    "cancel_button": "नहीं"
+  }
+}

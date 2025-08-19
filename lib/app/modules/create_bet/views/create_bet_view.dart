@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
-import 'package:fvf_flutter/app/modules/create_bet/widgets/keyboard_aware_sheet.dart';
 import 'package:fvf_flutter/app/modules/create_bet/widgets/work_space_sheet_repo.dart';
+import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/animated_list_view.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
@@ -96,7 +96,9 @@ class CreateBetView extends GetView<CreateBetController> {
               right: 24.w,
               child: AppButton(
                 buttonText: 'Bet',
-                onPressed: () {},
+                onPressed: () {
+                  Get.toNamed(Routes.AI_CHOOSING);
+                },
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: <Color>[

@@ -48,9 +48,6 @@ class AppImages {
   /// Profile bg image
   static const String profileBg = '$_path/profile_bg.png';
 
-  /// Share icon
-  static const String shareIcon = '$_svgPath/share_icon.svg';
-
   /// Profile image bg
   static const String profileImgBg = '$_path/profile_img_bg.png';
 
@@ -62,7 +59,4 @@ class AppImages {
 
   /// Emoji Icon
   static const String emojiIcon = '$_svgPath/emoji_icon.svg';
-
-  /// Close Icon
-  static const String closeIcon = '$_svgPath/close_icon.svg';
 }

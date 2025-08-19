@@ -12,6 +12,15 @@ class AppImages {
   /// Share icon
   static const String shareIcon = '$_svgPath/share_icon.svg';
 
+  /// Search person icon
+  static const String searchPersonIcon = '$_svgPath/search_person_icon.svg';
+
+  /// Close icon
+  static const String closeIcon = '$_svgPath/close_icon.svg';
+
+  /// Too much icon
+  static const String tooMuchIcon = '$_svgPath/too_much_icon.svg';
+
   /// Button background image
   static const String buttonBg = '$_path/button_bg.png';
 

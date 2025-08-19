@@ -13,7 +13,7 @@ class AnimatedListView extends StatelessWidget {
     this.padding,
     this.cacheExtent,
     this.physics = const BouncingScrollPhysics(),
-    this.showSlideTransition,
+    this.showScaleAnimation,
   });
 
   /// Children of the animated column.
@@ -38,7 +38,7 @@ class AnimatedListView extends StatelessWidget {
   final ScrollPhysics physics;
 
   /// Slide transition effect.
-  final bool? showSlideTransition;
+  final bool? showScaleAnimation;
 
   @override
   Widget build(BuildContext context) => AnimationLimiter(
@@ -57,17 +57,17 @@ class AnimatedListView extends StatelessWidget {
                   widget is Positioned) {
                 return widget;
               }
-              if (showSlideTransition ?? false) {
-                return SlideAnimation(
-                  horizontalOffset: 30,
+              if (showScaleAnimation ?? false) {
+                return ScaleAnimation(
+                  scale: 0.9,
+                  curve: Curves.easeOutCubic,
                   child: FadeInAnimation(
                     child: widget,
                   ),
                 );
               }
-              return ScaleAnimation(
-                scale: 0.9,
-                curve: Curves.easeOutCubic,
+              return SlideAnimation(
+                horizontalOffset: 30,
                 child: FadeInAnimation(
                   child: widget,
                 ),

@@ -3,8 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../data/config/app_colors.dart';
 
 /// Loader
@@ -58,9 +58,7 @@ class Loader {
                 ),
               ),
               if ((msg?.isNotEmpty ?? false) && msg != null) ...[
-                SizedBox(
-                  height: 5.h,
-                ),
+                5.verticalSpace,
                 Center(
                   child: Obx(
                     () => Text(
@@ -68,7 +66,7 @@ class Loader {
                           ? 'Hang in there... This could take some time.'
                           : msg,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
+                      style: AppTextStyle.openRunde(
                         color: AppColors.k101928,
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w500,

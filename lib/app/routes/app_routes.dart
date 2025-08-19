@@ -5,9 +5,13 @@ part of 'app_pages.dart';
 abstract class Routes {
   Routes._();
 
-  static const DASHBOARD = _Paths.DASHBOARD;
+  static const SPLASH = _Paths.SPLASH;
+  static const AUTH = _Paths.AUTH;
+  static const CREATE_BET = _Paths.CREATE_BET;
 }
 
 abstract class _Paths {
-  static const DASHBOARD = '/dashboard';
+  static const SPLASH = '/splash';
+  static const AUTH = '/auth';
+  static const CREATE_BET = '/create-bet';
 }

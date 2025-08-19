@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:fvf_flutter/app/utils/widget_ext.dart';
-
 import '../data/config/app_colors.dart';
 import '../ui/components/app_button.dart';
 
@@ -33,7 +32,7 @@ class AppSheetRepo {
           22.verticalSpace,
           Text(
             'Show Something',
-            style: GoogleFonts.manrope(
+            style: AppTextStyle.openRunde(
               fontSize: 20.sp,
               fontWeight: FontWeight.w700,
               color: AppColors.k000000,

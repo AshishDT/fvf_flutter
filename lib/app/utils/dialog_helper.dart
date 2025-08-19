@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:fvf_flutter/generated/locales.g.dart';
-
 import '../data/config/app_colors.dart';
 import '../data/enums/language_enum.dart';
 import '../ui/components/app_button.dart';
@@ -106,7 +105,7 @@ class DialogHelper {
               Text(
                 title,
                 textAlign: TextAlign.left,
-                style: GoogleFonts.inter(
+                style: AppTextStyle.openRunde(
                   fontSize: 24.sp,
                   fontWeight: FontWeight.w600,
                   color: AppColors.k000000.withValues(alpha: 82),
@@ -117,7 +116,7 @@ class DialogHelper {
                 Text(
                   msg,
                   textAlign: TextAlign.left,
-                  style: GoogleFonts.inter(
+                  style: AppTextStyle.openRunde(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w600,
                     color: AppColors.k000000.withValues(alpha: 60),
@@ -180,7 +179,7 @@ class DialogHelper {
               Text(
                 title,
                 textAlign: TextAlign.left,
-                style: GoogleFonts.inter(
+                style: AppTextStyle.openRunde(
                   fontSize: 24.sp,
                   fontWeight: FontWeight.w600,
                   color: AppColors.k000000.withValues(alpha: 82),
@@ -191,7 +190,7 @@ class DialogHelper {
                 Text(
                   msg,
                   textAlign: TextAlign.left,
-                  style: GoogleFonts.inter(
+                  style: AppTextStyle.openRunde(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w600,
                     color: AppColors.k000000.withValues(alpha: 60),

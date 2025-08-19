@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../data/config/app_colors.dart';
 
 /// A customizable elevated button with loading state,
@@ -11,14 +11,13 @@ class AppButton extends StatelessWidget {
   const AppButton({
     required this.buttonText,
     required this.onPressed,
-    this.borderSide,
     this.height,
     this.style,
     this.buttonColor,
     this.borderRadius,
     this.isLoading = false,
-    this.isEnabled = true,
     this.width,
+    this.decoration,
     Key? key,
   }) : super(key: key);
 
@@ -27,9 +26,6 @@ class AppButton extends StatelessWidget {
 
   /// Callback when the button is pressed.
   final void Function() onPressed;
-
-  /// Optional border side for the button.
-  final BorderSide? borderSide;
 
   /// Height of the button (defaults to 56.h).
   final double? height;
@@ -49,24 +45,20 @@ class AppButton extends StatelessWidget {
   /// Whether to show the loading animation.
   final bool isLoading;
 
-  /// Whether the button is enabled.
-  final bool isEnabled;
+  /// Optional decoration for the button.
+  final BoxDecoration? decoration;
 
   @override
   Widget build(BuildContext context) {
     final double btnHeight = height ?? 56.h;
     final double btnWidth = width ?? context.width;
 
-    // Determine background color based on state
-    final Color bgColor = isLoading
-        ? AppColors.k101928
-        : isEnabled
-        ? buttonColor ?? AppColors.k00A4A6
-        : AppColors.k00A4A6;
+    final Color bgColor =
+        isLoading ? AppColors.k101928 : buttonColor ?? AppColors.k00A4A6;
 
     return GestureDetector(
       onTap: () {
-        if (!isEnabled || isLoading) {
+        if (isLoading) {
           return;
         }
         onPressed.call();
@@ -76,17 +68,17 @@ class AppButton extends StatelessWidget {
         curve: Curves.easeInOut,
         height: btnHeight,
         width: btnWidth,
-        decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: borderRadius ?? BorderRadius.circular(28).r,
-          border: borderSide != null
-              ? Border.all(
-            color: borderSide!.color,
-            width: borderSide!.width,
-            style: borderSide!.style,
-          )
-              : null,
-        ),
+        decoration: decoration ??
+            BoxDecoration(
+              color: bgColor,
+              gradient: const LinearGradient(
+                colors: <Color>[
+                  AppColors.kA68DF5,
+                  AppColors.k64B6FE,
+                ],
+              ),
+              borderRadius: borderRadius ?? BorderRadius.circular(28).r,
+            ),
         child: Center(
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -99,8 +91,8 @@ class AppButton extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: style ??
-                          GoogleFonts.inter(
-                            fontSize: 16.sp,
+                          AppTextStyle.openRunde(
+                            fontSize: 18.sp,
                             fontWeight: FontWeight.w700,
                             color: AppColors.kffffff,
                           ),
@@ -112,7 +104,7 @@ class AppButton extends StatelessWidget {
                 15.horizontalSpace,
                 const Center(
                   child: CircularProgressIndicator(
-                    color: AppColors.k000000,
+                    color: AppColors.kffffff,
                   ),
                 )
               ]

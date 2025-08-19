@@ -7,7 +7,7 @@ class AnimatedColumn extends StatelessWidget {
   const AnimatedColumn({
     required this.children,
     super.key,
-    this.duration = const Duration(milliseconds: 300),
+    this.duration = const Duration(milliseconds: 370),
     this.mainAxisAlignment = MainAxisAlignment.start,
     this.crossAxisAlignment = CrossAxisAlignment.center,
     this.mainAxisSize = MainAxisSize.max,
@@ -15,7 +15,7 @@ class AnimatedColumn extends StatelessWidget {
     this.textBaseline,
     this.textDirection,
     this.verticalDirection = VerticalDirection.down,
-    this.showSlideTransition,
+    this.showScaleAnimation,
   });
 
   /// Children of the animated column.
@@ -46,7 +46,7 @@ class AnimatedColumn extends StatelessWidget {
   final VerticalDirection verticalDirection;
 
   /// Slide transition effect.
-  final bool? showSlideTransition;
+  final bool? showScaleAnimation;
 
   @override
   Widget build(BuildContext context) => AnimationLimiter(
@@ -68,18 +68,18 @@ class AnimatedColumn extends StatelessWidget {
                 return widget;
               }
 
-              if (showSlideTransition ?? false) {
-                return SlideAnimation(
-                  horizontalOffset: 50,
+              if (showScaleAnimation ?? false) {
+                return ScaleAnimation(
+                  scale: 0.9,
+                  curve: Curves.easeOutCubic,
                   child: FadeInAnimation(
                     child: widget,
                   ),
                 );
               }
 
-              return ScaleAnimation(
-                scale: 0.9,
-                curve: Curves.easeOutCubic,
+              return SlideAnimation(
+                horizontalOffset: 50,
                 child: FadeInAnimation(
                   child: widget,
                 ),

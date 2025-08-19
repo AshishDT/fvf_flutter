@@ -18,6 +18,8 @@ class AppButton extends StatelessWidget {
     this.isLoading = false,
     this.width,
     this.decoration,
+    this.showGradient = true,
+    this.child,
     Key? key,
   }) : super(key: key);
 
@@ -48,6 +50,12 @@ class AppButton extends StatelessWidget {
   /// Optional decoration for the button.
   final BoxDecoration? decoration;
 
+  /// showGradient
+  final bool showGradient;
+
+  /// Child
+  final Widget? child;
+
   @override
   Widget build(BuildContext context) {
     final double btnHeight = height ?? 56.h;
@@ -71,12 +79,12 @@ class AppButton extends StatelessWidget {
         decoration: decoration ??
             BoxDecoration(
               color: bgColor,
-              gradient: const LinearGradient(
+              gradient: showGradient? const LinearGradient(
                 colors: <Color>[
                   AppColors.kA68DF5,
                   AppColors.k64B6FE,
                 ],
-              ),
+              ) : null,
               borderRadius: borderRadius ?? BorderRadius.circular(28).r,
             ),
         child: Center(
@@ -85,7 +93,7 @@ class AppButton extends StatelessWidget {
             children: <Widget>[
               if (!isLoading) ...<Widget>[
                 Expanded(
-                  child: Center(
+                  child: child ?? Center(
                     child: Text(
                       buttonText,
                       maxLines: 1,

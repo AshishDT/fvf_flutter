@@ -26,4 +26,13 @@ class AppImages {
 
   /// Friend profile placeholder image
   static const String friendProfile = '$_path/friend_profile.png';
+
+  /// Dice image
+  static const String dice = '$_path/dice.png';
+
+  /// Pencil icon
+  static const String pencilIcon = '$_path/pencil_icon.png';
+
+  /// Pen icon
+  static const String penIcon = '$_path/pen_icon.svg';
 }

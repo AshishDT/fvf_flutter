@@ -9,6 +9,7 @@ import '../../../ui/components/common_app_bar.dart';
 import '../../../ui/components/gradient_card.dart';
 import '../controllers/pick_friends_controller.dart';
 import '../widgets/contacts_limit.dart';
+import '../widgets/contacts_placeholder.dart';
 import 'contacts_card_view.dart';
 import 'contacts_search_field.dart';
 
@@ -49,8 +50,9 @@ class PickFriendsView extends GetView<PickFriendsController> {
                   children: <Widget>[
                     const CommonAppBar().paddingSymmetric(horizontal: 24),
                     16.verticalSpace,
-                    const ContactsSearchField()
-                        .paddingSymmetric(horizontal: 24),
+                    const ContactsSearchField().paddingSymmetric(
+                      horizontal: 24,
+                    ),
                     AnimatedSize(
                       duration: const Duration(milliseconds: 300),
                       alignment: Alignment.topLeft,
@@ -84,18 +86,8 @@ class PickFriendsView extends GetView<PickFriendsController> {
                       ),
                     ),
                     24.verticalSpace,
-                    Obx(
-                      () => controller.isLoading()
-                          ? Padding(
-                              padding: REdgeInsets.only(top: 100),
-                              child: const Center(
-                                child: CircularProgressIndicator(
-                                  color: AppColors.k13C4E5,
-                                ),
-                              ),
-                            )
-                          : const ContactsCard()
-                              .paddingSymmetric(horizontal: 24),
+                    const ContactsCard().paddingSymmetric(
+                      horizontal: 24,
                     ),
                     150.verticalSpace,
                   ],

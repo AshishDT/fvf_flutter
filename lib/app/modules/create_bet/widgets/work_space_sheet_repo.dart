@@ -19,7 +19,12 @@ class WorkSpaceSheetRepo {
           top: Radius.circular(24),
         ).r,
       ),
-      builder: (BuildContext context) => const KeyboardAwareSheet(),
+      builder: (BuildContext context) => SingleChildScrollView(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: const KeyboardAwareSheet(),
+      ),
     );
   }
 }

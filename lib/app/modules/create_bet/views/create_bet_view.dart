@@ -20,97 +20,89 @@ class CreateBetView extends GetView<CreateBetController> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        backgroundColor: AppColors.kF5FCFF,
-        body: Stack(
-          children: [
-            GradientCard(
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: SafeArea(
-                  child: AnimatedListView(
-                    padding: REdgeInsets.symmetric(horizontal: 24),
-                    children: <Widget>[
-                      const CommonAppBar(),
-                      64.verticalSpace,
-                      GradientCard(
-                        padding:
-                            REdgeInsets.symmetric(vertical: 31, horizontal: 24),
-                        borderRadius: BorderRadius.circular(32.r),
-                        constraints: BoxConstraints(maxHeight: 120.h),
-                        bgImage: AppImages.contentCardBg,
-                        child: Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: Text(
-                                'Most likely to start an OF?',
-                                style: AppTextStyle.openRunde(
-                                  color: AppColors.kffffff,
-                                  fontSize: 24.sp,
-                                  fontWeight: FontWeight.w600,
-                                  height: 1.3,
-                                ),
-                              ),
-                            ),
-                            16.horizontalSpace,
-                            Image.asset(AppImages.dice),
-                          ],
-                        ),
-                      ),
-                      24.verticalSpace,
-                      AppButton(
-                        buttonText: '',
-                        buttonColor: AppColors.kE4F7FB,
-                        showGradient: false,
-                        onPressed: () {
-                          WorkSpaceSheetRepo.openChatField();
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text(
-                              'Or write your own',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: AppTextStyle.openRunde(
-                                fontSize: 18.sp,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.k3D4445,
-                              ),
-                            ),
-                            4.horizontalSpace,
-                            Image.asset(
-                              AppImages.pencilIcon,
-                              height: 32.h,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 35.h,
-              left: 24.w,
-              right: 24.w,
-              child: AppButton(
-                buttonText: 'Bet',
-                onPressed: () {
-                  Get.toNamed(Routes.AI_CHOOSING);
-                },
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: <Color>[
-                      AppColors.kA68DF5,
-                      AppColors.k64B6FE,
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(28).r,
-                ),
-              ),
-            ),
+    backgroundColor: AppColors.kF5FCFF,
+    floatingActionButton: AppButton(
+      buttonText: 'Bet',
+      onPressed: () {
+        Get.toNamed(Routes.PICK_CREW);
+      },
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: <Color>[
+            AppColors.kA68DF5,
+            AppColors.k64B6FE,
           ],
         ),
-      );
+        borderRadius: BorderRadius.circular(28).r,
+      ),
+    ).paddingSymmetric(horizontal: 24),
+    floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    body: GradientCard(
+      child: Align(
+        alignment: Alignment.topLeft,
+        child: SafeArea(
+          child: AnimatedListView(
+            padding: REdgeInsets.symmetric(horizontal: 24),
+            children: <Widget>[
+              const CommonAppBar(),
+              64.verticalSpace,
+              GradientCard(
+                padding:
+                REdgeInsets.symmetric(vertical: 31, horizontal: 24),
+                borderRadius: BorderRadius.circular(32.r),
+                constraints: BoxConstraints(maxHeight: 120.h),
+                bgImage: AppImages.contentCardBg,
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        'Most likely to start an OF?',
+                        style: AppTextStyle.openRunde(
+                          color: AppColors.kffffff,
+                          fontSize: 24.sp,
+                          fontWeight: FontWeight.w600,
+                          height: 1.3,
+                        ),
+                      ),
+                    ),
+                    16.horizontalSpace,
+                    Image.asset(AppImages.dice),
+                  ],
+                ),
+              ),
+              24.verticalSpace,
+              AppButton(
+                buttonText: '',
+                buttonColor: AppColors.kE4F7FB,
+                showGradient: false,
+                onPressed: () {
+                  WorkSpaceSheetRepo.openChatField();
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      'Or write your own',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyle.openRunde(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.k3D4445,
+                      ),
+                    ),
+                    4.horizontalSpace,
+                    Image.asset(
+                      AppImages.pencilIcon,
+                      height: 32.h,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
 }

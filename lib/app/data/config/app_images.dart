@@ -9,6 +9,18 @@ class AppImages {
   /// Back icon
   static const String backIcon = '$_svgPath/back_icon.svg';
 
+  /// Share icon
+  static const String shareIcon = '$_svgPath/share_icon.svg';
+
+  /// Search person icon
+  static const String searchPersonIcon = '$_svgPath/search_person_icon.svg';
+
+  /// Close icon
+  static const String closeIcon = '$_svgPath/close_icon.svg';
+
+  /// Too much icon
+  static const String tooMuchIcon = '$_svgPath/too_much_icon.svg';
+
   /// Button background image
   static const String buttonBg = '$_path/button_bg.png';
 
@@ -17,6 +29,12 @@ class AppImages {
 
   /// Content card background image
   static const String contentCardBg = '$_path/content_card_bg.png';
+
+  /// You profile placeholder image
+  static const String youProfile = '$_path/you_profile.png';
+
+  /// Friend profile placeholder image
+  static const String friendProfile = '$_path/friend_profile.png';
 
   /// Dice image
   static const String dice = '$_path/dice.png';

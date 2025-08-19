@@ -12,6 +12,11 @@ class PickFriendsController extends GetxController {
   @override
   void onInit() {
     getContacts();
+    searchController.addListener(
+      () {
+        _contacts.refresh();
+      },
+    );
     super.onInit();
   }
 
@@ -34,13 +39,13 @@ class PickFriendsController extends GetxController {
   TextEditingController searchController = TextEditingController();
 
   /// List of contacts
-  RxList<Contact> contacts = <Contact>[].obs;
+  RxList<Contact> _contacts = <Contact>[].obs;
 
   /// Set of selected contact IDs
   RxSet<String> selectedIds = <String>{}.obs;
 
   /// Selected contacts
-  RxList<Contact> get selectedContacts => contacts
+  RxList<Contact> get selectedContacts => _contacts
       .where((Contact contact) => selectedIds.contains(contact.id))
       .toList()
       .obs;
@@ -63,7 +68,7 @@ class PickFriendsController extends GetxController {
   /// Get contacts from the device
   Future<void> getContacts() async {
     isLoading(true);
-    contacts.clear();
+    _contacts.clear();
     selectedIds.clear();
 
     try {
@@ -84,11 +89,12 @@ class PickFriendsController extends GetxController {
         withAccounts: true,
       );
 
-      this.contacts(contacts);
+      _contacts(contacts);
 
-      this.contacts.removeWhere((Contact contact) =>
-          contact.phones.isEmpty || contact.displayName.isEmpty);
-      this.contacts.refresh();
+      _contacts
+        ..removeWhere((Contact contact) =>
+            contact.phones.isEmpty || contact.displayName.isEmpty)
+        ..refresh();
     } on Exception catch (e, stack) {
       appSnackbar(
         message: 'Failed to load contacts: $e',
@@ -146,5 +152,22 @@ class PickFriendsController extends GetxController {
       );
       return;
     }
+  }
+
+  /// Returns a list of filtered contacts based on the search query
+  RxList<Contact> get filteredContacts {
+    final String query = searchController.text.trim().toLowerCase();
+    if (query.isEmpty) {
+      return _contacts;
+    }
+    return _contacts
+        .where((Contact contact) =>
+            contact.displayName.toLowerCase().contains(query) ||
+            (contact.phones.isNotEmpty &&
+                contact.phones.any(
+                  (Phone phone) => phone.number.contains(query),
+                )))
+        .toList()
+        .obs;
   }
 }

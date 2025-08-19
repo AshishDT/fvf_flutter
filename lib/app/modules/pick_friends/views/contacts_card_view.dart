@@ -28,9 +28,9 @@ class ContactsCard extends GetView<PickFriendsController> {
           () => ListView.builder(
             shrinkWrap: true,
             physics: const BouncingScrollPhysics(),
-            itemCount: controller.contacts().length,
+            itemCount: controller.filteredContacts().length,
             itemBuilder: (BuildContext context, int index) {
-              final Contact contact = controller.contacts()[index];
+              final Contact contact = controller.filteredContacts()[index];
               final String phone =
                   contact.phones.isNotEmpty ? contact.phones.first.number : '';
 

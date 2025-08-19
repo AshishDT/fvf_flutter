@@ -8,10 +8,12 @@ abstract class Routes {
   static const SPLASH = _Paths.SPLASH;
   static const AUTH = _Paths.AUTH;
   static const CREATE_BET = _Paths.CREATE_BET;
+  static const PICK_CREW = _Paths.PICK_CREW;
 }
 
 abstract class _Paths {
   static const SPLASH = '/splash';
   static const AUTH = '/auth';
   static const CREATE_BET = '/create-bet';
+  static const PICK_CREW = '/pick-crew';
 }

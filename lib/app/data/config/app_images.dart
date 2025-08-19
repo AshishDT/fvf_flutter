@@ -9,6 +9,9 @@ class AppImages {
   /// Back icon
   static const String backIcon = '$_svgPath/back_icon.svg';
 
+  /// Share icon
+  static const String shareIcon = '$_svgPath/share_icon.svg';
+
   /// Button background image
   static const String buttonBg = '$_path/button_bg.png';
 
@@ -17,4 +20,10 @@ class AppImages {
 
   /// Content card background image
   static const String contentCardBg = '$_path/content_card_bg.png';
+
+  /// You profile placeholder image
+  static const String youProfile = '$_path/you_profile.png';
+
+  /// Friend profile placeholder image
+  static const String friendProfile = '$_path/friend_profile.png';
 }

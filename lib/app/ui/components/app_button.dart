@@ -18,7 +18,6 @@ class AppButton extends StatelessWidget {
     this.isLoading = false,
     this.width,
     this.decoration,
-    this.showGradient = true,
     this.child,
     Key? key,
   }) : super(key: key);
@@ -50,9 +49,6 @@ class AppButton extends StatelessWidget {
   /// Optional decoration for the button.
   final BoxDecoration? decoration;
 
-  /// showGradient
-  final bool showGradient;
-
   /// Child
   final Widget? child;
 
@@ -62,7 +58,7 @@ class AppButton extends StatelessWidget {
     final double btnWidth = width ?? context.width;
 
     final Color bgColor =
-        isLoading ? AppColors.k101928 : buttonColor ?? AppColors.k00A4A6;
+         buttonColor ?? AppColors.k2A2E2F.withValues(alpha: 0.42);
 
     return GestureDetector(
       onTap: () {
@@ -79,12 +75,6 @@ class AppButton extends StatelessWidget {
         decoration: decoration ??
             BoxDecoration(
               color: bgColor,
-              gradient: showGradient? const LinearGradient(
-                colors: <Color>[
-                  AppColors.kA68DF5,
-                  AppColors.k64B6FE,
-                ],
-              ) : null,
               borderRadius: borderRadius ?? BorderRadius.circular(28).r,
             ),
         child: Center(

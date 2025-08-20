@@ -26,15 +26,6 @@ class CreateBetView extends GetView<CreateBetController> {
           onPressed: () {
             Get.toNamed(Routes.PICK_CREW);
           },
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: <Color>[
-                AppColors.kA68DF5,
-                AppColors.k64B6FE,
-              ],
-            ),
-            borderRadius: BorderRadius.circular(28).r,
-          ),
         ).paddingSymmetric(horizontal: 24),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         body: GradientCard(
@@ -77,8 +68,7 @@ class CreateBetView extends GetView<CreateBetController> {
                   24.verticalSpace,
                   AppButton(
                     buttonText: '',
-                    buttonColor: AppColors.kE4F7FB,
-                    showGradient: false,
+                    buttonColor: AppColors.kF1F2F2.withValues(alpha: 0.36),
                     onPressed: () {
                       if (controller.enteredBet().isNotEmpty) {
                         controller.messageInputController.text =
@@ -97,7 +87,7 @@ class CreateBetView extends GetView<CreateBetController> {
                           style: AppTextStyle.openRunde(
                             fontSize: 18.sp,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.k3D4445,
+                            color: AppColors.kffffff,
                           ),
                         ),
                         4.horizontalSpace,

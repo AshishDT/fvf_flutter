@@ -84,7 +84,7 @@ class AuthView extends GetView<AuthController> {
               AppButton(
                 buttonText: 'Let’s Goooo!',
                 onPressed: () {
-                  Get.toNamed(Routes.CREATE_BET);
+                  Get.toNamed(Routes.AGE_INPUT);
                 },
                 decoration: BoxDecoration(
                   image: const DecorationImage(
@@ -98,7 +98,7 @@ class AuthView extends GetView<AuthController> {
               AppButton(
                 buttonText: 'I Have an Account',
                 onPressed: () {
-                  Get.toNamed(Routes.CREATE_BET);
+                  Get.toNamed(Routes.AGE_INPUT);
                 },
                 style: AppTextStyle.openRunde(
                   color: AppColors.kA8B3B5,

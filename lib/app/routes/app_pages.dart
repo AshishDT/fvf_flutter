@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../modules/age_input/bindings/age_input_binding.dart';
+import '../modules/age_input/views/age_input_view.dart';
 import '../modules/ai_choosing/bindings/ai_choosing_binding.dart';
 import '../modules/ai_choosing/views/ai_choosing_view.dart';
 import '../modules/auth/bindings/auth_binding.dart';
@@ -57,6 +59,11 @@ class AppPages {
       name: _Paths.PICK_FRIENDS,
       page: () => const PickFriendsView(),
       binding: PickFriendsBinding(),
+    ),
+    GetPage(
+      name: _Paths.AGE_INPUT,
+      page: () => const AgeInputView(),
+      binding: AgeInputBinding(),
     ),
   ];
 }

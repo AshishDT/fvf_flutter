@@ -25,6 +25,29 @@ class PickCrewView extends GetView<PickCrewController> {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: AppButton(
           buttonText: 'Pick your crew',
+          child:Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              SvgPicture.asset(
+                width: 18.w,
+                height: 18.h,
+                AppImages.shareIcon,
+                colorFilter: const ColorFilter.mode(
+                  AppColors.kffffff,
+                  BlendMode.srcIn,
+                ),
+              ),
+              8.horizontalSpace,
+              Text(
+                'Pick your crew',
+                style: AppTextStyle.openRunde(
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.kffffff,
+                ),
+              ),
+            ],
+          ),
           onPressed: () {
             Get.toNamed(Routes.PICK_FRIENDS);
           },
@@ -64,29 +87,11 @@ class PickCrewView extends GetView<PickCrewController> {
                     ),
                   ),
                   48.verticalSpace,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      _profileWidget(
-                        name: 'You',
-                        iconPath: AppImages.youProfile,
-                      ),
-                      32.horizontalSpace,
-                      _profileWidget(
-                        name: 'Friend',
-                        iconPath: AppImages.friendProfile,
-                      ),
-                      32.horizontalSpace,
-                      _profileWidget(
-                        name: 'Friend',
-                        iconPath: AppImages.friendProfile,
-                      ),
-                      32.horizontalSpace,
-                      _profileWidget(
-                        name: 'Friend',
-                        iconPath: AppImages.friendProfile,
-                      ),
-                    ],
+                  Align(
+                    child: _profileWidget(
+                      name: 'You',
+                      iconPath: AppImages.youProfile,
+                    ),
                   ),
                 ],
               ),

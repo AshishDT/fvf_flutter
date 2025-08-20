@@ -45,7 +45,7 @@ class KeyboardAwareSheet extends GetView<CreateBetController> {
               duration: const Duration(milliseconds: 300),
               padding: REdgeInsets.symmetric(horizontal: 16, vertical: 6),
               decoration: BoxDecoration(
-                color: AppColors.kF1F2F2,
+                color: AppColors.kF1F2F2.withValues(alpha: 0.36),
                 borderRadius: BorderRadius.circular(28).r,
               ),
               child: TextFormField(
@@ -54,19 +54,28 @@ class KeyboardAwareSheet extends GetView<CreateBetController> {
                 maxLines: 7,
                 minLines: 1,
                 autofocus: true,
-                cursorColor: AppColors.k2A2E2F,
+                cursorColor: AppColors.kffffff,
                 onFieldSubmitted: (String value) {
                   controller.messageInputFocusNode.unfocus();
 
-                  controller.enteredBet(value);
+                  if (value.isNotEmpty) {
+                    controller.enteredBet(value);
+                  } else {
+                    controller.enteredBet('Most likely to start an OF?');
+                  }
                   controller.enteredBet.refresh();
                 },
                 onChanged: (String value) {
-                  controller.enteredBet(value);
+                  if (value.isNotEmpty) {
+                    controller.enteredBet(value);
+                  } else {
+                    controller.enteredBet('Most likely to start an OF?');
+                  }
+
                   controller.enteredBet.refresh();
                 },
                 style: AppTextStyle.openRunde(
-                  color: AppColors.k787C82,
+                  color: AppColors.kffffff,
                   fontWeight: FontWeight.w600,
                   fontSize: 16.sp,
                 ),
@@ -81,9 +90,13 @@ class KeyboardAwareSheet extends GetView<CreateBetController> {
                     AppImages.penIcon,
                     height: 24.h,
                     width: 24.w,
+                    colorFilter: const ColorFilter.mode(
+                      AppColors.kffffff,
+                      BlendMode.srcIn,
+                    ),
                   ),
                   hintStyle: AppTextStyle.openRunde(
-                    color: AppColors.k787C82,
+                    color: AppColors.kffffff,
                     fontWeight: FontWeight.w600,
                     fontSize: 16.sp,
                   ),

@@ -80,6 +80,11 @@ class CreateBetView extends GetView<CreateBetController> {
                     buttonColor: AppColors.kE4F7FB,
                     showGradient: false,
                     onPressed: () {
+                      if (controller.enteredBet().isNotEmpty) {
+                        controller.messageInputController.text =
+                            controller.enteredBet();
+                      }
+
                       WorkSpaceSheetRepo.openChatField();
                     },
                     child: Row(

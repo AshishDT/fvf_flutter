@@ -52,4 +52,7 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
 
   /// Focus node for chat input field
   final FocusNode messageInputFocusNode = FocusNode();
+
+  /// Text editing controller for chat input field
+  TextEditingController messageInputController = TextEditingController();
 }

@@ -50,6 +50,7 @@ class KeyboardAwareSheet extends GetView<CreateBetController> {
               ),
               child: TextFormField(
                 focusNode: controller.messageInputFocusNode,
+                controller: controller.messageInputController,
                 maxLines: 7,
                 minLines: 1,
                 autofocus: true,

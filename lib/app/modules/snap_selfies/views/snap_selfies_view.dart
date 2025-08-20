@@ -1,6 +1,8 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fvf_flutter/app/modules/snap_selfies/widgets/animated_switcher.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:get/get.dart';
 import '../../../data/config/app_colors.dart';
@@ -52,10 +54,61 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                 ),
               ),
             ),
-            AppButton(
-              buttonText: 'Snap Selfie',
-              onPressed: () {},
-            ).paddingSymmetric(horizontal: 24),
+            AnimatedSize(
+              duration: const Duration(milliseconds: 300),
+              alignment: Alignment.bottomCenter,
+              curve: Curves.easeInOut,
+              child: Obx(
+                () => Visibility(
+                  replacement: const SizedBox(
+                    width: double.infinity,
+                  ),
+                  visible: controller.pickedSelfie().path.isNotEmpty &&
+                      !controller.isAllSelfiesTaken(),
+                  child: Padding(
+                    padding: REdgeInsets.only(bottom: 32),
+                    child: AnimatedTextSwitcher(
+                      currentIndex: controller.currentIndex(),
+                      texts: controller.texts,
+                    ).paddingSymmetric(horizontal: 24),
+                  ),
+                ),
+              ),
+            ),
+            AnimatedSize(
+              duration: const Duration(milliseconds: 300),
+              alignment: Alignment.bottomCenter,
+              curve: Curves.easeInOut,
+              child: Obx(
+                () => Visibility(
+                  replacement: const SizedBox(
+                    width: double.infinity,
+                  ),
+                  visible: controller.pickedSelfie().path.isEmpty,
+                  child: AppButton(
+                    buttonText: 'Snap Selfie',
+                    onPressed: controller.onSnapSelfie,
+                  ).paddingSymmetric(horizontal: 24),
+                ),
+              ),
+            ),
+            AnimatedSize(
+              duration: const Duration(milliseconds: 300),
+              alignment: Alignment.bottomCenter,
+              curve: Curves.easeInOut,
+              child: Obx(
+                () => Visibility(
+                  replacement: const SizedBox(
+                    width: double.infinity,
+                  ),
+                  visible: controller.isAllSelfiesTaken(),
+                  child: AppButton(
+                    buttonText: 'Let’s Go',
+                    onPressed: controller.onLetGo,
+                  ).paddingSymmetric(horizontal: 24),
+                ),
+              ),
+            ),
           ],
         ),
         body: GradientCard(
@@ -82,7 +135,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                     ),
                   ),
                   24.verticalSpace,
-                  Text(
+                  AutoSizeText(
                     'Most Likely to Start an OF?',
                     textAlign: TextAlign.center,
                     style: AppTextStyle.openRunde(
@@ -90,6 +143,8 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                       fontWeight: FontWeight.w700,
                       color: AppColors.kffffff,
                     ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 20,
                   ).paddingSymmetric(horizontal: 24),
                   48.verticalSpace,
                   SingleChildScrollView(
@@ -99,7 +154,6 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                         ...controller.selfies.map(
                           (MdUserSelfie user) => SelfieAvatar(
                             user: user,
-                            avatarColors: controller.avatarColors,
                           ).paddingOnly(right: 32),
                         ),
                       ],

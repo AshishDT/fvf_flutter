@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -75,9 +76,11 @@ class PickCrewView extends GetView<PickCrewController> {
                     ),
                   ),
                   24.verticalSpace,
-                  Text(
+                  AutoSizeText(
                     'Most Likely to Start an OF?',
                     textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 20,
                     style: AppTextStyle.openRunde(
                       fontSize: 40.sp,
                       fontWeight: FontWeight.w700,

@@ -9,7 +9,6 @@ class SelfieAvatar extends StatelessWidget {
   /// Constructor for SelfieAvatar
   const SelfieAvatar({
     required this.user,
-    required this.avatarColors,
     super.key,
     this.size = 56,
   });
@@ -17,17 +16,24 @@ class SelfieAvatar extends StatelessWidget {
   /// SelfieAvatar constructor
   final MdUserSelfie user;
 
-  /// List of colors for avatar background
-  final List<Color> avatarColors;
-
   /// Size of the avatar
   final double size;
 
   /// pick avatar color from id
   Color get _bgColor {
+    final List<Color> _avatarColors = <Color>[
+      const Color(0xFF13C4E5),
+      const Color(0xFF8C6BF5),
+      const Color(0xFFD353DB),
+      const Color(0xFF5B82FF),
+      const Color(0xFFFB47CD),
+      const Color(0xFF34A1FF),
+      const Color(0xFF7C70F9),
+    ];
+
     final int hash = user.id.hashCode;
-    final int index = hash % avatarColors.length;
-    return avatarColors[index];
+    final int index = hash % _avatarColors.length;
+    return _avatarColors[index];
   }
 
   /// get initials

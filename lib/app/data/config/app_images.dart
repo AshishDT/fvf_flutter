@@ -12,6 +12,9 @@ class AppImages {
   /// Share icon
   static const String shareIcon = '$_svgPath/share_icon.svg';
 
+  /// Click selfie icon
+  static const String clickSelfieIcon = '$_svgPath/click_selfie_icon.svg';
+
   /// Search person icon
   static const String searchPersonIcon = '$_svgPath/search_person_icon.svg';
 

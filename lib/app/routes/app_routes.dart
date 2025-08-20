@@ -14,6 +14,7 @@ abstract class Routes {
   static const AI_CHOOSING = _Paths.AI_CHOOSING;
   static const AGE_INPUT = _Paths.AGE_INPUT;
   static const SNAP_SELFIES = _Paths.SNAP_SELFIES;
+  static const CAMERA = _Paths.CAMERA;
 }
 
 abstract class _Paths {
@@ -26,4 +27,5 @@ abstract class _Paths {
   static const AI_CHOOSING = '/ai-choosing';
   static const AGE_INPUT = '/age-input';
   static const SNAP_SELFIES = '/snap-selfies';
+  static const CAMERA = '/camera';
 }

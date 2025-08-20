@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -32,7 +33,10 @@ class AiChoosingView extends GetView<AiChoosingController> {
                         AppImages.shareIcon,
                         width: 24.w,
                         height: 24.h,
-                        color: AppColors.kF1F2F2,
+                        colorFilter: const ColorFilter.mode(
+                          AppColors.kffffff,
+                          BlendMode.srcIn,
+                        ),
                       ),
                     ),
                   ],
@@ -50,9 +54,11 @@ class AiChoosingView extends GetView<AiChoosingController> {
                 ).paddingSymmetric(horizontal: 24.w),
                 24.verticalSpace,
                 Center(
-                  child: Text(
+                  child: AutoSizeText(
                     'Most Likely to Start an OF?',
                     textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 20,
                     style: AppTextStyle.openRunde(
                       fontSize: 24.sp,
                       color: AppColors.kFAFBFB,

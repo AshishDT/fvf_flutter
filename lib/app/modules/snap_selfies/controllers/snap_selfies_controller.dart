@@ -1,7 +1,9 @@
 import 'dart:async';
-import 'dart:ui';
+import 'package:camera/camera.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:fvf_flutter/app/modules/snap_selfies/models/md_user_selfie.dart';
+import 'package:fvf_flutter/app/routes/app_pages.dart';
+import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
 
 import '../../../data/config/app_images.dart';
@@ -31,7 +33,8 @@ class SnapSelfiesController extends GetxController {
   /// On close
   @override
   void onClose() {
-    _timer?.cancel();
+    stopTimer();
+    _textsTimer?.cancel();
     super.onClose();
   }
 
@@ -43,6 +46,18 @@ class SnapSelfiesController extends GetxController {
 
   /// Timer for countdown
   Timer? _timer;
+
+  /// Current index for texts
+  RxInt currentIndex = 0.obs;
+
+  /// Timer for texts
+  Timer? _textsTimer;
+
+  /// Indicates if all selfies are taken
+  RxBool isAllSelfiesTaken = false.obs;
+
+  /// User picked selfie
+  Rx<XFile> pickedSelfie = Rx<XFile>(XFile(''));
 
   /// List of selfies taken by the user
   RxList<MdUserSelfie> selfies = <MdUserSelfie>[].obs;
@@ -85,6 +100,11 @@ class SnapSelfiesController extends GetxController {
         if (secondsLeft.value > 0) {
           secondsLeft.value--;
         } else {
+          isAllSelfiesTaken(true);
+          appSnackbar(
+            message: 'All selfies taken! 🎉 Let\'s see the results.',
+            snackbarState: SnackbarState.success,
+          );
           timer.cancel();
         }
       },
@@ -96,21 +116,48 @@ class SnapSelfiesController extends GetxController {
     _timer?.cancel();
   }
 
-  /// Clears all selected contacts
-  final List<Color> avatarColors = <Color>[
-    const Color(0xFF13C4E5),
-    const Color(0xFF8C6BF5),
-    const Color(0xFFD353DB),
-    const Color(0xFF5B82FF),
-    const Color(0xFFFB47CD),
-    const Color(0xFF34A1FF),
-    const Color(0xFF7C70F9),
+  /// Checks if the camera is initialized.
+  final List<String> texts = <String>[
+    'Clark is still fixing his hair 👀',
+    'Lois is adjusting her glasses 🤓',
+    'Jimmy is checking his camera settings 📸',
+    'Perry is doing quick mack-up 💄',
+    'Lex is practicing his smile 😏',
+    'Superman is flexing his muscles 💪',
   ];
 
-  /// Generates a color for the avatar based on the contact ID
-  Color getAvatarColor(String id) {
-    final int hash = id.hashCode;
-    final int index = hash % avatarColors.length;
-    return avatarColors[index];
+  ///  Sets up the timer for changing texts
+  void setUpTextTimer() {
+    _timer = Timer.periodic(
+      const Duration(seconds: 2),
+      (Timer timer) {
+        currentIndex.value = (currentIndex() + 1) % texts.length;
+        currentIndex.refresh();
+      },
+    );
+  }
+
+  /// Handles the action when the user snaps a selfie
+  Future<void> onSnapSelfie() async {
+    await Get.toNamed(
+      Routes.CAMERA,
+      arguments: secondsLeft(),
+    )?.then(
+      (dynamic result) {
+        if (result != null && result is XFile) {
+          pickedSelfie(result);
+          pickedSelfie.refresh();
+
+          setUpTextTimer();
+        }
+      },
+    );
+  }
+
+  /// On let go action
+  void onLetGo() {
+    Get.toNamed(
+      Routes.AI_CHOOSING,
+    );
   }
 }

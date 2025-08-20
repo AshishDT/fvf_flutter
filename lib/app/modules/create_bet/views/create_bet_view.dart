@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fvf_flutter/app/data/config/app_colors.dart';
@@ -48,10 +49,12 @@ class CreateBetView extends GetView<CreateBetController> {
                       children: <Widget>[
                         Expanded(
                           child: Obx(
-                            () => Text(
+                            () => AutoSizeText(
                               controller.enteredBet().isNotEmpty
                                   ? controller.enteredBet()
                                   : 'Most likely to start an OF?',
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 20,
                               style: AppTextStyle.openRunde(
                                 color: AppColors.kffffff,
                                 fontSize: 24.sp,

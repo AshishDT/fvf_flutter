@@ -20,6 +20,8 @@ import '../modules/snap_selfies/bindings/snap_selfies_binding.dart';
 import '../modules/snap_selfies/views/snap_selfies_view.dart';
 import '../modules/splash/bindings/splash_binding.dart';
 import '../modules/splash/views/splash_view.dart';
+import '../modules/winner/bindings/winner_binding.dart';
+import '../modules/winner/views/winner_view.dart';
 
 part 'app_routes.dart';
 
@@ -78,6 +80,11 @@ class AppPages {
       name: _Paths.CAMERA,
       page: () => const CameraView(),
       binding: CameraBinding(),
+    ),
+    GetPage(
+      name: _Paths.WINNER,
+      page: () => const WinnerView(),
+      binding: WinnerBinding(),
     ),
   ];
 }

@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:get/get.dart';
 import '../../snap_selfies/models/md_user_selfie.dart';
 
@@ -35,13 +37,11 @@ class AiChoosingController extends GetxController {
         selfies.value = _selfies;
         selfies.refresh();
 
-        // Infinite looping carousel effect by starting at a high page
         pageController = PageController(
           viewportFraction: 0.55,
           initialPage: 1000,
         );
 
-        // Auto-scroll every 2 seconds
         timer = Timer.periodic(
           const Duration(seconds: 2),
           (Timer t) {
@@ -54,12 +54,36 @@ class AiChoosingController extends GetxController {
           },
         );
       }
+
+      Future<void>.delayed(
+        const Duration(seconds: 10),
+        () {
+          if (selfies.isEmpty) return;
+
+          final Random random = Random();
+          final MdUserSelfie winner = selfies[random.nextInt(selfies.length)];
+
+          int rankCounter = 2;
+          for (final MdUserSelfie selfie in selfies) {
+            if (selfie.id == winner.id) {
+              selfie.rank = 1;
+            } else {
+              selfie.rank = rankCounter;
+              rankCounter++;
+            }
+          }
+
+          Get.toNamed(
+            Routes.WINNER,
+            arguments: selfies,
+          );
+        },
+      );
     }
   }
 
   @override
   void onClose() {
-    // Cancel timer and dispose controller when closing
     timer?.cancel();
     pageController.dispose();
     super.onClose();

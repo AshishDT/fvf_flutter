@@ -42,7 +42,7 @@ class SnapSelfiesController extends GetxController {
   RxList<Contact> contacts = <Contact>[].obs;
 
   /// Seconds left for the timer
-  RxInt secondsLeft = 300.obs;
+  RxInt secondsLeft = 30.obs;
 
   /// Timer for countdown
   Timer? _timer;
@@ -93,7 +93,7 @@ class SnapSelfiesController extends GetxController {
   /// Starts the timer for 5 minutes (300 seconds)
   void startTimer() {
     _timer?.cancel();
-    secondsLeft.value = 300;
+    secondsLeft.value = 30;
     _timer = Timer.periodic(
       const Duration(seconds: 1),
       (Timer timer) {

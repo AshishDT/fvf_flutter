@@ -58,10 +58,17 @@ class AppImages {
   static const String profileImgBg = '$_path/profile_img_bg.png';
 
   /// AI Choosing Border Gradient Image
-  static const String aiChoosingBorderGradient = '$_path/ai_choosing_border_gradient.png';
+  static const String aiChoosingBorderGradient =
+      '$_path/ai_choosing_border_gradient.png';
 
   /// Trophy Icon
   static const String trophyIcon = '$_svgPath/trophy_icon.svg';
+
+  /// Trophy Icon with Gradient
+  static const String trophyIconGradient = '$_svgPath/trophy_icon_gradient.svg';
+
+  /// First Rank Icon
+  static const String firstRank = '$_svgPath/firs_rank.svg';
 
   /// Fire Icon
   static const String fireIcon = '$_svgPath/fire_icon.svg';

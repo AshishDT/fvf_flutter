@@ -1,8 +1,6 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
-import 'package:fvf_flutter/app/utils/app_decorations_ext.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../snap_selfies/models/md_user_selfie.dart';
 
@@ -15,6 +13,7 @@ class AiChoosingAvatar extends StatelessWidget {
     super.key,
   });
 
+  /// User for which the avatar is displayed
   final MdUserSelfie user;
 
   /// Whether to show borders around the avatar

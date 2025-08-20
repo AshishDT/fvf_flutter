@@ -21,6 +21,9 @@ class AppImages {
   /// Close icon
   static const String closeIcon = '$_svgPath/close_icon.svg';
 
+  /// Close icon white
+  static const String closeIconWhite = '$_svgPath/close_icon_white.svg';
+
   /// Too much icon
   static const String tooMuchIcon = '$_svgPath/too_much_icon.svg';
 
@@ -53,6 +56,9 @@ class AppImages {
 
   /// Profile image bg
   static const String profileImgBg = '$_path/profile_img_bg.png';
+
+  /// AI Choosing Border Gradient Image
+  static const String aiChoosingBorderGradient = '$_path/ai_choosing_border_gradient.png';
 
   /// Trophy Icon
   static const String trophyIcon = '$_svgPath/trophy_icon.svg';

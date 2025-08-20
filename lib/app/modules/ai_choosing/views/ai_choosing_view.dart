@@ -10,7 +10,10 @@ import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
 
+import '../../snap_selfies/models/md_user_selfie.dart';
+import '../../snap_selfies/widgets/selfie_avatar.dart';
 import '../controllers/ai_choosing_controller.dart';
+import '../widgets/ai_choosing_avatar.dart';
 
 /// AiChoosingView
 class AiChoosingView extends GetView<AiChoosingController> {
@@ -25,7 +28,7 @@ class AiChoosingView extends GetView<AiChoosingController> {
             child: AnimatedListView(
               children: <Widget>[
                 CommonAppBar(
-                  leadingIcon: AppImages.closeIcon,
+                  leadingIcon: AppImages.closeIconWhite,
                   actions: <Widget>[
                     GestureDetector(
                       onTap: () {},
@@ -40,7 +43,7 @@ class AiChoosingView extends GetView<AiChoosingController> {
                       ),
                     ),
                   ],
-                ).paddingSymmetric(horizontal: 24.w),
+                ).paddingSymmetric(horizontal: 24),
                 64.verticalSpace,
                 Center(
                   child: Text(
@@ -51,7 +54,7 @@ class AiChoosingView extends GetView<AiChoosingController> {
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                ).paddingSymmetric(horizontal: 24.w),
+                ).paddingSymmetric(horizontal: 24),
                 24.verticalSpace,
                 Center(
                   child: AutoSizeText(
@@ -65,64 +68,65 @@ class AiChoosingView extends GetView<AiChoosingController> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                ).paddingSymmetric(horizontal: 24.w),
+                ).paddingSymmetric(horizontal: 24),
                 61.verticalSpace,
                 SizedBox(
                   height: 200.h,
                   child: PageView.builder(
                     controller: controller.pageController,
-                    itemCount: controller.images.length,
-                    itemBuilder: (BuildContext context, int index) =>
-                        AnimatedBuilder(
-                      animation: controller.pageController,
-                      builder: (BuildContext context, Widget? child) {
-                        double value = 1;
-                        if (controller.pageController.position.haveDimensions) {
-                          value =
-                              (controller.pageController.page! - index).abs();
-                          value = (1 - (value * 0.3)).clamp(0.0, 1.0);
-                        }
-                        final bool isCenter =
-                            controller.pageController.page?.round() == index;
-                        return AnimatedOpacity(
-                          opacity: isCenter ? 1 : 0.7,
-                          duration: 300.milliseconds,
-                          child: Center(
-                            child: Transform.scale(
-                              scale: Curves.easeOut.transform(value),
-                              child: GradientCard(
-                                height: 200.w,
-                                width: 200.w,
-                                bgImage: AppImages.profileImgBg,
-                                padding: REdgeInsets.all(8),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: AppColors.kFAFBFB,
-                                    border: Border.all(
-                                      color: AppColors.kFAFBFB,
-                                      width: 4.w,
-                                    ),
-                                  ),
+                    itemBuilder: (BuildContext context, int index) {
+                      if (controller.selfies.isEmpty) {
+                        return const SizedBox();
+                      }
+
+                      final int realIndex = index % controller.selfies.length;
+                      final MdUserSelfie selfie = controller.selfies[realIndex];
+
+                      return AnimatedBuilder(
+                        animation: controller.pageController,
+                        builder: (BuildContext context, Widget? child) {
+                          double value = 1;
+                          if (controller
+                              .pageController.position.haveDimensions) {
+                            value =
+                                (controller.pageController.page! - index).abs();
+                            value = (1 - (value * 0.3)).clamp(0.0, 1.0);
+                          }
+
+                          final bool isCenter =
+                              controller.pageController.page?.round() == index;
+
+                          return AnimatedOpacity(
+                            opacity: isCenter ? 1 : 0.32,
+                            duration: 300.milliseconds,
+                            child: Center(
+                              child: Transform.scale(
+                                scale: Curves.easeOut.transform(value),
+                                child: AiChoosingAvatar(
+                                  user: selfie,
+                                  showBorders: isCenter,
                                 ),
                               ),
                             ),
-                          ),
-                        );
-                      },
-                    ),
+                          );
+                        },
+                      );
+                    },
                   ),
                 ),
                 68.verticalSpace,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    personCard(name: 'You'),
-                    personCard(name: 'Tom'),
-                    personCard(name: 'Alice'),
-                    personCard(name: 'Mary'),
-                  ],
-                ).paddingSymmetric(horizontal: 24.w),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: <Widget>[
+                      ...controller.selfies.map(
+                        (MdUserSelfie user) => SelfieAvatar(
+                          user: user,
+                        ).paddingOnly(right: 32),
+                      ),
+                    ],
+                  ),
+                ).paddingOnly(left: 24),
               ],
             ),
           ),

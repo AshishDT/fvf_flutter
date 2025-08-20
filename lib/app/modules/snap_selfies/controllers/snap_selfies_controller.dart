@@ -100,11 +100,20 @@ class SnapSelfiesController extends GetxController {
         if (secondsLeft.value > 0) {
           secondsLeft.value--;
         } else {
-          isAllSelfiesTaken(true);
-          appSnackbar(
-            message: 'All selfies taken! 🎉 Let\'s see the results.',
-            snackbarState: SnackbarState.success,
-          );
+          if (pickedSelfie().path.isNotEmpty) {
+            isAllSelfiesTaken(true);
+            appSnackbar(
+              message: 'All selfies taken! 🎉 Let\'s see the results.',
+              snackbarState: SnackbarState.success,
+            );
+          } else {
+            Get.back();
+            appSnackbar(
+              message: 'Time is up! Please start again.',
+              snackbarState: SnackbarState.danger,
+            );
+          }
+
           timer.cancel();
         }
       },
@@ -158,6 +167,7 @@ class SnapSelfiesController extends GetxController {
   void onLetGo() {
     Get.toNamed(
       Routes.AI_CHOOSING,
+      arguments: selfies(),
     );
   }
 }

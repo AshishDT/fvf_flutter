@@ -9,26 +9,52 @@ class MdUserSelfie {
     this.createdAt,
     this.displayName,
     this.isWaiting = false,
+    this.rank,
   });
 
   /// The unique identifier for the selfie.
-  final String? id;
+  String? id;
 
   /// The unique identifier for the user who took the selfie.
-  final String? userId;
+  String? userId;
 
   /// The URL of the selfie image.
-  final String? selfieUrl;
+  String? selfieUrl;
 
   /// The asset image for fallback (mainly for current user).
-  final String? assetImage;
+  String? assetImage;
 
   /// The display name of the user who took the selfie.
-  final String? displayName;
+  String? displayName;
 
   /// The date and time when the selfie was created.
-  final DateTime? createdAt;
+  DateTime? createdAt;
 
   /// Whether this user is still waiting for a selfie (no image yet).
-  final bool isWaiting;
+  bool isWaiting;
+
+  /// Rank
+  int? rank;
+
+  /// Copy method to create a new instance with the same properties.
+  MdUserSelfie copyWith({
+    String? id,
+    String? userId,
+    String? selfieUrl,
+    String? assetImage,
+    DateTime? createdAt,
+    String? displayName,
+    bool? isWaiting,
+    int? rank,
+  }) =>
+      MdUserSelfie(
+        id: id ?? this.id,
+        userId: userId ?? this.userId,
+        selfieUrl: selfieUrl ?? this.selfieUrl,
+        assetImage: assetImage ?? this.assetImage,
+        createdAt: createdAt ?? this.createdAt,
+        displayName: displayName ?? this.displayName,
+        isWaiting: isWaiting ?? this.isWaiting,
+        rank: rank ?? this.rank,
+      );
 }

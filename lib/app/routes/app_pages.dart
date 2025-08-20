@@ -14,6 +14,8 @@ import '../modules/pick_friends/bindings/pick_friends_binding.dart';
 import '../modules/pick_friends/views/pick_friends_view.dart';
 import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/profile/views/profile_view.dart';
+import '../modules/snap_selfies/bindings/snap_selfies_binding.dart';
+import '../modules/snap_selfies/views/snap_selfies_view.dart';
 import '../modules/splash/bindings/splash_binding.dart';
 import '../modules/splash/views/splash_view.dart';
 
@@ -64,6 +66,11 @@ class AppPages {
       name: _Paths.AGE_INPUT,
       page: () => const AgeInputView(),
       binding: AgeInputBinding(),
+    ),
+    GetPage(
+      name: _Paths.SNAP_SELFIES,
+      page: () => const SnapSelfiesView(),
+      binding: SnapSelfiesBinding(),
     ),
   ];
 }

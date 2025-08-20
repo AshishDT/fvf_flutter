@@ -6,10 +6,9 @@ import '../../../data/config/app_colors.dart';
 import '../../../ui/components/animated_list_view.dart';
 import '../../../ui/components/app_button.dart';
 import '../../../ui/components/common_app_bar.dart';
-import '../../../ui/components/gradient_card.dart';
+import '../../../utils/app_decorations_ext.dart';
 import '../controllers/pick_friends_controller.dart';
 import '../widgets/contacts_limit.dart';
-import '../widgets/contacts_placeholder.dart';
 import 'contacts_card_view.dart';
 import 'contacts_search_field.dart';
 
@@ -36,7 +35,8 @@ class PickFriendsView extends GetView<PickFriendsController> {
             ),
           ).paddingSymmetric(horizontal: 24),
         ),
-        body: GradientCard(
+        body: Container(
+          decoration: AppDecorations.fancyGradient(),
           child: Align(
             alignment: Alignment.topLeft,
             child: SafeArea(

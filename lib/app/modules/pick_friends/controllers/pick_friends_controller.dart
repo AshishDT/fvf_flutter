@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
+import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -39,7 +40,7 @@ class PickFriendsController extends GetxController {
   TextEditingController searchController = TextEditingController();
 
   /// List of contacts
-  RxList<Contact> _contacts = <Contact>[].obs;
+  final RxList<Contact> _contacts = <Contact>[].obs;
 
   /// Set of selected contact IDs
   RxSet<String> selectedIds = <String>{}.obs;
@@ -152,6 +153,11 @@ class PickFriendsController extends GetxController {
       );
       return;
     }
+
+    Get.toNamed(
+      Routes.SNAP_SELFIES,
+      arguments: selectedContacts(),
+    );
   }
 
   /// Returns a list of filtered contacts based on the search query

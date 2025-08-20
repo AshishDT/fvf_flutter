@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:get/get.dart';
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
 import '../../../ui/components/animated_list_view.dart';
 import '../../../ui/components/app_button.dart';
 import '../../../ui/components/common_app_bar.dart';
-import '../../../utils/app_decorations_ext.dart';
 import '../../../utils/app_text_style.dart';
 import '../controllers/snap_selfies_controller.dart';
 import '../models/md_user_selfie.dart';
@@ -58,8 +58,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
             ).paddingSymmetric(horizontal: 24),
           ],
         ),
-        body: Container(
-          decoration: AppDecorations.fancyGradient(),
+        body: GradientCard(
           child: Align(
             alignment: Alignment.topLeft,
             child: SafeArea(

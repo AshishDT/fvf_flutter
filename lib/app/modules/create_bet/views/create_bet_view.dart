@@ -8,9 +8,8 @@ import 'package:fvf_flutter/app/ui/components/animated_list_view.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
-import 'package:gradient_borders/box_borders/gradient_box_border.dart';
 import '../../../ui/components/common_app_bar.dart';
-import '../../../utils/app_decorations_ext.dart';
+import '../../../ui/components/gradient_card.dart';
 import '../controllers/create_bet_controller.dart';
 
 /// Create Bet View
@@ -28,8 +27,7 @@ class CreateBetView extends GetView<CreateBetController> {
           },
         ).paddingSymmetric(horizontal: 24),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        body: Container(
-          decoration: AppDecorations.fancyGradient(),
+        body: GradientCard(
           child: Align(
             alignment: Alignment.topLeft,
             child: SafeArea(
@@ -38,32 +36,14 @@ class CreateBetView extends GetView<CreateBetController> {
                 children: <Widget>[
                   const CommonAppBar(),
                   64.verticalSpace,
-                  Container(
+                  GradientCard(
                     padding: REdgeInsets.symmetric(
                       vertical: 31,
                       horizontal: 24,
                     ),
-                    decoration: AppDecorations.fancyGradient2().copyWith(
-                      borderRadius: BorderRadius.circular(32.r),
-                      border: GradientBoxBorder(
-                        width: 3.w,
-                        gradient: const LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          stops: <double>[
-                            0.1161,
-                            0.4775,
-                            0.837,
-                          ],
-                          colors: <Color>[
-                            Color(0xFFFB32C8),
-                            Color(0xFF666FFF),
-                            Color(0xFF00B4F5),
-                          ],
-                        ),
-                      ),
-                    ),
+                    borderRadius: BorderRadius.circular(32.r),
                     constraints: BoxConstraints(maxHeight: 120.h),
+                    bgImage: AppImages.contentCardBg,
                     child: Row(
                       children: <Widget>[
                         Expanded(

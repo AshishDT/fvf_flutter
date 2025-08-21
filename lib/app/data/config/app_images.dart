@@ -78,4 +78,7 @@ class AppImages {
 
   /// Emoji Icon
   static const String emojiIcon = '$_svgPath/emoji_icon.svg';
+
+  /// Add Emoji Icon
+  static const String addEmojiIcon = '$_svgPath/add_emoji_icon.svg';
 }

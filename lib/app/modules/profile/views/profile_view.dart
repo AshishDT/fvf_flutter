@@ -4,10 +4,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_highlight.dart';
+import 'package:fvf_flutter/app/modules/profile/widgets/edit_data_sheet.dart';
 import 'package:fvf_flutter/app/modules/profile/widgets/profile_highlight_card.dart';
 import 'package:fvf_flutter/app/ui/components/animated_list_view.dart';
 import 'package:fvf_flutter/app/ui/components/common_app_bar.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
+import 'package:fvf_flutter/app/ui/components/work_space_sheet_repo.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -55,7 +57,7 @@ class ProfileView extends GetView<ProfileController> {
                     child: Padding(
                       padding: REdgeInsets.all(24),
                       child: Container(
-                        decoration:  BoxDecoration(
+                        decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: AppColors.kFAFBFB,
                           border: Border.fromBorderSide(
@@ -74,13 +76,32 @@ class ProfileView extends GetView<ProfileController> {
                   ),
                 ),
                 Center(
-                  child: Text(
-                    'Alice',
-                    style: AppTextStyle.openRunde(
-                      color: AppColors.k2A2E2F,
-                      fontSize: 32.sp,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        controller.user().displayName ?? '',
+                        style: AppTextStyle.openRunde(
+                          color: AppColors.k2A2E2F,
+                          fontSize: 32.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      4.horizontalSpace,
+                      GestureDetector(
+                        onTap: () {
+                          WorkSpaceSheetRepo.openChatField(
+                            const EditDataSheet(),
+                            isDismissible: true,
+                          );
+                        },
+                        child: SvgPicture.asset(
+                          AppImages.penIcon,
+                          height: 16.h,
+                          color: AppColors.k899699,
+                        ).paddingOnly(bottom: 5.h),
+                      ),
+                    ],
                   ),
                 ),
                 8.verticalSpace,

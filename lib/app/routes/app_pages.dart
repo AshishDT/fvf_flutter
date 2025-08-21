@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+
 import '../modules/age_input/bindings/age_input_binding.dart';
 import '../modules/age_input/views/age_input_view.dart';
 import '../modules/ai_choosing/bindings/ai_choosing_binding.dart';
@@ -11,6 +12,8 @@ import '../modules/create_bet/bindings/create_bet_binding.dart';
 import '../modules/create_bet/views/create_bet_view.dart';
 import '../modules/pick_crew/bindings/pick_crew_binding.dart';
 import '../modules/pick_crew/views/pick_crew_view.dart';
+import '../modules/premium_winner/bindings/premium_winner_binding.dart';
+import '../modules/premium_winner/views/premium_winner_view.dart';
 import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/profile/views/profile_view.dart';
 import '../modules/snap_selfies/bindings/snap_selfies_binding.dart';
@@ -77,6 +80,11 @@ class AppPages {
       name: _Paths.WINNER,
       page: () => const WinnerView(),
       binding: WinnerBinding(),
+    ),
+    GetPage(
+      name: _Paths.PREMIUM_WINNER,
+      page: () => const PremiumWinnerView(),
+      binding: PremiumWinnerBinding(),
     ),
   ];
 }

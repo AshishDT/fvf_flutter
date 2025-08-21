@@ -5,6 +5,10 @@ import '../../snap_selfies/models/md_user_selfie.dart';
 
 /// Winner Controller
 class WinnerController extends GetxController {
+
+  /// isExposed
+  RxBool isExposed = false.obs;
+
   /// Emoji reactions
   RxList<EmojiReaction> emojiReactions = <EmojiReaction>[
     EmojiReaction(emoji: '😎', count: 2),

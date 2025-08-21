@@ -1,9 +1,21 @@
+import 'package:fvf_flutter/app/modules/winner/models/emoji_model.dart';
 import 'package:get/get.dart';
 
 import '../../snap_selfies/models/md_user_selfie.dart';
 
 /// Winner Controller
 class WinnerController extends GetxController {
+  /// Emoji reactions
+  RxList<EmojiReaction> emojiReactions = <EmojiReaction>[
+    EmojiReaction(emoji: '😎', count: 2),
+    EmojiReaction(emoji: '😂', count: 11),
+    EmojiReaction(emoji: '🔥', count: 5),
+    EmojiReaction(emoji: '👀', count: 80),
+  ].obs;
+
+  /// Track the index of the emoji the user has reacted with (-1 = none)
+  RxInt userReactionIndex = (-1).obs;
+
   /// On init
   @override
   void onInit() {
@@ -47,4 +59,20 @@ class WinnerController extends GetxController {
   /// Get third rank
   Rx<MdUserSelfie> get thirdRank =>
       selfies().firstWhere((u) => u.rank == 3).obs;
+
+  /// Handle emoji tap
+  void handleEmojiTap(int index) {
+    if (userReactionIndex() == -1) {
+      emojiReactions[index].count++;
+      userReactionIndex(index);
+    } else if (userReactionIndex() == index) {
+      emojiReactions[index].count--;
+      userReactionIndex(-1);
+    } else {
+      emojiReactions[userReactionIndex()].count--;
+      emojiReactions[index].count++;
+      userReactionIndex(index);
+    }
+    emojiReactions.refresh();
+  }
 }

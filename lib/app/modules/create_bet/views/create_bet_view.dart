@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
-import 'package:fvf_flutter/app/modules/create_bet/widgets/work_space_sheet_repo.dart';
+import 'package:fvf_flutter/app/modules/create_bet/widgets/keyboard_aware_sheet.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/animated_list_view.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
+import 'package:fvf_flutter/app/ui/components/work_space_sheet_repo.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
 import '../../../ui/components/common_app_bar.dart';
@@ -79,7 +80,7 @@ class CreateBetView extends GetView<CreateBetController> {
                             controller.enteredBet();
                       }
 
-                      WorkSpaceSheetRepo.openChatField();
+                      WorkSpaceSheetRepo.openChatField(const KeyboardAwareSheet());
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,

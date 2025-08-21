@@ -1,8 +1,11 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fvf_flutter/app/modules/winner/models/emoji_model.dart';
+import 'package:fvf_flutter/app/modules/winner/widgets/expose_sheet.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
 import 'package:get/get.dart';
+
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
 import '../../../ui/components/animated_list_view.dart';
@@ -22,10 +25,47 @@ class WinnerView extends GetView<WinnerController> {
   Widget build(BuildContext context) => Scaffold(
         backgroundColor: AppColors.kF5FCFF,
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: AppButton(
-          buttonText: 'Share',
-          onPressed: () {},
-        ).paddingSymmetric(horizontal: 24),
+        floatingActionButton: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            AppButton(
+              buttonText: '',
+              height: 57.h,
+              buttonColor: AppColors.kFFC300,
+              onPressed: () {
+                ExposeSheet.openExposeSheet();
+              },
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'Expose Everyone 👀',
+                    style: AppTextStyle.openRunde(
+                      fontSize: 18.sp,
+                      color: AppColors.k2A2E2F,
+                      fontWeight: FontWeight.w700,
+                      height: .8,
+                    ),
+                  ),
+                  4.verticalSpace,
+                  Text(
+                    'See how everyone placed!',
+                    style: AppTextStyle.openRunde(
+                      fontSize: 12.sp,
+                      color: AppColors.k2A2E2F,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            16.verticalSpace,
+            AppButton(
+              buttonText: 'Share',
+              onPressed: () {},
+            ),
+          ],
+        ).paddingSymmetric(horizontal: 24.w),
         body: GradientCard(
           child: SafeArea(
             child: AnimatedListView(
@@ -100,9 +140,73 @@ class WinnerView extends GetView<WinnerController> {
                     ),
                   ),
                 ),
+                24.verticalSpace,
+                Obx(
+                  () => Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: List.generate(
+                      controller.emojiReactions().length,
+                      (int index) {
+                        final EmojiReaction emojiData =
+                            controller.emojiReactions()[index];
+                        return _emojiTile(
+                          emojiIcon: emojiData.emoji,
+                          value: emojiData.count.toString(),
+                          onTap: () => controller.handleEmojiTap(index),
+                          isSelected: controller.userReactionIndex() == index,
+                        ).paddingOnly(right: 12.w);
+                      },
+                    ),
+                  ).paddingSymmetric(horizontal: 40.w),
+                ),
               ],
             ),
           ),
+        ),
+      );
+
+  Widget _emojiTile({
+    required String value,
+    required String emojiIcon,
+    required bool isSelected,
+    VoidCallback? onTap,
+  }) =>
+      GestureDetector(
+        onTap: () {
+          onTap?.call();
+        },
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            AnimatedContainer(
+              duration: 300.milliseconds,
+              padding: REdgeInsets.all(isSelected ? 2 : 0),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: isSelected
+                    ? Border.all(
+                        color: AppColors.kffffff,
+                        width: 2.w,
+                      )
+                    : null,
+              ),
+              child: Text(
+                emojiIcon,
+                style: AppTextStyle.openRunde(
+                  fontSize: 28.sp,
+                ),
+              ),
+            ),
+            2.verticalSpace,
+            Text(
+              value,
+              style: AppTextStyle.openRunde(
+                fontSize: 12.sp,
+                color: AppColors.kffffff,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
         ),
       );
 }

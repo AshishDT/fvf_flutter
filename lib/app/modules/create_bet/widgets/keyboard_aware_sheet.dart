@@ -62,7 +62,9 @@ class KeyboardAwareSheet extends GetView<CreateBetController> {
                   if (value.isNotEmpty) {
                     controller.enteredBet(value);
                   } else {
-                    controller.enteredBet('Most likely to start an OF?');
+                    controller.enteredBet(
+                      controller.question(),
+                    );
                   }
                   controller.enteredBet.refresh();
                 },
@@ -70,7 +72,7 @@ class KeyboardAwareSheet extends GetView<CreateBetController> {
                   if (value.isNotEmpty) {
                     controller.enteredBet(value);
                   } else {
-                    controller.enteredBet('Most likely to start an OF?');
+                    controller.enteredBet(controller.question());
                   }
 
                   controller.enteredBet.refresh();
@@ -83,6 +85,7 @@ class KeyboardAwareSheet extends GetView<CreateBetController> {
                 textInputAction: TextInputAction.go,
                 decoration: InputDecoration(
                   hintText: 'Message',
+                  counterText: '',
                   prefixIconConstraints: BoxConstraints(
                     maxHeight: 24.h,
                     maxWidth: 24.w,

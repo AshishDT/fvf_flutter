@@ -90,7 +90,7 @@ class ProfileView extends GetView<ProfileController> {
                       4.horizontalSpace,
                       GestureDetector(
                         onTap: () {
-                          WorkSpaceSheetRepo.openChatField(
+                          ChatFieldSheetRepo.openChatField(
                             const EditDataSheet(),
                             isDismissible: true,
                           );

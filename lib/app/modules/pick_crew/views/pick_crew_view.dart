@@ -75,15 +75,20 @@ class PickCrewView extends GetView<PickCrewController> {
                     ),
                   ),
                   24.verticalSpace,
-                  AutoSizeText(
-                    'Most Likely to Start an OF?',
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 20,
-                    style: AppTextStyle.openRunde(
-                      fontSize: 40.sp,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.kffffff,
+                  ConstrainedBox(
+                    constraints: BoxConstraints(maxHeight: 120.h),
+                    child: Obx(
+                      () => AutoSizeText(
+                        controller.bet(),
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 20,
+                        style: AppTextStyle.openRunde(
+                          fontSize: 40.sp,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.kffffff,
+                        ),
+                      ),
                     ),
                   ),
                   48.verticalSpace,

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-/// Repository for handling workspace related bottom sheets
-class WorkSpaceSheetRepo {
+/// Repository for handling chat related bottom sheets
+class ChatFieldSheetRepo {
   /// Opens the chat input bottom sheet and dismisses it when keyboard closes
   static void openChatField(Widget child, {bool isDismissible = false}) {
     showModalBottomSheet(

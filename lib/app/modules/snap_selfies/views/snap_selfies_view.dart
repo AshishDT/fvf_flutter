@@ -135,17 +135,22 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                     ),
                   ),
                   24.verticalSpace,
-                  AutoSizeText(
-                    'Most Likely to Start an OF?',
-                    textAlign: TextAlign.center,
-                    style: AppTextStyle.openRunde(
-                      fontSize: 40.sp,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.kffffff,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 20,
-                  ).paddingSymmetric(horizontal: 24),
+                  ConstrainedBox(
+                    constraints: BoxConstraints(maxHeight: 120.h),
+                    child: Obx(
+                      () => AutoSizeText(
+                        controller.bet(),
+                        textAlign: TextAlign.center,
+                        style: AppTextStyle.openRunde(
+                          fontSize: 40.sp,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.kffffff,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 20,
+                      ),
+                    ).paddingSymmetric(horizontal: 24),
+                  ),
                   48.verticalSpace,
                   Align(
                     child: SingleChildScrollView(

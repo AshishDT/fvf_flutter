@@ -29,30 +29,7 @@ class PremiumWinnerView extends GetView<PremiumWinnerController> {
         floatingActionButton: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Obx(
-              () => Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: controller
-                    .selfies()
-                    .asMap()
-                    .entries
-                    .map(
-                      (MapEntry<int, MdUserSelfie> e) => AnimatedContainer(
-                        duration: 300.milliseconds,
-                        height: 8.w,
-                        width: 8.w,
-                        margin: REdgeInsets.only(right: 8),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: controller.currentRank() == e.key
-                              ? AppColors.kF1F2F2
-                              : AppColors.kF1F2F2.withValues(alpha: .24),
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ),
-            ),
+            _dotIndicator(),
             24.verticalSpace,
             AppButton(
               buttonText: 'Share',
@@ -98,6 +75,25 @@ class PremiumWinnerView extends GetView<PremiumWinnerController> {
                         controller.pageController == null) {
                       return const SizedBox.shrink();
                     }
+                    return WinnersPodium(
+                      rank1: controller.selfies[controller.currentRank()],
+                      rank2: controller.currentRank() > 0
+                          ? controller.selfies[controller.currentRank() - 1]
+                          : null,
+                      rank3: controller.currentRank() <
+                              controller.selfies.length - 1
+                          ? controller.selfies[controller.currentRank() + 1]
+                          : null,
+                    ).paddingSymmetric(horizontal: 94.w);
+                  },
+                ),
+                16.verticalSpace,
+                Obx(
+                  () {
+                    if (controller.selfies.isEmpty ||
+                        controller.pageController == null) {
+                      return const SizedBox.shrink();
+                    }
                     return SizedBox(
                       height: 400.h,
                       child: Stack(
@@ -121,12 +117,12 @@ class PremiumWinnerView extends GetView<PremiumWinnerController> {
                               return Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
-                                  WinnersPodium(
-                                    rank1: rank1,
-                                    rank2: rank2,
-                                    rank3: rank3,
-                                  ),
-                                  16.verticalSpace,
+                                  // WinnersPodium(
+                                  //   rank1: rank1,
+                                  //   rank2: rank2,
+                                  //   rank3: rank3,
+                                  // ),
+                                  // 16.verticalSpace,
                                   RankCard(rank: selfie.rank ?? 0),
                                   12.verticalSpace,
                                   Text(
@@ -168,31 +164,40 @@ class PremiumWinnerView extends GetView<PremiumWinnerController> {
                               );
                             },
                           ),
-                          Positioned(
-                            left: 10.w,
-                            top: 0,
-                            bottom: 36.h,
-                            child: Center(
-                              child: IconButton(
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
-                                onPressed: controller.prevPage,
-                                icon: SvgPicture.asset(AppImages.backwardArrow),
-                              ),
-                            ),
+                          Obx(
+                            () => controller.currentRank() != 0
+                                ? Positioned(
+                                    left: 10.w,
+                                    top: 36.w,
+                                    child: Center(
+                                      child: IconButton(
+                                        padding: EdgeInsets.zero,
+                                        constraints: const BoxConstraints(),
+                                        onPressed: controller.prevPage,
+                                        icon: SvgPicture.asset(
+                                            AppImages.backwardArrow),
+                                      ),
+                                    ),
+                                  )
+                                : const SizedBox.shrink(),
                           ),
-                          Positioned(
-                            right: 10.w,
-                            top: 0,
-                            bottom: 36.h,
-                            child: Center(
-                              child: IconButton(
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
-                                onPressed: controller.nextPage,
-                                icon: SvgPicture.asset(AppImages.forwardArrow),
-                              ),
-                            ),
+                          Obx(
+                            () => controller.currentRank() <
+                                    controller.selfies().length - 1
+                                ? Positioned(
+                                    right: 10.w,
+                                    top: 36.w,
+                                    child: Center(
+                                      child: IconButton(
+                                        padding: EdgeInsets.zero,
+                                        constraints: const BoxConstraints(),
+                                        onPressed: controller.nextPage,
+                                        icon: SvgPicture.asset(
+                                            AppImages.forwardArrow),
+                                      ),
+                                    ),
+                                  )
+                                : const SizedBox.shrink(),
                           ),
                         ],
                       ),
@@ -202,6 +207,34 @@ class PremiumWinnerView extends GetView<PremiumWinnerController> {
               ],
             ),
           ),
+        ),
+      );
+
+  /// Dot indicator for the current selfie rank
+  Obx _dotIndicator() => Obx(
+        () => Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: controller
+              .selfies()
+              .asMap()
+              .entries
+              .map(
+                (MapEntry<int, MdUserSelfie> e) => FittedBox(
+                  child: AnimatedContainer(
+                    duration: 300.milliseconds,
+                    height: 8.w,
+                    width: 8.w,
+                    margin: REdgeInsets.only(right: 8),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: controller.currentRank() == e.key
+                          ? AppColors.kF1F2F2
+                          : AppColors.kF1F2F2.withValues(alpha: .24),
+                    ),
+                  ),
+                ),
+              )
+              .toList(),
         ),
       );
 

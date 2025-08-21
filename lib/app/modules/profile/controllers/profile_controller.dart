@@ -1,7 +1,9 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
+import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_highlight.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -23,6 +25,9 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
       },
     );
     super.onInit();
+    if(Get.arguments != null) {
+      user.value = Get.arguments['user'] as MdUserSelfie;
+    }
   }
 
   /// On close
@@ -32,6 +37,9 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
     nameInputFocusNode.dispose();
     super.onClose();
   }
+
+  /// isCurrentUser
+  bool get isCurrentUser => user().userId == 'current_user';
 
   /// Observable to track keyboard visibility
   RxBool isKeyboardVisible = false.obs;

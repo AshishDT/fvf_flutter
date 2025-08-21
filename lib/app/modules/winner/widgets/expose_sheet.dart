@@ -18,7 +18,7 @@ class ExposeSheet {
           top: Radius.circular(24),
         ).r,
       ),
-      builder: (BuildContext context) => ExposeSheetView(),
+      builder: (BuildContext context) => const ExposeSheetView(),
     );
   }
 }

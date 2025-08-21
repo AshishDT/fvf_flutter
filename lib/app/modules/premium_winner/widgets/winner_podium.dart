@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fvf_flutter/app/data/config/logger.dart';
+import 'package:fvf_flutter/app/routes/app_pages.dart';
+import 'package:get/get.dart';
 
 import '../../ai_choosing/widgets/ai_choosing_avatar.dart';
 import '../../snap_selfies/models/md_user_selfie.dart';
@@ -60,13 +63,22 @@ class WinnersPodium extends StatelessWidget {
               ),
             ),
           if (rank1 != null)
-            Align(
-              child: SizedBox(
-                width: bigSize,
-                height: bigSize,
-                child: AiChoosingAvatar(
-                  user: rank1!,
-                  showBorders: true,
+            GestureDetector(
+              onTap: () {
+                logI(rank1?.selfieUrl ?? '');
+                Get.toNamed(
+                  Routes.PROFILE,
+                  arguments: <String, MdUserSelfie?>{'user': rank1},
+                );
+              },
+              child: Align(
+                child: SizedBox(
+                  width: bigSize,
+                  height: bigSize,
+                  child: AiChoosingAvatar(
+                    user: rank1!,
+                    showBorders: true,
+                  ),
                 ),
               ),
             ),

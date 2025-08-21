@@ -53,6 +53,7 @@ class KeyboardAwareSheet extends GetView<CreateBetController> {
                 controller: controller.messageInputController,
                 maxLines: 7,
                 minLines: 1,
+                maxLength: 80,
                 autofocus: true,
                 cursorColor: AppColors.kffffff,
                 onFieldSubmitted: (String value) {

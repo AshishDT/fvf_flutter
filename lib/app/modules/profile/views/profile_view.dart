@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
+import 'package:fvf_flutter/app/modules/profile/models/md_highlight.dart';
 import 'package:fvf_flutter/app/modules/profile/widgets/profile_highlight_card.dart';
 import 'package:fvf_flutter/app/ui/components/animated_list_view.dart';
 import 'package:fvf_flutter/app/ui/components/common_app_bar.dart';
@@ -12,6 +13,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../controllers/profile_controller.dart';
+import '../widgets/profile_image_card.dart';
 
 /// ProfileView
 class ProfileView extends GetView<ProfileController> {
@@ -36,30 +38,41 @@ class ProfileView extends GetView<ProfileController> {
                         AppImages.shareIcon,
                         width: 24.w,
                         height: 24.h,
+                        colorFilter: const ColorFilter.mode(
+                          AppColors.k3D4445,
+                          BlendMode.srcIn,
+                        ),
                       ),
                     ),
                   ],
                 ),
-                56.verticalSpace,
+                36.verticalSpace,
                 Center(
                   child: GradientCard(
-                    height: 112.w,
-                    width: 112.w,
+                    height: 155.w,
+                    width: 155.w,
                     bgImage: AppImages.profileImgBg,
-                    padding: REdgeInsets.all(12),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppColors.kFAFBFB,
-                        border: Border.all(
+                    child: Padding(
+                      padding: REdgeInsets.all(24),
+                      child: Container(
+                        decoration:  BoxDecoration(
+                          shape: BoxShape.circle,
                           color: AppColors.kFAFBFB,
-                          width: 4.w,
+                          border: Border.fromBorderSide(
+                            BorderSide(
+                              color: AppColors.kF6FCFE,
+                              width: 4.w,
+                            ),
+                          ),
+                        ),
+                        child: ProfileImageCard(
+                          placeholderAsset: AppImages.profilePlaceholder,
+                          imageUrl: controller.user().selfieUrl,
                         ),
                       ),
                     ),
                   ),
                 ),
-                18.verticalSpace,
                 Center(
                   child: Text(
                     'Alice',
@@ -112,12 +125,12 @@ class ProfileView extends GetView<ProfileController> {
                 ),
                 24.verticalSpace,
                 ...controller.highlightCards.map(
-                  (Map<String, dynamic> card) => ProfileHighlightCard(
-                    avatarUrl: card['avatarUrl'] ?? '',
-                    title: card['title'] ?? '',
-                    subtitle: card['subtitle'] ?? '',
-                    backgroundColor: card['backgroundColor'] as Color,
-                    borderColor: card['borderColor'] as Color,
+                  (MdHighlight highlight) => ProfileHighlightCard(
+                    avatarUrl: highlight.avatarUrl,
+                    title: highlight.title,
+                    subtitle: highlight.subtitle,
+                    backgroundColor: highlight.backgroundColor,
+                    borderColor: highlight.borderColor,
                   ),
                 ),
               ],

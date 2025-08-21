@@ -11,4 +11,11 @@ class EnvConfig {
 
   /// Base URL
   static String baseUrl = const String.fromEnvironment('base_url');
+
+  /// Supabase URL
+  static String supabaseUrl = const String.fromEnvironment('supabase_url');
+
+  /// Supabase Anon Key
+  static String supabaseAnonKey =
+      const String.fromEnvironment('supabase_anon_key');
 }

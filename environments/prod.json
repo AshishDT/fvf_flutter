@@ -1,4 +1,6 @@
 {
   "env": "prod",
-    "base_url": "https://prod.example.com"
+  "base_url": "https://prod.example.com",
+  "supabase_anon_key": "",
+  "supabase_url": ""
 }

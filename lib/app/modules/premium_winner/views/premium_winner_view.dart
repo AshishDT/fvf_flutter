@@ -56,15 +56,20 @@ class PremiumWinnerView extends GetView<PremiumWinnerController> {
                 ).paddingSymmetric(horizontal: 24.w),
                 64.verticalSpace,
                 Center(
-                  child: AutoSizeText(
-                    'Most Likely to Start an OF?',
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 40,
-                    style: AppTextStyle.openRunde(
-                      fontSize: 40.sp,
-                      color: AppColors.kffffff,
-                      fontWeight: FontWeight.w700,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxHeight: 120.h),
+                    child: Obx(
+                      () => AutoSizeText(
+                        controller.bet(),
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 40,
+                        style: AppTextStyle.openRunde(
+                          fontSize: 40.sp,
+                          color: AppColors.kffffff,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                   ),
                 ).paddingSymmetric(horizontal: 24.w),
@@ -75,7 +80,7 @@ class PremiumWinnerView extends GetView<PremiumWinnerController> {
                         controller.pageController == null) {
                       return const SizedBox.shrink();
                     }
-                    return WinnersPodium(
+                    return WinnersPodiumPremiumView(
                       rank1: controller.selfies[controller.currentRank()],
                       rank2: controller.currentRank() > 0
                           ? controller.selfies[controller.currentRank() - 1]
@@ -107,23 +112,12 @@ class PremiumWinnerView extends GetView<PremiumWinnerController> {
                                   controller.selfies[index];
                               final MdUserSelfie? rank1 =
                                   controller.selfies[index];
-                              final MdUserSelfie? rank2 = index > 0
-                                  ? controller.selfies[index - 1]
-                                  : null;
-                              final MdUserSelfie? rank3 =
-                                  index < controller.selfies.length - 1
-                                      ? controller.selfies[index + 1]
-                                      : null;
                               return Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
-                                  // WinnersPodium(
-                                  //   rank1: rank1,
-                                  //   rank2: rank2,
-                                  //   rank3: rank3,
-                                  // ),
-                                  // 16.verticalSpace,
-                                  RankCard(rank: selfie.rank ?? 0),
+                                  RankCard(
+                                    rank: selfie.rank ?? 0,
+                                  ),
                                   12.verticalSpace,
                                   Text(
                                     rank1?.displayName ?? '',

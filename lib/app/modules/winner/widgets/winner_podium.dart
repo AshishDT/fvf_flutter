@@ -11,6 +11,7 @@ class WinnersPodium extends StatelessWidget {
     required this.rank1,
     required this.rank2,
     required this.rank3,
+    required this.onAvatarTap,
     super.key,
   });
 
@@ -22,6 +23,9 @@ class WinnersPodium extends StatelessWidget {
 
   /// Third place user
   final MdUserSelfie rank3;
+
+  /// Callback for when the avatar is tapped
+  final void Function(MdUserSelfie user) onAvatarTap;
 
   @override
   Widget build(BuildContext context) {
@@ -42,28 +46,37 @@ class WinnersPodium extends StatelessWidget {
           Positioned(
             left: 0,
             top: (bigSize - smallSize) / 2,
-            child: SizedBox(
-              width: smallSize,
-              height: smallSize,
-              child: AiChoosingAvatar(user: rank2),
+            child: GestureDetector(
+              onTap: () => onAvatarTap(rank2),
+              child: SizedBox(
+                width: smallSize,
+                height: smallSize,
+                child: AiChoosingAvatar(user: rank2),
+              ),
             ),
           ),
           Positioned(
             right: 0,
             top: (bigSize - smallSize) / 2,
-            child: SizedBox(
-              width: smallSize,
-              height: smallSize,
-              child: AiChoosingAvatar(user: rank3),
+            child: GestureDetector(
+              onTap: () => onAvatarTap(rank3),
+              child: SizedBox(
+                width: smallSize,
+                height: smallSize,
+                child: AiChoosingAvatar(user: rank3),
+              ),
             ),
           ),
           Align(
-            child: SizedBox(
-              width: bigSize,
-              height: bigSize,
-              child: AiChoosingAvatar(
-                user: rank1,
-                showBorders: true,
+            child: GestureDetector(
+              onTap: () => onAvatarTap(rank1),
+              child: SizedBox(
+                width: bigSize,
+                height: bigSize,
+                child: AiChoosingAvatar(
+                  user: rank1,
+                  showBorders: true,
+                ),
               ),
             ),
           ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:get/get.dart';
 
@@ -8,9 +7,9 @@ import '../../ai_choosing/widgets/ai_choosing_avatar.dart';
 import '../../snap_selfies/models/md_user_selfie.dart';
 
 /// Winners podium widget
-class WinnersPodium extends StatelessWidget {
+class WinnersPodiumPremiumView extends StatelessWidget {
   /// Winners podium widget constructor
-  const WinnersPodium({
+  const WinnersPodiumPremiumView({
     required this.rank1,
     required this.rank2,
     required this.rank3,
@@ -65,7 +64,6 @@ class WinnersPodium extends StatelessWidget {
           if (rank1 != null)
             GestureDetector(
               onTap: () {
-                logI(rank1?.selfieUrl ?? '');
                 Get.toNamed(
                   Routes.PROFILE,
                   arguments: <String, MdUserSelfie?>{'user': rank1},

@@ -13,6 +13,7 @@ import '../../../ui/components/animated_list_view.dart';
 import '../../../ui/components/common_app_bar.dart';
 import '../../../ui/components/gradient_card.dart';
 import '../../../utils/app_text_style.dart';
+import '../../snap_selfies/models/md_user_selfie.dart';
 import '../controllers/winner_controller.dart';
 import '../widgets/rank_card.dart';
 import '../widgets/winner_podium.dart';
@@ -37,7 +38,10 @@ class WinnerView extends GetView<WinnerController> {
                 controller.isExposed()
                     ? Get.toNamed(
                         Routes.PREMIUM_WINNER,
-                        arguments: controller.selfies,
+                        arguments: <String, dynamic>{
+                          'selfies': controller.selfies(),
+                          'bet': controller.bet(),
+                        },
                       )
                     : ExposeSheet.openExposeSheet();
               },
@@ -116,6 +120,12 @@ class WinnerView extends GetView<WinnerController> {
                       rank1: controller.firstRank(),
                       rank2: controller.secondRank(),
                       rank3: controller.thirdRank(),
+                      onAvatarTap: (MdUserSelfie user) {
+                        Get.toNamed(
+                          Routes.PROFILE,
+                          arguments: <String, MdUserSelfie?>{'user': user},
+                        );
+                      },
                     ),
                   ),
                 ),

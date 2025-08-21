@@ -156,7 +156,10 @@ class ExposeSheetView extends GetView<WinnerController> {
                       controller.isExposed(true);
                       Get.toNamed(
                         Routes.PREMIUM_WINNER,
-                        arguments: controller.selfies,
+                        arguments: <String, dynamic>{
+                          'selfies': controller.selfies(),
+                          'bet': controller.bet(),
+                        },
                       );
                     },
                     style: AppTextStyle.openRunde(
@@ -192,7 +195,10 @@ class ExposeSheetView extends GetView<WinnerController> {
                       controller.isExposed(true);
                       Get.toNamed(
                         Routes.PREMIUM_WINNER,
-                        arguments: controller.selfies,
+                        arguments: <String, dynamic>{
+                          'selfies': controller.selfies(),
+                          'bet': controller.bet(),
+                        },
                       );
                     },
                     style: AppTextStyle.openRunde(

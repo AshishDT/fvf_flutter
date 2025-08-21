@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/modules/snap_selfies/models/md_user_selfie.dart';
 import 'package:fvf_flutter/app/modules/winner/models/emoji_model.dart';
 import 'package:get/get.dart';
@@ -24,18 +23,26 @@ class PremiumWinnerController extends GetxController {
   @override
   void onInit() {
     if (Get.arguments != null) {
-      final List<MdUserSelfie> _selfies = Get.arguments as List<MdUserSelfie>;
+      if (Get.arguments['selfies'] != null) {
+        final List<MdUserSelfie> _selfies = Get.arguments as List<MdUserSelfie>;
 
-      WidgetsBinding.instance.addPostFrameCallback((Duration timeStamp) {
-        if (_selfies.isNotEmpty) {
-          _selfies.sort((MdUserSelfie a, MdUserSelfie b) =>
-          a.rank?.compareTo(b.rank ?? 0) ?? 0);
+        WidgetsBinding.instance.addPostFrameCallback(
+          (Duration timeStamp) {
+            if (_selfies.isNotEmpty) {
+              _selfies.sort((MdUserSelfie a, MdUserSelfie b) =>
+                  a.rank?.compareTo(b.rank ?? 0) ?? 0);
 
-          selfies.value = List<MdUserSelfie>.from(_selfies);
-          logI(selfies().length);
-          pageController = PageController(initialPage: 0);
-        }
-      },);
+              selfies.value = List<MdUserSelfie>.from(_selfies);
+              pageController = PageController(initialPage: 0);
+            }
+          },
+        );
+      }
+
+      if (Get.arguments['bet'] != null) {
+        bet.value = Get.arguments['bet'] as String;
+        bet.refresh();
+      }
     }
     super.onInit();
   }
@@ -52,6 +59,9 @@ class PremiumWinnerController extends GetxController {
     pageController?.dispose();
     super.onClose();
   }
+
+  /// bet
+  RxString bet = ''.obs;
 
   /// nextPage
   void nextPage() {

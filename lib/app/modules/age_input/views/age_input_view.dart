@@ -20,7 +20,10 @@ class AgeInputView extends GetView<AgeInputController> {
         resizeToAvoidBottomInset: false,
         floatingActionButton: AppButton(
           buttonText: 'Next',
-          onPressed: controller.onNext,
+          onPressed: () {
+            FocusScope.of(context).unfocus();
+            controller.onNext();
+          },
         ).paddingSymmetric(horizontal: 24),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         body: GradientCard(
@@ -58,7 +61,8 @@ class AgeInputView extends GetView<AgeInputController> {
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
                       width: 273.w,
-                      padding: REdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                      padding:
+                          REdgeInsets.symmetric(horizontal: 16, vertical: 6),
                       decoration: BoxDecoration(
                         color: AppColors.kF1F2F2.withValues(alpha: 0.36),
                         borderRadius: BorderRadius.circular(28).r,
@@ -70,14 +74,22 @@ class AgeInputView extends GetView<AgeInputController> {
                         autofocus: true,
                         cursorColor: AppColors.kffffff,
                         keyboardType: TextInputType.number,
-                        onFieldSubmitted: (String value) {},
+                        onFieldSubmitted: (String value) {
+                          FocusScope.of(context).unfocus();
+                          Future<void>.delayed(
+                            const Duration(milliseconds: 300),
+                            () {
+                              controller.onNext();
+                            },
+                          );
+                        },
                         style: AppTextStyle.openRunde(
                           color: AppColors.kffffff,
                           fontWeight: FontWeight.w600,
                           fontSize: 16.sp,
                         ),
                         textAlign: TextAlign.center,
-                        textInputAction: TextInputAction.go,
+                        textInputAction: TextInputAction.done,
                         decoration: InputDecoration(
                           hintText: 'Age',
                           hintTextDirection: TextDirection.ltr,

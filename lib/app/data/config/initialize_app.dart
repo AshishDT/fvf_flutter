@@ -1,3 +1,4 @@
+import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/data/local/locale_provider.dart';
 import 'package:fvf_flutter/app/data/local/theme_provider.dart';
@@ -18,6 +19,9 @@ Future<void> initializeCoreApp({
   await ThemeProvider.getThemeModeFromStore();
 
   await SupaBaseService.init();
+
+  // Initialize branch
+  await FlutterBranchSdk.init();
 
   APIService.initializeAPIService(
     encryptData: encryption,

@@ -84,7 +84,8 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                   replacement: const SizedBox(
                     width: double.infinity,
                   ),
-                  visible: !controller.isCurrentUserSelfieTaken(),
+                  visible: !controller.isCurrentUserSelfieTaken() &&
+                      controller.secondsLeft() > 0,
                   child: AppButton(
                     buttonText: 'Snap Selfie',
                     onPressed: controller.onSnapSelfie,

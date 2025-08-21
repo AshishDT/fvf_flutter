@@ -81,4 +81,10 @@ class AppImages {
 
   /// Add Emoji Icon
   static const String addEmojiIcon = '$_svgPath/add_emoji_icon.svg';
+
+  /// Forward Arrow
+  static const String forwardArrow = '$_svgPath/forward_arrow.svg';
+
+  /// Backward Arrow
+  static const String backwardArrow = '$_svgPath/backward_arrow.svg';
 }

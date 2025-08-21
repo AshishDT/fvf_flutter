@@ -24,59 +24,73 @@ class ProfileImageCard extends GetView<ProfileController> {
   final String placeholderAsset;
 
   @override
-  Widget build(BuildContext context) => Container(
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: AspectRatio(
-          aspectRatio: 1,
-          child: imageUrl != null && imageUrl!.isNotEmpty
-              ? CachedNetworkImage(
-                  imageUrl: imageUrl!,
-                  fit: BoxFit.cover,
-                  placeholder: (BuildContext context, String url) => Align(
-                    child: Image.asset(
-                      placeholderAsset,
+  Widget build(BuildContext context) {
+    final bool hasAsset = controller.user().assetImage != null &&
+        controller.user().assetImage!.isNotEmpty;
+    return IgnorePointer(
+      ignoring: !controller.isCurrentUser,
+      child: GestureDetector(
+        onTap: () async {
+          final File? pickedImage =
+              await controller.pickImage(source: ImageSource.gallery);
+          if (pickedImage != null) {
+            controller.image(pickedImage);
+            logI('Done');
+          }
+        },
+        child: Container(
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: AspectRatio(
+            aspectRatio: 1,
+            child: Obx(
+              () => controller.image().path.isNotEmpty
+                  ? Image.file(
+                      controller.image(),
                       height: 64.h,
                       width: 64.w,
-                    ),
-                  ),
-                  errorWidget:
-                      (BuildContext context, String url, Object error) => Align(
-                    child: Image.asset(
-                      placeholderAsset,
-                      height: 64.h,
-                      width: 64.w,
-                    ),
-                  ),
-                )
-              : Obx(
-                  () => controller.image().path.isNotEmpty
-                      ? Image.file(
-                          controller.image(),
-                          height: 64.h,
-                          width: 64.w,
+                      fit: BoxFit.cover,
+                    )
+                  : hasAsset
+                      ? Image.asset(
+                          controller.user().assetImage!,
                           fit: BoxFit.cover,
                         )
-                      : GestureDetector(
-                          onTap: () async {
-                            final File? pickedImage = await controller
-                                .pickImage(source: ImageSource.gallery);
-                            if (pickedImage != null) {
-                              controller.image(pickedImage);
-                              logI('Done');
-                            }
-                          },
-                          child: Align(
-                            child: Image.asset(
-                              placeholderAsset,
-                              height: 64.h,
-                              width: 64.w,
+                      : imageUrl != null && imageUrl!.isNotEmpty
+                          ? CachedNetworkImage(
+                              imageUrl: imageUrl!,
+                              fit: BoxFit.cover,
+                              placeholder: (BuildContext context, String url) =>
+                                  Align(
+                                child: Image.asset(
+                                  placeholderAsset,
+                                  height: 64.h,
+                                  width: 64.w,
+                                ),
+                              ),
+                              errorWidget: (BuildContext context, String url,
+                                      Object error) =>
+                                  Align(
+                                child: Image.asset(
+                                  placeholderAsset,
+                                  height: 64.h,
+                                  width: 64.w,
+                                ),
+                              ),
+                            )
+                          : Align(
+                              child: Image.asset(
+                                placeholderAsset,
+                                height: 64.h,
+                                width: 64.w,
+                              ),
                             ),
-                          ),
-                        ),
-                ),
+            ),
+          ),
         ),
-      );
+      ),
+    );
+  }
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fvf_flutter/app/modules/winner/models/emoji_model.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/expose_sheet.dart';
+import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
 import 'package:get/get.dart';
 
@@ -33,7 +34,12 @@ class WinnerView extends GetView<WinnerController> {
               height: 57.h,
               buttonColor: AppColors.kFFC300,
               onPressed: () {
-                ExposeSheet.openExposeSheet();
+                controller.isExposed()
+                    ? Get.toNamed(
+                        Routes.PREMIUM_WINNER,
+                        arguments: controller.selfies,
+                      )
+                    : ExposeSheet.openExposeSheet();
               },
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

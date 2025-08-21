@@ -15,6 +15,7 @@ abstract class Routes {
   static const SNAP_SELFIES = _Paths.SNAP_SELFIES;
   static const CAMERA = _Paths.CAMERA;
   static const WINNER = _Paths.WINNER;
+  static const PREMIUM_WINNER = _Paths.PREMIUM_WINNER;
 }
 
 abstract class _Paths {
@@ -28,4 +29,5 @@ abstract class _Paths {
   static const SNAP_SELFIES = '/snap-selfies';
   static const CAMERA = '/camera';
   static const WINNER = '/winner';
+  static const PREMIUM_WINNER = '/premium-winner';
 }

@@ -87,20 +87,22 @@ class ProfileView extends GetView<ProfileController> {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      4.horizontalSpace,
-                      GestureDetector(
-                        onTap: () {
-                          ChatFieldSheetRepo.openChatField(
-                            const EditDataSheet(),
-                            isDismissible: true,
-                          );
-                        },
-                        child: SvgPicture.asset(
-                          AppImages.penIcon,
-                          height: 16.h,
-                          color: AppColors.k899699,
-                        ).paddingOnly(bottom: 5.h),
-                      ),
+                      if (controller.isCurrentUser) ...<Widget>[
+                        4.horizontalSpace,
+                        GestureDetector(
+                          onTap: () {
+                            ChatFieldSheetRepo.openChatField(
+                              const EditDataSheet(),
+                              isDismissible: true,
+                            );
+                          },
+                          child: SvgPicture.asset(
+                            AppImages.penIcon,
+                            height: 16.h,
+                            color: AppColors.k899699,
+                          ).paddingOnly(bottom: 5.h),
+                        ),
+                      ],
                     ],
                   ),
                 ),

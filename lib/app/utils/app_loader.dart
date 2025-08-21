@@ -3,8 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import '../data/config/app_colors.dart';
 
 /// Loader
@@ -49,13 +51,11 @@ class Loader {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              const Center(
-                child: CircularProgressIndicator(
-                  strokeWidth: 2.5,
-                  backgroundColor: AppColors.kFB46CD,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    AppColors.k0DBFFF,
-                  ),
+              Center(
+                child: Lottie.asset(
+                  AppImages.loader,
+                  width: 200.w,
+                  height: 200.h,
                 ),
               ),
               if ((msg?.isNotEmpty ?? false) && msg != null) ...[

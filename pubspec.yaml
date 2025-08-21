@@ -28,6 +28,7 @@ dependencies:
   share_plus: ^11.1.0
   supabase_flutter: ^2.9.1
   flutter_branch_sdk: ^8.4.1
+  lottie: ^3.3.1
   flutter:
     sdk: flutter
   google_fonts: ^6.3.0
@@ -52,6 +53,7 @@ flutter:
     - assets/images/svg/
     - assets/locales/
     - assets/fonts/open_runde/
+    - assets/lottie/
 
   fonts:
     - family: OpenRunde

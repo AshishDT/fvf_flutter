@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:fvf_flutter/app/data/remote/deep_link/deep_link_service.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:fvf_flutter/app/utils/app_loader.dart';
 import 'package:get/get.dart';
@@ -37,31 +36,16 @@ class PickCrewController extends GetxController {
   /// Share text
   Future<void> shareUri() async {
     Loader.show();
-    try {
-      final String? _invitationLink =
-          await DeepLinkService.generateSlayInviteLink(
-        title: bet(),
-        invitationId: '1',
-      );
-
-      if (_invitationLink == null || _invitationLink.isEmpty) {
+    await Future<void>.delayed(
+      const Duration(seconds: 3),
+      () {
         Loader.dismiss();
-        appSnackbar(
-          message: 'Failed to generate invitation link. Please try again.',
-          snackbarState: SnackbarState.danger,
-        );
-        return;
-      }
-
-      final Uri uri = Uri.parse(_invitationLink);
-
-      Loader.dismiss();
-
-      unawaited(
         SharePlus.instance
             .share(
           ShareParams(
-            uri: uri,
+            uri: Uri.parse(
+              'https://slay.app/invite?bet=${Uri.encodeComponent(bet.value)}',
+            ),
             title: 'Slay',
             subject: 'Slay Invitation',
           ),
@@ -79,12 +63,61 @@ class PickCrewController extends GetxController {
               );
             }
           },
-        ),
-      );
-    } on Exception {
-      Loader.dismiss();
-    } finally {
-      Loader.dismiss();
-    }
+        );
+      },
+    );
+    Loader.dismiss();
   }
+// Future<void> shareUri() async {
+//   Loader.show();
+//   try {
+//     final String? _invitationLink =
+//         await DeepLinkService.generateSlayInviteLink(
+//       title: bet(),
+//       invitationId: '1',
+//     );
+//
+//     if (_invitationLink == null || _invitationLink.isEmpty) {
+//       Loader.dismiss();
+//       appSnackbar(
+//         message: 'Failed to generate invitation link. Please try again.',
+//         snackbarState: SnackbarState.danger,
+//       );
+//       return;
+//     }
+//
+//     final Uri uri = Uri.parse(_invitationLink);
+//
+//     Loader.dismiss();
+//
+//     unawaited(
+//       SharePlus.instance
+//           .share(
+//         ShareParams(
+//           uri: uri,
+//           title: 'Slay',
+//           subject: 'Slay Invitation',
+//         ),
+//       )
+//           .then(
+//         (ShareResult result) {
+//           if (result.status == ShareResultStatus.success) {
+//             appSnackbar(
+//               message: 'Invitation shared successfully!',
+//               snackbarState: SnackbarState.success,
+//             );
+//             Get.toNamed(
+//               Routes.SNAP_SELFIES,
+//               arguments: bet.value,
+//             );
+//           }
+//         },
+//       ),
+//     );
+//   } on Exception {
+//     Loader.dismiss();
+//   } finally {
+//     Loader.dismiss();
+//   }
+// }
 }

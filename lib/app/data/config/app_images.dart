@@ -2,6 +2,7 @@
 class AppImages {
   static const String _path = 'assets/images';
   static const String _svgPath = 'assets/images/svg';
+  static const String _lottiePath = 'assets/lottie';
 
   /// App logo
   static const String appLogo = '$_path/app_logo.png';
@@ -87,4 +88,7 @@ class AppImages {
 
   /// Backward Arrow
   static const String backwardArrow = '$_svgPath/backward_arrow.svg';
+
+  /// Loader Animation
+  static const String loader = '$_lottiePath/loader.json';
 }

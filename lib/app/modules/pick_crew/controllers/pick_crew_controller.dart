@@ -32,8 +32,8 @@ class PickCrewController extends GetxController {
         .share(
       ShareParams(
         uri: uri,
-        title: 'FVF Crew',
-        subject: 'FVF Crew Invitation',
+        title: 'Slay Crew',
+        subject: 'Slay Crew Invitation',
       ),
     )
         .then(

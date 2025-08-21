@@ -1,4 +1,4 @@
-package com.fvf_flutter.org.app
+package com.slay.org.app
 
 import io.flutter.embedding.android.FlutterActivity
 

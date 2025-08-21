@@ -128,8 +128,8 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                   ).paddingSymmetric(horizontal: 24),
                   64.verticalSpace,
                   Image(
-                    height: 132.h,
-                    width: 136.w,
+                    height: 147.h,
+                    width: 150.w,
                     image: const AssetImage(
                       AppImages.appLogo,
                     ),

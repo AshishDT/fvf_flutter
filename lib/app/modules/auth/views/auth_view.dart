@@ -29,8 +29,8 @@ class AuthView extends GetView<AuthController> {
                   image: const AssetImage(
                     AppImages.appLogo,
                   ),
-                  height: 180.h,
-                  width: 180.w,
+                  height: 195.h,
+                  width: 200.w,
                 ),
               ),
               16.verticalSpace,

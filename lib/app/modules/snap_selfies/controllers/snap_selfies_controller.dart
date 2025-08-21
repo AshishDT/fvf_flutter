@@ -32,7 +32,7 @@ class SnapSelfiesController extends GetxController {
   }
 
   /// Seconds left for the timer
-  RxInt secondsLeft = 300.obs;
+  RxInt secondsLeft = 60.obs;
 
   /// Timer for countdown
   Timer? _timer;
@@ -84,7 +84,7 @@ class SnapSelfiesController extends GetxController {
 
     for (int i = 0; i < 10; i++) {
       Timer(
-        Duration(seconds: 10 * (i + 1)),
+        Duration(seconds: 5 * (i + 1)),
         () {
           final String imageUrl = picsumUrls[random.nextInt(picsumUrls.length)];
 
@@ -109,7 +109,7 @@ class SnapSelfiesController extends GetxController {
   /// Starts the timer for 5 minutes (300 seconds)
   void startTimer() {
     _timer?.cancel();
-    secondsLeft.value = 300;
+    secondsLeft.value = 60;
     _timer = Timer.periodic(
       const Duration(seconds: 1),
       (Timer timer) {
@@ -171,7 +171,7 @@ class SnapSelfiesController extends GetxController {
           );
           if (currentUser != null) {
             currentUser
-              ..selfieUrl = 'https://picsum.photos/id/237/200/300'
+              ..selfieUrl = 'https://picsum.photos/seed/picsum/200/300'
               ..assetImage = null;
             selfies.refresh();
           }
@@ -197,8 +197,8 @@ class SnapSelfiesController extends GetxController {
     SharePlus.instance.share(
       ShareParams(
         uri: uri,
-        title: 'FVF Crew',
-        subject: 'FVF Crew Invitation',
+        title: 'Slay Crew',
+        subject: 'Slay Crew Invitation',
       ),
     );
   }

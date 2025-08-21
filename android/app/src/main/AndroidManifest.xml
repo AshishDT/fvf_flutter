@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.fvf_flutter.org.app">
+    package="com.slay.org.app">
 
     <queries>
         <intent>
@@ -34,7 +34,7 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
-        android:label="FVF"
+        android:label="Slay"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 

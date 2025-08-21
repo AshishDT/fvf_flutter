@@ -54,7 +54,7 @@ class StartTheApp extends StatelessWidget {
           ),
           builder: (BuildContext context, Widget? w) => GetMaterialApp(
             debugShowCheckedModeBanner: false,
-            title: 'FVF',
+            title: 'Slay',
             initialRoute: AppPages.INITIAL,
             getPages: AppPages.routes,
             translationsKeys: Get.find<AppTranslations>().keys,

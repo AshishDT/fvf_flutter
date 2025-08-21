@@ -1,4 +1,4 @@
-# FVF App
+# Slay App
 
 ## Create a dev build
 

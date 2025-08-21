@@ -52,8 +52,9 @@ class Loader {
               const Center(
                 child: CircularProgressIndicator(
                   strokeWidth: 2.5,
+                  backgroundColor: AppColors.kFB46CD,
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    AppColors.k101928,
+                    AppColors.k0DBFFF,
                   ),
                 ),
               ),

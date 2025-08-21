@@ -192,10 +192,15 @@ class SnapSelfiesController extends GetxController {
 
   /// On let go action
   void onLetGo() {
+    final List<MdUserSelfie> _selfies = selfies()
+        .where((MdUserSelfie selfie) =>
+            selfie.selfieUrl != null && selfie.selfieUrl!.isNotEmpty)
+        .toList();
+
     Get.toNamed(
       Routes.AI_CHOOSING,
       arguments: <String, dynamic>{
-        'selfies': <MdUserSelfie>[...selfies()],
+        'selfies': _selfies,
         'bet': bet.value,
       },
     );

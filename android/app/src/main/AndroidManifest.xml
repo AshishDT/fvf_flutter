@@ -137,11 +137,11 @@
         <!-- REPLACE `BranchKey` with the value from your Branch Dashboard -->
         <meta-data
             android:name="io.branch.sdk.BranchKey"
-            android:value="" />
+            android:value="key_live_cwtnkxEz87IxnJG59kgIXhkmtxka949L" />
         <!-- REPLACE `BranchKey.test` with the value from your Branch Dashboard -->
         <meta-data
             android:name="io.branch.sdk.BranchKey.test"
-            android:value="" />
+            android:value="key_test_oxtecCrFZZPAoHV2YioPulfjEBemZY7y" />
         <!-- Set to `true` to use `BranchKey.test` -->
         <meta-data
             android:name="io.branch.sdk.TestMode"

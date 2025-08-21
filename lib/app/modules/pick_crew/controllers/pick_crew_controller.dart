@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:fvf_flutter/app/data/remote/deep_link/deep_link_service.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
+import 'package:fvf_flutter/app/utils/app_loader.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -35,45 +36,55 @@ class PickCrewController extends GetxController {
 
   /// Share text
   Future<void> shareUri() async {
-    final String? _invitationLink =
-        await DeepLinkService.generateSlayInviteLink(
-      title: bet(),
-      invitationId: '1',
-    );
-
-    if (_invitationLink == null || _invitationLink.isEmpty) {
-      appSnackbar(
-        message: 'Failed to generate invitation link. Please try again.',
-        snackbarState: SnackbarState.danger,
+    Loader.show();
+    try {
+      final String? _invitationLink =
+          await DeepLinkService.generateSlayInviteLink(
+        title: bet(),
+        invitationId: '1',
       );
-      return;
-    }
 
-    final Uri uri = Uri.parse(_invitationLink);
+      if (_invitationLink == null || _invitationLink.isEmpty) {
+        Loader.dismiss();
+        appSnackbar(
+          message: 'Failed to generate invitation link. Please try again.',
+          snackbarState: SnackbarState.danger,
+        );
+        return;
+      }
 
-    unawaited(
-      SharePlus.instance
-          .share(
-        ShareParams(
-          uri: uri,
-          title: 'Slay',
-          subject: 'Slay Invitation',
+      final Uri uri = Uri.parse(_invitationLink);
+
+      Loader.dismiss();
+
+      unawaited(
+        SharePlus.instance
+            .share(
+          ShareParams(
+            uri: uri,
+            title: 'Slay',
+            subject: 'Slay Invitation',
+          ),
+        )
+            .then(
+          (ShareResult result) {
+            if (result.status == ShareResultStatus.success) {
+              appSnackbar(
+                message: 'Invitation shared successfully!',
+                snackbarState: SnackbarState.success,
+              );
+              Get.toNamed(
+                Routes.SNAP_SELFIES,
+                arguments: bet.value,
+              );
+            }
+          },
         ),
-      )
-          .then(
-        (ShareResult result) {
-          if (result.status == ShareResultStatus.success) {
-            appSnackbar(
-              message: 'Invitation shared successfully!',
-              snackbarState: SnackbarState.success,
-            );
-            Get.toNamed(
-              Routes.SNAP_SELFIES,
-              arguments: bet.value,
-            );
-          }
-        },
-      ),
-    );
+      );
+    } on Exception {
+      Loader.dismiss();
+    } finally {
+      Loader.dismiss();
+    }
   }
 }

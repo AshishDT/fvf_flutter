@@ -54,6 +54,9 @@ class AppImages {
   /// Profile bg image
   static const String profileBg = '$_path/profile_bg.png';
 
+  /// Profile placeholder image
+  static const String profilePlaceholder = '$_path/profile_placeholder.png';
+
   /// Profile image bg
   static const String profileImgBg = '$_path/profile_img_bg.png';
 

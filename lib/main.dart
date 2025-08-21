@@ -11,6 +11,7 @@ import 'package:fvf_flutter/app/data/config/translation_api.dart';
 import 'package:fvf_flutter/app/data/local/locale_provider.dart';
 import 'app/data/config/design_config.dart';
 import 'app/routes/app_pages.dart';
+import 'app/utils/app_utils.dart';
 
 Future<void> main() async {
   await runZonedGuarded(
@@ -42,24 +43,29 @@ class StartTheApp extends StatelessWidget {
   const StartTheApp({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => ScreenUtilInit(
-        designSize: const Size(
-          DesignConfig.kDesignWidth,
-          DesignConfig.kDesignHeight,
-        ),
-        builder: (BuildContext context, Widget? w) => GetMaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'FVF',
-          initialRoute: AppPages.INITIAL,
-          getPages: AppPages.routes,
-          translationsKeys: Get.find<AppTranslations>().keys,
-          translations: Get.find<AppTranslations>(),
-          locale: LocaleProvider.currentLocale,
-          builder: EasyLoading.init(),
-          fallbackLocale: const Locale('en_US'),
-          defaultTransition: Transition.cupertino,
-          theme: AppThemes.lightTheme,
-          darkTheme: AppThemes.darkTheme,
+  Widget build(BuildContext context) => GestureDetector(
+        onTap: () {
+          hideKeyboard();
+        },
+        child: ScreenUtilInit(
+          designSize: const Size(
+            DesignConfig.kDesignWidth,
+            DesignConfig.kDesignHeight,
+          ),
+          builder: (BuildContext context, Widget? w) => GetMaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Slay',
+            initialRoute: AppPages.INITIAL,
+            getPages: AppPages.routes,
+            translationsKeys: Get.find<AppTranslations>().keys,
+            translations: Get.find<AppTranslations>(),
+            locale: LocaleProvider.currentLocale,
+            builder: EasyLoading.init(),
+            fallbackLocale: const Locale('en_US'),
+            defaultTransition: Transition.cupertino,
+            theme: AppThemes.lightTheme,
+            darkTheme: AppThemes.darkTheme,
+          ),
         ),
       );
 }

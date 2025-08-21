@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
-import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
@@ -48,7 +47,7 @@ class PickCrewView extends GetView<PickCrewController> {
             ],
           ),
           onPressed: () {
-            Get.toNamed(Routes.PICK_FRIENDS);
+            controller.shareUri();
           },
         ).paddingSymmetric(horizontal: 24),
         body: GradientCard(
@@ -69,8 +68,8 @@ class PickCrewView extends GetView<PickCrewController> {
                   ),
                   64.verticalSpace,
                   Image(
-                    height: 132.h,
-                    width: 136.w,
+                    height: 147.h,
+                    width: 150.w,
                     image: const AssetImage(
                       AppImages.appLogo,
                     ),

@@ -10,7 +10,7 @@ import '../controllers/splash_controller.dart';
 /// Splash  view
 class SplashView extends GetView<SplashController> {
   /// Splash view constructor
-   SplashView({super.key});
+  SplashView({super.key});
 
   @override
   final SplashController controller = Get.find<SplashController>();
@@ -18,10 +18,10 @@ class SplashView extends GetView<SplashController> {
   @override
   Widget build(BuildContext context) => Scaffold(
         backgroundColor: AppColors.kF5FCFF,
-        body:  Center(
+        body: Center(
           child: Image(
-            height: 180.h,
-            width: 180.w,
+            height: 195.h,
+            width: 200.w,
             image: const AssetImage(
               AppImages.appLogo,
             ),

@@ -24,16 +24,6 @@ class AiChoosingController extends GetxController {
       final List<MdUserSelfie> _selfies = Get.arguments as List<MdUserSelfie>;
 
       if (_selfies.isNotEmpty) {
-        for (final MdUserSelfie selfie in _selfies) {
-          if (selfie.id == 'current_user') {
-            selfie.selfieUrl = 'https://picsum.photos/seed/picsum/200/300';
-          } else {
-            if (selfie.selfieUrl == null || selfie.selfieUrl!.isEmpty) {
-              selfie.selfieUrl = 'https://picsum.photos/id/237/200/300';
-            }
-          }
-        }
-
         selfies.value = _selfies;
         selfies.refresh();
 
@@ -58,7 +48,9 @@ class AiChoosingController extends GetxController {
       Future<void>.delayed(
         const Duration(seconds: 10),
         () {
-          if (selfies.isEmpty) return;
+          if (selfies.isEmpty) {
+            return;
+          }
 
           final Random random = Random();
           final MdUserSelfie winner = selfies[random.nextInt(selfies.length)];

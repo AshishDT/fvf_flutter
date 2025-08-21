@@ -63,8 +63,8 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                   replacement: const SizedBox(
                     width: double.infinity,
                   ),
-                  visible: controller.pickedSelfie().path.isNotEmpty &&
-                      !controller.isAllSelfiesTaken(),
+                  visible: controller.isCurrentUserSelfieTaken() &&
+                      !controller.isTimesUp(),
                   child: Padding(
                     padding: REdgeInsets.only(bottom: 32),
                     child: AnimatedTextSwitcher(
@@ -84,7 +84,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                   replacement: const SizedBox(
                     width: double.infinity,
                   ),
-                  visible: controller.pickedSelfie().path.isEmpty,
+                  visible: !controller.isCurrentUserSelfieTaken(),
                   child: AppButton(
                     buttonText: 'Snap Selfie',
                     onPressed: controller.onSnapSelfie,
@@ -101,7 +101,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                   replacement: const SizedBox(
                     width: double.infinity,
                   ),
-                  visible: controller.isAllSelfiesTaken(),
+                  visible: controller.isTimesUp(),
                   child: AppButton(
                     buttonText: 'Let’s Go',
                     onPressed: controller.onLetGo,
@@ -128,8 +128,8 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                   ).paddingSymmetric(horizontal: 24),
                   64.verticalSpace,
                   Image(
-                    height: 132.h,
-                    width: 136.w,
+                    height: 147.h,
+                    width: 150.w,
                     image: const AssetImage(
                       AppImages.appLogo,
                     ),
@@ -147,18 +147,47 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                     maxLines: 20,
                   ).paddingSymmetric(horizontal: 24),
                   48.verticalSpace,
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: <Widget>[
-                        ...controller.selfies.map(
-                          (MdUserSelfie user) => SelfieAvatar(
-                            user: user,
-                          ).paddingOnly(right: 32),
+                  Align(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Obx(
+                        () => Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            ...controller.selfies().map(
+                                  (MdUserSelfie user) => SelfieAvatar(
+                                    user: user,
+                                  ).paddingOnly(right: 32),
+                                ),
+                          ],
                         ),
-                      ],
+                      ),
+                    ).paddingOnly(left: 24),
+                  ),
+                  16.verticalSpace,
+                  AnimatedSize(
+                    duration: const Duration(milliseconds: 300),
+                    alignment: Alignment.bottomCenter,
+                    curve: Curves.easeInOut,
+                    child: Obx(
+                      () => Visibility(
+                        visible: controller.secondsLeft() > 0,
+                        child: TextButton(
+                          onPressed: () {
+                            controller.shareUri();
+                          },
+                          child: Text(
+                            'Resend Invites',
+                            style: AppTextStyle.openRunde(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.kF1F2F2,
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                  ).paddingOnly(left: 24),
+                  ),
                 ],
               ),
             ),

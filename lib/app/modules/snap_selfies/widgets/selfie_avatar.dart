@@ -64,18 +64,11 @@ class SelfieAvatar extends StatelessWidget {
           width: size.w,
           height: size.h,
           fit: BoxFit.cover,
-          placeholder: (_, __) => const Center(
-            child: CircularProgressIndicator(strokeWidth: 2),
+          placeholder: (_, __) => Center(
+            child: CircularProgressIndicator(strokeWidth: 2.w),
           ),
           errorWidget: (_, __, ___) => Center(
-            child: Text(
-              _initials,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            child: CircularProgressIndicator(strokeWidth: 2.w),
           ),
         ),
       );

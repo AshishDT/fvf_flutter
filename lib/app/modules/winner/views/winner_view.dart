@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fvf_flutter/app/modules/winner/models/emoji_model.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/expose_sheet.dart';
-import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
 import 'package:get/get.dart';
 
@@ -63,9 +62,7 @@ class WinnerView extends GetView<WinnerController> {
             16.verticalSpace,
             AppButton(
               buttonText: 'Share',
-              onPressed: () {
-                Get.toNamed(Routes.PROFILE);
-              },
+              onPressed: () {},
             ),
           ],
         ).paddingSymmetric(horizontal: 24.w),
@@ -183,13 +180,15 @@ class WinnerView extends GetView<WinnerController> {
           children: <Widget>[
             AnimatedContainer(
               duration: 300.milliseconds,
-              padding: REdgeInsets.all(isSelected? 2 : 0),
+              padding: REdgeInsets.all(isSelected ? 2 : 0),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: isSelected? Border.all(
-                  color: AppColors.kffffff,
-                  width: 2.w,
-                ) : null,
+                border: isSelected
+                    ? Border.all(
+                        color: AppColors.kffffff,
+                        width: 2.w,
+                      )
+                    : null,
               ),
               child: Text(
                 emojiIcon,

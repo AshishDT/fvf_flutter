@@ -20,7 +20,6 @@ class ExposeSheet {
       context: Get.context!,
       useSafeArea: true,
       isScrollControlled: true,
-      isDismissible: false,
       useRootNavigator: true,
       enableDrag: false,
       shape: RoundedRectangleBorder(

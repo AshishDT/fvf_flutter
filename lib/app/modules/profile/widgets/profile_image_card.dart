@@ -1,9 +1,15 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fvf_flutter/app/data/config/logger.dart';
+import 'package:fvf_flutter/app/modules/profile/controllers/profile_controller.dart';
+import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 /// Profile image card widget
-class ProfileImageCard extends StatelessWidget {
+class ProfileImageCard extends GetView<ProfileController> {
   /// ProfileImageCard Constructor
   const ProfileImageCard({
     required this.placeholderAsset,
@@ -45,12 +51,31 @@ class ProfileImageCard extends StatelessWidget {
                     ),
                   ),
                 )
-              : Align(
-                  child: Image.asset(
-                    placeholderAsset,
-                    height: 64.h,
-                    width: 64.w,
-                  ),
+              : Obx(
+                  () => controller.image().path.isNotEmpty
+                      ? Image.file(
+                          controller.image(),
+                          height: 64.h,
+                          width: 64.w,
+                          fit: BoxFit.cover,
+                        )
+                      : GestureDetector(
+                          onTap: () async {
+                            final File? pickedImage = await controller
+                                .pickImage(source: ImageSource.gallery);
+                            if (pickedImage != null) {
+                              controller.image(pickedImage);
+                              logI('Done');
+                            }
+                          },
+                          child: Align(
+                            child: Image.asset(
+                              placeholderAsset,
+                              height: 64.h,
+                              width: 64.w,
+                            ),
+                          ),
+                        ),
                 ),
         ),
       );

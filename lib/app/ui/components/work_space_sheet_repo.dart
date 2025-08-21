@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fvf_flutter/app/modules/create_bet/widgets/keyboard_aware_sheet.dart';
 import 'package:get/get.dart';
 
 /// Repository for handling workspace related bottom sheets
 class WorkSpaceSheetRepo {
   /// Opens the chat input bottom sheet and dismisses it when keyboard closes
-  static void openChatField() {
+  static void openChatField(Widget child, {bool isDismissible = false}) {
     showModalBottomSheet(
       context: Get.context!,
       useSafeArea: true,
       isScrollControlled: true,
-      isDismissible: false,
+      isDismissible: isDismissible,
       useRootNavigator: true,
       enableDrag: false,
       shape: RoundedRectangleBorder(
@@ -23,7 +22,7 @@ class WorkSpaceSheetRepo {
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
-        child: const KeyboardAwareSheet(),
+        child: child,
       ),
     );
   }

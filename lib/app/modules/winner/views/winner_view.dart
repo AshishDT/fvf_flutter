@@ -92,15 +92,20 @@ class WinnerView extends GetView<WinnerController> {
                 ),
                 64.verticalSpace,
                 Center(
-                  child: AutoSizeText(
-                    'Most Likely to Start an OF?',
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 40,
-                    style: AppTextStyle.openRunde(
-                      fontSize: 40.sp,
-                      color: AppColors.kffffff,
-                      fontWeight: FontWeight.w700,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxHeight: 120.h),
+                    child: Obx(
+                      () => AutoSizeText(
+                        controller.bet(),
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 40,
+                        style: AppTextStyle.openRunde(
+                          fontSize: 40.sp,
+                          color: AppColors.kffffff,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -165,6 +170,7 @@ class WinnerView extends GetView<WinnerController> {
                     ),
                   ).paddingSymmetric(horizontal: 40.w),
                 ),
+                300.verticalSpace,
               ],
             ),
           ),

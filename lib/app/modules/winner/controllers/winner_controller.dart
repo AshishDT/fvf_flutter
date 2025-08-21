@@ -24,14 +24,22 @@ class WinnerController extends GetxController {
   @override
   void onInit() {
     if (Get.arguments != null) {
-      final List<MdUserSelfie> _selfies = Get.arguments as List<MdUserSelfie>;
+      if (Get.arguments['selfies'] != null) {
+        final List<MdUserSelfie> _selfies =
+            Get.arguments['selfies'] as List<MdUserSelfie>;
 
-      if (_selfies.isNotEmpty) {
-        _selfies.sort((MdUserSelfie a, MdUserSelfie b) =>
-            a.rank?.compareTo(b.rank ?? 0) ?? 0);
+        if (_selfies.isNotEmpty) {
+          _selfies.sort((MdUserSelfie a, MdUserSelfie b) =>
+              a.rank?.compareTo(b.rank ?? 0) ?? 0);
 
-        selfies.value = _selfies;
-        selfies.refresh();
+          selfies.value = _selfies;
+          selfies.refresh();
+        }
+      }
+
+      if (Get.arguments['bet'] != null) {
+        bet.value = Get.arguments['bet'] as String;
+        bet.refresh();
       }
     }
     super.onInit();
@@ -51,6 +59,9 @@ class WinnerController extends GetxController {
 
   /// List of selfies taken by the user
   RxList<MdUserSelfie> selfies = <MdUserSelfie>[].obs;
+
+  /// Observable for bet text
+  RxString bet = ''.obs;
 
   /// Get first rank
   Rx<MdUserSelfie> get firstRank =>

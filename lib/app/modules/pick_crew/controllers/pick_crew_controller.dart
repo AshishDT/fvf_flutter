@@ -9,6 +9,10 @@ class PickCrewController extends GetxController {
   /// On init
   @override
   void onInit() {
+    if (Get.arguments != null) {
+      bet.value = Get.arguments as String;
+      bet.refresh();
+    }
     super.onInit();
   }
 
@@ -23,6 +27,9 @@ class PickCrewController extends GetxController {
   void onClose() {
     super.onClose();
   }
+
+  /// Observable for bet text
+  RxString bet = ''.obs;
 
   /// Share text
   void shareUri() {
@@ -45,6 +52,7 @@ class PickCrewController extends GetxController {
           );
           Get.toNamed(
             Routes.SNAP_SELFIES,
+            arguments: bet.value,
           );
         }
       },

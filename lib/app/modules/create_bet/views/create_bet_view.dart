@@ -13,6 +13,7 @@ import 'package:get/get.dart';
 import '../../../ui/components/common_app_bar.dart';
 import '../../../ui/components/gradient_card.dart';
 import '../controllers/create_bet_controller.dart';
+import '../widgets/dice_roller.dart';
 
 /// Create Bet View
 class CreateBetView extends GetView<CreateBetController> {
@@ -25,7 +26,12 @@ class CreateBetView extends GetView<CreateBetController> {
         floatingActionButton: AppButton(
           buttonText: 'Bet',
           onPressed: () {
-            Get.toNamed(Routes.PICK_CREW);
+            Get.toNamed(
+              Routes.PICK_CREW,
+              arguments: controller.enteredBet().isNotEmpty
+                  ? controller.enteredBet()
+                  : controller.question(),
+            );
           },
         ).paddingSymmetric(horizontal: 24),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -49,24 +55,15 @@ class CreateBetView extends GetView<CreateBetController> {
                     child: Row(
                       children: <Widget>[
                         Expanded(
-                          child: Obx(
-                            () => AutoSizeText(
-                              controller.enteredBet().isNotEmpty
-                                  ? controller.enteredBet()
-                                  : 'Most likely to start an OF?',
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 20,
-                              style: AppTextStyle.openRunde(
-                                color: AppColors.kffffff,
-                                fontSize: 24.sp,
-                                fontWeight: FontWeight.w600,
-                                height: 1.3,
-                              ),
-                            ),
-                          ),
+                          child: _question(),
                         ),
                         16.horizontalSpace,
-                        Image.asset(AppImages.dice),
+                        Obx(
+                          () => DiceRoller(
+                            turns: controller.turns(),
+                            onTap: controller.rollDice,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -80,7 +77,9 @@ class CreateBetView extends GetView<CreateBetController> {
                             controller.enteredBet();
                       }
 
-                      WorkSpaceSheetRepo.openChatField(const KeyboardAwareSheet());
+                      ChatFieldSheetRepo.openChatField(
+                        const KeyboardAwareSheet(),
+                      );
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -108,5 +107,61 @@ class CreateBetView extends GetView<CreateBetController> {
             ),
           ),
         ),
+      );
+
+  /// Question widget that displays the current question
+  Obx _question() => Obx(
+        () => controller.enteredBet().isNotEmpty
+            ? AutoSizeText(
+                controller.enteredBet(),
+                key: ValueKey<String>(controller.enteredBet()),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 20,
+                style: AppTextStyle.openRunde(
+                  color: AppColors.kffffff,
+                  fontSize: 24.sp,
+                  fontWeight: FontWeight.w600,
+                  height: 1.3,
+                ),
+              )
+            : AnimatedSwitcher(
+                duration: const Duration(milliseconds: 400),
+                transitionBuilder: (Widget child, Animation<double> animation) {
+                  final Animation<Offset> inAnimation = Tween<Offset>(
+                    begin: const Offset(0, 1),
+                    end: Offset.zero,
+                  ).animate(animation);
+
+                  final Animation<Offset> outAnimation = Tween<Offset>(
+                    begin: Offset.zero,
+                    end: const Offset(0, -1),
+                  ).animate(animation);
+
+                  return ClipRect(
+                    child: SlideTransition(
+                      position:
+                          child.key == ValueKey<String>(controller.question())
+                              ? inAnimation
+                              : outAnimation,
+                      child: FadeTransition(
+                        opacity: animation,
+                        child: child,
+                      ),
+                    ),
+                  );
+                },
+                child: AutoSizeText(
+                  controller.question(),
+                  key: ValueKey<String>(controller.question()),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 20,
+                  style: AppTextStyle.openRunde(
+                    color: AppColors.kffffff,
+                    fontSize: 24.sp,
+                    fontWeight: FontWeight.w600,
+                    height: 1.3,
+                  ),
+                ),
+              ),
       );
 }

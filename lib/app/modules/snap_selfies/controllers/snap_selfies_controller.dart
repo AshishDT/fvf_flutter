@@ -13,6 +13,11 @@ class SnapSelfiesController extends GetxController {
   /// On init
   @override
   void onInit() {
+    if (Get.arguments != null) {
+      bet.value = Get.arguments as String;
+      bet.refresh();
+    }
+
     setUsers();
     super.onInit();
   }
@@ -30,6 +35,9 @@ class SnapSelfiesController extends GetxController {
     _textsTimer?.cancel();
     super.onClose();
   }
+
+  /// Observable for bet text
+  RxString bet = ''.obs;
 
   /// Seconds left for the timer
   RxInt secondsLeft = 60.obs;
@@ -186,7 +194,10 @@ class SnapSelfiesController extends GetxController {
   void onLetGo() {
     Get.toNamed(
       Routes.AI_CHOOSING,
-      arguments: <MdUserSelfie>[...selfies()],
+      arguments: <String, dynamic>{
+        'selfies': <MdUserSelfie>[...selfies()],
+        'bet': bet.value,
+      },
     );
   }
 

@@ -1,4 +1,6 @@
 {
   "env": "dev",
-  "base_url": "https://dev.example.com"
+  "base_url": "https://dev.example.com",
+  "supabase_anon_key": "",
+  "supabase_url": ""
 }

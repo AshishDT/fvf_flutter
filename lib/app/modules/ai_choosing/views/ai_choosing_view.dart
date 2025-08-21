@@ -57,15 +57,22 @@ class AiChoosingView extends GetView<AiChoosingController> {
                 ).paddingSymmetric(horizontal: 24),
                 24.verticalSpace,
                 Center(
-                  child: AutoSizeText(
-                    'Most Likely to Start an OF?',
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 20,
-                    style: AppTextStyle.openRunde(
-                      fontSize: 24.sp,
-                      color: AppColors.kFAFBFB,
-                      fontWeight: FontWeight.w600,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: 120.w,
+                    ),
+                    child: Obx(
+                      () => AutoSizeText(
+                        controller.bet(),
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 20,
+                        style: AppTextStyle.openRunde(
+                          fontSize: 24.sp,
+                          color: AppColors.kFAFBFB,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ),
                 ).paddingSymmetric(horizontal: 24),

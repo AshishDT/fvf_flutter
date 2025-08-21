@@ -24,7 +24,7 @@ class PremiumWinnerController extends GetxController {
   void onInit() {
     if (Get.arguments != null) {
       if (Get.arguments['selfies'] != null) {
-        final List<MdUserSelfie> _selfies = Get.arguments as List<MdUserSelfie>;
+        final List<MdUserSelfie> _selfies = Get.arguments['selfies'] as List<MdUserSelfie>;
 
         WidgetsBinding.instance.addPostFrameCallback(
           (Duration timeStamp) {

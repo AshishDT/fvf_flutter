@@ -96,7 +96,7 @@ class AuthView extends GetView<AuthController> {
               ),
               16.verticalSpace,
               AppButton(
-                buttonText: 'I Have an Account',
+                buttonText: 'Login',
                 onPressed: () {
                   Get.toNamed(Routes.AGE_INPUT);
                 },

@@ -1,26 +1,19 @@
 import 'dart:async';
-import 'package:camera/camera.dart';
-import 'package:flutter_contacts/flutter_contacts.dart';
+import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/modules/snap_selfies/models/md_user_selfie.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
-
+import 'package:share_plus/share_plus.dart';
 import '../../../data/config/app_images.dart';
+import 'dart:math';
 
 /// Snap Selfies Controller
 class SnapSelfiesController extends GetxController {
   /// On init
   @override
   void onInit() {
-    if (Get.arguments != null) {
-      final List<Contact> _contacts = Get.arguments as List<Contact>;
-      if (_contacts.isNotEmpty) {
-        contacts.value = _contacts;
-        contacts.refresh();
-        setUsers();
-      }
-    }
+    setUsers();
     super.onInit();
   }
 
@@ -38,11 +31,8 @@ class SnapSelfiesController extends GetxController {
     super.onClose();
   }
 
-  /// Contacts list
-  RxList<Contact> contacts = <Contact>[].obs;
-
   /// Seconds left for the timer
-  RxInt secondsLeft = 30.obs;
+  RxInt secondsLeft = 300.obs;
 
   /// Timer for countdown
   Timer? _timer;
@@ -54,17 +44,21 @@ class SnapSelfiesController extends GetxController {
   Timer? _textsTimer;
 
   /// Indicates if all selfies are taken
-  RxBool isAllSelfiesTaken = false.obs;
-
-  /// User picked selfie
-  Rx<XFile> pickedSelfie = Rx<XFile>(XFile(''));
+  RxBool isTimesUp = false.obs;
 
   /// List of selfies taken by the user
   RxList<MdUserSelfie> selfies = <MdUserSelfie>[].obs;
 
+  /// Get selfies
+  RxBool get isCurrentUserSelfieTaken => selfies()
+      .any((MdUserSelfie selfie) =>
+          selfie.id == 'current_user' && selfie.selfieUrl != null)
+      .obs;
+
   /// Set users
-  void setUsers() {
+  Future<void> setUsers() async {
     startTimer();
+
     selfies
       ..clear()
       ..add(
@@ -75,37 +69,55 @@ class SnapSelfiesController extends GetxController {
           assetImage: AppImages.youProfile,
           createdAt: DateTime.now(),
         ),
-      );
+      )
+      ..refresh();
 
-    for (final Contact contact in contacts) {
-      final MdUserSelfie selfie = MdUserSelfie(
-        id: contact.id,
-        displayName: contact.displayName,
-        userId: contact.id,
-        createdAt: DateTime.now(),
-        isWaiting: true,
+    final List<String> picsumUrls = <String>[
+      'https://picsum.photos/id/237/200/300',
+      'https://picsum.photos/seed/picsum/200/300',
+      'https://picsum.photos/200/300?grayscale',
+      'https://picsum.photos/200',
+      'https://picsum.photos/200/300',
+    ];
+
+    final Random random = Random();
+
+    for (int i = 0; i < 10; i++) {
+      Timer(
+        Duration(seconds: 10 * (i + 1)),
+        () {
+          final String imageUrl = picsumUrls[random.nextInt(picsumUrls.length)];
+
+          selfies
+            ..add(
+              MdUserSelfie(
+                id: 'user_${DateTime.now().millisecondsSinceEpoch}',
+                displayName: 'User_${random.nextInt(10000)}',
+                userId: 'user_${i + 1}',
+                selfieUrl: imageUrl,
+                createdAt: DateTime.now(),
+              ),
+            )
+            ..refresh();
+
+          logI('Added selfie $i -> $imageUrl');
+        },
       );
-      selfies.add(selfie);
     }
-    selfies.refresh();
   }
 
   /// Starts the timer for 5 minutes (300 seconds)
   void startTimer() {
     _timer?.cancel();
-    secondsLeft.value = 30;
+    secondsLeft.value = 300;
     _timer = Timer.periodic(
       const Duration(seconds: 1),
       (Timer timer) {
         if (secondsLeft.value > 0) {
           secondsLeft.value--;
         } else {
-          if (pickedSelfie().path.isNotEmpty) {
-            isAllSelfiesTaken(true);
-            appSnackbar(
-              message: 'All selfies taken! 🎉 Let\'s see the results.',
-              snackbarState: SnackbarState.success,
-            );
+          if (selfies().isNotEmpty && selfies().length > 3) {
+            isTimesUp(true);
           } else {
             Get.back();
             appSnackbar(
@@ -154,8 +166,15 @@ class SnapSelfiesController extends GetxController {
     )?.then(
       (dynamic result) {
         if (result != null && result is XFile) {
-          pickedSelfie(result);
-          pickedSelfie.refresh();
+          final MdUserSelfie? currentUser = selfies().firstWhereOrNull(
+            (MdUserSelfie selfie) => selfie.id == 'current_user',
+          );
+          if (currentUser != null) {
+            currentUser
+              ..selfieUrl = 'https://picsum.photos/id/237/200/300'
+              ..assetImage = null;
+            selfies.refresh();
+          }
 
           setUpTextTimer();
         }
@@ -167,7 +186,20 @@ class SnapSelfiesController extends GetxController {
   void onLetGo() {
     Get.toNamed(
       Routes.AI_CHOOSING,
-      arguments: selfies(),
+      arguments: <MdUserSelfie>[...selfies()],
+    );
+  }
+
+  /// Share uri
+  void shareUri() {
+    final Uri uri = Uri.parse('https://example.com/some-page');
+
+    SharePlus.instance.share(
+      ShareParams(
+        uri: uri,
+        title: 'FVF Crew',
+        subject: 'FVF Crew Invitation',
+      ),
     );
   }
 }

@@ -50,7 +50,7 @@ class CreateBetView extends GetView<CreateBetController> {
                       horizontal: 24,
                     ),
                     borderRadius: BorderRadius.circular(32.r),
-                    constraints: BoxConstraints(maxHeight: 120.h),
+                    constraints: BoxConstraints(maxHeight: 135.h),
                     bgImage: AppImages.contentCardBg,
                     child: Row(
                       children: <Widget>[
@@ -58,10 +58,13 @@ class CreateBetView extends GetView<CreateBetController> {
                           child: _question(),
                         ),
                         16.horizontalSpace,
-                        Obx(
-                          () => DiceRoller(
-                            turns: controller.turns(),
-                            onTap: controller.rollDice,
+                        Padding(
+                          padding: REdgeInsets.only(bottom: 16.h),
+                          child: Obx(
+                            () => DiceRoller(
+                              rollTrigger: controller.rollCounter(),
+                              onTap: controller.rollDice,
+                            ),
                           ),
                         ),
                       ],

@@ -7,6 +7,7 @@ import 'package:fvf_flutter/app/ui/components/app_button.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
+import 'package:fvf_flutter/app/utils/widget_ext.dart';
 import 'package:get/get.dart';
 
 /// AIPlan enum
@@ -71,6 +72,14 @@ class ExposeSheetView extends GetView<WinnerController> {
               _planInfoCard(AIPlan.PLAN2, controller),
             ],
           ),
+        ).withGPad(
+          context,
+          decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(24.r),
+            ),
+          )
         ),
       );
 

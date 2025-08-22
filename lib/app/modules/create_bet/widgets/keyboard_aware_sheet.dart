@@ -20,9 +20,6 @@ class KeyboardAwareSheet extends GetView<CreateBetController> {
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(24.r),
         ),
-        constraints: BoxConstraints(
-          maxHeight: 174.h,
-        ),
         padding: REdgeInsets.only(
           top: 24,
           left: 24,
@@ -113,6 +110,7 @@ class KeyboardAwareSheet extends GetView<CreateBetController> {
                 ),
               ),
             ),
+            30.verticalSpace,
           ],
         ),
       );

@@ -6,7 +6,6 @@ import 'package:fvf_flutter/app/modules/winner/widgets/expose_sheet.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
 import 'package:get/get.dart';
-
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
 import '../../../ui/components/animated_list_view.dart';
@@ -26,56 +25,6 @@ class WinnerView extends GetView<WinnerController> {
   @override
   Widget build(BuildContext context) => Scaffold(
         backgroundColor: AppColors.kF5FCFF,
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            AppButton(
-              buttonText: '',
-              height: 57.h,
-              buttonColor: AppColors.kFFC300,
-              onPressed: () {
-                controller.isExposed()
-                    ? Get.toNamed(
-                        Routes.PREMIUM_WINNER,
-                        arguments: <String, dynamic>{
-                          'selfies': controller.selfies(),
-                          'bet': controller.bet(),
-                        },
-                      )
-                    : ExposeSheet.openExposeSheet();
-              },
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    'Expose Everyone 👀',
-                    style: AppTextStyle.openRunde(
-                      fontSize: 18.sp,
-                      color: AppColors.k2A2E2F,
-                      fontWeight: FontWeight.w700,
-                      height: .8,
-                    ),
-                  ),
-                  4.verticalSpace,
-                  Text(
-                    'See how everyone placed!',
-                    style: AppTextStyle.openRunde(
-                      fontSize: 12.sp,
-                      color: AppColors.k2A2E2F,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            16.verticalSpace,
-            AppButton(
-              buttonText: 'Share',
-              onPressed: () {},
-            ),
-          ],
-        ).paddingSymmetric(horizontal: 24.w),
         body: GradientCard(
           child: SafeArea(
             child: AnimatedListView(
@@ -165,7 +114,7 @@ class WinnerView extends GetView<WinnerController> {
                 Obx(
                   () => Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: List.generate(
+                    children: List<Widget>.generate(
                       controller.emojiReactions().length,
                       (int index) {
                         final EmojiReaction emojiData =
@@ -180,7 +129,57 @@ class WinnerView extends GetView<WinnerController> {
                     ),
                   ).paddingSymmetric(horizontal: 40.w),
                 ),
-                300.verticalSpace,
+                36.verticalSpace,
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    AppButton(
+                      buttonText: '',
+                      height: 57.h,
+                      buttonColor: AppColors.kFFC300,
+                      onPressed: () {
+                        controller.isExposed()
+                            ? Get.toNamed(
+                                Routes.PREMIUM_WINNER,
+                                arguments: <String, dynamic>{
+                                  'selfies': controller.selfies(),
+                                  'bet': controller.bet(),
+                                },
+                              )
+                            : ExposeSheet.openExposeSheet();
+                      },
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            'Expose Everyone 👀',
+                            style: AppTextStyle.openRunde(
+                              fontSize: 18.sp,
+                              color: AppColors.k2A2E2F,
+                              fontWeight: FontWeight.w700,
+                              height: .8,
+                            ),
+                          ),
+                          4.verticalSpace,
+                          Text(
+                            'See how everyone placed!',
+                            style: AppTextStyle.openRunde(
+                              fontSize: 12.sp,
+                              color: AppColors.k2A2E2F,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    16.verticalSpace,
+                    AppButton(
+                      buttonText: 'Share',
+                      onPressed: () {},
+                    ),
+                  ],
+                ),
+                100.verticalSpace,
               ],
             ),
           ),

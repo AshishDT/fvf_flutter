@@ -20,6 +20,12 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
   /// On ready
   @override
   void onReady() {
+    Future<void>.delayed(
+      const Duration(milliseconds: 600),
+      () {
+        rollCounter.value++;
+      },
+    );
     super.onReady();
   }
 
@@ -58,17 +64,14 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
   TextEditingController messageInputController = TextEditingController();
 
   /// Number of turns for the dice
-  RxInt turns = 0.obs;
-
-  /// Is rolling state
-  RxBool isDiceRolling = false.obs;
+  RxInt rollCounter = 0.obs;
 
   /// Question for the bet
   RxString question = 'Most likely to start an OF?'.obs;
 
   /// Roll dice
   void rollDice() {
-    turns.value++;
+    rollCounter.value++;
     enteredBet('');
     messageInputController.clear();
 

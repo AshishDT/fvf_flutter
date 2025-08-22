@@ -1,7 +1,12 @@
+import 'dart:async';
 import 'package:flutter/cupertino.dart';
+import 'package:fvf_flutter/app/modules/create_bet/models/md_round.dart';
 import 'package:fvf_flutter/app/modules/create_bet/repositories/create_bet_api_repo.dart';
+import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
 import 'dart:math';
+
+import '../../../routes/app_pages.dart';
 
 /// Create Bet Controller
 class CreateBetController extends GetxController with WidgetsBindingObserver {
@@ -66,6 +71,9 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
   /// Is loading
   RxBool isLoading = true.obs;
 
+  /// Is create round loading
+  RxBool createRoundLoading = false.obs;
+
   /// List of questions
   RxList<String> bets = <String>[].obs;
 
@@ -73,7 +81,17 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
   RxString bet = ''.obs;
 
   /// Roll dice
-  void rollDice() {
+  void rollDice({
+    bool showLoader = false,
+  }) {
+    if (createRoundLoading()) {
+      appSnackbar(
+        message: 'Please wait, creating round...',
+        snackbarState: SnackbarState.warning,
+      );
+      return;
+    }
+
     rollCounter.value++;
     enteredBet('');
     messageInputController.clear();
@@ -100,6 +118,41 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
       rollDice();
     } finally {
       isLoading(false);
+    }
+  }
+
+  /// On bet pressed
+  Future<void> onBetPressed() async {
+    createRoundLoading(true);
+
+    try {
+      final String prompt =
+          enteredBet().trim().isNotEmpty ? enteredBet() : bet();
+
+      final bool isCustomPrompt = enteredBet().trim().isNotEmpty &&
+          messageInputController.text.trim().isNotEmpty;
+
+      final MdRound? _round = await CreateBetApiRepo.createRound(
+        prompt: prompt,
+        isCustomPrompt: isCustomPrompt,
+      );
+
+      if (_round != null) {
+        unawaited(
+          Get.toNamed(
+            Routes.PICK_CREW,
+            arguments: _round,
+          ),
+        );
+
+        appSnackbar(
+          message:
+              'Round created successfully! for "$prompt", please pick a crew.',
+          snackbarState: SnackbarState.success,
+        );
+      }
+    } finally {
+      createRoundLoading(false);
     }
   }
 }

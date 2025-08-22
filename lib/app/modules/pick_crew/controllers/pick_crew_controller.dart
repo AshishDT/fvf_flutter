@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:fvf_flutter/app/modules/create_bet/models/md_round.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:fvf_flutter/app/utils/app_loader.dart';
 import 'package:get/get.dart';
@@ -12,8 +13,8 @@ class PickCrewController extends GetxController {
   @override
   void onInit() {
     if (Get.arguments != null) {
-      bet.value = Get.arguments as String;
-      bet.refresh();
+      round.value = Get.arguments as MdRound;
+      round.refresh();
     }
     super.onInit();
   }
@@ -31,7 +32,7 @@ class PickCrewController extends GetxController {
   }
 
   /// Observable for bet text
-  RxString bet = ''.obs;
+  Rx<MdRound> round = MdRound().obs;
 
   /// Share text
   Future<void> shareUri() async {
@@ -44,7 +45,7 @@ class PickCrewController extends GetxController {
             .share(
           ShareParams(
             uri: Uri.parse(
-              'https://slay.app/invite?bet=${Uri.encodeComponent(bet.value)}',
+              'https://slay.app/invite?bet=${Uri.encodeComponent(round.value.prompt ?? '')}',
             ),
             title: 'Slay',
             subject: 'Slay Invitation',
@@ -59,7 +60,7 @@ class PickCrewController extends GetxController {
               );
               Get.toNamed(
                 Routes.SNAP_SELFIES,
-                arguments: bet.value,
+                arguments: round.value,
               );
             }
           },

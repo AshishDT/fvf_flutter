@@ -79,7 +79,7 @@ class PickCrewView extends GetView<PickCrewController> {
                     constraints: BoxConstraints(maxHeight: 120.h),
                     child: Obx(
                       () => AutoSizeText(
-                        controller.bet(),
+                        controller.round().prompt ?? '',
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 20,

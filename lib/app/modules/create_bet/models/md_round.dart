@@ -1,0 +1,101 @@
+/// To parse this JSON data, do
+class MdRound {
+  /// Md round
+  MdRound({
+    this.prompt,
+    this.isCustomPrompt,
+    this.host,
+    this.roundJoinedEndAt,
+    this.status,
+    this.id,
+    this.createdAt,
+    this.updatedAt,
+    this.isActive,
+    this.isDeleted,
+  });
+
+  /// From JSON
+  factory MdRound.fromJson(Map<String, dynamic> json) => MdRound(
+        prompt: json['prompt'],
+        isCustomPrompt: json['is_custom_prompt'],
+        host: json['host'] == null ? null : RoundHost.fromJson(json['host']),
+        roundJoinedEndAt: json['round_joined_end_at'] == null
+            ? null
+            : DateTime.parse(json['round_joined_end_at']),
+        status: json['status'],
+        id: json['id'],
+        createdAt: json['createdAt'] == null
+            ? null
+            : DateTime.parse(json['createdAt']),
+        updatedAt: json['updatedAt'] == null
+            ? null
+            : DateTime.parse(json['updatedAt']),
+        isActive: json['is_active'],
+        isDeleted: json['is_deleted'],
+      );
+
+  /// Prompt
+  String? prompt;
+
+  /// Is custom prompt
+  bool? isCustomPrompt;
+
+  /// Host
+  RoundHost? host;
+
+  /// Round joined end at
+  DateTime? roundJoinedEndAt;
+
+  /// Status
+  String? status;
+
+  /// Round Id
+  String? id;
+
+  /// Created at
+  DateTime? createdAt;
+
+  /// Updated at
+  DateTime? updatedAt;
+
+  /// Is active
+  bool? isActive;
+
+  /// Is deleted
+  bool? isDeleted;
+
+  /// To JSON
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'prompt': prompt,
+        'is_custom_prompt': isCustomPrompt,
+        'host': host?.toJson(),
+        'round_joined_end_at': roundJoinedEndAt?.toIso8601String(),
+        'status': status,
+        'id': id,
+        'createdAt': createdAt?.toIso8601String(),
+        'updatedAt': updatedAt?.toIso8601String(),
+        'is_active': isActive,
+        'is_deleted': isDeleted,
+      };
+}
+
+/// Round host model
+class RoundHost {
+  /// Round host model
+  RoundHost({
+    this.id,
+  });
+
+  /// From json
+  factory RoundHost.fromJson(Map<String, dynamic> json) => RoundHost(
+        id: json['id'],
+      );
+
+  /// user id
+  String? id;
+
+  /// To json
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'id': id,
+      };
+}

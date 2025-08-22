@@ -5,12 +5,12 @@ import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:fvf_flutter/app/modules/create_bet/widgets/bets_wrapper.dart';
 import 'package:fvf_flutter/app/modules/create_bet/widgets/keyboard_aware_sheet.dart';
-import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/animated_list_view.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
 import 'package:fvf_flutter/app/ui/components/work_space_sheet_repo.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
+import '../../../ui/components/app_snackbar.dart';
 import '../../../ui/components/common_app_bar.dart';
 import '../../../ui/components/gradient_card.dart';
 import '../controllers/create_bet_controller.dart';
@@ -22,97 +22,112 @@ class CreateBetView extends GetView<CreateBetController> {
   const CreateBetView({super.key});
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        backgroundColor: AppColors.kF5FCFF,
-        floatingActionButton: AppButton(
-          buttonText: 'Bet',
-          onPressed: () {
-            Get.toNamed(
-              Routes.PICK_CREW,
-              arguments: controller.enteredBet().isNotEmpty
-                  ? controller.enteredBet()
-                  : controller.bet(),
-            );
-          },
-        ).paddingSymmetric(horizontal: 24),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        body: GradientCard(
-          child: Align(
-            alignment: Alignment.topLeft,
-            child: SafeArea(
-              child: AnimatedListView(
-                padding: REdgeInsets.symmetric(horizontal: 24),
-                children: <Widget>[
-                  const CommonAppBar(),
-                  64.verticalSpace,
-                  GradientCard(
-                    padding: REdgeInsets.symmetric(
-                      vertical: 31,
-                      horizontal: 24,
-                    ),
-                    borderRadius: BorderRadius.circular(32.r),
-                    constraints: BoxConstraints(maxHeight: 135.h),
-                    bgImage: AppImages.contentCardBg,
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: Obx(
-                            () => BetsWrapper(
-                              isLoading: controller.isLoading(),
-                              child: _question(),
+  Widget build(BuildContext context) => Obx(
+        () => PopScope(
+          canPop: !controller.createRoundLoading(),
+          child: Scaffold(
+            backgroundColor: AppColors.kF5FCFF,
+            floatingActionButton: Obx(
+              () => AppButton(
+                buttonText: 'Bet',
+                isLoading: controller.createRoundLoading(),
+                onPressed: controller.onBetPressed,
+              ),
+            ).paddingSymmetric(horizontal: 24),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat,
+            body: GradientCard(
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: SafeArea(
+                  child: AnimatedListView(
+                    padding: REdgeInsets.symmetric(horizontal: 24),
+                    children: <Widget>[
+                      CommonAppBar(
+                        onBack: () {
+                          if (controller.createRoundLoading()) {
+                            appSnackbar(
+                              message: 'Please wait, creating round...',
+                              snackbarState: SnackbarState.warning,
+                            );
+                            return;
+                          }
+                          Get.back();
+                        },
+                      ),
+                      64.verticalSpace,
+                      GradientCard(
+                        padding: REdgeInsets.symmetric(
+                          vertical: 31,
+                          horizontal: 24,
+                        ),
+                        borderRadius: BorderRadius.circular(32.r),
+                        constraints: BoxConstraints(maxHeight: 135.h),
+                        bgImage: AppImages.contentCardBg,
+                        child: Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: Obx(
+                                () => BetsWrapper(
+                                  isLoading: controller.isLoading(),
+                                  child: _question(),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                        16.horizontalSpace,
-                        Padding(
-                          padding: REdgeInsets.only(bottom: 16.h),
-                          child: Obx(
-                            () => DiceRoller(
-                              rollTrigger: controller.rollCounter(),
-                              onTap: controller.rollDice,
+                            16.horizontalSpace,
+                            Padding(
+                              padding: REdgeInsets.only(bottom: 16.h),
+                              child: Obx(
+                                () => DiceRoller(
+                                  rollTrigger: controller.rollCounter(),
+                                  onTap: controller.rollDice,
+                                ),
+                              ),
                             ),
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                      24.verticalSpace,
+                      AppButton(
+                        buttonText: '',
+                        buttonColor: AppColors.kF1F2F2.withValues(alpha: 0.36),
+                        onPressed: () {
+                          if (controller.createRoundLoading()) {
+                            appSnackbar(
+                              message: 'Please wait, creating round...',
+                              snackbarState: SnackbarState.warning,
+                            );
+                            return;
+                          }
+                          ChatFieldSheetRepo.openChatField(
+                            const KeyboardAwareSheet(),
+                            isDismissible: true,
+                          );
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Text(
+                              'Or write your own',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTextStyle.openRunde(
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.kffffff,
+                              ),
+                            ),
+                            4.horizontalSpace,
+                            Image.asset(
+                              AppImages.pencilIcon,
+                              height: 32.h,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  24.verticalSpace,
-                  AppButton(
-                    buttonText: '',
-                    buttonColor: AppColors.kF1F2F2.withValues(alpha: 0.36),
-                    onPressed: () {
-                      if (controller.enteredBet().isNotEmpty) {
-                        controller.messageInputController.text =
-                            controller.enteredBet();
-                      }
-
-                      ChatFieldSheetRepo.openChatField(
-                        const KeyboardAwareSheet(),
-                        isDismissible: true,
-                      );
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          'Or write your own',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTextStyle.openRunde(
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.kffffff,
-                          ),
-                        ),
-                        4.horizontalSpace,
-                        Image.asset(
-                          AppImages.pencilIcon,
-                          height: 32.h,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),

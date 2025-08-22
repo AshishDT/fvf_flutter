@@ -36,7 +36,6 @@ void appSnackbar({
     ),
     backgroundColor: _snackbarColor(snackbarState),
     borderRadius: 10,
-    duration: const Duration(seconds: 2),
   );
 }
 

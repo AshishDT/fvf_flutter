@@ -40,7 +40,15 @@ class AgeInputView extends GetView<AgeInputController> {
                   child: AnimatedListView(
                     padding: REdgeInsets.symmetric(horizontal: 24),
                     children: <Widget>[
-                      const CommonAppBar(),
+                      CommonAppBar(
+                        onBack: () {
+                          if (controller.creatingUser()) {
+                            return;
+                          }
+
+                          Get.back();
+                        },
+                      ),
                       64.verticalSpace,
                       Align(
                         child: Text(

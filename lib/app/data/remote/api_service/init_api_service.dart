@@ -23,80 +23,80 @@ InterceptorsWrapper addAuthToken({String authTokenHeader = 'authorization'}) =>
         options.headers.addAll(<String, dynamic>{
           authTokenHeader: 'Bearer ${UserProvider.authToken}',
         });
-        handler.next(options); //continue
+        handler.next(options);
       },
     );
 
 /// Add cancel token to the request
 InterceptorsWrapper onCancelToken() => InterceptorsWrapper(
-  onRequest: (RequestOptions options, RequestInterceptorHandler handler) {
-    cancelToken = CancelToken();
-    options.cancelToken = cancelToken;
-    handler.next(options); //continue
-  },
-  onError: (DioException e, ErrorInterceptorHandler handler) {
-    switch (e.type) {
-      case DioExceptionType.connectionTimeout:
-      case DioExceptionType.sendTimeout:
-      case DioExceptionType.receiveTimeout:
-      case DioExceptionType.badResponse:
-        if (e.response?.data['status'] == 401) {
-          UserProvider.onLogout();
-          appSnackbar(
-            message: 'Session expired! Please login again',
-            snackbarState: SnackbarState.danger,
-          );
-          return;
+      onRequest: (RequestOptions options, RequestInterceptorHandler handler) {
+        cancelToken = CancelToken();
+        options.cancelToken = cancelToken;
+        handler.next(options);
+      },
+      onError: (DioException e, ErrorInterceptorHandler handler) {
+        switch (e.type) {
+          case DioExceptionType.connectionTimeout:
+          case DioExceptionType.sendTimeout:
+          case DioExceptionType.receiveTimeout:
+          case DioExceptionType.badResponse:
+            if (e.response?.data['status'] == 401) {
+              UserProvider.onLogout();
+              appSnackbar(
+                message: 'Session expired! Please login again',
+                snackbarState: SnackbarState.danger,
+              );
+              return;
+            }
+            return handler.next(e);
+          case DioExceptionType.unknown:
+            handler.next(e);
+            break;
+          case DioExceptionType.cancel:
+            handler.reject(e);
+            break;
+          case DioExceptionType.badCertificate:
+            handler.reject(e);
+            break;
+          case DioExceptionType.connectionError:
+            handler.reject(e);
+            break;
         }
-        return handler.next(e);
-      case DioExceptionType.unknown:
-        handler.next(e);
-        break;
-      case DioExceptionType.cancel:
-        handler.reject(e);
-        break;
-      case DioExceptionType.badCertificate:
-        handler.reject(e);
-        break;
-      case DioExceptionType.connectionError:
-        handler.reject(e);
-        break;
-    }
-  },
-);
+      },
+    );
 
 /// Dio interceptor to encrypt the request body
 InterceptorsWrapper encryptBody() => InterceptorsWrapper(
-  onRequest: (RequestOptions options, RequestInterceptorHandler handler) {
-    final String method = options.method.toUpperCase();
+      onRequest: (RequestOptions options, RequestInterceptorHandler handler) {
+        final String method = options.method.toUpperCase();
 
-    if (options.headers['encrypt'] as bool) {
-      switch (method) {
-        case 'POST':
-        case 'PUT':
-        case 'PATCH':
-          logW('encrypting $method method');
-          if (options.data.runtimeType.toString() ==
-              '_InternalLinkedHashMap<String, dynamic>') {
-            logI('Data will be encrypted before sending request');
-            options.data = <String, dynamic>{
-              'data': AppEncryption.encrypt(
-                  plainText: jsonEncode(options.data)),
-            };
-          } else {
-            logI(
-                'Skipping encryption for ${options.data.runtimeType} type');
+        if (options.headers['encrypt'] as bool) {
+          switch (method) {
+            case 'POST':
+            case 'PUT':
+            case 'PATCH':
+              logW('encrypting $method method');
+              if (options.data.runtimeType.toString() ==
+                  '_InternalLinkedHashMap<String, dynamic>') {
+                logI('Data will be encrypted before sending request');
+                options.data = <String, dynamic>{
+                  'data': AppEncryption.encrypt(
+                      plainText: jsonEncode(options.data)),
+                };
+              } else {
+                logI(
+                    'Skipping encryption for ${options.data.runtimeType} type');
+              }
+
+              break;
+            default:
+              logWTF('Skipping encryption for $method method');
+              break;
           }
-
-          break;
-        default:
-          logWTF('Skipping encryption for $method method');
-          break;
-      }
-    }
-    handler.next(options); //continue
-  },
-);
+        }
+        handler.next(options); //continue
+      },
+    );
 
 /// API service of the application. To use Get, POST, PUT and PATCH rest methods
 class APIService {
@@ -368,7 +368,7 @@ class APIService {
 
     final Map<String, dynamic>? data = response?.data;
 
-    if (data != null)  {
+    if (data != null) {
       logE(data['file']);
       return data['file'] as String?;
     } else {

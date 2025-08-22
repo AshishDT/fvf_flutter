@@ -46,6 +46,9 @@ class StartTheApp extends StatelessWidget {
   Widget build(BuildContext context) => GestureDetector(
         onTap: () {
           hideKeyboard();
+          if (Get.isBottomSheetOpen ?? false) {
+            Get.back();
+          }
         },
         child: ScreenUtilInit(
           designSize: const Size(

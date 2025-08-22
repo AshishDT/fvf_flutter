@@ -60,7 +60,7 @@ class KeyboardAwareSheet extends GetView<CreateBetController> {
                     controller.enteredBet(value);
                   } else {
                     controller.enteredBet(
-                      controller.question(),
+                      controller.bet(),
                     );
                   }
                   controller.enteredBet.refresh();
@@ -69,7 +69,7 @@ class KeyboardAwareSheet extends GetView<CreateBetController> {
                   if (value.isNotEmpty) {
                     controller.enteredBet(value);
                   } else {
-                    controller.enteredBet(controller.question());
+                    controller.enteredBet(controller.bet());
                   }
 
                   controller.enteredBet.refresh();

@@ -1,36 +1,29 @@
 import 'package:dio/dio.dart';
-import 'package:fvf_flutter/app/data/models/md_user.dart';
 import '../../../data/models/api_reponse.dart';
 import '../../../data/remote/api_service/api_wrapper.dart';
 import '../../../data/remote/api_service/init_api_service.dart';
 import '../../../ui/components/app_snackbar.dart';
 
-/// Auth API Repository
-class AuthApiRepo {
-  /// Create user
-  static Future<MdUser?> createUser({
-    required String supabaseId,
-    required int age,
-  }) async =>
-      APIWrapper.handleApiCall<MdUser>(
-        APIService.post<Map<String, dynamic>>(
-          path: 'user/create-anonymous-user',
-          data: <String, dynamic>{
-            'supabase_id': supabaseId,
-            'age': age,
-          },
+/// Create bet api repository
+class CreateBetApiRepo {
+  /// Get bets
+  static Future<List<String>?> getBets() async =>
+      APIWrapper.handleApiCall<List<String>?>(
+        APIService.get<Map<String, dynamic>>(
+          path: 'round/questions',
         ).then(
           (Response<Map<String, dynamic>>? response) {
             if (response?.isOk != true || response?.data == null) {
               return null;
             }
 
-            final ApiResponse<MdUser> data = ApiResponse<MdUser>.fromJson(
+            final ApiResponse<List<String>> data =
+                ApiResponse<List<String>>.fromJson(
               response!.data!,
-              fromJsonT: (dynamic json) => MdUser.fromJson(json),
+              fromJsonT: (dynamic json) => List<String>.from(json as List),
             );
 
-            if (data.success == true) {
+            if (data.success ?? false) {
               return data.data;
             }
 

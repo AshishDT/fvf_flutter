@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
+import 'package:fvf_flutter/app/data/local/user_provider.dart';
+import 'package:fvf_flutter/app/data/models/md_user.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
@@ -68,12 +70,16 @@ class AgeInputController extends GetxController {
         return;
       }
 
-      final bool? success = await AuthApiRepo.createUser(
+      final MdUser? _user = await AuthApiRepo.createUser(
         supabaseId: supabaseId,
         age: age,
       );
 
-      if (success ?? false) {
+      if (_user != null && (_user.id?.isNotEmpty ?? false)) {
+        UserProvider.onLogin(
+          user: _user,
+          userAuthToken: _user.token ?? '',
+        );
         await Get.offAllNamed(
           Routes.CREATE_BET,
         );

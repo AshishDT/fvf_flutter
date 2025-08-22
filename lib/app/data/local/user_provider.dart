@@ -1,16 +1,16 @@
 import 'dart:convert';
 import 'package:fvf_flutter/app/data/local/store/local_store.dart';
 import '../config/encryption.dart';
-import '../models/user_entity.dart';
+import '../models/md_user.dart';
 
 /// Helper class for local stored User
 class UserProvider {
-  static UserEntity? _userEntity;
+  static MdUser? _userEntity;
   static String? _authToken;
   static late bool _isLoggedIn;
 
   /// Get currently logged in user
-  static UserEntity? get currentUser => _userEntity;
+  static MdUser? get currentUser => _userEntity;
 
   /// Get auth token of the logged in user
   static String? get authToken => _authToken;
@@ -20,7 +20,7 @@ class UserProvider {
 
   ///Set [currentUser] and [authToken]
   static void onLogin({
-    required UserEntity user,
+    required MdUser user,
     required String userAuthToken,
   }) {
     _isLoggedIn = true;
@@ -36,7 +36,7 @@ class UserProvider {
 
     if (encryptedUserData != null) {
       _isLoggedIn = true;
-      _userEntity = UserEntity.fromJson(
+      _userEntity = MdUser.fromJson(
           jsonDecode(AppEncryption.decrypt(cipherText: encryptedUserData))
               as Map<String, dynamic>);
       _authToken = LocalStore.authToken();

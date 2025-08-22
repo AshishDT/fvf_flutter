@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
+import 'package:fvf_flutter/app/modules/create_bet/widgets/bets_wrapper.dart';
 import 'package:fvf_flutter/app/modules/create_bet/widgets/keyboard_aware_sheet.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/animated_list_view.dart';
@@ -30,7 +31,7 @@ class CreateBetView extends GetView<CreateBetController> {
               Routes.PICK_CREW,
               arguments: controller.enteredBet().isNotEmpty
                   ? controller.enteredBet()
-                  : controller.question(),
+                  : controller.bet(),
             );
           },
         ).paddingSymmetric(horizontal: 24),
@@ -55,7 +56,12 @@ class CreateBetView extends GetView<CreateBetController> {
                     child: Row(
                       children: <Widget>[
                         Expanded(
-                          child: _question(),
+                          child: Obx(
+                            () => BetsWrapper(
+                              isLoading: controller.isLoading(),
+                              child: _question(),
+                            ),
+                          ),
                         ),
                         16.horizontalSpace,
                         Padding(
@@ -82,6 +88,7 @@ class CreateBetView extends GetView<CreateBetController> {
 
                       ChatFieldSheetRepo.openChatField(
                         const KeyboardAwareSheet(),
+                        isDismissible: true,
                       );
                     },
                     child: Row(
@@ -142,10 +149,9 @@ class CreateBetView extends GetView<CreateBetController> {
 
                   return ClipRect(
                     child: SlideTransition(
-                      position:
-                          child.key == ValueKey<String>(controller.question())
-                              ? inAnimation
-                              : outAnimation,
+                      position: child.key == ValueKey<String>(controller.bet())
+                          ? inAnimation
+                          : outAnimation,
                       child: FadeTransition(
                         opacity: animation,
                         child: child,
@@ -154,8 +160,8 @@ class CreateBetView extends GetView<CreateBetController> {
                   );
                 },
                 child: AutoSizeText(
-                  controller.question(),
-                  key: ValueKey<String>(controller.question()),
+                  controller.bet(),
+                  key: ValueKey<String>(controller.bet()),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 20,
                   style: AppTextStyle.openRunde(

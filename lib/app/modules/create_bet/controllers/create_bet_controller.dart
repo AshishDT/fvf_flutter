@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:fvf_flutter/app/modules/create_bet/repositories/create_bet_api_repo.dart';
 import 'package:get/get.dart';
 import 'dart:math';
 
@@ -14,18 +15,14 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
       },
     );
 
+    getBets();
+
     super.onInit();
   }
 
   /// On ready
   @override
   void onReady() {
-    Future<void>.delayed(
-      const Duration(milliseconds: 600),
-      () {
-        rollCounter.value++;
-      },
-    );
     super.onReady();
   }
 
@@ -66,8 +63,14 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
   /// Number of turns for the dice
   RxInt rollCounter = 0.obs;
 
+  /// Is loading
+  RxBool isLoading = true.obs;
+
+  /// List of questions
+  RxList<String> bets = <String>[].obs;
+
   /// Question for the bet
-  RxString question = 'Most likely to start an OF?'.obs;
+  RxString bet = ''.obs;
 
   /// Roll dice
   void rollDice() {
@@ -78,24 +81,25 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
     Future<void>.delayed(
       const Duration(seconds: 1),
       () {
-        final int index = Random().nextInt(questions.length);
-        question.value = questions[index];
-        question.refresh();
+        final int index = Random().nextInt(bets.length);
+        bet.value = bets[index];
+        bet.refresh();
       },
     );
   }
 
-  /// List of questions for the bet
-  final List<String> questions = <String>[
-    'Whose smile could light up a whole room?',
-    'Who has the most photogenic pose?',
-    'Best dressed in this pic?',
-    'Whose eyes steal the spotlight?',
-    'Who looks like they walked out of a magazine?',
-    'Cutest candid caught on camera?',
-    'Who’s serving the strongest selfie game?',
-    'Which picture deserves to be framed?',
-    'Who has the most iconic hairstyle here?',
-    'Who looks effortlessly aesthetic?',
-  ];
+  /// Get bets from API
+  Future<void> getBets() async {
+    isLoading(true);
+    try {
+      final List<String>? _betData = await CreateBetApiRepo.getBets();
+
+      bets(_betData ?? <String>[]);
+      bets.refresh();
+
+      rollDice();
+    } finally {
+      isLoading(false);
+    }
+  }
 }

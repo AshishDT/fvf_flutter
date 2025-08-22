@@ -140,7 +140,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                     constraints: BoxConstraints(maxHeight: 120.h),
                     child: Obx(
                       () => AutoSizeText(
-                        controller.bet(),
+                        controller.round().prompt ?? '',
                         textAlign: TextAlign.center,
                         style: AppTextStyle.openRunde(
                           fontSize: 40.sp,

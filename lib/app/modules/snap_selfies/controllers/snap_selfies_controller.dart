@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:fvf_flutter/app/data/config/logger.dart';
+import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
+import 'package:fvf_flutter/app/modules/create_bet/models/md_round.dart';
 import 'package:fvf_flutter/app/modules/snap_selfies/models/md_user_selfie.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
@@ -8,18 +10,46 @@ import 'package:share_plus/share_plus.dart';
 import '../../../data/config/app_images.dart';
 import 'dart:math';
 
+import '../repositories/socket_io_repo.dart';
+
 /// Snap Selfies Controller
 class SnapSelfiesController extends GetxController {
   /// On init
   @override
   void onInit() {
     if (Get.arguments != null) {
-      bet.value = Get.arguments as String;
-      bet.refresh();
+      round.value = Get.arguments as MdRound;
+      round.refresh();
     }
+
+    socketIoRepo
+      ..initSocket(url: 'http://192.168.29.28:7800')
+      ..listenForDateEvent(
+        (dynamic data) {
+          logI('🎯 Controller got update: $data');
+          dataList.add(data.toString());
+        },
+      )
+      ..startAutoEmit(
+        {
+          'user_id': SupaBaseService.userId,
+          'round_id': round().id,
+        },
+      );
 
     setUsers();
     super.onInit();
+  }
+
+  /// Call emit with custom payload
+  void emitDate() {
+    final Map<String, dynamic> payload = <String, dynamic>{
+      'user_id': SupaBaseService.userId,
+      'round_id': round().id,
+    };
+
+    logI('👉 Calling emitDate() with payload: $payload');
+    socketIoRepo.emitGetDate(payload);
   }
 
   /// On ready
@@ -33,14 +63,15 @@ class SnapSelfiesController extends GetxController {
   void onClose() {
     stopTimer();
     _textsTimer?.cancel();
+    socketIoRepo.dispose();
     super.onClose();
   }
 
   /// Observable for bet text
-  RxString bet = ''.obs;
+  Rx<MdRound> round = MdRound().obs;
 
   /// Seconds left for the timer
-  RxInt secondsLeft = 60.obs;
+  RxInt secondsLeft = 300.obs;
 
   /// Timer for countdown
   Timer? _timer;
@@ -53,6 +84,12 @@ class SnapSelfiesController extends GetxController {
 
   /// Indicates if all selfies are taken
   RxBool isTimesUp = false.obs;
+
+  /// Socket IO repository
+  final SocketIoRepo socketIoRepo = SocketIoRepo();
+
+  /// List of data (for testing purposes)
+  final RxList<String> dataList = <String>[].obs;
 
   /// List of selfies taken by the user
   RxList<MdUserSelfie> selfies = <MdUserSelfie>[].obs;
@@ -117,7 +154,7 @@ class SnapSelfiesController extends GetxController {
   /// Starts the timer for 5 minutes (300 seconds)
   void startTimer() {
     _timer?.cancel();
-    secondsLeft.value = 60;
+    secondsLeft.value = 300;
     _timer = Timer.periodic(
       const Duration(seconds: 1),
       (Timer timer) {
@@ -201,7 +238,7 @@ class SnapSelfiesController extends GetxController {
       Routes.AI_CHOOSING,
       arguments: <String, dynamic>{
         'selfies': _selfies,
-        'bet': bet.value,
+        // 'bet': bet.value,
       },
     );
   }

@@ -1,10 +1,10 @@
 import 'dart:async';
+import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_round.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
-import 'package:fvf_flutter/app/utils/app_loader.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
-
+import '../../../data/remote/deep_link/deep_link_service.dart';
 import '../../../routes/app_pages.dart';
 
 /// Pick crew controller
@@ -34,19 +34,30 @@ class PickCrewController extends GetxController {
   /// Observable for bet text
   Rx<MdRound> round = MdRound().obs;
 
-  /// Share text
+  /// Share Uri
   Future<void> shareUri() async {
-    Loader.show();
-    await Future<void>.delayed(
-      const Duration(seconds: 3),
-      () {
-        Loader.dismiss();
+    try {
+      final String? _invitationLink =
+          await DeepLinkService.generateSlayInviteLink(
+        title: round().prompt ?? '',
+        invitationId: round().id ?? '',
+      );
+
+      if (_invitationLink == null || _invitationLink.isEmpty) {
+        appSnackbar(
+          message: 'Failed to generate invitation link. Please try again.',
+          snackbarState: SnackbarState.danger,
+        );
+        return;
+      }
+
+      final Uri uri = Uri.parse(_invitationLink);
+
+      unawaited(
         SharePlus.instance
             .share(
           ShareParams(
-            uri: Uri.parse(
-              'https://slay.app/invite?bet=${Uri.encodeComponent(round.value.prompt ?? '')}',
-            ),
+            uri: uri,
             title: 'Slay',
             subject: 'Slay Invitation',
           ),
@@ -60,65 +71,14 @@ class PickCrewController extends GetxController {
               );
               Get.toNamed(
                 Routes.SNAP_SELFIES,
-                arguments: round.value,
+                arguments: round(),
               );
             }
           },
-        );
-      },
-    );
-    Loader.dismiss();
+        ),
+      );
+    } on Exception {
+      logE('Error sharing invitation link');
+    }
   }
-// Future<void> shareUri() async {
-//   Loader.show();
-//   try {
-//     final String? _invitationLink =
-//         await DeepLinkService.generateSlayInviteLink(
-//       title: bet(),
-//       invitationId: '1',
-//     );
-//
-//     if (_invitationLink == null || _invitationLink.isEmpty) {
-//       Loader.dismiss();
-//       appSnackbar(
-//         message: 'Failed to generate invitation link. Please try again.',
-//         snackbarState: SnackbarState.danger,
-//       );
-//       return;
-//     }
-//
-//     final Uri uri = Uri.parse(_invitationLink);
-//
-//     Loader.dismiss();
-//
-//     unawaited(
-//       SharePlus.instance
-//           .share(
-//         ShareParams(
-//           uri: uri,
-//           title: 'Slay',
-//           subject: 'Slay Invitation',
-//         ),
-//       )
-//           .then(
-//         (ShareResult result) {
-//           if (result.status == ShareResultStatus.success) {
-//             appSnackbar(
-//               message: 'Invitation shared successfully!',
-//               snackbarState: SnackbarState.success,
-//             );
-//             Get.toNamed(
-//               Routes.SNAP_SELFIES,
-//               arguments: bet.value,
-//             );
-//           }
-//         },
-//       ),
-//     );
-//   } on Exception {
-//     Loader.dismiss();
-//   } finally {
-//     Loader.dismiss();
-//   }
-// }
 }

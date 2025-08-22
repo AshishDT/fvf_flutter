@@ -1,3 +1,5 @@
+import 'md_participant.dart';
+
 /// To parse this JSON data, do
 class MdRound {
   /// Md round
@@ -12,6 +14,7 @@ class MdRound {
     this.updatedAt,
     this.isActive,
     this.isDeleted,
+    this.participants,
   });
 
   /// From JSON
@@ -32,6 +35,11 @@ class MdRound {
             : DateTime.parse(json['updatedAt']),
         isActive: json['is_active'],
         isDeleted: json['is_deleted'],
+        participants: json['participants'] == null
+            ? <MdParticipant>[]
+            : (json['participants'] as List<dynamic>)
+                .map((dynamic e) => MdParticipant.fromJson(e))
+                .toList(),
       );
 
   /// Prompt
@@ -63,6 +71,9 @@ class MdRound {
 
   /// Is deleted
   bool? isDeleted;
+
+  /// Participants in the round
+  List<MdParticipant>? participants;
 
   /// To JSON
   Map<String, dynamic> toJson() => <String, dynamic>{

@@ -72,7 +72,7 @@
                 <!-- REPLACE `android:scheme` with your Android URI scheme -->
                 <data
                     android:host="open"
-                    android:scheme="stagepay" />
+                    android:scheme="slay" />
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -88,10 +88,10 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="ikmza.app.link"
+                    android:host="0wkmj.app.link"
                     android:scheme="https" />
                 <data
-                    android:host="ikmza-alternate.app.link"
+                    android:host="0wkmj-alternate.app.link"
                     android:scheme="https" />
             </intent-filter>
 
@@ -103,10 +103,10 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="ikmza.test-app.link"
+                    android:host="0wkmj.test-app.link"
                     android:scheme="https" />
                 <data
-                    android:host="ikmza-alternate.test-app.link"
+                    android:host="0wkmj-alternate.test-app.link"
                     android:scheme="https" />
             </intent-filter>
 
@@ -137,11 +137,11 @@
         <!-- REPLACE `BranchKey` with the value from your Branch Dashboard -->
         <meta-data
             android:name="io.branch.sdk.BranchKey"
-            android:value="key_live_cwtnkxEz87IxnJG59kgIXhkmtxka949L" />
+            android:value="key_live_hBtjVMkxvipgfwkmMWnxUehjxFliMfyC" />
         <!-- REPLACE `BranchKey.test` with the value from your Branch Dashboard -->
         <meta-data
             android:name="io.branch.sdk.BranchKey.test"
-            android:value="key_test_oxtecCrFZZPAoHV2YioPulfjEBemZY7y" />
+            android:value="key_test_dsBlSRoyybhfcFeeH5ElsebbwyjjRhAU" />
         <!-- Set to `true` to use `BranchKey.test` -->
         <meta-data
             android:name="io.branch.sdk.TestMode"

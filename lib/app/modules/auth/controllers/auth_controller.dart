@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-
 import '../../../data/remote/deep_link/deep_link_service.dart';
 
 /// Auth Controller

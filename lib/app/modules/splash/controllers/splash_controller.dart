@@ -1,3 +1,4 @@
+import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:get/get.dart';
 
@@ -9,7 +10,11 @@ class SplashController extends GetxController {
     Future<void>.delayed(
       const Duration(seconds: 1),
       () {
-        Get.offAllNamed(Routes.AUTH);
+        if (SupaBaseService.isLoggedIn) {
+          Get.offAllNamed(Routes.CREATE_BET);
+        } else {
+          Get.offAllNamed(Routes.AUTH);
+        }
       },
     );
     super.onInit();

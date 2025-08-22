@@ -238,7 +238,7 @@ class SnapSelfiesController extends GetxController {
       Routes.AI_CHOOSING,
       arguments: <String, dynamic>{
         'selfies': _selfies,
-        // 'bet': bet.value,
+        'bet': round().prompt ?? '',
       },
     );
   }

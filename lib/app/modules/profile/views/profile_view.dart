@@ -24,139 +24,145 @@ class ProfileView extends GetView<ProfileController> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        body: GradientCard(
-          bgImage: AppImages.profileBg,
-          alignment: Alignment.center,
-          child: SafeArea(
-            child: AnimatedListView(
-              padding: REdgeInsets.symmetric(horizontal: 24),
-              children: <Widget>[
-                CommonAppBar(
-                  leadingIconColor: AppColors.k3D4445,
-                  actions: <Widget>[
-                    GestureDetector(
-                      onTap: () {},
-                      child: SvgPicture.asset(
-                        AppImages.shareIcon,
-                        width: 24.w,
-                        height: 24.h,
-                        colorFilter: const ColorFilter.mode(
-                          AppColors.k3D4445,
-                          BlendMode.srcIn,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                36.verticalSpace,
-                Center(
-                  child: GradientCard(
-                    height: 155.w,
-                    width: 155.w,
-                    bgImage: AppImages.profileImgBg,
-                    child: Padding(
-                      padding: REdgeInsets.all(24),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: AppColors.kFAFBFB,
-                          border: Border.fromBorderSide(
-                            BorderSide(
-                              color: AppColors.kF6FCFE,
-                              width: 4.w,
-                            ),
+        body: Obx(
+          () => GradientCard(
+            bgImage: AppImages.profileBg,
+            alignment: Alignment.center,
+            child: SafeArea(
+              child: AnimatedListView(
+                padding: REdgeInsets.symmetric(horizontal: 24),
+                children: <Widget>[
+                  CommonAppBar(
+                    leadingIconColor: AppColors.k3D4445,
+                    actions: <Widget>[
+                      GestureDetector(
+                        onTap: () {},
+                        child: SvgPicture.asset(
+                          AppImages.shareIcon,
+                          width: 24.w,
+                          height: 24.h,
+                          colorFilter: const ColorFilter.mode(
+                            AppColors.k3D4445,
+                            BlendMode.srcIn,
                           ),
                         ),
-                        child: ProfileImageCard(
-                          placeholderAsset: AppImages.profilePlaceholder,
-                          imageUrl: controller.user().selfieUrl,
-                        ),
                       ),
-                    ),
-                  ),
-                ),
-                Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        controller.user().displayName ?? '',
-                        style: AppTextStyle.openRunde(
-                          color: AppColors.k2A2E2F,
-                          fontSize: 32.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      if (controller.isCurrentUser) ...<Widget>[
-                        4.horizontalSpace,
-                        GestureDetector(
-                          onTap: () {
-                            ChatFieldSheetRepo.openChatField(
-                              const EditDataSheet(),
-                              isDismissible: true,
-                            );
-                          },
-                          child: SvgPicture.asset(
-                            AppImages.penIcon,
-                            height: 16.h,
-                            color: AppColors.k899699,
-                          ).paddingOnly(bottom: 5.h),
-                        ),
-                      ],
                     ],
                   ),
-                ),
-                8.verticalSpace,
-                Row(
-                  spacing: 8.w,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    _streakChip(
-                      icon: AppImages.trophyIcon,
-                      title: '3x Winner',
-                      bgColor: AppColors.k09DB84.withValues(alpha: 0.4),
+                  36.verticalSpace,
+                  Center(
+                    child: GradientCard(
+                      height: 155.w,
+                      width: 155.w,
+                      bgImage: AppImages.profileImgBg,
+                      child: Padding(
+                        padding: REdgeInsets.all(24),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.kFAFBFB,
+                            border: Border.fromBorderSide(
+                              BorderSide(
+                                color: AppColors.kF6FCFE,
+                                width: 4.w,
+                              ),
+                            ),
+                          ),
+                          child: ProfileImageCard(
+                            placeholderAsset: AppImages.profilePlaceholder,
+                            imageUrl:
+                                controller.profile()?.user?.profileUrl ?? '',
+                          ),
+                        ),
+                      ),
                     ),
-                    _streakChip(
-                      icon: AppImages.fireIcon,
-                      title: '52 Days',
-                      bgColor: AppColors.kEE4AD1.withValues(alpha: 0.4),
-                    ),
-                    _streakChip(
-                      icon: AppImages.emojiIcon,
-                      title: 'Funniest',
-                      bgColor: AppColors.kFFC300.withValues(alpha: 0.4),
-                    ),
-                  ],
-                ),
-                24.verticalSpace,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    _profileInfo(
-                      value: '8',
-                      title: 'Wins',
-                    ),
-                    _profileInfo(
-                      value: '12',
-                      title: 'Rounds',
-                    ),
-                    _profileInfo(
-                      value: '91',
-                      title: 'Reactions',
-                    ),
-                  ],
-                ),
-                24.verticalSpace,
-                ...controller.highlightCards.map(
-                  (MdHighlight highlight) => ProfileHighlightCard(
-                    avatarUrl: highlight.avatarUrl,
-                    title: highlight.title,
-                    subtitle: highlight.subtitle,
-                    backgroundColor: highlight.backgroundColor,
-                    borderColor: highlight.borderColor,
                   ),
-                ),
-              ],
+                  Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          controller.profile()?.user?.username ?? 'Anonymous',
+                          style: AppTextStyle.openRunde(
+                            color: AppColors.k2A2E2F,
+                            fontSize: 32.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        if (controller.isCurrentUser) ...<Widget>[
+                          4.horizontalSpace,
+                          GestureDetector(
+                            onTap: () {
+                              ChatFieldSheetRepo.openChatField(
+                                const EditDataSheet(),
+                                isDismissible: true,
+                              );
+                            },
+                            child: SvgPicture.asset(
+                              AppImages.penIcon,
+                              height: 16.h,
+                              color: AppColors.k899699,
+                            ).paddingOnly(bottom: 5.h),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  8.verticalSpace,
+                  Row(
+                    spacing: 8.w,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      _streakChip(
+                        icon: AppImages.trophyIcon,
+                        title:
+                            '${controller.profile()?.user?.totalWins ?? 0} Winner',
+                        bgColor: AppColors.k09DB84.withValues(alpha: 0.4),
+                      ),
+                      _streakChip(
+                        icon: AppImages.fireIcon,
+                        title:
+                            '${controller.profile()?.user?.winnerStreakCount} Days',
+                        bgColor: AppColors.kEE4AD1.withValues(alpha: 0.4),
+                      ),
+                      _streakChip(
+                        icon: AppImages.emojiIcon,
+                        title: 'Funniest',
+                        bgColor: AppColors.kFFC300.withValues(alpha: 0.4),
+                      ),
+                    ],
+                  ),
+                  24.verticalSpace,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      _profileInfo(
+                        value: '${controller.profile()?.round?.winsCount ?? 0}',
+                        title: 'Wins',
+                      ),
+                      _profileInfo(
+                        value:
+                            '${controller.profile()?.round?.totalRound ?? 0}',
+                        title: 'Rounds',
+                      ),
+                      _profileInfo(
+                        value: '91',
+                        title: 'Reactions',
+                      ),
+                    ],
+                  ),
+                  24.verticalSpace,
+                  ...controller.highlightCards.map(
+                    (MdHighlight highlight) => ProfileHighlightCard(
+                      avatarUrl: highlight.avatarUrl,
+                      title: highlight.title,
+                      subtitle: highlight.subtitle,
+                      backgroundColor: highlight.backgroundColor,
+                      borderColor: highlight.borderColor,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

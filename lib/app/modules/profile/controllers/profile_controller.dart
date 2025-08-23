@@ -3,8 +3,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
-import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_highlight.dart';
+import 'package:fvf_flutter/app/modules/profile/models/md_profile.dart';
+import 'package:fvf_flutter/app/modules/profile/repositories/profile_api_repo.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -14,6 +15,9 @@ import '../../snap_selfies/models/md_user_selfie.dart';
 class ProfileController extends GetxController with WidgetsBindingObserver {
   /// image
   Rx<File> image = File('').obs;
+
+  /// User
+  Rxn<MdProfile?> profile = Rxn<MdProfile>();
 
   /// On init
   @override
@@ -25,9 +29,10 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
       },
     );
     super.onInit();
-    if(Get.arguments != null) {
+    if (Get.arguments != null) {
       user.value = Get.arguments['user'] as MdUserSelfie;
     }
+    getUser();
   }
 
   /// On close
@@ -98,4 +103,18 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
       subtitle: 'The reason why she won goes here!',
     ),
   ];
+
+  /// Get User
+  Future<void> getUser() async {
+    try {
+      final MdProfile? _user = await ProfileApiRepo.getUser();
+      if (_user != null) {
+        log('User fetched: ${_user.toJson()}');
+        profile(_user);
+      }
+    } catch (e, st) {
+      logE('Error getting user: $e');
+      logE(st);
+    } finally {}
+  }
 }

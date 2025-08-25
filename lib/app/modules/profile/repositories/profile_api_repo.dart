@@ -37,4 +37,41 @@ class ProfileApiRepo {
           },
         ),
       );
+
+  /// Update user
+  static Future<MdProfile?> updateUser({
+    required String username,
+    required String profilePic,
+  }) async =>
+      APIWrapper.handleApiCall<MdProfile>(
+        APIService.put<Map<String, dynamic>>(
+          path: 'user/update',
+          data: {
+            'profile_pic': profilePic,
+            'username': username,
+          },
+        ).then(
+          (Response<Map<String, dynamic>>? response) {
+            if (response?.isOk != true || response?.data == null) {
+              return null;
+            }
+
+            final ApiResponse<MdProfile> data = ApiResponse<MdProfile>.fromJson(
+              response!.data!,
+              fromJsonT: (dynamic json) => MdProfile.fromJson(json),
+            );
+
+            if (data.success == true) {
+              return data.data;
+            }
+
+            appSnackbar(
+              message:
+                  data.message ?? 'Something went wrong, please try again.',
+              snackbarState: SnackbarState.danger,
+            );
+            return null;
+          },
+        ),
+      );
 }

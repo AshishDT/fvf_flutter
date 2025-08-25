@@ -1,11 +1,10 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
+import 'package:fvf_flutter/app/modules/create_bet/models/md_bet.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_round.dart';
 import 'package:fvf_flutter/app/modules/create_bet/repositories/create_bet_api_repo.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
-import 'dart:math';
-
 import '../../../data/remote/deep_link/deep_link_service.dart';
 import '../../../routes/app_pages.dart';
 
@@ -22,7 +21,9 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
       },
     );
 
-    getBets();
+    rollDice(
+      fromInit: true,
+    );
 
     super.onInit();
   }
@@ -76,15 +77,12 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
   /// Is create round loading
   RxBool createRoundLoading = false.obs;
 
-  /// List of questions
-  RxList<String> bets = <String>[].obs;
-
   /// Question for the bet
   RxString bet = ''.obs;
 
   /// Roll dice
   void rollDice({
-    bool showLoader = false,
+    bool fromInit = false,
   }) {
     if (createRoundLoading()) {
       appSnackbar(
@@ -94,30 +92,37 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
       return;
     }
 
-    rollCounter.value++;
-    enteredBet('');
-    messageInputController.clear();
-
-    Future<void>.delayed(
-      const Duration(seconds: 1),
-      () {
-        final int index = Random().nextInt(bets.length);
-        bet.value = bets[index];
-        bet.refresh();
-      },
+    getBets(
+      fromInit: fromInit,
     );
   }
 
   /// Get bets from API
-  Future<void> getBets() async {
+  Future<void> getBets({
+    bool fromInit = false,
+  }) async {
+    if (!fromInit) {
+      rollCounter.value++;
+    }
+
     isLoading(true);
     try {
-      final List<String>? _betData = await CreateBetApiRepo.getBets();
+      if (fromInit) {
+        Future<void>.delayed(
+          const Duration(milliseconds: 300),
+          () {
+            rollCounter.value++;
+          },
+        );
+      }
+      final MdBet? _bet = await CreateBetApiRepo.getQuestion();
 
-      bets(_betData ?? <String>[]);
-      bets.refresh();
+      if (_bet != null && _bet.question != null && _bet.question!.isNotEmpty) {
+        bet.value = _bet.question!;
+      }
 
-      rollDice();
+      enteredBet('');
+      messageInputController.clear();
     } finally {
       isLoading(false);
     }

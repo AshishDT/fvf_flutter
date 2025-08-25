@@ -9,6 +9,7 @@ class DiceRoller extends StatefulWidget {
   const DiceRoller({
     required this.rollTrigger,
     required this.onTap,
+    this.isLoading = false,
     super.key,
   });
 
@@ -17,6 +18,9 @@ class DiceRoller extends StatefulWidget {
 
   /// Callback when the dice is tapped
   final VoidCallback onTap;
+
+  /// Is loading
+  final bool isLoading;
 
   @override
   State<DiceRoller> createState() => _DiceRollerState();
@@ -29,7 +33,11 @@ class _DiceRollerState extends State<DiceRoller>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this);
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+      reverseDuration: const Duration(milliseconds: 200),
+    );
   }
 
   @override
@@ -51,16 +59,16 @@ class _DiceRollerState extends State<DiceRoller>
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-    onTap: widget.onTap,
-    child: Lottie.asset(
-      AppImages.diceRoll,
-      height: 100.h,
-      controller: _controller,
-
-      onLoaded: (LottieComposition composition) {
-        _controller.duration = composition.duration;
-        _controller.value = 0.0;
-      },
-    ),
-  );
+        onTap: widget.onTap,
+        child: Lottie.asset(
+          AppImages.diceRoll,
+          height: 100.h,
+          repeat: widget.isLoading,
+          controller: _controller,
+          onLoaded: (LottieComposition composition) {
+            _controller.duration = const Duration(milliseconds: 200);
+            _controller.value = 0.0;
+          },
+        ),
+      );
 }

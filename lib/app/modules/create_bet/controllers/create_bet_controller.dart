@@ -6,6 +6,7 @@ import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
 import 'dart:math';
 
+import '../../../data/remote/deep_link/deep_link_service.dart';
 import '../../../routes/app_pages.dart';
 
 /// Create Bet Controller
@@ -13,6 +14,7 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
   /// On init
   @override
   void onInit() {
+    DeepLinkService.initBranchListener();
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback(
       (_) {

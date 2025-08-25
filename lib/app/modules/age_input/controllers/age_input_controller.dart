@@ -7,6 +7,7 @@ import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../data/remote/deep_link/deep_link_incoming_data_handler.dart';
 import '../../../data/remote/supabse_service/supabse_service.dart';
 import '../../auth/repositories/auth_api_repo.dart';
 
@@ -83,6 +84,11 @@ class AgeInputController extends GetxController {
         await Get.offAllNamed(
           Routes.CREATE_BET,
         );
+
+        if (invitationId().isNotEmpty) {
+          await joinProjectInvitation(invitationId());
+          invitationId('');
+        }
       } else {
         appSnackbar(
           message: 'Failed to create user. Please try again.',

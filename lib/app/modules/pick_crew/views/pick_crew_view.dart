@@ -21,35 +21,67 @@ class PickCrewView extends GetView<PickCrewController> {
   Widget build(BuildContext context) => Scaffold(
         backgroundColor: AppColors.kF5FCFF,
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: AppButton(
-          buttonText: 'Pick your crew',
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              SvgPicture.asset(
-                width: 18.w,
-                height: 18.h,
-                AppImages.shareIcon,
-                colorFilter: const ColorFilter.mode(
-                  AppColors.kffffff,
-                  BlendMode.srcIn,
+        floatingActionButton: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            AnimatedSize(
+              duration: const Duration(milliseconds: 300),
+              alignment: Alignment.bottomCenter,
+              curve: Curves.easeInOut,
+              child: Obx(
+                    () => Visibility(
+                  visible: controller.secondsLeft() > 0,
+                  replacement: const SizedBox(
+                    width: double.infinity,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text(
+                        '${controller.secondsLeft().toString()}s',
+                        style: AppTextStyle.openRunde(
+                          fontSize: 24.sp,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.kF6FCFE,
+                        ),
+                      ).paddingSymmetric(horizontal: 24),
+                      16.verticalSpace
+                    ],
+                  ),
                 ),
               ),
-              8.horizontalSpace,
-              Text(
-                'Pick your crew',
-                style: AppTextStyle.openRunde(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.kffffff,
-                ),
+            ),
+            AppButton(
+              buttonText: 'Pick your crew',
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  SvgPicture.asset(
+                    width: 18.w,
+                    height: 18.h,
+                    AppImages.shareIcon,
+                    colorFilter: const ColorFilter.mode(
+                      AppColors.kffffff,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                  8.horizontalSpace,
+                  Text(
+                    'Pick your crew',
+                    style: AppTextStyle.openRunde(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.kffffff,
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-          onPressed: () {
-            controller.shareUri();
-          },
-        ).paddingSymmetric(horizontal: 24),
+              onPressed: () {
+                controller.shareUri();
+              },
+            ).paddingSymmetric(horizontal: 24),
+          ],
+        ),
         body: GradientCard(
           child: Align(
             alignment: Alignment.topLeft,

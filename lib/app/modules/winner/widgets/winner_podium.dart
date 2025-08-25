@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
+import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import '../../ai_choosing/widgets/ai_choosing_avatar.dart';
-import '../../snap_selfies/models/md_user_selfie.dart';
 
 /// Winners podium widget
 class WinnersPodium extends StatelessWidget {
@@ -16,16 +15,16 @@ class WinnersPodium extends StatelessWidget {
   });
 
   /// First place user
-  final MdUserSelfie rank1;
+  final MdParticipant rank1;
 
   /// Second place user
-  final MdUserSelfie rank2;
+  final MdParticipant rank2;
 
   /// Third place user
-  final MdUserSelfie rank3;
+  final MdParticipant rank3;
 
   /// Callback for when the avatar is tapped
-  final void Function(MdUserSelfie user) onAvatarTap;
+  final void Function(MdParticipant user) onAvatarTap;
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +50,7 @@ class WinnersPodium extends StatelessWidget {
               child: SizedBox(
                 width: smallSize,
                 height: smallSize,
-                child: AiChoosingAvatar(user: rank2),
+                child: AiChoosingAvatar(participant: rank2),
               ),
             ),
           ),
@@ -63,7 +62,7 @@ class WinnersPodium extends StatelessWidget {
               child: SizedBox(
                 width: smallSize,
                 height: smallSize,
-                child: AiChoosingAvatar(user: rank3),
+                child: AiChoosingAvatar(participant: rank3),
               ),
             ),
           ),
@@ -74,7 +73,7 @@ class WinnersPodium extends StatelessWidget {
                 width: bigSize,
                 height: bigSize,
                 child: AiChoosingAvatar(
-                  user: rank1,
+                  participant: rank1,
                   showBorders: true,
                 ),
               ),

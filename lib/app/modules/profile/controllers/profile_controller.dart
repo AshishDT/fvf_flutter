@@ -4,14 +4,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/data/remote/api_service/init_api_service.dart';
+import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
+import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_highlight.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_profile.dart';
 import 'package:fvf_flutter/app/modules/profile/repositories/profile_api_repo.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-
-import '../../snap_selfies/models/md_user_selfie.dart';
 
 /// Profile Controller
 class ProfileController extends GetxController with WidgetsBindingObserver {
@@ -38,7 +38,7 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
     );
     super.onInit();
     if (Get.arguments != null) {
-      user.value = Get.arguments['user'] as MdUserSelfie;
+      user.value = Get.arguments['user'] as MdParticipant;
     }
     getUser();
   }
@@ -52,7 +52,8 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
   }
 
   /// isCurrentUser
-  bool get isCurrentUser => user().userId == 'current_user';
+  bool get isCurrentUser =>
+      user().userData?.supabaseId == SupaBaseService.userId;
 
   /// Observable to track keyboard visibility
   RxBool isKeyboardVisible = false.obs;
@@ -67,13 +68,7 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
   TextEditingController nameInputController = TextEditingController();
 
   /// On ready
-  Rx<MdUserSelfie> user = MdUserSelfie(
-    id: 'current_user',
-    displayName: 'Marri',
-    userId: 'current_user',
-    selfieUrl: 'https://picsum.photos/seed/picsum/200/300',
-    createdAt: DateTime.now(),
-  ).obs;
+  Rx<MdParticipant> user = MdParticipant().obs;
 
   /// Pick Image Method
   Future<File?> pickImage({required ImageSource source}) async {
@@ -147,7 +142,7 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
           snackbarState: SnackbarState.success,
         );
       }
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       logE('Error getting user: $e');
       logE(st);
     } finally {
@@ -166,11 +161,11 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
           await APIService.uploadFile(file: pickedImage, folder: folder);
       if (_uploadedUrl != null) {
         await updateUser(
-          profilePic: _uploadedUrl ?? '',
+          profilePic: _uploadedUrl,
           username: profile()?.user?.username ?? '',
         );
       }
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       logE('Error getting upload file: $e');
       logE(st);
     } finally {

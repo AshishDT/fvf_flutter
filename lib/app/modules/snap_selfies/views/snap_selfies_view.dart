@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/modules/snap_selfies/widgets/animated_switcher.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:get/get.dart';
@@ -12,7 +13,6 @@ import '../../../ui/components/app_button.dart';
 import '../../../ui/components/common_app_bar.dart';
 import '../../../utils/app_text_style.dart';
 import '../controllers/snap_selfies_controller.dart';
-import '../models/md_user_selfie.dart';
 import '../widgets/selfie_avatar.dart';
 
 /// Snap selfies view
@@ -88,6 +88,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                       controller.secondsLeft() > 0,
                   child: AppButton(
                     buttonText: 'Snap Selfie',
+                    isLoading: controller.submittingSelfie(),
                     onPressed: controller.onSnapSelfie,
                   ).paddingSymmetric(horizontal: 24),
                 ),
@@ -140,7 +141,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                     constraints: BoxConstraints(maxHeight: 120.h),
                     child: Obx(
                       () => AutoSizeText(
-                        controller.round().prompt ?? '',
+                        controller.joinedInvitationData().prompt ?? '',
                         textAlign: TextAlign.center,
                         style: AppTextStyle.openRunde(
                           fontSize: 40.sp,
@@ -160,9 +161,9 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                         () => Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            ...controller.selfies().map(
-                                  (MdUserSelfie user) => SelfieAvatar(
-                                    user: user,
+                            ...controller.participants().map(
+                                  (MdParticipant participant) => SelfieAvatar(
+                                    participant: participant,
                                   ).paddingOnly(right: 32),
                                 ),
                           ],
@@ -177,7 +178,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                     curve: Curves.easeInOut,
                     child: Obx(
                       () => Visibility(
-                        visible: controller.secondsLeft() > 0,
+                        visible: controller.secondsLeft() > 0 && controller.isHost(),
                         child: TextButton(
                           onPressed: () {
                             controller.shareUri();

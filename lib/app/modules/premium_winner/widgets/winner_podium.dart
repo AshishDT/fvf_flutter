@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:get/get.dart';
-
 import '../../ai_choosing/widgets/ai_choosing_avatar.dart';
-import '../../snap_selfies/models/md_user_selfie.dart';
 
 /// Winners podium widget
 class WinnersPodiumPremiumView extends StatelessWidget {
@@ -17,13 +16,13 @@ class WinnersPodiumPremiumView extends StatelessWidget {
   });
 
   /// First place user
-  final MdUserSelfie? rank1;
+  final MdParticipant? rank1;
 
   /// Second place user
-  final MdUserSelfie? rank2;
+  final MdParticipant? rank2;
 
   /// Third place user
-  final MdUserSelfie? rank3;
+  final MdParticipant? rank3;
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +47,7 @@ class WinnersPodiumPremiumView extends StatelessWidget {
               child: SizedBox(
                 width: smallSize,
                 height: smallSize,
-                child: AiChoosingAvatar(user: rank2!),
+                child: AiChoosingAvatar(participant: rank2!),
               ),
             ),
           if (rank3 != null)
@@ -58,7 +57,7 @@ class WinnersPodiumPremiumView extends StatelessWidget {
               child: SizedBox(
                 width: smallSize,
                 height: smallSize,
-                child: AiChoosingAvatar(user: rank3!),
+                child: AiChoosingAvatar(participant: rank3!),
               ),
             ),
           if (rank1 != null)
@@ -66,7 +65,7 @@ class WinnersPodiumPremiumView extends StatelessWidget {
               onTap: () {
                 Get.toNamed(
                   Routes.PROFILE,
-                  arguments: <String, MdUserSelfie?>{'user': rank1},
+                  arguments: <String, MdParticipant?>{'user': rank1},
                 );
               },
               child: Align(
@@ -74,7 +73,7 @@ class WinnersPodiumPremiumView extends StatelessWidget {
                   width: bigSize,
                   height: bigSize,
                   child: AiChoosingAvatar(
-                    user: rank1!,
+                    participant: rank1!,
                     showBorders: true,
                   ),
                 ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fvf_flutter/app/modules/snap_selfies/models/md_user_selfie.dart';
+import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/modules/winner/models/emoji_model.dart';
 import 'package:get/get.dart';
 
@@ -23,16 +23,16 @@ class PremiumWinnerController extends GetxController {
   @override
   void onInit() {
     if (Get.arguments != null) {
-      if (Get.arguments['selfies'] != null) {
-        final List<MdUserSelfie> _selfies = Get.arguments['selfies'] as List<MdUserSelfie>;
+      if (Get.arguments['participants'] != null) {
+        final List<MdParticipant> _selfies = Get.arguments['participants'] as List<MdParticipant>;
 
         WidgetsBinding.instance.addPostFrameCallback(
           (Duration timeStamp) {
             if (_selfies.isNotEmpty) {
-              _selfies.sort((MdUserSelfie a, MdUserSelfie b) =>
+              _selfies.sort((MdParticipant a, MdParticipant b) =>
                   a.rank?.compareTo(b.rank ?? 0) ?? 0);
 
-              selfies.value = List<MdUserSelfie>.from(_selfies);
+              participants.value = List<MdParticipant>.from(_selfies);
               pageController = PageController(initialPage: 0);
             }
           },
@@ -84,5 +84,5 @@ class PremiumWinnerController extends GetxController {
   }
 
   /// List of selfies taken by the user
-  RxList<MdUserSelfie> selfies = <MdUserSelfie>[].obs;
+  RxList<MdParticipant> participants = <MdParticipant>[].obs;
 }

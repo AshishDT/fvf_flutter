@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:fvf_flutter/app/routes/app_pages.dart';
+import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:get/get.dart';
-import '../../snap_selfies/models/md_user_selfie.dart';
+
+import '../../../routes/app_pages.dart';
 
 /// AiChoosingController
 class AiChoosingController extends GetxController {
@@ -14,7 +15,7 @@ class AiChoosingController extends GetxController {
   Timer? timer;
 
   /// List of selfies taken by the user
-  RxList<MdUserSelfie> selfies = <MdUserSelfie>[].obs;
+  RxList<MdParticipant> participants = <MdParticipant>[].obs;
 
   /// Observable for bet text
   RxString bet = ''.obs;
@@ -24,13 +25,13 @@ class AiChoosingController extends GetxController {
     super.onInit();
 
     if (Get.arguments != null) {
-      if (Get.arguments['selfies'] != null) {
-        final List<MdUserSelfie> _selfies =
-            Get.arguments['selfies'] as List<MdUserSelfie>;
+      if (Get.arguments['participants'] != null) {
+        final List<MdParticipant> _participants =
+            Get.arguments['participants'] as List<MdParticipant>;
 
-        if (_selfies.isNotEmpty) {
-          selfies.value = _selfies;
-          selfies.refresh();
+        if (_participants.isNotEmpty) {
+          participants.value = _participants;
+          participants.refresh();
 
           pageController = PageController(
             viewportFraction: 0.55,
@@ -53,19 +54,20 @@ class AiChoosingController extends GetxController {
         Future<void>.delayed(
           const Duration(seconds: 10),
           () {
-            if (selfies.isEmpty) {
+            if (participants.isEmpty) {
               return;
             }
 
             final Random random = Random();
-            final MdUserSelfie winner = selfies[random.nextInt(selfies.length)];
+            final MdParticipant winner =
+                participants[random.nextInt(participants().length)];
 
             int rankCounter = 2;
-            for (final MdUserSelfie selfie in selfies) {
-              if (selfie.id == winner.id) {
-                selfie.rank = 1;
+            for (final MdParticipant participant in participants()) {
+              if (participant.id == winner.id) {
+                participant.rank = 1;
               } else {
-                selfie.rank = rankCounter;
+                participant.rank = rankCounter;
                 rankCounter++;
               }
             }
@@ -73,7 +75,7 @@ class AiChoosingController extends GetxController {
             Get.toNamed(
               Routes.WINNER,
               arguments: <String, dynamic>{
-                'selfies': <MdUserSelfie>[...selfies()],
+                'participants': <MdParticipant>[...participants()],
                 'bet': bet.value,
               },
             );

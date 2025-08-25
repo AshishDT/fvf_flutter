@@ -1,31 +1,28 @@
 /// Deep link data model
 class MdDeepLinkData {
-  /// Default constructor
+  /// Constructor
   MdDeepLinkData({
-    this.title,
-    this.description,
     this.invitationId,
+    this.tags,
     this.canonicalIdentifier,
     this.clickedBranchLink,
   });
 
-  /// Factory method to create a BranchData instance from JSON
+  /// From JSON
   factory MdDeepLinkData.fromJson(Map<dynamic, dynamic> json) => MdDeepLinkData(
-    title: json[r'$og_title'],
-    description: json[r'$og_description'],
-    invitationId: json['invitation_id'],
-    canonicalIdentifier: json[r'$canonical_identifier'],
-    clickedBranchLink: json[r'+clicked_branch_link'] == true,
-  );
+        invitationId: json['invitation_id'] as String?,
+        tags: (json[r'~tags'] as List<dynamic>?)
+            ?.map((e) => e.toString())
+            .toList(),
+        canonicalIdentifier: json[r'$canonical_identifier'] as String?,
+        clickedBranchLink: json[r'+clicked_branch_link'] == true,
+      );
 
-  ///  Title
-  final String? title;
-
-  /// Description
-  final String? description;
-
-  /// Slay invite id
+  /// Invitation ID
   final String? invitationId;
+
+  /// Tags
+  final List<String>? tags;
 
   /// Canonical identifier
   final String? canonicalIdentifier;
@@ -33,16 +30,11 @@ class MdDeepLinkData {
   /// Clicked branch link
   final bool? clickedBranchLink;
 
-  /// Convert the BranchData instance to JSON
+  /// To JSON
   Map<String, dynamic> toJson() => <String, dynamic>{
-    r'$og_title': title,
-    r'$og_description': description,
-    'invitation_id': invitationId,
-    r'$canonical_identifier': canonicalIdentifier,
-    r'+clicked_branch_link': clickedBranchLink,
-  };
-
-  @override
-  String toString() =>
-      'BranchData(invitation_id: $invitationId,clicked: $clickedBranchLink)';
+        'invitation_id': invitationId,
+        r'~tags': tags,
+        r'$canonical_identifier': canonicalIdentifier,
+        r'+clicked_branch_link': clickedBranchLink,
+      };
 }

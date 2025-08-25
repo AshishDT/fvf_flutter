@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/modules/winner/models/emoji_model.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/expose_sheet.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
@@ -12,7 +13,6 @@ import '../../../ui/components/animated_list_view.dart';
 import '../../../ui/components/common_app_bar.dart';
 import '../../../ui/components/gradient_card.dart';
 import '../../../utils/app_text_style.dart';
-import '../../snap_selfies/models/md_user_selfie.dart';
 import '../controllers/winner_controller.dart';
 import '../widgets/rank_card.dart';
 import '../widgets/winner_podium.dart';
@@ -69,10 +69,12 @@ class WinnerView extends GetView<WinnerController> {
                       rank1: controller.firstRank(),
                       rank2: controller.secondRank(),
                       rank3: controller.thirdRank(),
-                      onAvatarTap: (MdUserSelfie user) {
+                      onAvatarTap: (MdParticipant participant) {
                         Get.toNamed(
                           Routes.PROFILE,
-                          arguments: <String, MdUserSelfie?>{'user': user},
+                          arguments: <String, MdParticipant?>{
+                            'user': participant,
+                          },
                         );
                       },
                     ),
@@ -88,7 +90,7 @@ class WinnerView extends GetView<WinnerController> {
                 Align(
                   child: Obx(
                     () => Text(
-                      controller.firstRank().displayName ?? '',
+                      controller.firstRank().userData?.username ?? '',
                       style: AppTextStyle.openRunde(
                         fontSize: 32.sp,
                         fontWeight: FontWeight.w600,
@@ -142,7 +144,7 @@ class WinnerView extends GetView<WinnerController> {
                             ? Get.toNamed(
                                 Routes.PREMIUM_WINNER,
                                 arguments: <String, dynamic>{
-                                  'selfies': controller.selfies(),
+                                  'participants': controller.participants(),
                                   'bet': controller.bet(),
                                 },
                               )

@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:fvf_flutter/app/data/config/logger.dart';
+import 'package:fvf_flutter/app/data/models/md_join_invitation.dart';
+import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_round.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
@@ -15,6 +17,8 @@ class PickCrewController extends GetxController {
     if (Get.arguments != null) {
       round.value = Get.arguments as MdRound;
       round.refresh();
+
+      startTimer();
     }
     super.onInit();
   }
@@ -33,6 +37,12 @@ class PickCrewController extends GetxController {
 
   /// Observable for bet text
   Rx<MdRound> round = MdRound().obs;
+
+  /// Seconds left for the timer
+  RxInt secondsLeft = 300.obs;
+
+  /// Timer for countdown
+  Timer? _timer;
 
   /// Share Uri
   Future<void> shareUri() async {
@@ -71,7 +81,30 @@ class PickCrewController extends GetxController {
               );
               Get.toNamed(
                 Routes.SNAP_SELFIES,
-                arguments: round(),
+                arguments: MdJoinInvitation(
+                  id: round().id ?? '',
+                  createdAt: round().createdAt?.toIso8601String(),
+                  type: round().id,
+                  prompt: round().prompt ?? '',
+                  isCustomPrompt: round().isCustomPrompt ?? false,
+                  isActive: round().isActive ?? false,
+                  isDeleted: round().isDeleted ?? false,
+                  status: round().status ?? 'active',
+                  updatedAt: round().updatedAt?.toIso8601String(),
+                  roundJoinedEndAt: round().roundJoinedEndAt,
+                  participants: <MdParticipant>[
+                    MdParticipant(
+                      createdAt: DateTime.now().toIso8601String(),
+                      id: round().host?.id ?? '',
+                      isActive: true,
+                      isDeleted: false,
+                      isHost: true,
+                      joinedAt: DateTime.now().toIso8601String(),
+                      userData: round().host,
+                    ),
+                  ],
+                  host: round().host,
+                ),
               );
             }
           },
@@ -79,6 +112,51 @@ class PickCrewController extends GetxController {
       );
     } on Exception {
       logE('Error sharing invitation link');
+    }
+  }
+
+  /// Start timer
+  void startTimer() {
+    _timer?.cancel();
+
+    final DateTime? endTime = round().roundJoinedEndAt;
+
+    if (endTime == null) {
+      secondsLeft.value = 300;
+    } else {
+      final DateTime localEndTime = endTime.toLocal();
+      final int diffInSeconds =
+          localEndTime.difference(DateTime.now()).inSeconds;
+
+      if (diffInSeconds <= 0) {
+        _handleTimeUp();
+        return;
+      }
+
+      secondsLeft.value = diffInSeconds;
+    }
+
+    _timer = Timer.periodic(
+      const Duration(seconds: 1),
+      (Timer timer) {
+        if (secondsLeft.value > 0) {
+          secondsLeft.value--;
+        } else {
+          _handleTimeUp();
+          timer.cancel();
+        }
+      },
+    );
+  }
+
+  /// Handle what happens when timer finishes
+  void _handleTimeUp() {
+    if (Get.currentRoute == Routes.PICK_CREW) {
+      Get.back();
+      appSnackbar(
+        message: 'Time is up! Please start again.',
+        snackbarState: SnackbarState.danger,
+      );
     }
   }
 }

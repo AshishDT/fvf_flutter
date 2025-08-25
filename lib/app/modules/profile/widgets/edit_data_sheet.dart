@@ -17,7 +17,7 @@ class EditDataSheet extends GetView<ProfileController> {
 
   @override
   Widget build(BuildContext context) {
-    controller.nameInputController.text = controller.user().displayName ?? '';
+    controller.nameInputController.text = controller.profile()?.user?.username ?? 'Anonymous';
     return GradientCard(
       alignment: AlignmentDirectional.topStart,
       borderRadius: BorderRadius.vertical(
@@ -88,15 +88,17 @@ class EditDataSheet extends GetView<ProfileController> {
             ),
           ),
           24.verticalSpace,
-          AppButton(
-            buttonText: 'Save',
-            onPressed: () {
-              controller.user(
-                controller.user().copyWith(
-                      displayName: controller.nameInputController.text.trim(),
-                    ),
-              );
-            },
+          Obx(
+            () => AppButton(
+              isLoading: controller.isEditing(),
+              buttonText: 'Save',
+              onPressed: () {
+                controller.updateUser(
+                  profilePic: controller.profile()?.user?.profileUrl ?? '',
+                  username: controller.nameInputController.text.trim(),
+                );
+              },
+            ),
           ),
         ],
       ),

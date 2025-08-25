@@ -3,8 +3,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
-import 'package:fvf_flutter/app/data/local/user_provider.dart';
+import 'package:fvf_flutter/app/data/remote/api_service/init_api_service.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_highlight.dart';
+import 'package:fvf_flutter/app/modules/profile/models/md_profile.dart';
+import 'package:fvf_flutter/app/modules/profile/repositories/profile_api_repo.dart';
+import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -14,6 +17,15 @@ import '../../snap_selfies/models/md_user_selfie.dart';
 class ProfileController extends GetxController with WidgetsBindingObserver {
   /// image
   Rx<File> image = File('').obs;
+
+  /// User
+  Rxn<MdProfile?> profile = Rxn<MdProfile>();
+
+  /// isEditing
+  RxBool isEditing = false.obs;
+
+  /// isLoading
+  RxBool isLoading = false.obs;
 
   /// On init
   @override
@@ -25,9 +37,10 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
       },
     );
     super.onInit();
-    if(Get.arguments != null) {
+    if (Get.arguments != null) {
       user.value = Get.arguments['user'] as MdUserSelfie;
     }
+    getUser();
   }
 
   /// On close
@@ -98,4 +111,70 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
       subtitle: 'The reason why she won goes here!',
     ),
   ];
+
+  /// Get User
+  Future<void> getUser() async {
+    try {
+      isLoading(true);
+      final MdProfile? _user = await ProfileApiRepo.getUser();
+      if (_user != null) {
+        log('User fetched: ${_user.toJson()}');
+        profile(_user);
+      }
+    } catch (e, st) {
+      logE('Error getting user: $e');
+      logE(st);
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  /// Update User
+  Future<void> updateUser({
+    required String profilePic,
+    required String username,
+  }) async {
+    try {
+      isEditing(true);
+      final MdProfile? _user = await ProfileApiRepo.updateUser(
+        profilePic: profilePic,
+        username: username,
+      );
+      if (_user != null) {
+        await getUser();
+        appSnackbar(
+          message: 'Profile updated successfully',
+          snackbarState: SnackbarState.success,
+        );
+      }
+    } catch (e, st) {
+      logE('Error getting user: $e');
+      logE(st);
+    } finally {
+      isEditing(false);
+    }
+  }
+
+  /// Upload File
+  Future<void> uploadFile({
+    required File pickedImage,
+    required String folder,
+  }) async {
+    try {
+      isEditing(true);
+      final String? _uploadedUrl =
+          await APIService.uploadFile(file: pickedImage, folder: folder);
+      if (_uploadedUrl != null) {
+        await updateUser(
+          profilePic: _uploadedUrl ?? '',
+          username: profile()?.user?.username ?? '',
+        );
+      }
+    } catch (e, st) {
+      logE('Error getting upload file: $e');
+      logE(st);
+    } finally {
+      isEditing(false);
+    }
+  }
 }

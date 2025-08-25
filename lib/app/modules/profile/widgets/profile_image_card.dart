@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
+import 'package:fvf_flutter/app/data/remote/api_service/init_api_service.dart';
 import 'package:fvf_flutter/app/modules/profile/controllers/profile_controller.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -25,6 +26,7 @@ class ProfileImageCard extends GetView<ProfileController> {
 
   @override
   Widget build(BuildContext context) {
+    logI(controller.profile()?.user?.username);
     final bool hasAsset = controller.user().assetImage != null &&
         controller.user().assetImage!.isNotEmpty;
     return IgnorePointer(
@@ -35,6 +37,10 @@ class ProfileImageCard extends GetView<ProfileController> {
               await controller.pickImage(source: ImageSource.gallery);
           if (pickedImage != null) {
             controller.image(pickedImage);
+            await controller.uploadFile(
+              pickedImage: pickedImage,
+              folder: 'profile',
+            );
             logI('Done');
           }
         },

@@ -13,6 +13,9 @@ class AiChoosingController extends GetxController {
   /// PageController for the PageView
   late PageController pageController;
 
+  /// Current page index
+  RxInt currentIndex = 0.obs;
+
   /// Timer for auto-scrolling
   Timer? timer;
 
@@ -35,10 +38,7 @@ class AiChoosingController extends GetxController {
           participants.value = _participants;
           participants.refresh();
 
-          pageController = PageController(
-            viewportFraction: 0.55,
-            initialPage: 1000,
-          );
+          pageController = PageController(initialPage: currentIndex());
 
           timer = Timer.periodic(
             const Duration(seconds: 2),

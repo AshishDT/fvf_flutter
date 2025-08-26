@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -10,9 +11,9 @@ import 'package:fvf_flutter/app/ui/components/common_app_bar.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
+
 import '../../snap_selfies/widgets/selfie_avatar.dart';
 import '../controllers/ai_choosing_controller.dart';
-import '../widgets/ai_choosing_avatar.dart';
 
 /// AiChoosingView
 class AiChoosingView extends GetView<AiChoosingController> {
@@ -22,127 +23,142 @@ class AiChoosingView extends GetView<AiChoosingController> {
   @override
   Widget build(BuildContext context) => Scaffold(
         backgroundColor: AppColors.kF5FCFF,
-        body: GradientCard(
-          child: SafeArea(
-            child: AnimatedListView(
-              children: <Widget>[
-                CommonAppBar(
-                  leadingIcon: AppImages.closeIconWhite,
-                  actions: <Widget>[
-                    GestureDetector(
-                      onTap: () {},
-                      child: SvgPicture.asset(
-                        AppImages.shareIcon,
-                        width: 24.w,
-                        height: 24.h,
-                        colorFilter: const ColorFilter.mode(
-                          AppColors.kffffff,
-                          BlendMode.srcIn,
+        body: Stack(
+          children: <Widget>[
+            GradientCard(
+              height: 1.sh,
+              width: 1.sw,
+              child: const SizedBox.shrink(),
+            ),
+            SizedBox(
+              height: 1.sh,
+              width: 1.sw,
+              child: PageView.builder(
+                controller: controller.pageController,
+                onPageChanged: (int index) {
+                  controller.currentIndex(index);
+                },
+                itemBuilder: (BuildContext context, int index) {
+                  if (controller.participants().isEmpty) {
+                    return const SizedBox();
+                  }
+
+                  final int realIndex =
+                      index % controller.participants().length;
+                  final MdParticipant participant =
+                  controller.participants()[realIndex];
+
+                  return AnimatedOpacity(
+                    duration: 300.milliseconds,
+                    opacity: 0.36,
+                    child: CachedNetworkImage(
+                      imageUrl: participant.selfieUrl!,
+                      width: 1.sw,
+                      height: 1.sh,
+                      fit: BoxFit.cover,
+                      placeholder: (_, __) => const Center(
+                          child: CircularProgressIndicator(strokeWidth: 2)),
+                      errorWidget: (_, __, ___) => const Center(
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            SafeArea(
+              child: AnimatedListView(
+                children: <Widget>[
+                  CommonAppBar(
+                    leadingIcon: AppImages.closeIconWhite,
+                    actions: <Widget>[
+                      GestureDetector(
+                        onTap: () {},
+                        child: SvgPicture.asset(
+                          AppImages.shareIcon,
+                          width: 24.w,
+                          height: 24.h,
+                          colorFilter: const ColorFilter.mode(
+                            AppColors.kffffff,
+                            BlendMode.srcIn,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ).paddingSymmetric(horizontal: 24),
+                  64.verticalSpace,
+                  Center(
+                    child: Text(
+                      'AI Choosing...',
+                      style: AppTextStyle.openRunde(
+                        fontSize: 40.sp,
+                        color: AppColors.kffffff,
+                        fontWeight: FontWeight.w700,
+                        height: 1,
+                      ),
+                    ),
+                  ).paddingSymmetric(horizontal: 24),
+                  24.verticalSpace,
+                  Center(
+                    child: Text(
+                      'Most likely to Start an OF?',
+                      style: AppTextStyle.openRunde(
+                        fontSize: 24.sp,
+                        color: AppColors.kF6FCFE,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ).paddingSymmetric(horizontal: 24),
+                  24.verticalSpace,
+                  Center(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight: 120.w,
+                      ),
+                      child: Obx(
+                            () => AutoSizeText(
+                          controller.bet(),
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 20,
+                          style: AppTextStyle.openRunde(
+                            fontSize: 24.sp,
+                            color: AppColors.kFAFBFB,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ),
-                  ],
-                ).paddingSymmetric(horizontal: 24),
-                64.verticalSpace,
-                Center(
-                  child: Text(
-                    'AI Choosing...',
-                    style: AppTextStyle.openRunde(
-                      fontSize: 40.sp,
-                      color: AppColors.kffffff,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ).paddingSymmetric(horizontal: 24),
-                24.verticalSpace,
-                Center(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxHeight: 120.w,
-                    ),
-                    child: Obx(
-                      () => AutoSizeText(
-                        controller.bet(),
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 20,
-                        style: AppTextStyle.openRunde(
-                          fontSize: 24.sp,
-                          color: AppColors.kFAFBFB,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                ).paddingSymmetric(horizontal: 24),
-                61.verticalSpace,
-                SizedBox(
-                  height: 200.h,
-                  child: PageView.builder(
-                    controller: controller.pageController,
-                    itemBuilder: (BuildContext context, int index) {
-                      if (controller.participants().isEmpty) {
-                        return const SizedBox();
-                      }
-
-                      final int realIndex =
-                          index % controller.participants().length;
-                      final MdParticipant participant =
-                          controller.participants()[realIndex];
-
-                      return AnimatedBuilder(
-                        animation: controller.pageController,
-                        builder: (BuildContext context, Widget? child) {
-                          double value = 1;
-                          if (controller
-                              .pageController.position.haveDimensions) {
-                            value =
-                                (controller.pageController.page! - index).abs();
-                            value = (1 - (value * 0.3)).clamp(0.0, 1.0);
-                          }
-
-                          final bool isCenter =
-                              controller.pageController.page?.round() == index;
-
-                          return AnimatedOpacity(
-                            opacity: isCenter ? 1 : 0.32,
-                            duration: 300.milliseconds,
-                            child: Center(
-                              child: Transform.scale(
-                                scale: Curves.easeOut.transform(value),
-                                child: AiChoosingAvatar(
-                                  participant: participant,
-                                  showBorders: isCenter,
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ),
-                68.verticalSpace,
-                Align(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Obx(
-                      () => Row(
+                  ).paddingSymmetric(horizontal: 24),
+                ],
+              ),
+            ),
+            Positioned(
+              bottom: 58.h,
+              child: Align(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Obx(
+                    () => Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          ...controller.participants().map(
-                                (MdParticipant participant) => SelfieAvatar(
-                                  participant: participant,
-                                ).paddingOnly(right: 32),
-                              ),
+                          ...controller.participants().asMap().entries.map(
+                            (MapEntry<int, MdParticipant> entry) {
+                              final int index = entry.key;
+                              final MdParticipant participant = entry.value;
+                              return SelfieAvatar(
+                                participant: participant,
+                                showBorder:  controller.currentIndex() % controller.participants().length == index,
+                              ).paddingOnly(right: 32);
+                            },
+                          ),
                         ],
                       ),
-                    ),
-                  ).paddingOnly(left: 24),
-                ),
-              ],
+                  ),
+                ).paddingOnly(left: 24),
+              ),
             ),
-          ),
+          ],
         ),
       );
 

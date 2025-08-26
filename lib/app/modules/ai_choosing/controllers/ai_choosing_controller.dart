@@ -1,15 +1,32 @@
 import 'dart:async';
-import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:fvf_flutter/app/data/config/logger.dart';
+import 'package:fvf_flutter/app/modules/ai_choosing/enums/round_status_enum.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:get/get.dart';
-import '../../../data/config/env_config.dart';
+import '../../../data/remote/socket_io_repo.dart';
 import '../../../routes/app_pages.dart';
-import '../repositories/socket_io_results.dart';
+import '../models/md_ai_result.dart';
 
 /// AiChoosingController
 class AiChoosingController extends GetxController {
+  @override
+  void onInit() {
+    super.onInit();
+
+    _onInit();
+  }
+
+  @override
+  void onClose() {
+    timer?.cancel();
+    pageController.dispose();
+    resultsRepo.dispose();
+    super.onClose();
+  }
+
+  /// Socket.IO repository instance
+  final SocketIoRepo resultsRepo = SocketIoRepo();
+
   /// PageController for the PageView
   late PageController pageController;
 
@@ -25,10 +42,11 @@ class AiChoosingController extends GetxController {
   /// Observable for bet text
   RxString bet = ''.obs;
 
-  @override
-  void onInit() {
-    super.onInit();
+  /// Observable for AI failure state
+  RxBool isAiFailed = false.obs;
 
+  /// On init
+  void _onInit() {
     if (Get.arguments != null) {
       if (Get.arguments['participants'] != null) {
         final List<MdParticipant> _participants =
@@ -52,37 +70,6 @@ class AiChoosingController extends GetxController {
             },
           );
         }
-
-        Future<void>.delayed(
-          const Duration(seconds: 10),
-          () {
-            if (participants.isEmpty) {
-              return;
-            }
-
-            final Random random = Random();
-            final MdParticipant winner =
-                participants[random.nextInt(participants().length)];
-
-            int rankCounter = 2;
-            for (final MdParticipant participant in participants()) {
-              if (participant.id == winner.id) {
-                participant.rank = 1;
-              } else {
-                participant.rank = rankCounter;
-                rankCounter++;
-              }
-            }
-
-            Get.toNamed(
-              Routes.WINNER,
-              arguments: <String, dynamic>{
-                'participants': <MdParticipant>[...participants()],
-                'bet': bet.value,
-              },
-            );
-          },
-        );
       }
 
       if (Get.arguments['bet'] != null) {
@@ -90,24 +77,42 @@ class AiChoosingController extends GetxController {
         bet.refresh();
       }
 
-      resultsRepo
-        ..initSocket(url: EnvConfig.socketUrl)
-        ..listenForRoundProcess(
-          (dynamic data) {
-            logI('🎯 Round process update: $data');
-          },
-        );
+      resultsRepo.listenForRoundProcess(
+        (dynamic data) {
+          _onResults(data);
+        },
+      );
     }
   }
 
-  @override
-  void onClose() {
-    timer?.cancel();
-    pageController.dispose();
-    resultsRepo.dispose();
-    super.onClose();
-  }
+  /// Observable for result data
+  Rx<MdAiResultData> resultData = MdAiResultData().obs;
 
-  /// Socket.IO repository instance
-  final SocketIoResultsRepo resultsRepo = SocketIoResultsRepo();
+  /// On results received
+  void _onResults(dynamic data) {
+    final Map<String, dynamic> raw = data as Map<String, dynamic>;
+    final MdAiResultData resultData =
+        MdAiResultData.fromJson(raw['data'] as Map<String, dynamic>);
+
+    this.resultData.value = resultData;
+    this.resultData.refresh();
+
+    final bool isComplete = resultData.status == RoundStatus.completed;
+
+    final bool isFailed = resultData.status == RoundStatus.failed;
+
+    if (isComplete) {
+      Get.toNamed(
+        Routes.WINNER,
+        arguments: resultData,
+      );
+      return;
+    }
+
+    if (isFailed) {
+      isAiFailed(true);
+      isAiFailed.refresh();
+      return;
+    }
+  }
 }

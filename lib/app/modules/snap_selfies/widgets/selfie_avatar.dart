@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
-import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:get/get.dart';
 
 /// Selfie Avatar widget
@@ -100,8 +99,8 @@ class SelfieAvatar extends StatelessWidget {
           if (showBorder)
             AnimatedContainer(
               duration: 300.milliseconds,
-              width: size.w + 4,
-              height: size.h + 4,
+              width: size.w + 4.w,
+              height: size.h + 4.w,
               padding: REdgeInsets.all(2),
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,

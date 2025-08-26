@@ -152,11 +152,16 @@ class PickCrewController extends GetxController {
   /// Handle what happens when timer finishes
   void _handleTimeUp() {
     if (Get.currentRoute == Routes.PICK_CREW) {
-      Get.back();
-      appSnackbar(
-        message: 'Time is up! Please start again.',
-        snackbarState: SnackbarState.danger,
-      );
+      Get
+        ..back()
+        ..toNamed(
+          Routes.FAILED_ROUND,
+          arguments: <String, dynamic>{
+            'reason': 'Only you joined..',
+            'round': round(),
+            'sub_reason': 'Go again with your friends',
+          },
+        );
     }
   }
 }

@@ -2,5 +2,6 @@
   "env": "prod",
   "base_url": "http://173.249.10.82:7800/",
   "supabase_anon_key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNheGJxcmdjdGNlaHBibnJ2d3RiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU4NDQ5NDQsImV4cCI6MjA3MTQyMDk0NH0.jZZmw-m_MKJLUS728DHqZsvkvBMiVpWRdxQ3cF5cjcA",
-  "supabase_url": "https://caxbqrgctcehpbnrvwtb.supabase.co"
+  "supabase_url": "https://caxbqrgctcehpbnrvwtb.supabase.co",
+  "socket_url": "http://173.249.10.82:7800"
 }

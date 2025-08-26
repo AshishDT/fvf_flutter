@@ -1,9 +1,12 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:fvf_flutter/app/data/config/env_config.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
+import 'package:fvf_flutter/app/modules/create_bet/models/md_round.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
@@ -29,7 +32,7 @@ class SnapSelfiesController extends GetxController {
     }
 
     socketIoRepo
-      ..initSocket(url: 'http://192.168.29.28:7800')
+      ..initSocket(url: EnvConfig.socketUrl)
       ..listenForDateEvent(
         (dynamic data) {
           log('🎯 Controller got update: $data');
@@ -169,16 +172,50 @@ class SnapSelfiesController extends GetxController {
 
   /// Handles what happens when timer finishes
   void _handleTimeUp() {
-    if (participants().isNotEmpty && participants().length >= 3) {
+    final List<MdParticipant> participantsWithSelfies = participants()
+        .where((MdParticipant participant) =>
+            participant.selfieUrl != null && participant.selfieUrl!.isNotEmpty)
+        .toList();
+
+    final bool canStartRound = participantsWithSelfies.isNotEmpty &&
+        participantsWithSelfies.length >= 2;
+
+    if (canStartRound) {
       isTimesUp(true);
       onLetGo();
     } else {
-      Get.back();
-      appSnackbar(
-        message: 'Time is up! Please start again.',
-        snackbarState: SnackbarState.danger,
-      );
+      _fallBackToStartAgain();
     }
+  }
+
+  /// Fallback to start again
+  void _fallBackToStartAgain() {
+    Get
+      ..until(
+        (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
+      )
+      ..toNamed(
+        Routes.FAILED_ROUND,
+        arguments: <String, dynamic>{
+          'reason': 'Not enough selfies taken to start the round!',
+          'round': MdRound(
+            createdAt:
+                DateTime.tryParse(joinedInvitationData().createdAt ?? ''),
+            isActive: joinedInvitationData().isActive,
+            isDeleted: joinedInvitationData().isDeleted,
+            status: joinedInvitationData().status,
+            participants: <MdParticipant>[],
+            isCustomPrompt: joinedInvitationData().isCustomPrompt,
+            updatedAt:
+                DateTime.tryParse(joinedInvitationData().updatedAt ?? ''),
+            host: joinedInvitationData().host,
+            id: joinedInvitationData().id,
+            prompt: joinedInvitationData().prompt,
+            roundJoinedEndAt: joinedInvitationData().roundJoinedEndAt,
+          ),
+          'sub_reason': ' Please ask your friends to join again.',
+        },
+      );
   }
 
   /// Stops the timer

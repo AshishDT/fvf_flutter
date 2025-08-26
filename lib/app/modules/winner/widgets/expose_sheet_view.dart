@@ -166,7 +166,7 @@ class ExposeSheetView extends GetView<WinnerController> {
                       Get.toNamed(
                         Routes.PREMIUM_WINNER,
                         arguments: <String, dynamic>{
-                          'selfies': controller.selfies(),
+                          'participants': controller.participants(),
                           'bet': controller.bet(),
                         },
                       );
@@ -205,7 +205,7 @@ class ExposeSheetView extends GetView<WinnerController> {
                       Get.toNamed(
                         Routes.PREMIUM_WINNER,
                         arguments: <String, dynamic>{
-                          'selfies': controller.selfies(),
+                          'participants': controller.participants(),
                           'bet': controller.bet(),
                         },
                       );

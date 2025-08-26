@@ -57,7 +57,7 @@ class SocketIoRepo {
 
   /// Start auto-emitting every 5 seconds
   void startAutoEmit(Map<String, dynamic> payload) {
-    stopAutoEmit(); // prevent duplicates
+    stopAutoEmit();
     logI('⏱️ Starting auto emit every 5 seconds with payload: $payload');
 
     _emitTimer = Timer.periodic(const Duration(seconds: 5), (_) {

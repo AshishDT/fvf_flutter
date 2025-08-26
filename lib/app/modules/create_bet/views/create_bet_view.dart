@@ -79,6 +79,7 @@ class CreateBetView extends GetView<CreateBetController> {
                               padding: REdgeInsets.only(bottom: 16.h),
                               child: Obx(
                                 () => DiceRoller(
+                                  isLoading: controller.isLoading(),
                                   rollTrigger: controller.rollCounter(),
                                   onTap: controller.rollDice,
                                 ),
@@ -151,29 +152,12 @@ class CreateBetView extends GetView<CreateBetController> {
               )
             : AnimatedSwitcher(
                 duration: const Duration(milliseconds: 400),
-                transitionBuilder: (Widget child, Animation<double> animation) {
-                  final Animation<Offset> inAnimation = Tween<Offset>(
-                    begin: const Offset(0, 1),
-                    end: Offset.zero,
-                  ).animate(animation);
-
-                  final Animation<Offset> outAnimation = Tween<Offset>(
-                    begin: Offset.zero,
-                    end: const Offset(0, -1),
-                  ).animate(animation);
-
-                  return ClipRect(
-                    child: SlideTransition(
-                      position: child.key == ValueKey<String>(controller.bet())
-                          ? inAnimation
-                          : outAnimation,
-                      child: FadeTransition(
-                        opacity: animation,
-                        child: child,
-                      ),
-                    ),
-                  );
-                },
+                transitionBuilder:
+                    (Widget child, Animation<double> animation) =>
+                        FadeTransition(
+                  opacity: animation,
+                  child: child,
+                ),
                 child: AutoSizeText(
                   controller.bet(),
                   key: ValueKey<String>(controller.bet()),

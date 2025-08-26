@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import '../models/md_user_selfie.dart';
+import 'package:fvf_flutter/app/data/config/app_images.dart';
+import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 
 /// Selfie Avatar widget
 class SelfieAvatar extends StatelessWidget {
   /// Constructor for SelfieAvatar
   const SelfieAvatar({
-    required this.user,
+    required this.participant,
     super.key,
     this.size = 56,
   });
 
   /// SelfieAvatar constructor
-  final MdUserSelfie user;
+  final MdParticipant participant;
 
   /// Size of the avatar
   final double size;
@@ -31,36 +31,22 @@ class SelfieAvatar extends StatelessWidget {
       const Color(0xFF7C70F9),
     ];
 
-    final int hash = user.id.hashCode;
+    final int hash = participant.userData?.supabaseId?.hashCode ?? 0;
     final int index = hash % _avatarColors.length;
     return _avatarColors[index];
-  }
-
-  /// get initials
-  String get _initials {
-    if (user.displayName == null || user.displayName!.isEmpty) {
-      return '?';
-    }
-    final List<String> parts = user.displayName!.trim().split(' ');
-    if (parts.length == 1) {
-      return parts.first[0].toUpperCase();
-    }
-    return (parts[0][0] + parts[1][0]).toUpperCase();
   }
 
   @override
   Widget build(BuildContext context) {
     final bool hasNetworkImage =
-        user.selfieUrl != null && user.selfieUrl!.isNotEmpty;
-    final bool hasAsset =
-        user.assetImage != null && user.assetImage!.isNotEmpty;
+        participant.selfieUrl != null && participant.selfieUrl!.isNotEmpty;
 
     Widget avatarContent;
 
     if (hasNetworkImage) {
       avatarContent = ClipOval(
         child: CachedNetworkImage(
-          imageUrl: user.selfieUrl!,
+          imageUrl: participant.selfieUrl!,
           width: size.w,
           height: size.h,
           fit: BoxFit.cover,
@@ -72,10 +58,10 @@ class SelfieAvatar extends StatelessWidget {
           ),
         ),
       );
-    } else if (hasAsset) {
+    } else if (participant.isCurrentUser) {
       avatarContent = ClipOval(
         child: Image.asset(
-          user.assetImage!,
+          AppImages.youProfile,
           width: size.w,
           height: size.h,
           fit: BoxFit.cover,
@@ -92,36 +78,37 @@ class SelfieAvatar extends StatelessWidget {
           ),
         ),
         child: Center(
-          child: Text(
-            _initials,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w600,
-            ),
+          child: CircularProgressIndicator(
+            strokeWidth: 2.w,
+            color: Colors.white,
           ),
         ),
       );
     }
 
     return Opacity(
-      opacity: user.isWaiting ? 0.66 : 1.0,
+      opacity: 1,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           SizedBox(width: size.w, height: size.h, child: avatarContent),
           2.verticalSpace,
-          if (user.displayName != null && user.displayName!.isNotEmpty)
-            Text(
-              user.displayName!.split(' ').first,
-              style: TextStyle(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w500,
-                color: Colors.white,
-              ),
+          Text(
+            participant.isCurrentUser ? 'You' : _userName(),
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w500,
+              color: Colors.white,
             ),
+          ),
         ],
       ),
     );
   }
+
+  /// User name
+  String _userName() => participant.userData?.username != null &&
+          (participant.userData?.username?.isNotEmpty ?? false)
+      ? participant.userData?.username?.split(' ').first ?? ''
+      : '';
 }

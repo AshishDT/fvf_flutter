@@ -4,13 +4,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
+import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/ui/components/animated_list_view.dart';
 import 'package:fvf_flutter/app/ui/components/common_app_bar.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
-
-import '../../snap_selfies/models/md_user_selfie.dart';
 import '../../snap_selfies/widgets/selfie_avatar.dart';
 import '../controllers/ai_choosing_controller.dart';
 import '../widgets/ai_choosing_avatar.dart';
@@ -82,12 +81,14 @@ class AiChoosingView extends GetView<AiChoosingController> {
                   child: PageView.builder(
                     controller: controller.pageController,
                     itemBuilder: (BuildContext context, int index) {
-                      if (controller.selfies.isEmpty) {
+                      if (controller.participants().isEmpty) {
                         return const SizedBox();
                       }
 
-                      final int realIndex = index % controller.selfies.length;
-                      final MdUserSelfie selfie = controller.selfies[realIndex];
+                      final int realIndex =
+                          index % controller.participants().length;
+                      final MdParticipant participant =
+                          controller.participants()[realIndex];
 
                       return AnimatedBuilder(
                         animation: controller.pageController,
@@ -110,7 +111,7 @@ class AiChoosingView extends GetView<AiChoosingController> {
                               child: Transform.scale(
                                 scale: Curves.easeOut.transform(value),
                                 child: AiChoosingAvatar(
-                                  user: selfie,
+                                  participant: participant,
                                   showBorders: isCenter,
                                 ),
                               ),
@@ -122,18 +123,23 @@ class AiChoosingView extends GetView<AiChoosingController> {
                   ),
                 ),
                 68.verticalSpace,
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: <Widget>[
-                      ...controller.selfies.map(
-                        (MdUserSelfie user) => SelfieAvatar(
-                          user: user,
-                        ).paddingOnly(right: 32),
+                Align(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Obx(
+                      () => Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          ...controller.participants().map(
+                                (MdParticipant participant) => SelfieAvatar(
+                                  participant: participant,
+                                ).paddingOnly(right: 32),
+                              ),
+                        ],
                       ),
-                    ],
-                  ),
-                ).paddingOnly(left: 24),
+                    ),
+                  ).paddingOnly(left: 24),
+                ),
               ],
             ),
           ),

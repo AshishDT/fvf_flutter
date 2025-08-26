@@ -3,25 +3,24 @@ import '../../../data/models/api_reponse.dart';
 import '../../../data/remote/api_service/api_wrapper.dart';
 import '../../../data/remote/api_service/init_api_service.dart';
 import '../../../ui/components/app_snackbar.dart';
+import '../models/md_bet.dart';
 import '../models/md_round.dart';
 
 /// Create bet api repository
 class CreateBetApiRepo {
-  /// Get bets
-  static Future<List<String>?> getBets() async =>
-      APIWrapper.handleApiCall<List<String>?>(
+  /// Get question
+  static Future<MdBet?> getQuestion() async => APIWrapper.handleApiCall<MdBet?>(
         APIService.get<Map<String, dynamic>>(
-          path: 'round/questions',
+          path: 'question/weekly',
         ).then(
           (Response<Map<String, dynamic>>? response) {
             if (response?.isOk != true || response?.data == null) {
               return null;
             }
 
-            final ApiResponse<List<String>> data =
-                ApiResponse<List<String>>.fromJson(
+            final ApiResponse<MdBet> data = ApiResponse<MdBet>.fromJson(
               response!.data!,
-              fromJsonT: (dynamic json) => List<String>.from(json as List),
+              fromJsonT: (dynamic json) => MdBet.fromJson(json),
             );
 
             if (data.success ?? false) {

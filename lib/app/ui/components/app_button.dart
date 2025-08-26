@@ -58,7 +58,7 @@ class AppButton extends StatelessWidget {
     final double btnWidth = width ?? context.width;
 
     final Color bgColor =
-         buttonColor ?? AppColors.k2A2E2F.withValues(alpha: 0.42);
+        buttonColor ?? AppColors.k2A2E2F.withValues(alpha: 0.42);
 
     return GestureDetector(
       onTap: () {
@@ -83,26 +83,31 @@ class AppButton extends StatelessWidget {
             children: <Widget>[
               if (!isLoading) ...<Widget>[
                 Expanded(
-                  child: child ?? Center(
-                    child: Text(
-                      buttonText,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: style ??
-                          AppTextStyle.openRunde(
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.kffffff,
-                          ),
-                    ),
-                  ),
+                  child: child ??
+                      Center(
+                        child: Text(
+                          buttonText,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: style ??
+                              AppTextStyle.openRunde(
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.kffffff,
+                              ),
+                        ),
+                      ),
                 ),
               ],
               if (isLoading) ...<Widget>[
                 15.horizontalSpace,
-                const Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.kffffff,
+                Center(
+                  child: SizedBox(
+                    height: btnHeight - 30.h,
+                    width: btnHeight - 30.w,
+                    child: const CircularProgressIndicator(
+                      color: AppColors.kffffff,
+                    ),
                   ),
                 )
               ]

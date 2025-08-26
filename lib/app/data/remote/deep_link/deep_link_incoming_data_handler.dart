@@ -1,25 +1,42 @@
-import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
+import 'dart:async';
 
+import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
+import 'package:fvf_flutter/app/routes/app_pages.dart';
+import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
+import 'package:fvf_flutter/app/utils/app_loader.dart';
+import 'package:get/get.dart';
+import '../../../modules/pick_crew/repositories/pick_crew_api_repo.dart';
 import '../../config/logger.dart';
 import '../../models/md_deep_link_data.dart';
+import '../../models/md_join_invitation.dart';
+
+/// Observable to track if deep link is being handled
+RxString invitationId = ''.obs;
 
 /// Handle incoming data
 void handleDeepLinkIncomingData(Map<dynamic, dynamic> data) {
-  final bool isClickBranchLinkActive = data['+clicked_branch_link'] == true;
+  final MdDeepLinkData deepLinkData = MdDeepLinkData.fromJson(data);
 
-  if (isClickBranchLinkActive) {
-    final MdDeepLinkData deepLinkData = MdDeepLinkData.fromJson(data);
-
+  if (deepLinkData.clickedBranchLink == true) {
     switch (deepLinkData.canonicalIdentifier) {
       case 'slay_invite':
-        if (deepLinkData.invitationId != null &&
-            deepLinkData.invitationId!.isNotEmpty) {
-          appSnackbar(
-            message: 'Slay invite received: ${deepLinkData.invitationId}',
-            snackbarState: SnackbarState.success,
-          );
+        if (deepLinkData.invitationId?.isNotEmpty ?? false) {
+          if (SupaBaseService.isLoggedIn &&
+              SupaBaseService.currentUser != null) {
+            joinProjectInvitation(
+              deepLinkData.invitationId!,
+            );
+            invitationId('');
+          } else {
+            invitationId(deepLinkData.invitationId!);
+            appSnackbar(
+              message: 'Please log in to join the invitation.',
+              snackbarState: SnackbarState.info,
+            );
+          }
         }
         break;
+
       default:
         logW('Unknown active deep link canonicalIdentifier: $data');
         break;
@@ -40,12 +57,38 @@ void handleDeepLinkIncomingData(Map<dynamic, dynamic> data) {
         branchDomains.any((String domain) => nonBranchLink.contains(domain));
 
     if (isNonBranchLinkPresent && isBranchDomainInNonBranchLink) {
-      showLinkExpiredOrInvalidMessage();
+      logWTF('Expired or invalid deep link clicked: $data');
     }
   }
 }
 
-/// Helper method to show the user a message about the link status
-void showLinkExpiredOrInvalidMessage() {
-  // DialogHelper.onLinkExpires();
+/// Join project invitation
+Future<void> joinProjectInvitation(String invitationId) async {
+  Loader.show();
+
+  try {
+    final MdJoinInvitation? _joinedData = await PickCrewApiRepo.joinInvitation(
+      roundId: invitationId,
+    );
+
+    Loader.dismiss();
+
+    if (_joinedData != null) {
+      appSnackbar(
+        message: 'You have successfully joined the project!',
+        snackbarState: SnackbarState.success,
+      );
+
+      unawaited(
+        Get.toNamed(
+          Routes.SNAP_SELFIES,
+          arguments: _joinedData,
+        ),
+      );
+    }
+  } on Exception {
+    Loader.dismiss();
+  } finally {
+    Loader.dismiss();
+  }
 }

@@ -1,3 +1,7 @@
+import 'package:fvf_flutter/app/data/models/md_join_invitation.dart';
+
+import '../../../data/remote/supabse_service/supabse_service.dart';
+
 /// Participant Model
 class MdParticipant {
   /// Constructor
@@ -11,6 +15,9 @@ class MdParticipant {
     this.magicLink,
     this.isActive,
     this.isDeleted,
+    this.userData,
+    this.selfieUrl,
+    this.rank,
   });
 
   /// From JSON
@@ -24,6 +31,10 @@ class MdParticipant {
         magicLink: json['magic_link'],
         isActive: json['is_active'],
         isDeleted: json['is_deleted'],
+        selfieUrl: json['selfie_url'],
+        userData: json['user'] == null
+            ? null
+            : RoundHost.fromJson(json['user'] as Map<String, dynamic>),
       );
 
   /// Participant Id
@@ -53,6 +64,18 @@ class MdParticipant {
   /// Is deleted
   final bool? isDeleted;
 
+  /// Selfie URL
+  final String? selfieUrl;
+
+  /// User data
+  final RoundHost? userData;
+
+  /// Rank
+  int? rank;
+
+  /// Check if the participant is the current user
+  bool get isCurrentUser => userData?.supabaseId == SupaBaseService.userId;
+
   /// To JSON
   Map<String, dynamic> toJson() => <String, dynamic>{
         'id': id,
@@ -64,5 +87,7 @@ class MdParticipant {
         'magic_link': magicLink,
         'is_active': isActive,
         'is_deleted': isDeleted,
+        'selfie_url': selfieUrl,
+        'user': userData?.toJson(),
       };
 }

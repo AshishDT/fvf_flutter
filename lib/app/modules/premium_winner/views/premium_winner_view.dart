@@ -4,9 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
+import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/modules/premium_winner/widgets/rank_card.dart';
 import 'package:fvf_flutter/app/modules/premium_winner/widgets/winner_podium.dart';
-import 'package:fvf_flutter/app/modules/snap_selfies/models/md_user_selfie.dart';
 import 'package:fvf_flutter/app/modules/winner/models/emoji_model.dart';
 import 'package:fvf_flutter/app/ui/components/animated_list_view.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
@@ -76,18 +76,20 @@ class PremiumWinnerView extends GetView<PremiumWinnerController> {
                 24.verticalSpace,
                 Obx(
                   () {
-                    if (controller.selfies.isEmpty ||
+                    if (controller.participants.isEmpty ||
                         controller.pageController == null) {
                       return const SizedBox.shrink();
                     }
                     return WinnersPodiumPremiumView(
-                      rank1: controller.selfies[controller.currentRank()],
+                      rank1: controller.participants[controller.currentRank()],
                       rank2: controller.currentRank() > 0
-                          ? controller.selfies[controller.currentRank() - 1]
+                          ? controller
+                              .participants[controller.currentRank() - 1]
                           : null,
                       rank3: controller.currentRank() <
-                              controller.selfies.length - 1
-                          ? controller.selfies[controller.currentRank() + 1]
+                              controller.participants.length - 1
+                          ? controller
+                              .participants[controller.currentRank() + 1]
                           : null,
                     ).paddingSymmetric(horizontal: 94.w);
                   },
@@ -95,7 +97,7 @@ class PremiumWinnerView extends GetView<PremiumWinnerController> {
                 16.verticalSpace,
                 Obx(
                   () {
-                    if (controller.selfies.isEmpty ||
+                    if (controller.participants.isEmpty ||
                         controller.pageController == null) {
                       return const SizedBox.shrink();
                     }
@@ -105,13 +107,13 @@ class PremiumWinnerView extends GetView<PremiumWinnerController> {
                         children: <Widget>[
                           PageView.builder(
                             controller: controller.pageController,
-                            itemCount: controller.selfies().length,
+                            itemCount: controller.participants().length,
                             onPageChanged: (int i) => controller.currentRank(i),
                             itemBuilder: (BuildContext context, int index) {
-                              final MdUserSelfie selfie =
-                                  controller.selfies[index];
-                              final MdUserSelfie? rank1 =
-                                  controller.selfies[index];
+                              final MdParticipant selfie =
+                                  controller.participants[index];
+                              final MdParticipant? rank1 =
+                                  controller.participants[index];
                               return Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
@@ -120,7 +122,7 @@ class PremiumWinnerView extends GetView<PremiumWinnerController> {
                                   ),
                                   12.verticalSpace,
                                   Text(
-                                    rank1?.displayName ?? '',
+                                    rank1?.userData?.username ?? '',
                                     style: AppTextStyle.openRunde(
                                       fontSize: 32.sp,
                                       fontWeight: FontWeight.w600,
@@ -177,7 +179,7 @@ class PremiumWinnerView extends GetView<PremiumWinnerController> {
                           ),
                           Obx(
                             () => controller.currentRank() <
-                                    controller.selfies().length - 1
+                                    controller.participants().length - 1
                                 ? Positioned(
                                     right: 10.w,
                                     top: 36.w,
@@ -209,11 +211,11 @@ class PremiumWinnerView extends GetView<PremiumWinnerController> {
         () => Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: controller
-              .selfies()
+              .participants()
               .asMap()
               .entries
               .map(
-                (MapEntry<int, MdUserSelfie> e) => FittedBox(
+                (MapEntry<int, MdParticipant> e) => FittedBox(
                   child: AnimatedContainer(
                     duration: 300.milliseconds,
                     height: 8.w,

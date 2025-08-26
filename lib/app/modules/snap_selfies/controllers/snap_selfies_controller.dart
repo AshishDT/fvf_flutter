@@ -1,15 +1,18 @@
 import 'dart:async';
+import 'dart:developer';
+import 'dart:io';
 import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
-import 'package:fvf_flutter/app/modules/create_bet/models/md_round.dart';
-import 'package:fvf_flutter/app/modules/snap_selfies/models/md_user_selfie.dart';
+import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
-import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
-import '../../../data/config/app_images.dart';
-import 'dart:math';
-
+import '../../../data/models/md_join_invitation.dart';
+import '../../../data/remote/api_service/init_api_service.dart';
+import '../../../data/remote/deep_link/deep_link_service.dart';
+import '../../../ui/components/app_snackbar.dart';
+import '../models/md_socket_io_response.dart';
+import '../repositories/snap_selfie_api_repo.dart';
 import '../repositories/socket_io_repo.dart';
 
 /// Snap Selfies Controller
@@ -18,26 +21,31 @@ class SnapSelfiesController extends GetxController {
   @override
   void onInit() {
     if (Get.arguments != null) {
-      round.value = Get.arguments as MdRound;
-      round.refresh();
+      joinedInvitationData.value = Get.arguments as MdJoinInvitation;
+      joinedInvitationData.refresh();
+      participants.refresh();
+
+      startTimer();
     }
 
     socketIoRepo
       ..initSocket(url: 'http://192.168.29.28:7800')
       ..listenForDateEvent(
         (dynamic data) {
-          logI('🎯 Controller got update: $data');
-          dataList.add(data.toString());
+          log('🎯 Controller got update: $data');
+          log('Current user Id : ${SupaBaseService.userId}');
+          final MdSocketData updatedData = MdSocketData.fromJson(data);
+
+          socketIoDataParser(updatedData);
         },
       )
       ..startAutoEmit(
-        {
+        <String, dynamic>{
           'user_id': SupaBaseService.userId,
-          'round_id': round().id,
+          'round_id': joinedInvitationData().id,
         },
       );
 
-    setUsers();
     super.onInit();
   }
 
@@ -45,10 +53,8 @@ class SnapSelfiesController extends GetxController {
   void emitDate() {
     final Map<String, dynamic> payload = <String, dynamic>{
       'user_id': SupaBaseService.userId,
-      'round_id': round().id,
+      'round_id': joinedInvitationData().id,
     };
-
-    logI('👉 Calling emitDate() with payload: $payload');
     socketIoRepo.emitGetDate(payload);
   }
 
@@ -67,8 +73,31 @@ class SnapSelfiesController extends GetxController {
     super.onClose();
   }
 
-  /// Observable for bet text
-  Rx<MdRound> round = MdRound().obs;
+  /// Joined invitation data
+  Rx<MdJoinInvitation> joinedInvitationData = MdJoinInvitation().obs;
+
+  /// Check if current user is host
+  RxBool get isHost =>
+      (joinedInvitationData().host?.supabaseId == SupaBaseService.userId).obs;
+
+  /// Participants
+  RxList<MdParticipant> get participants {
+    final List<MdParticipant> list =
+        joinedInvitationData().participants ?? <MdParticipant>[]
+          ..sort(
+            (MdParticipant a, MdParticipant b) {
+              if (a.isCurrentUser) {
+                return -1;
+              }
+              if (b.isCurrentUser) {
+                return 1;
+              }
+              return 0;
+            },
+          );
+
+    return list.obs;
+  }
 
   /// Seconds left for the timer
   RxInt secondsLeft = 300.obs;
@@ -85,96 +114,71 @@ class SnapSelfiesController extends GetxController {
   /// Indicates if all selfies are taken
   RxBool isTimesUp = false.obs;
 
+  /// Submitting selfie
+  RxBool submittingSelfie = false.obs;
+
   /// Socket IO repository
   final SocketIoRepo socketIoRepo = SocketIoRepo();
 
-  /// List of data (for testing purposes)
-  final RxList<String> dataList = <String>[].obs;
-
-  /// List of selfies taken by the user
-  RxList<MdUserSelfie> selfies = <MdUserSelfie>[].obs;
-
   /// Get selfies
-  RxBool get isCurrentUserSelfieTaken => selfies()
-      .any((MdUserSelfie selfie) =>
-          selfie.id == 'current_user' && selfie.selfieUrl != null)
-      .obs;
+  RxBool get isCurrentUserSelfieTaken {
+    final MdParticipant? currentUser = participants().firstWhereOrNull(
+        (MdParticipant participant) => participant.isCurrentUser);
 
-  /// Set users
-  Future<void> setUsers() async {
-    startTimer();
-
-    selfies
-      ..clear()
-      ..add(
-        MdUserSelfie(
-          id: 'current_user',
-          displayName: 'You',
-          userId: 'current_user',
-          assetImage: AppImages.youProfile,
-          createdAt: DateTime.now(),
-        ),
-      )
-      ..refresh();
-
-    final List<String> picsumUrls = <String>[
-      'https://picsum.photos/id/237/200/300',
-      'https://picsum.photos/seed/picsum/200/300',
-      'https://picsum.photos/200/300?grayscale',
-      'https://picsum.photos/200',
-      'https://picsum.photos/200/300',
-    ];
-
-    final Random random = Random();
-
-    for (int i = 0; i < 10; i++) {
-      Timer(
-        Duration(seconds: 5 * (i + 1)),
-        () {
-          final String imageUrl = picsumUrls[random.nextInt(picsumUrls.length)];
-
-          selfies
-            ..add(
-              MdUserSelfie(
-                id: 'user_${DateTime.now().millisecondsSinceEpoch}',
-                displayName: 'User_${random.nextInt(10000)}',
-                userId: 'user_${i + 1}',
-                selfieUrl: imageUrl,
-                createdAt: DateTime.now(),
-              ),
-            )
-            ..refresh();
-
-          logI('Added selfie $i -> $imageUrl');
-        },
-      );
+    if (currentUser == null) {
+      return false.obs;
     }
+
+    return (currentUser.selfieUrl != null && currentUser.selfieUrl!.isNotEmpty)
+        .obs;
   }
 
-  /// Starts the timer for 5 minutes (300 seconds)
+  /// Starts the timer from `roundJoinedEndAt`
   void startTimer() {
     _timer?.cancel();
-    secondsLeft.value = 300;
+
+    final DateTime? endTime = joinedInvitationData().roundJoinedEndAt;
+
+    if (endTime == null) {
+      secondsLeft.value = 300;
+    } else {
+      final DateTime localEndTime = endTime.toLocal();
+      final int diffInSeconds =
+          localEndTime.difference(DateTime.now()).inSeconds;
+
+      if (diffInSeconds <= 0) {
+        _handleTimeUp();
+        return;
+      }
+
+      secondsLeft.value = diffInSeconds;
+    }
+
     _timer = Timer.periodic(
       const Duration(seconds: 1),
       (Timer timer) {
         if (secondsLeft.value > 0) {
           secondsLeft.value--;
         } else {
-          if (selfies().isNotEmpty && selfies().length > 3) {
-            isTimesUp(true);
-          } else {
-            Get.back();
-            appSnackbar(
-              message: 'Time is up! Please start again.',
-              snackbarState: SnackbarState.danger,
-            );
-          }
-
+          _handleTimeUp();
           timer.cancel();
         }
       },
     );
+  }
+
+  /// Handles what happens when timer finishes
+  void _handleTimeUp() {
+    if (participants().isNotEmpty && participants().length >= 3) {
+      isTimesUp(true);
+      onLetGo();
+    } else {
+      Get.back();
+      appSnackbar(
+        message: 'Time is up! Please start again.',
+        snackbarState: SnackbarState.danger,
+      );
+    }
   }
 
   /// Stops the timer
@@ -211,17 +215,7 @@ class SnapSelfiesController extends GetxController {
     )?.then(
       (dynamic result) {
         if (result != null && result is XFile) {
-          final MdUserSelfie? currentUser = selfies().firstWhereOrNull(
-            (MdUserSelfie selfie) => selfie.id == 'current_user',
-          );
-          if (currentUser != null) {
-            currentUser
-              ..selfieUrl = 'https://picsum.photos/seed/picsum/200/300'
-              ..assetImage = null;
-            selfies.refresh();
-          }
-
-          setUpTextTimer();
+          submitSelfie(File(result.path));
         }
       },
     );
@@ -229,30 +223,114 @@ class SnapSelfiesController extends GetxController {
 
   /// On let go action
   void onLetGo() {
-    final List<MdUserSelfie> _selfies = selfies()
-        .where((MdUserSelfie selfie) =>
-            selfie.selfieUrl != null && selfie.selfieUrl!.isNotEmpty)
+    final List<MdParticipant> _participants = participants()
+        .where((MdParticipant participant) =>
+            participant.selfieUrl != null && participant.selfieUrl!.isNotEmpty)
         .toList();
 
     Get.toNamed(
       Routes.AI_CHOOSING,
       arguments: <String, dynamic>{
-        'selfies': _selfies,
-        'bet': round().prompt ?? '',
+        'participants': _participants,
+        'bet': joinedInvitationData().prompt ?? '',
       },
     );
   }
 
   /// Share uri
-  void shareUri() {
-    final Uri uri = Uri.parse('https://example.com/some-page');
+  Future<void> shareUri() async {
+    try {
+      final String? _invitationLink =
+          await DeepLinkService.generateSlayInviteLink(
+        title: joinedInvitationData().prompt ?? '',
+        invitationId: joinedInvitationData().id ?? '',
+      );
 
-    SharePlus.instance.share(
-      ShareParams(
-        uri: uri,
-        title: 'Slay Crew',
-        subject: 'Slay Crew Invitation',
-      ),
-    );
+      if (_invitationLink == null || _invitationLink.isEmpty) {
+        appSnackbar(
+          message: 'Failed to generate invitation link. Please try again.',
+          snackbarState: SnackbarState.danger,
+        );
+        return;
+      }
+
+      final Uri uri = Uri.parse(_invitationLink);
+
+      unawaited(
+        SharePlus.instance.share(
+          ShareParams(
+            uri: uri,
+            title: 'Slay',
+            subject: 'Slay Invitation',
+          ),
+        ),
+      );
+    } on Exception {
+      logE('Error sharing invitation link');
+    }
+  }
+
+  /// Socket IO data parser
+  void socketIoDataParser(MdSocketData updatedData) {
+    if (updatedData.round?.participants != null &&
+        (updatedData.round?.participants?.isNotEmpty ?? false)) {
+      joinedInvitationData().participants = updatedData.round?.participants;
+      joinedInvitationData.refresh();
+      participants.refresh();
+    }
+  }
+
+  /// Upload selfie
+  Future<String?> uploadSelfie({
+    required File pickedImage,
+    required String folder,
+  }) async {
+    try {
+      final String? _imagePath =
+          await APIService.uploadFile(file: pickedImage, folder: folder);
+      if (_imagePath != null) {
+        return _imagePath;
+      }
+
+      return null;
+    } on Exception catch (e) {
+      logE('Error getting upload file: $e');
+      return null;
+    }
+  }
+
+  /// Submit selfie
+  Future<void> submitSelfie(File file) async {
+    submittingSelfie(true);
+    try {
+      final String? _fileName =
+          await uploadSelfie(pickedImage: file, folder: 'selfie');
+
+      logWTF('Uploaded file name: $_fileName');
+
+      if (_fileName == null || _fileName.isEmpty) {
+        appSnackbar(
+          message: 'Failed to upload selfie. Please try again.',
+          snackbarState: SnackbarState.danger,
+        );
+        return;
+      }
+
+      final bool? isSuccess = await SnapSelfieApiRepo.submitSelfie(
+        roundId: joinedInvitationData().id ?? '',
+        fileName: _fileName,
+      );
+
+      if (isSuccess == true) {
+        emitDate();
+        setUpTextTimer();
+        appSnackbar(
+          message: 'Selfie submitted successfully!',
+          snackbarState: SnackbarState.success,
+        );
+      }
+    } finally {
+      submittingSelfie(false);
+    }
   }
 }

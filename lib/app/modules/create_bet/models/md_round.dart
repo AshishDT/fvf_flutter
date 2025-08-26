@@ -1,3 +1,4 @@
+import '../../../data/models/md_join_invitation.dart';
 import 'md_participant.dart';
 
 /// To parse this JSON data, do
@@ -87,26 +88,6 @@ class MdRound {
         'updatedAt': updatedAt?.toIso8601String(),
         'is_active': isActive,
         'is_deleted': isDeleted,
-      };
-}
-
-/// Round host model
-class RoundHost {
-  /// Round host model
-  RoundHost({
-    this.id,
-  });
-
-  /// From json
-  factory RoundHost.fromJson(Map<String, dynamic> json) => RoundHost(
-        id: json['id'],
-      );
-
-  /// user id
-  String? id;
-
-  /// To json
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'id': id,
+        'participants': participants?.map((e) => e.toJson()).toList(),
       };
 }

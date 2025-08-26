@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fvf_flutter/app/ui/components/animated_column.dart';
 import 'package:fvf_flutter/app/ui/components/app_placeholder.dart';
 import 'package:fvf_flutter/app/ui/components/placeholder_card.dart';
 
@@ -22,7 +23,8 @@ class BetsWrapper extends StatelessWidget {
   Widget build(BuildContext context) => AppPlaceHolder(
         isLoading: isLoading,
         child: child,
-        placeHolder: Column(
+        placeHolder: AnimatedColumn(
+          showScaleAnimation: true,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             PlaceholderCard(

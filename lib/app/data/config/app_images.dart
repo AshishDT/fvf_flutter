@@ -94,4 +94,7 @@ class AppImages {
 
   /// Dice Roll Animation
   static const String diceRoll = '$_lottiePath/dice_roll.json';
+
+  /// Smily Icon
+  static const String smilyIcon = '$_svgPath/smily_icon.svg';
 }

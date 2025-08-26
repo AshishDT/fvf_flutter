@@ -10,6 +10,7 @@ abstract class Routes {
   static const CREATE_BET = _Paths.CREATE_BET;
   static const PICK_CREW = _Paths.PICK_CREW;
   static const PROFILE = _Paths.PROFILE;
+  static const EDIT_PROFILE = _Paths.EDIT_PROFILE;
   static const AI_CHOOSING = _Paths.AI_CHOOSING;
   static const AGE_INPUT = _Paths.AGE_INPUT;
   static const SNAP_SELFIES = _Paths.SNAP_SELFIES;
@@ -25,6 +26,7 @@ abstract class _Paths {
   static const CREATE_BET = '/create-bet';
   static const PICK_CREW = '/pick-crew';
   static const PROFILE = '/profile';
+  static const EDIT_PROFILE = '/edit-profile';
   static const AI_CHOOSING = '/ai-choosing';
   static const AGE_INPUT = '/age-input';
   static const SNAP_SELFIES = '/snap-selfies';

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_profile.dart';
 
 import '../../../data/models/api_reponse.dart';
@@ -15,6 +16,7 @@ class ProfileApiRepo {
           path: 'user/profile',
         ).then(
           (Response<Map<String, dynamic>>? response) {
+            logI('Get User Response: ${response}');
             if (response?.isOk != true || response?.data == null) {
               return null;
             }

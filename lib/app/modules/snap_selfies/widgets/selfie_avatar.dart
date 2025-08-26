@@ -1,8 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
+import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
+import 'package:get/get.dart';
 
 /// Selfie Avatar widget
 class SelfieAvatar extends StatelessWidget {
@@ -11,6 +13,7 @@ class SelfieAvatar extends StatelessWidget {
     required this.participant,
     super.key,
     this.size = 56,
+    this.showBorder = false,
   });
 
   /// SelfieAvatar constructor
@@ -18,6 +21,9 @@ class SelfieAvatar extends StatelessWidget {
 
   /// Size of the avatar
   final double size;
+
+  /// Show border around avatar
+  final bool showBorder;
 
   /// pick avatar color from id
   Color get _bgColor {
@@ -91,7 +97,23 @@ class SelfieAvatar extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          SizedBox(width: size.w, height: size.h, child: avatarContent),
+          if (showBorder)
+            AnimatedContainer(
+              duration: 300.milliseconds,
+              width: size.w + 4,
+              height: size.h + 4,
+              padding: REdgeInsets.all(2),
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                image: DecorationImage(
+                  image: AssetImage(AppImages.gradientCardBg),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: avatarContent,
+            )
+          else
+            SizedBox(width: size.w, height: size.h, child: avatarContent),
           2.verticalSpace,
           Text(
             participant.isCurrentUser ? 'You' : _userName(),

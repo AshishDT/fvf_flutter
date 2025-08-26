@@ -131,11 +131,11 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
   }) async {
     try {
       isEditing(true);
-      final MdProfile? _user = await ProfileApiRepo.updateUser(
+      final bool? _isUpdated = await ProfileApiRepo.updateUser(
         profilePic: profilePic,
         username: username,
       );
-      if (_user != null) {
+      if (_isUpdated != null) {
         await getUser();
         appSnackbar(
           message: 'Profile updated successfully',

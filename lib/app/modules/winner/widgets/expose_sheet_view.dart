@@ -72,15 +72,13 @@ class ExposeSheetView extends GetView<WinnerController> {
               _planInfoCard(AIPlan.PLAN2, controller),
             ],
           ),
-        ).withGPad(
-          context,
-          decoration: BoxDecoration(
-            color: Colors.black,
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(24.r),
-            ),
-          )
-        ),
+        ).withGPad(context,
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(24.r),
+              ),
+            )),
       );
 
   /// _divider
@@ -158,18 +156,19 @@ class ExposeSheetView extends GetView<WinnerController> {
                       ],
                     ),
                     onPressed: () {
+                      Get.back();
                       appSnackbar(
                         message: 'You have successfully exposed this round!',
                         snackbarState: SnackbarState.success,
                       );
                       controller.isExposed(true);
-                      Get.toNamed(
+                      /*Get.toNamed(
                         Routes.PREMIUM_WINNER,
                         arguments: <String, dynamic>{
                           'participants': controller.participants(),
                           'bet': controller.bet(),
                         },
-                      );
+                      );*/
                     },
                     style: AppTextStyle.openRunde(
                       fontSize: 16.sp,
@@ -196,19 +195,20 @@ class ExposeSheetView extends GetView<WinnerController> {
                       ],
                     ),
                     onPressed: () {
+                      Get.back();
                       appSnackbar(
                         message:
                             'You have successfully subscribed to the unlimited plan!',
                         snackbarState: SnackbarState.success,
                       );
                       controller.isExposed(true);
-                      Get.toNamed(
+                      /*Get.toNamed(
                         Routes.PREMIUM_WINNER,
                         arguments: <String, dynamic>{
                           'participants': controller.participants(),
                           'bet': controller.bet(),
                         },
-                      );
+                      );*/
                     },
                     style: AppTextStyle.openRunde(
                       fontSize: 16.sp,

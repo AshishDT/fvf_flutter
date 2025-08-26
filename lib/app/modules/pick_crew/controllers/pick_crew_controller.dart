@@ -71,42 +71,35 @@ class PickCrewController extends GetxController {
             title: 'Slay',
             subject: 'Slay Invitation',
           ),
-        )
-            .then(
+        ).then(
           (ShareResult result) {
-            if (result.status == ShareResultStatus.success) {
-              appSnackbar(
-                message: 'Invitation shared successfully!',
-                snackbarState: SnackbarState.success,
-              );
-              Get.toNamed(
-                Routes.SNAP_SELFIES,
-                arguments: MdJoinInvitation(
-                  id: round().id ?? '',
-                  createdAt: round().createdAt?.toIso8601String(),
-                  type: round().id,
-                  prompt: round().prompt ?? '',
-                  isCustomPrompt: round().isCustomPrompt ?? false,
-                  isActive: round().isActive ?? false,
-                  isDeleted: round().isDeleted ?? false,
-                  status: round().status ?? 'active',
-                  updatedAt: round().updatedAt?.toIso8601String(),
-                  roundJoinedEndAt: round().roundJoinedEndAt,
-                  participants: <MdParticipant>[
-                    MdParticipant(
-                      createdAt: DateTime.now().toIso8601String(),
-                      id: round().host?.id ?? '',
-                      isActive: true,
-                      isDeleted: false,
-                      isHost: true,
-                      joinedAt: DateTime.now().toIso8601String(),
-                      userData: round().host,
-                    ),
-                  ],
-                  host: round().host,
-                ),
-              );
-            }
+            Get.toNamed(
+              Routes.SNAP_SELFIES,
+              arguments: MdJoinInvitation(
+                id: round().id ?? '',
+                createdAt: round().createdAt?.toIso8601String(),
+                type: round().id,
+                prompt: round().prompt ?? '',
+                isCustomPrompt: round().isCustomPrompt ?? false,
+                isActive: round().isActive ?? false,
+                isDeleted: round().isDeleted ?? false,
+                status: round().status ?? 'active',
+                updatedAt: round().updatedAt?.toIso8601String(),
+                roundJoinedEndAt: round().roundJoinedEndAt,
+                participants: <MdParticipant>[
+                  MdParticipant(
+                    createdAt: DateTime.now().toIso8601String(),
+                    id: round().host?.id ?? '',
+                    isActive: true,
+                    isDeleted: false,
+                    isHost: true,
+                    joinedAt: DateTime.now().toIso8601String(),
+                    userData: round().host,
+                  ),
+                ],
+                host: round().host,
+              ),
+            );
           },
         ),
       );

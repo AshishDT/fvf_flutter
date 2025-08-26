@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
@@ -87,11 +88,26 @@ class SocketIoRepo {
   /// Listen function (subscribe to "roundUpdate")
   void listenForDateEvent(void Function(dynamic data) onData) {
     logI('👂 Subscribing to [roundUpdate] event');
-    _socket.on('roundUpdate', (dynamic data) {
-      logI('📥 Received [roundUpdate]: $data');
-      receivedData.add(data.toString());
-      onData(data);
-    });
+    _socket.on(
+      'roundUpdate',
+      (dynamic data) {
+        logI('📥 Received [roundUpdate]: $data');
+        receivedData.add(data.toString());
+        onData(data);
+      },
+    );
+  }
+
+  /// Listen function (subscribe to "roundProcess")
+  void listenForRoundProcess(void Function(dynamic data) onData) {
+    logI('👂 Subscribing to [roundProcess] event');
+    _socket.on(
+      'roundProcess',
+      (dynamic data) {
+        log('📥 Received [roundProcess]: $data');
+        onData(data);
+      },
+    );
   }
 
   /// Dispose resources
@@ -100,6 +116,14 @@ class SocketIoRepo {
     stopAutoEmit();
     _socket
       ..off('roundUpdate')
+      ..off('roundProcess')
       ..dispose();
+  }
+
+  /// Dispose only round update listener
+  void disposeRoundUpdate() {
+    logI('🛑 Disposing only roundUpdate listener');
+    stopAutoEmit();
+    _socket.off('roundUpdate');
   }
 }

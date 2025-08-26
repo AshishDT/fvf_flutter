@@ -16,7 +16,7 @@ import '../../../data/remote/deep_link/deep_link_service.dart';
 import '../../../ui/components/app_snackbar.dart';
 import '../models/md_socket_io_response.dart';
 import '../repositories/snap_selfie_api_repo.dart';
-import '../repositories/socket_io_repo.dart';
+import '../../../data/remote/socket_io_repo.dart';
 
 /// Snap Selfies Controller
 class SnapSelfiesController extends GetxController {
@@ -182,6 +182,7 @@ class SnapSelfiesController extends GetxController {
 
     if (canStartRound) {
       isTimesUp(true);
+      socketIoRepo.disposeRoundUpdate();
       onLetGo();
     } else {
       _fallBackToStartAgain();

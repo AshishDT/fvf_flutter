@@ -6,12 +6,16 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
+import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/animated_list_view.dart';
+import 'package:fvf_flutter/app/ui/components/app_button.dart';
 import 'package:fvf_flutter/app/ui/components/common_app_bar.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
+import 'package:fvf_flutter/app/utils/widget_ext.dart';
 import 'package:get/get.dart';
 
+import '../../../utils/dialog_helper.dart';
 import '../../snap_selfies/widgets/selfie_avatar.dart';
 import '../controllers/ai_choosing_controller.dart';
 
@@ -21,145 +25,189 @@ class AiChoosingView extends GetView<AiChoosingController> {
   const AiChoosingView({super.key});
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        backgroundColor: AppColors.kF5FCFF,
-        body: Stack(
-          children: <Widget>[
-            GradientCard(
-              height: 1.sh,
-              width: 1.sw,
-              child: const SizedBox.shrink(),
-            ),
-            SizedBox(
-              height: 1.sh,
-              width: 1.sw,
-              child: PageView.builder(
-                controller: controller.pageController,
-                onPageChanged: (int index) {
-                  controller.currentIndex(index);
-                },
-                itemBuilder: (BuildContext context, int index) {
-                  if (controller.participants().isEmpty) {
-                    return const SizedBox();
-                  }
-
-                  final int realIndex =
-                      index % controller.participants().length;
-                  final MdParticipant participant =
-                  controller.participants()[realIndex];
-
-                  return AnimatedOpacity(
-                    duration: 300.milliseconds,
-                    opacity: 0.36,
-                    child: CachedNetworkImage(
-                      imageUrl: participant.selfieUrl!,
-                      width: 1.sw,
-                      height: 1.sh,
-                      fit: BoxFit.cover,
-                      placeholder: (_, __) => const Center(
-                          child: CircularProgressIndicator(strokeWidth: 2)),
-                      errorWidget: (_, __, ___) => const Center(
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    ),
-                  );
-                },
+  Widget build(BuildContext context) => PopScope(
+        canPop: false,
+        child: Scaffold(
+          backgroundColor: AppColors.kF5FCFF,
+          body: Stack(
+            children: <Widget>[
+              GradientCard(
+                height: 1.sh,
+                width: 1.sw,
+                child: const SizedBox.shrink(),
               ),
-            ),
-            SafeArea(
-              child: AnimatedListView(
-                children: <Widget>[
-                  CommonAppBar(
-                    leadingIcon: AppImages.closeIconWhite,
-                    actions: <Widget>[
-                      GestureDetector(
-                        onTap: () {},
-                        child: SvgPicture.asset(
-                          AppImages.shareIcon,
-                          width: 24.w,
-                          height: 24.h,
-                          colorFilter: const ColorFilter.mode(
-                            AppColors.kffffff,
-                            BlendMode.srcIn,
+              SizedBox(
+                height: 1.sh,
+                width: 1.sw,
+                child: PageView.builder(
+                  controller: controller.pageController,
+                  onPageChanged: (int index) {
+                    controller.currentIndex(index);
+                  },
+                  itemBuilder: (BuildContext context, int index) {
+                    if (controller.participants().isEmpty) {
+                      return const SizedBox();
+                    }
+
+                    final int realIndex =
+                        index % controller.participants().length;
+                    final MdParticipant participant =
+                        controller.participants()[realIndex];
+
+                    return Obx(
+                      () => AnimatedOpacity(
+                        duration: 300.milliseconds,
+                        opacity: controller.isAiFailed() ? 0 : 0.36,
+                        child: CachedNetworkImage(
+                          imageUrl: participant.selfieUrl!,
+                          width: 1.sw,
+                          height: 1.sh,
+                          fit: BoxFit.cover,
+                          placeholder: (_, __) => const Center(
+                              child: CircularProgressIndicator(strokeWidth: 2)),
+                          errorWidget: (_, __, ___) => const Center(
+                            child: CircularProgressIndicator(strokeWidth: 2),
                           ),
                         ),
                       ),
-                    ],
-                  ).paddingSymmetric(horizontal: 24),
-                  64.verticalSpace,
-                  Center(
-                    child: Text(
-                      'AI Choosing...',
-                      style: AppTextStyle.openRunde(
-                        fontSize: 40.sp,
-                        color: AppColors.kffffff,
-                        fontWeight: FontWeight.w700,
-                        height: 1,
-                      ),
-                    ),
-                  ).paddingSymmetric(horizontal: 24),
-                  24.verticalSpace,
-                  Center(
-                    child: Text(
-                      'Most likely to Start an OF?',
-                      style: AppTextStyle.openRunde(
-                        fontSize: 24.sp,
-                        color: AppColors.kF6FCFE,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ).paddingSymmetric(horizontal: 24),
-                  24.verticalSpace,
-                  Center(
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxHeight: 120.w,
-                      ),
+                    );
+                  },
+                ),
+              ),
+              SafeArea(
+                child: AnimatedListView(
+                  children: <Widget>[
+                    CommonAppBar(
+                      leadingIcon: AppImages.closeIconWhite,
+                      onBack: () {
+                        DialogHelper.onBackOfAiChoosing(
+                          onPositiveClick: () {
+                            Get.offAllNamed(
+                              Routes.CREATE_BET,
+                            );
+                          },
+                        );
+                      },
+                      actions: <Widget>[
+                        GestureDetector(
+                          onTap: () {},
+                          child: SvgPicture.asset(
+                            AppImages.shareIcon,
+                            width: 24.w,
+                            height: 24.h,
+                            colorFilter: const ColorFilter.mode(
+                              AppColors.kffffff,
+                              BlendMode.srcIn,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ).paddingSymmetric(horizontal: 24),
+                    64.verticalSpace,
+                    Center(
                       child: Obx(
-                            () => AutoSizeText(
-                          controller.bet(),
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 20,
+                        () => Text(
+                          controller.isAiFailed()
+                              ? 'AI fell asleep 😴'
+                              : 'AI Choosing...',
                           style: AppTextStyle.openRunde(
-                            fontSize: 24.sp,
-                            color: AppColors.kFAFBFB,
-                            fontWeight: FontWeight.w600,
+                            fontSize: 40.sp,
+                            color: AppColors.kffffff,
+                            fontWeight: FontWeight.w700,
+                            height: 1,
                           ),
                         ),
                       ),
-                    ),
-                  ).paddingSymmetric(horizontal: 24),
-                ],
-              ),
-            ),
-            Positioned(
-              bottom: 58.h,
-              child: Align(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Obx(
-                    () => Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          ...controller.participants().asMap().entries.map(
-                            (MapEntry<int, MdParticipant> entry) {
-                              final int index = entry.key;
-                              final MdParticipant participant = entry.value;
-                              return SelfieAvatar(
-                                participant: participant,
-                                showBorder:  controller.currentIndex() % controller.participants().length == index,
-                              ).paddingOnly(right: 32);
-                            },
+                    ).paddingSymmetric(horizontal: 24),
+                    24.verticalSpace,
+                    Center(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight: 120.w,
+                        ),
+                        child: Obx(
+                          () => AutoSizeText(
+                            controller.bet(),
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 20,
+                            style: AppTextStyle.openRunde(
+                              fontSize: 24.sp,
+                              color: AppColors.kFAFBFB,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ],
+                        ),
                       ),
-                  ),
-                ).paddingOnly(left: 24),
+                    ).paddingSymmetric(horizontal: 24),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
+              Positioned(
+                bottom: 58.h,
+                left: 0,
+                right: 0,
+                child: Align(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Obx(
+                          () => Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              ...controller.participants().asMap().entries.map(
+                                (MapEntry<int, MdParticipant> entry) {
+                                  final int index = entry.key;
+                                  final MdParticipant participant = entry.value;
+                                  return SelfieAvatar(
+                                    participant: participant,
+                                    showBorder: !controller.isAiFailed() &&
+                                        controller.currentIndex() %
+                                                controller
+                                                    .participants()
+                                                    .length ==
+                                            index,
+                                  ).paddingOnly(right: 32);
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ).paddingOnly(left: 24),
+                      AnimatedSize(
+                        duration: 300.milliseconds,
+                        alignment: Alignment.topCenter,
+                        curve: Curves.easeInOut,
+                        child: Obx(
+                          () => Visibility(
+                            visible: controller.isAiFailed(),
+                            child: 56.verticalSpace,
+                          ),
+                        ),
+                      ),
+                      AnimatedSize(
+                        duration: 300.milliseconds,
+                        alignment: Alignment.topCenter,
+                        curve: Curves.easeInOut,
+                        child: Obx(
+                          () => Visibility(
+                            visible: controller.isAiFailed(),
+                            child: AppButton(
+                              buttonText: 'Wake it up',
+                              onPressed: () {},
+                            ),
+                          ),
+                        ),
+                      ).paddingSymmetric(horizontal: 24),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ).withGPad(context, color: Colors.black),
       );
 
   /// Person Card

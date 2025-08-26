@@ -7,7 +7,7 @@ import 'package:fvf_flutter/app/modules/create_bet/widgets/bets_wrapper.dart';
 import 'package:fvf_flutter/app/modules/create_bet/widgets/keyboard_aware_sheet.dart';
 import 'package:fvf_flutter/app/ui/components/animated_list_view.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
-import 'package:fvf_flutter/app/ui/components/work_space_sheet_repo.dart';
+import 'package:fvf_flutter/app/ui/components/chat_field_sheet_repo.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
 import '../../../ui/components/app_snackbar.dart';

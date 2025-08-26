@@ -74,7 +74,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                       padding: REdgeInsets.only(bottom: 32),
                       child: AnimatedTextSwitcher(
                         currentIndex: controller.currentIndex(),
-                        texts: controller.texts,
+                        texts: controller.preSelfieStrings(),
                       ).paddingSymmetric(horizontal: 24),
                     ),
                   ),

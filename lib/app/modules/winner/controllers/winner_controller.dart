@@ -50,8 +50,15 @@ class WinnerController extends GetxController {
   RxBool isLoading = true.obs;
 
   /// Result data
-  RxList<MdResult> get results =>
-      (roundDetails().round?.results ?? <MdResult>[]).obs;
+  RxList<MdResult> get results {
+    final List<MdResult> sorted =
+        (roundDetails().round?.results ?? <MdResult>[]).toList()
+          ..sort(
+            (MdResult a, MdResult b) => (a.rank ?? 0).compareTo(b.rank ?? 0),
+          );
+
+    return sorted.obs;
+  }
 
   /// Prompt
   RxString get prompt => (roundDetails().round?.prompt ?? '').obs;

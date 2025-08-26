@@ -2,8 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/get.dart';
-
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
 import '../../../utils/app_text_style.dart';
@@ -45,63 +43,48 @@ class ResultCard extends StatelessWidget {
         children: <Widget>[
           Column(
             children: <Widget>[
-              (isCurrentRankIs1 ?? false)
-                  ? Align(
-                      alignment: Alignment.centerRight,
-                      child: RichText(
-                        text: TextSpan(
-                          children: <InlineSpan>[
-                            TextSpan(
-                              text: '${rank ?? 0}',
-                              style: AppTextStyle.openRunde(
-                                fontSize: 40.sp,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.kffffff,
-                                shadows: <Shadow>[
-                                  const Shadow(
-                                    offset: Offset(0, 4),
-                                    blurRadius: 4,
-                                    color: Color(0x33000000),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            WidgetSpan(
-                              alignment: PlaceholderAlignment.top,
-                              child: Transform.translate(
-                                offset: const Offset(2, -22),
-                                child: Text(
-                                  ordinalSuffix ?? '',
-                                  style: AppTextStyle.openRunde(
-                                    fontSize: 20.sp,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.kffffff,
-                                    shadows: <Shadow>[
-                                      const Shadow(
-                                        offset: Offset(0, 4),
-                                        blurRadius: 4,
-                                        color: Color(0x33000000),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    Text(
+                      '${rank ?? 0}',
+                      style: AppTextStyle.openRunde(
+                        fontSize: 40.sp,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.kffffff,
+                        shadows: <Shadow>[
+                          const Shadow(
+                            offset: Offset(0, 4),
+                            blurRadius: 4,
+                            color: Color(0x33000000),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: REdgeInsets.only(top: 5),
+                      child: Text(
+                        ordinalSuffix ?? '',
+                        style: AppTextStyle.openRunde(
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.kffffff,
+                          shadows: <Shadow>[
+                            const Shadow(
+                              offset: Offset(0, 4),
+                              blurRadius: 4,
+                              color: Color(0x33000000),
                             ),
                           ],
                         ),
                       ),
-                    )
-                  : Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        '?',
-                        style: AppTextStyle.openRunde(
-                          fontSize: 36.sp,
-                          color: AppColors.kffffff,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ).paddingOnly(right: 8.w),
+                    ),
+                  ],
+                ),
+              ),
               16.verticalSpace,
               Align(
                 alignment: Alignment.centerRight,

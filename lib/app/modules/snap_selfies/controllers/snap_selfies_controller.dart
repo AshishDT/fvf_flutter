@@ -30,6 +30,7 @@ class SnapSelfiesController extends GetxController {
       participants.refresh();
 
       startTimer();
+      getPreSelfieStrings();
     }
 
     socketIoRepo
@@ -205,7 +206,8 @@ class SnapSelfiesController extends GetxController {
                 DateTime.tryParse(joinedInvitationData().createdAt ?? ''),
             isActive: joinedInvitationData().isActive,
             isDeleted: joinedInvitationData().isDeleted,
-            status: RoundStatusX.fromString(joinedInvitationData().status ?? ''),
+            status:
+                RoundStatusX.fromString(joinedInvitationData().status ?? ''),
             participants: <MdParticipant>[],
             isCustomPrompt: joinedInvitationData().isCustomPrompt,
             updatedAt:
@@ -226,21 +228,21 @@ class SnapSelfiesController extends GetxController {
   }
 
   /// Checks if the camera is initialized.
-  final List<String> texts = <String>[
-    'Clark is still fixing his hair 👀',
-    'Lois is adjusting her glasses 🤓',
-    'Jimmy is checking his camera settings 📸',
-    'Perry is doing quick mack-up 💄',
-    'Lex is practicing his smile 😏',
-    'Superman is flexing his muscles 💪',
-  ];
+  RxList<String> preSelfieStrings = <String>[
+    'Still fixing his hair 👀',
+    'Adjusting her glasses 🤓',
+    'Checking camera settings 📸',
+    'Doing quick mack-up 💄',
+    'Practicing smile 😏',
+    'Flexing muscles 💪',
+  ].obs;
 
   ///  Sets up the timer for changing texts
   void setUpTextTimer() {
     _timer = Timer.periodic(
       const Duration(seconds: 2),
       (Timer timer) {
-        currentIndex.value = (currentIndex() + 1) % texts.length;
+        currentIndex.value = (currentIndex() + 1) % preSelfieStrings.length;
         currentIndex.refresh();
       },
     );
@@ -345,8 +347,6 @@ class SnapSelfiesController extends GetxController {
       final String? _fileName =
           await uploadSelfie(pickedImage: file, folder: 'selfie');
 
-      logWTF('Uploaded file name: $_fileName');
-
       if (_fileName == null || _fileName.isEmpty) {
         appSnackbar(
           message: 'Failed to upload selfie. Please try again.',
@@ -367,6 +367,22 @@ class SnapSelfiesController extends GetxController {
           message: 'Selfie submitted successfully!',
           snackbarState: SnackbarState.success,
         );
+      }
+    } finally {
+      submittingSelfie(false);
+    }
+  }
+
+  /// Get pre-selfie strings
+  Future<void> getPreSelfieStrings() async {
+    try {
+      final List<String>? _preSelfieActions =
+          await SnapSelfieApiRepo.getPreSelfieActions();
+
+      if (_preSelfieActions?.isNotEmpty ?? false) {
+        preSelfieStrings.clear();
+        preSelfieStrings(_preSelfieActions);
+        preSelfieStrings.refresh();
       }
     } finally {
       submittingSelfie(false);

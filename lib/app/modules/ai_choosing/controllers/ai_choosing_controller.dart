@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:get/get.dart';
-
+import '../../../data/config/env_config.dart';
 import '../../../routes/app_pages.dart';
+import '../repositories/socket_io_results.dart';
 
 /// AiChoosingController
 class AiChoosingController extends GetxController {
@@ -87,6 +89,14 @@ class AiChoosingController extends GetxController {
         bet.value = Get.arguments['bet'] as String;
         bet.refresh();
       }
+
+      resultsRepo
+        ..initSocket(url: EnvConfig.socketUrl)
+        ..listenForRoundProcess(
+          (dynamic data) {
+            logI('🎯 Round process update: $data');
+          },
+        );
     }
   }
 
@@ -94,6 +104,10 @@ class AiChoosingController extends GetxController {
   void onClose() {
     timer?.cancel();
     pageController.dispose();
+    resultsRepo.dispose();
     super.onClose();
   }
+
+  /// Socket.IO repository instance
+  final SocketIoResultsRepo resultsRepo = SocketIoResultsRepo();
 }

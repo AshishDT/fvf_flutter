@@ -24,8 +24,7 @@ class WinnerView extends GetView<WinnerController> {
   Widget build(BuildContext context) => Scaffold(
         backgroundColor: AppColors.kF5FCFF,
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton:
-        Obx(
+        floatingActionButton: Obx(
           () => !controller.isExposed()
               ? AppButton(
                   buttonText: '',
@@ -70,20 +69,22 @@ class WinnerView extends GetView<WinnerController> {
           child: Stack(
             children: <Widget>[
               Obx(
-                () => CachedNetworkImage(
-                  imageUrl: controller
-                          .participants()[controller.currentRank()]
-                          .selfieUrl ??
-                      '',
-                  width: 1.sw,
-                  height: 1.sh,
-                  fit: BoxFit.cover,
-                  placeholder: (_, __) => const Center(
-                      child: CircularProgressIndicator(strokeWidth: 2)),
-                  errorWidget: (_, __, ___) => const Center(
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                ),
+                () => controller.participants().isNotEmpty
+                    ? CachedNetworkImage(
+                        imageUrl: controller
+                                .participants()[controller.currentRank()]
+                                .selfieUrl ??
+                            '',
+                        width: 1.sw,
+                        height: 1.sh,
+                        fit: BoxFit.cover,
+                        placeholder: (_, __) => const Center(
+                            child: CircularProgressIndicator(strokeWidth: 2)),
+                        errorWidget: (_, __, ___) => const Center(
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
               ),
               AnimatedListView(
                 children: <Widget>[

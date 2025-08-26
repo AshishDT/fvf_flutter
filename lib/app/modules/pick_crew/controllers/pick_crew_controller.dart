@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/data/models/md_join_invitation.dart';
+import 'package:fvf_flutter/app/modules/ai_choosing/enums/round_status_enum.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_round.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
@@ -83,7 +84,7 @@ class PickCrewController extends GetxController {
                 isCustomPrompt: round().isCustomPrompt ?? false,
                 isActive: round().isActive ?? false,
                 isDeleted: round().isDeleted ?? false,
-                status: round().status ?? 'active',
+                status: round().status?.value,
                 updatedAt: round().updatedAt?.toIso8601String(),
                 roundJoinedEndAt: round().roundJoinedEndAt,
                 participants: <MdParticipant>[

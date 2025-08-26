@@ -14,6 +14,7 @@ class AppTextStyle {
     FontStyle? fontStyle,
     TextDecoration? decoration,
     TextOverflow? overflow,
+    List<Shadow>? shadows,
   }) =>
       TextStyle(
         fontFamily: _fontFamily,
@@ -25,5 +26,6 @@ class AppTextStyle {
         fontStyle: fontStyle,
         decoration: decoration,
         overflow: overflow,
+        shadows: shadows,
       );
 }

@@ -1,3 +1,5 @@
+import 'package:fvf_flutter/app/modules/ai_choosing/models/md_result.dart';
+
 import '../../../data/models/md_join_invitation.dart';
 import '../enums/round_status_enum.dart';
 
@@ -60,47 +62,4 @@ class MdAiResultData {
       };
 }
 
-/// Md result
-class MdResult {
-  /// Constructor
-  MdResult({
-    this.rank,
-    this.reason,
-    this.userId,
-    this.selfieUrl,
-    this.supabaseId,
-  });
 
-  /// From JSON
-  factory MdResult.fromJson(Map<String, dynamic> json) => MdResult(
-        rank: json['rank'],
-        reason: json['reason'],
-        userId: json['userId'],
-        selfieUrl: json['selfieUrl'],
-        supabaseId: json['supabase_id'],
-      );
-
-  /// Rank
-  int? rank;
-
-  /// Reason
-  String? reason;
-
-  /// User ID
-  String? userId;
-
-  /// Supabase ID
-  String? supabaseId;
-
-  /// Selfie URL
-  String? selfieUrl;
-
-  /// To JSON
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'rank': rank,
-        'reason': reason,
-        'userId': userId,
-        'selfieUrl': selfieUrl,
-        'supabase_id': supabaseId,
-      };
-}

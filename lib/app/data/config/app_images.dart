@@ -97,4 +97,7 @@ class AppImages {
 
   /// Smily Icon
   static const String smilyIcon = '$_svgPath/smily_icon.svg';
+
+  /// Share Icon Shadow
+  static const String shareIconShadow = '$_svgPath/share_icon_shadow.svg';
 }

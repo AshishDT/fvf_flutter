@@ -3,17 +3,19 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
+import 'package:fvf_flutter/app/modules/ai_choosing/models/md_result.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/expose_sheet.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
+import 'package:fvf_flutter/app/utils/dialog_helper.dart';
+import 'package:fvf_flutter/app/utils/widget_ext.dart';
 import 'package:get/get.dart';
-
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
-import '../../../ui/components/animated_list_view.dart';
+import '../../../routes/app_pages.dart';
 import '../../../ui/components/common_app_bar.dart';
 import '../../../utils/app_text_style.dart';
 import '../controllers/winner_controller.dart';
+import '../widgets/result_card.dart';
 
 /// Winner View
 class WinnerView extends GetView<WinnerController> {
@@ -21,126 +23,40 @@ class WinnerView extends GetView<WinnerController> {
   const WinnerView({super.key});
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        backgroundColor: AppColors.kF5FCFF,
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: Obx(
-          () => !controller.isExposed()
-              ? AppButton(
-                  buttonText: '',
-                  height: 57.h,
-                  onPressed: () {
-                    ExposeSheet.openExposeSheet();
-                  },
-                  decoration: BoxDecoration(
-                    image: const DecorationImage(
-                      image: AssetImage(AppImages.buttonBg),
-                      fit: BoxFit.cover,
-                    ),
-                    borderRadius: BorderRadius.circular(28).r,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        'Expose Everyone 👀',
-                        style: AppTextStyle.openRunde(
-                          fontSize: 18.sp,
-                          color: AppColors.kFAFBFB,
-                          fontWeight: FontWeight.w700,
-                          height: .8,
-                        ),
-                      ),
-                      4.verticalSpace,
-                      Text(
-                        'See how everyone placed!',
-                        style: AppTextStyle.openRunde(
-                          fontSize: 12.sp,
-                          color: AppColors.kFAFBFB,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ).paddingAll(24.w)
-              : const SizedBox.shrink(),
-        ),
-        body: SafeArea(
-          child: Stack(
+  Widget build(BuildContext context) => PopScope(
+        canPop: false,
+        child: Scaffold(
+          backgroundColor: AppColors.kF5FCFF,
+          extendBody: true,
+          bottomNavigationBar: Obx(
+            () => !controller.isExposed()
+                ? _exposeButton()
+                : const SizedBox.shrink(),
+          ),
+          body: Stack(
             children: <Widget>[
               Obx(
-                () => controller.participants().isNotEmpty
-                    ? CachedNetworkImage(
-                        imageUrl: controller
-                                .participants()[controller.currentRank()]
-                                .selfieUrl ??
-                            '',
-                        width: 1.sw,
-                        height: 1.sh,
-                        fit: BoxFit.cover,
-                        placeholder: (_, __) => const Center(
-                            child: CircularProgressIndicator(strokeWidth: 2)),
-                        errorWidget: (_, __, ___) => const Center(
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                () => controller.results().isNotEmpty
+                    ? AnimatedSize(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                        child: CachedNetworkImage(
+                          imageUrl: _currentRankImageUrl(),
+                          width: 1.sw,
+                          height: 1.sh,
+                          fit: BoxFit.cover,
+                          placeholder: (_, __) => const Center(
+                              child: CircularProgressIndicator(strokeWidth: 2)),
+                          errorWidget: (_, __, ___) => const Center(
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
                         ),
                       )
                     : const SizedBox.shrink(),
               ),
-              AnimatedListView(
-                children: <Widget>[
-                  CommonAppBar(
-                    leadingIcon: AppImages.closeIconWhite,
-                    actions: <Widget>[
-                      Container(
-                        height: 34.w,
-                        width: 34.w,
-                        decoration: BoxDecoration(
-                          color: AppColors.kFAFBFB.withValues(alpha: 0.3),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Image.asset(
-                          AppImages.dice,
-                        ),
-                      ),
-                    ],
-                  ).paddingOnly(left: 24.w, right: 21.w),
-                  8.verticalSpace,
-                  Obx(
-                    () => Center(
-                      child: Text(
-                        controller.bet(),
-                        textAlign: TextAlign.center,
-                        style: AppTextStyle.openRunde(
-                          fontSize: 32.sp,
-                          color: AppColors.kffffff,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ).paddingSymmetric(horizontal: 24.w),
-                  ),
-                  Center(
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(maxHeight: 120.h),
-                      child: Obx(
-                        () => AutoSizeText(
-                          controller.bet(),
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 40,
-                          style: AppTextStyle.openRunde(
-                            fontSize: 40.sp,
-                            color: AppColors.kffffff,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ).paddingSymmetric(horizontal: 24.w),
-                ],
-              ),
               Obx(
                 () {
-                  if (controller.participants.isEmpty ||
+                  if (controller.results.isEmpty ||
                       controller.pageController == null) {
                     return const SizedBox.shrink();
                   }
@@ -150,211 +66,76 @@ class WinnerView extends GetView<WinnerController> {
                       children: <Widget>[
                         PageView.builder(
                           controller: controller.pageController,
-                          itemCount: controller.participants().length,
+                          itemCount: controller.results().length,
                           onPageChanged: (int i) => controller.currentRank(i),
                           itemBuilder: (BuildContext context, int index) {
-                            final MdParticipant participant =
-                                controller.participants[index];
+                            final MdResult result = controller.results()[index];
+
                             return Obx(
-                              () => Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: <Widget>[
-                                  Column(
-                                    children: <Widget>[
-                                      controller.isExposed() ||
-                                              participant.rank == 1
-                                          ? Align(
-                                              alignment: Alignment.centerRight,
-                                              child: RichText(
-                                                text: TextSpan(
-                                                  children: [
-                                                    TextSpan(
-                                                      text:
-                                                          '${participant.rank ?? 0}',
-                                                      style: AppTextStyle
-                                                          .openRunde(
-                                                        fontSize: 40.sp,
-                                                        fontWeight:
-                                                            FontWeight.w700,
-                                                        color:
-                                                            AppColors.kffffff,
-                                                      ),
-                                                    ),
-                                                    WidgetSpan(
-                                                      alignment:
-                                                          PlaceholderAlignment
-                                                              .top,
-                                                      child:
-                                                          Transform.translate(
-                                                        offset: const Offset(
-                                                            2, -22),
-                                                        child: Text(
-                                                          getOrdinalSuffix(
-                                                              participant
-                                                                      .rank ??
-                                                                  0),
-                                                          style: AppTextStyle
-                                                              .openRunde(
-                                                            fontSize: 20.sp,
-                                                            fontWeight:
-                                                                FontWeight.w700,
-                                                            color: AppColors
-                                                                .kffffff,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            )
-                                          : Align(
-                                              alignment: Alignment.centerRight,
-                                              child: Text(
-                                                '?',
-                                                style: AppTextStyle.openRunde(
-                                                  fontSize: 36.sp,
-                                                  color: AppColors.kffffff,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                              ),
-                                            ).paddingOnly(right: 8.w),
-                                      16.verticalSpace,
-                                      Align(
-                                        alignment: Alignment.centerRight,
-                                        child: GestureDetector(
-                                          onTap: () {},
-                                          child: SvgPicture.asset(
-                                              AppImages.smilyIcon),
-                                        ),
-                                      ),
-                                      16.verticalSpace,
-                                      Column(
-                                        children: <Widget>[
-                                          Row(
-                                            children: <Widget>[
-                                              Expanded(
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: <Widget>[
-                                                    ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              500.r),
-                                                      child: CachedNetworkImage(
-                                                        imageUrl: participant
-                                                                .selfieUrl ??
-                                                            '',
-                                                        width: 24.w,
-                                                        height: 24.w,
-                                                        fit: BoxFit.cover,
-                                                        placeholder: (_, __) =>
-                                                            const Center(
-                                                                child: CircularProgressIndicator(
-                                                                    strokeWidth:
-                                                                        2)),
-                                                        errorWidget:
-                                                            (_, __, ___) =>
-                                                                const Center(
-                                                          child:
-                                                              CircularProgressIndicator(
-                                                                  strokeWidth:
-                                                                      2),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    4.horizontalSpace,
-                                                    Flexible(
-                                                      child: Text(
-                                                        participant.userData
-                                                                ?.username ??
-                                                            '',
-                                                        maxLines: 1,
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                        style: AppTextStyle
-                                                            .openRunde(
-                                                          fontSize: 24.sp,
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                          color:
-                                                              AppColors.kffffff,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              GestureDetector(
-                                                onTap: () {},
-                                                child: SvgPicture.asset(
-                                                  AppImages.shareIcon,
-                                                  height: 32.w,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          16.verticalSpace,
-                                          Text(
-                                            'That no-nonsense stare made it obvious',
-                                            textAlign: TextAlign.center,
-                                            style: AppTextStyle.openRunde(
-                                              fontSize: 20.sp,
-                                              fontStyle: FontStyle.italic,
-                                              fontWeight: FontWeight.w700,
-                                              color: AppColors.kffffff,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                              () => ResultCard(
+                                rank: result.rank ?? 0,
+                                reason: result.reason ?? '',
+                                isCurrentRankIs1:
+                                    controller.isExposed() || result.rank == 1,
+                                ordinalSuffix:
+                                    getOrdinalSuffix(result.rank ?? 0),
+                                selfieUrl: result.selfieUrl,
+                                userName: result.userName,
                               ).paddingOnly(
-                                  right: 24.w,
-                                  left: 24.w,
-                                  bottom:
-                                      controller.isExposed() ? 36.h : 117.h),
+                                right: 24.w,
+                                left: 24.w,
+                                bottom: controller.isExposed() ? 36.h : 117.h,
+                              ),
                             );
                           },
                         ),
                         Obx(
                           () => controller.currentRank() != 0
-                              ? Positioned(
-                                  left: 6.w,
-                                  top: 0,
-                                  bottom: 0,
-                                  child: Center(
-                                    child: IconButton(
-                                      padding: EdgeInsets.zero,
-                                      constraints: const BoxConstraints(),
-                                      onPressed: controller.prevPage,
-                                      icon: SvgPicture.asset(
-                                          AppImages.backwardArrow),
-                                    ),
-                                  ),
-                                )
+                              ? _backwardButton()
                               : const SizedBox.shrink(),
                         ),
                         Obx(
                           () => controller.currentRank() <
-                                  controller.participants().length - 1
-                              ? Positioned(
-                                  right: 6.w,
-                                  top: 0,
-                                  bottom: 0,
-                                  child: Center(
-                                    child: IconButton(
-                                      padding: EdgeInsets.zero,
-                                      constraints: const BoxConstraints(),
-                                      onPressed: controller.nextPage,
-                                      icon: SvgPicture.asset(
-                                          AppImages.forwardArrow),
+                                  controller.results().length - 1
+                              ? forwardButton()
+                              : const SizedBox.shrink(),
+                        ),
+                        Positioned(
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          child: Column(
+                            children: <Widget>[
+                              32.verticalSpace,
+                              _appBar(),
+                              8.verticalSpace,
+                              Center(
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(maxHeight: 120.h),
+                                  child: Obx(
+                                    () => AutoSizeText(
+                                      controller.prompt(),
+                                      textAlign: TextAlign.center,
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 40,
+                                      style: AppTextStyle.openRunde(
+                                        fontSize: 32.sp,
+                                        color: AppColors.kffffff,
+                                        fontWeight: FontWeight.w700,
+                                        shadows: <Shadow>[
+                                          const Shadow(
+                                            offset: Offset(0, 4),
+                                            blurRadius: 4,
+                                            color: Color(0x33000000),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                )
-                              : const SizedBox.shrink(),
+                                ),
+                              ).paddingSymmetric(horizontal: 24.w),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -363,8 +144,112 @@ class WinnerView extends GetView<WinnerController> {
               ),
             ],
           ),
+        ).withGPad(context, color: Colors.black),
+      );
+
+  /// App bar
+  Widget _appBar() => CommonAppBar(
+        leadingIcon: AppImages.closeIconWhite,
+        onBack: () {
+          DialogHelper.onBackOfWinner(
+            onPositiveClick: () {
+              Get.offAllNamed(
+                Routes.CREATE_BET,
+              );
+            },
+          );
+        },
+        actions: <Widget>[
+          Container(
+            height: 34.w,
+            width: 34.w,
+            decoration: BoxDecoration(
+              color: AppColors.kFAFBFB.withValues(alpha: 0.3),
+              shape: BoxShape.circle,
+            ),
+            child: Image.asset(
+              AppImages.dice,
+            ),
+          ),
+        ],
+      ).paddingOnly(left: 24.w, right: 21.w);
+
+  /// Forward button
+  Positioned forwardButton() => Positioned(
+        right: 6.w,
+        top: 0,
+        bottom: 0,
+        child: Center(
+          child: IconButton(
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            onPressed: controller.nextPage,
+            icon: SvgPicture.asset(
+              AppImages.forwardArrow,
+            ),
+          ),
         ),
       );
+
+  /// Backward button
+  Positioned _backwardButton() => Positioned(
+        left: 6.w,
+        top: 0,
+        bottom: 0,
+        child: Center(
+          child: IconButton(
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            onPressed: controller.prevPage,
+            icon: SvgPicture.asset(
+              AppImages.backwardArrow,
+            ),
+          ),
+        ),
+      );
+
+  /// Expose button
+  Widget _exposeButton() => AppButton(
+        buttonText: '',
+        height: 57.h,
+        onPressed: () {
+          ExposeSheet.openExposeSheet();
+        },
+        decoration: BoxDecoration(
+          image: const DecorationImage(
+            image: AssetImage(AppImages.buttonBg),
+            fit: BoxFit.cover,
+          ),
+          borderRadius: BorderRadius.circular(28).r,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              'Expose Everyone 👀',
+              style: AppTextStyle.openRunde(
+                fontSize: 18.sp,
+                color: AppColors.kFAFBFB,
+                fontWeight: FontWeight.w700,
+                height: .8,
+              ),
+            ),
+            4.verticalSpace,
+            Text(
+              'See how everyone placed!',
+              style: AppTextStyle.openRunde(
+                fontSize: 12.sp,
+                color: AppColors.kFAFBFB,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ).paddingAll(24.w);
+
+  /// _currentRankImageUrl
+  String _currentRankImageUrl() =>
+      controller.results()[controller.currentRank()].selfieUrl ?? '';
 
   /// getOrdinalSuffix
   String getOrdinalSuffix(int number) {

@@ -25,6 +25,23 @@ class DialogHelper {
     );
   }
 
+  /// Show a dialog to confirm log out
+  static void onBackOfWinner({
+    void Function()? onPositiveClick,
+  }) {
+    _showDialog(
+      title: 'Are you sure you want to leave?',
+      msg: 'You will not be able to see the results again.',
+      negTxt: 'No, Stay',
+      posTxt: 'Yes, Proceed',
+      negative: () {},
+      positive: () {
+        onPositiveClick?.call();
+      },
+    );
+  }
+
+
   /// Show a dialog
   static void _showDialog({
     required String title,

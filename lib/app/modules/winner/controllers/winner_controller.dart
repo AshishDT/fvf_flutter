@@ -1,43 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:fvf_flutter/app/data/models/md_join_invitation.dart';
-import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
+import 'package:fvf_flutter/app/modules/ai_choosing/models/md_result.dart';
+import 'package:fvf_flutter/app/modules/winner/models/md_round_details.dart';
+import 'package:fvf_flutter/app/modules/winner/repositories/winner_api_repo.dart';
 import 'package:get/get.dart';
+import '../../ai_choosing/models/md_ai_result.dart';
 
 /// Winner Controller
 class WinnerController extends GetxController {
-  /// isExposed
-  RxBool isExposed = false.obs;
-
-  /// Current rank
-  RxInt currentRank = 0.obs;
-
-  /// pageController
-  PageController? pageController = PageController(initialPage: 0);
-
   /// On init
   @override
   void onInit() {
     if (Get.arguments != null) {
-      if (Get.arguments['participants'] != null) {
-        final List<MdParticipant> _selfies = Get.arguments['participants'] as List<MdParticipant>;
+      _resultData.value = Get.arguments as MdAiResultData;
+      _resultData.refresh();
 
-        WidgetsBinding.instance.addPostFrameCallback(
-              (Duration timeStamp) {
-            if (_selfies.isNotEmpty) {
-              _selfies.sort((MdParticipant a, MdParticipant b) =>
-              a.rank?.compareTo(b.rank ?? 0) ?? 0);
+      getRoundDetails(
+        _resultData().id ?? '',
+      );
 
-              participants.value = List<MdParticipant>.from(_selfies);
-              pageController = PageController(initialPage: 0);
-            }
-          },
-        );
-      }
-
-      if (Get.arguments['bet'] != null) {
-        bet.value = Get.arguments['bet'] as String;
-        bet.refresh();
-      }
+      WidgetsBinding.instance.addPostFrameCallback(
+        (Duration timeStamp) {
+          pageController = PageController();
+        },
+      );
     }
     super.onInit();
   }
@@ -55,8 +40,30 @@ class WinnerController extends GetxController {
     super.onClose();
   }
 
-  /// bet
-  RxString bet = ''.obs;
+  /// isExposed
+  RxBool isExposed = false.obs;
+
+  /// Current rank
+  RxInt currentRank = 0.obs;
+
+  /// Is data loading
+  RxBool isLoading = true.obs;
+
+  /// Result data
+  RxList<MdResult> get results =>
+      (roundDetails().round?.results ?? <MdResult>[]).obs;
+
+  /// Prompt
+  RxString get prompt => (roundDetails().round?.prompt ?? '').obs;
+
+  /// pageController
+  PageController? pageController = PageController(initialPage: 0);
+
+  /// Observable result data
+  final Rx<MdAiResultData> _resultData = MdAiResultData().obs;
+
+  /// Observable round details
+  Rx<MdRoundDetails> roundDetails = MdRoundDetails().obs;
 
   /// nextPage
   void nextPage() {
@@ -78,6 +85,17 @@ class WinnerController extends GetxController {
     }
   }
 
-  /// List of selfies taken by the user
-  RxList<MdParticipant> participants = <MdParticipant>[].obs;
+  /// Get round details
+  Future<void> getRoundDetails(String roundId) async {
+    isLoading(true);
+    try {
+      final MdRoundDetails? _roundDetails =
+          await WinnerApiRepo.getRoundDetails(roundId: roundId);
+
+      roundDetails(_roundDetails);
+      roundDetails.refresh();
+    } finally {
+      isLoading(false);
+    }
+  }
 }

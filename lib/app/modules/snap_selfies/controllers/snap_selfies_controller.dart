@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/data/config/env_config.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
+import 'package:fvf_flutter/app/modules/ai_choosing/enums/round_status_enum.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_round.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
@@ -204,7 +205,7 @@ class SnapSelfiesController extends GetxController {
                 DateTime.tryParse(joinedInvitationData().createdAt ?? ''),
             isActive: joinedInvitationData().isActive,
             isDeleted: joinedInvitationData().isDeleted,
-            status: joinedInvitationData().status,
+            status: RoundStatusX.fromString(joinedInvitationData().status ?? ''),
             participants: <MdParticipant>[],
             isCustomPrompt: joinedInvitationData().isCustomPrompt,
             updatedAt:

@@ -1,4 +1,6 @@
+import 'package:fvf_flutter/app/modules/ai_choosing/enums/round_status_enum.dart';
 import '../../../data/models/md_join_invitation.dart';
+import '../../ai_choosing/models/md_result.dart';
 import 'md_participant.dart';
 
 /// To parse this JSON data, do
@@ -16,6 +18,8 @@ class MdRound {
     this.isActive,
     this.isDeleted,
     this.participants,
+    this.results,
+    this.revealAt,
   });
 
   /// From JSON
@@ -26,7 +30,9 @@ class MdRound {
         roundJoinedEndAt: json['round_joined_end_at'] == null
             ? null
             : DateTime.parse(json['round_joined_end_at']),
-        status: json['status'],
+        status: json['status'] == null
+            ? null
+            : RoundStatusX.fromString(json['status'].toString()),
         id: json['id'],
         createdAt: json['createdAt'] == null
             ? null
@@ -41,6 +47,12 @@ class MdRound {
             : (json['participants'] as List<dynamic>)
                 .map((dynamic e) => MdParticipant.fromJson(e))
                 .toList(),
+        results: json['results'] == null
+            ? []
+            : List<MdResult>.from(
+                json['results']!.map((x) => MdResult.fromJson(x))),
+        revealAt:
+            json['revealAt'] == null ? null : DateTime.parse(json["revealAt"]),
       );
 
   /// Prompt
@@ -56,7 +68,7 @@ class MdRound {
   DateTime? roundJoinedEndAt;
 
   /// Status
-  String? status;
+  RoundStatus? status;
 
   /// Round Id
   String? id;
@@ -67,6 +79,9 @@ class MdRound {
   /// Updated at
   DateTime? updatedAt;
 
+  /// Reveal at
+  DateTime? revealAt;
+
   /// Is active
   bool? isActive;
 
@@ -76,18 +91,25 @@ class MdRound {
   /// Participants in the round
   List<MdParticipant>? participants;
 
+  /// Results
+  List<MdResult>? results;
+
   /// To JSON
   Map<String, dynamic> toJson() => <String, dynamic>{
         'prompt': prompt,
         'is_custom_prompt': isCustomPrompt,
         'host': host?.toJson(),
         'round_joined_end_at': roundJoinedEndAt?.toIso8601String(),
-        'status': status,
+        'status': status?.value,
         'id': id,
         'createdAt': createdAt?.toIso8601String(),
         'updatedAt': updatedAt?.toIso8601String(),
         'is_active': isActive,
         'is_deleted': isDeleted,
         'participants': participants?.map((e) => e.toJson()).toList(),
+        'results': results == null
+            ? <dynamic>[]
+            : List<dynamic>.from(results!.map((MdResult x) => x.toJson())),
+        'revealAt': revealAt?.toIso8601String(),
       };
 }

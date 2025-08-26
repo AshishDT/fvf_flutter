@@ -102,10 +102,14 @@ class AiChoosingController extends GetxController {
     final bool isFailed = resultData.status == RoundStatus.failed;
 
     if (isComplete) {
-      Get.toNamed(
-        Routes.WINNER,
-        arguments: resultData,
-      );
+      Get
+        ..until(
+          (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
+        )
+        ..toNamed(
+          Routes.WINNER,
+          arguments: resultData,
+        );
       return;
     }
 

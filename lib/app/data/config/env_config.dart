@@ -18,4 +18,7 @@ class EnvConfig {
   /// Supabase Anon Key
   static String supabaseAnonKey =
       const String.fromEnvironment('supabase_anon_key');
+
+  /// Socket URL
+  static String socketUrl = const String.fromEnvironment('socket_url');
 }

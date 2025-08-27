@@ -42,15 +42,15 @@ class ProfileApiRepo {
 
   /// Update user
   static Future<bool> updateUser({
-    required String username,
-    required String profilePic,
+     String? username,
+     String? profilePic,
   }) async =>
       APIWrapper.handleApiCall<bool>(
         APIService.put<Map<String, dynamic>>(
           path: 'user/update',
-          data: {
-            'profile_pic': profilePic,
-            'username': username,
+          data: <String, dynamic>{
+            if(profilePic != null)  'profile_pic': profilePic,
+            if(username != null)'username': username,
           },
         ).then(
           (Response<Map<String, dynamic>>? response) {

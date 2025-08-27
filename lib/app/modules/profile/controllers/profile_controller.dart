@@ -14,16 +14,15 @@ import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../utils/app_loader.dart';
+
 /// Profile Controller
 class ProfileController extends GetxController with WidgetsBindingObserver {
   /// image
   Rx<File> image = File('').obs;
 
   /// User
-  Rxn<MdProfile?> profile = Rxn<MdProfile>();
-
-  /// isEditing
-  RxBool isEditing = false.obs;
+  Rxn<MdProfile> profile = Rxn<MdProfile>();
 
   /// isLoading
   RxBool isLoading = false.obs;
@@ -85,9 +84,6 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
       },
     );
     super.onInit();
-    if (Get.arguments != null) {
-      user.value = Get.arguments['user'] as MdParticipant;
-    }
     getUser();
   }
 
@@ -99,9 +95,27 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
     super.onClose();
   }
 
+  @override
+  void didChangeMetrics() {
+    final double currentViewInsets = View.of(Get.context!).viewInsets.bottom;
+
+    if (_prevBottomInset() > 0 && currentViewInsets == 0) {
+      Future<void>.delayed(
+        const Duration(seconds: 1),
+        () {
+          if (Get.isBottomSheetOpen ?? false) {
+            Get.back();
+          }
+        },
+      );
+    }
+
+    _prevBottomInset.value = currentViewInsets;
+  }
+
   /// isCurrentUser
   bool get isCurrentUser =>
-      user().userData?.supabaseId == SupaBaseService.userId;
+      profile.value?.user?.supabaseId == SupaBaseService.userId;
 
   /// Observable to track keyboard visibility
   RxBool isKeyboardVisible = false.obs;
@@ -114,9 +128,6 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
 
   /// Text editing controller for chat input field
   TextEditingController nameInputController = TextEditingController();
-
-  /// On ready
-  Rx<MdParticipant> user = MdParticipant().obs;
 
   /// Pick Image Method
   Future<File?> pickImage({required ImageSource source}) async {
@@ -175,11 +186,11 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
 
   /// Update User
   Future<void> updateUser({
-    required String profilePic,
-    required String username,
+    String? profilePic,
+    String? username,
   }) async {
     try {
-      isEditing(true);
+      isLoading(true);
       final bool? _isUpdated = await ProfileApiRepo.updateUser(
         profilePic: profilePic,
         username: username,
@@ -195,7 +206,7 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
       logE('Error getting user: $e');
       logE(st);
     } finally {
-      isEditing(false);
+      isLoading(false);
     }
   }
 
@@ -204,21 +215,22 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
     required File pickedImage,
     required String folder,
   }) async {
+    Loader.show();
     try {
-      isEditing(true);
       final String? _uploadedUrl =
           await APIService.uploadFile(file: pickedImage, folder: folder);
       if (_uploadedUrl != null) {
+        Loader.dismiss();
         await updateUser(
           profilePic: _uploadedUrl,
-          username: profile()?.user?.username ?? '',
         );
       }
-    } on Exception catch (e, st) {
+    } on Exception catch (e) {
       logE('Error getting upload file: $e');
-      logE(st);
+      image(File(''));
+      Loader.dismiss();
     } finally {
-      isEditing(false);
+      Loader.dismiss();
     }
   }
 

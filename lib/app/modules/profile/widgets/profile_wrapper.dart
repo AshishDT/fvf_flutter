@@ -23,6 +23,7 @@ class ProfileWrapper extends StatelessWidget {
   Widget build(BuildContext context) => AppPlaceHolder(
         isLoading: isLoading,
         child: child,
+        padding: REdgeInsets.symmetric(horizontal: 24),
         placeHolder: Align(
           child: Column(
             children: <Widget>[

@@ -16,7 +16,6 @@ import '../modules/premium_winner/bindings/premium_winner_binding.dart';
 import '../modules/premium_winner/views/premium_winner_view.dart';
 import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/profile/views/profile_view.dart';
-import '../modules/profile/views/edit_profile_view.dart';
 import '../modules/snap_selfies/bindings/snap_selfies_binding.dart';
 import '../modules/snap_selfies/views/snap_selfies_view.dart';
 import '../modules/splash/bindings/splash_binding.dart';
@@ -50,11 +49,6 @@ class AppPages {
     GetPage(
       name: _Paths.PROFILE,
       page: () => const ProfileView(),
-      binding: ProfileBinding(),
-    ),
-    GetPage(
-      name: _Paths.EDIT_PROFILE,
-      page: () => const EditProfileView(),
       binding: ProfileBinding(),
     ),
     GetPage(

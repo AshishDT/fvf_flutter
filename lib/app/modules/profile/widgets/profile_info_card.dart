@@ -1,0 +1,47 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import '../../../data/config/app_colors.dart';
+import '../../../utils/app_text_style.dart';
+
+/// STATS CARD
+class ProfileInfoCard extends StatelessWidget {
+  /// Constructor
+  const ProfileInfoCard({
+    required this.value,
+    required this.title,
+    super.key,
+  });
+
+  /// Value
+  final String value;
+
+  /// Title
+  final String title;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+        width: 90.w,
+        child: Column(
+          children: <Widget>[
+            Text(
+              value,
+              style: GoogleFonts.fredoka(
+                fontSize: 24.sp,
+                color: AppColors.kFAFBFB,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            Text(
+              title,
+              style: AppTextStyle.openRunde(
+                fontSize: 14.sp,
+                color: AppColors.kFAFBFB,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      );
+}

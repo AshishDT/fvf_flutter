@@ -12,20 +12,22 @@ class EditProfileSheetRepo {
       context: Get.context!,
       useSafeArea: true,
       isScrollControlled: true,
-      isDismissible: !controller.isEditing(),
       useRootNavigator: true,
+      isDismissible: false,
       shape: RoundedRectangleBorder(
         borderRadius: const BorderRadius.vertical(
           top: Radius.circular(24),
         ).r,
       ),
-      builder: (BuildContext context) => WillPopScope(
-        onWillPop: () async => !controller.isEditing(),
-        child: SingleChildScrollView(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
+      builder: (BuildContext context) => Obx(
+        () => PopScope(
+          canPop: !controller.isLoading(),
+          child: SingleChildScrollView(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: child,
           ),
-          child: child,
         ),
       ),
     );

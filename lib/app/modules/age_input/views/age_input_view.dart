@@ -41,7 +41,7 @@ class AgeInputView extends GetView<AgeInputController> {
                     padding: REdgeInsets.symmetric(horizontal: 24),
                     children: <Widget>[
                       CommonAppBar(
-                        onBack: () {
+                        onTapOfLeading: () {
                           if (controller.creatingUser()) {
                             return;
                           }

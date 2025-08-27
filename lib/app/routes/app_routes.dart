@@ -8,7 +8,6 @@ abstract class Routes {
   static const SPLASH = _Paths.SPLASH;
   static const AUTH = _Paths.AUTH;
   static const CREATE_BET = _Paths.CREATE_BET;
-  static const PICK_CREW = _Paths.PICK_CREW;
   static const PROFILE = _Paths.PROFILE;
   static const EDIT_PROFILE = _Paths.EDIT_PROFILE;
   static const AI_CHOOSING = _Paths.AI_CHOOSING;
@@ -24,7 +23,6 @@ abstract class _Paths {
   static const SPLASH = '/splash';
   static const AUTH = '/auth';
   static const CREATE_BET = '/create-bet';
-  static const PICK_CREW = '/pick-crew';
   static const PROFILE = '/profile';
   static const EDIT_PROFILE = '/edit-profile';
   static const AI_CHOOSING = '/ai-choosing';

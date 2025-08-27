@@ -86,11 +86,55 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                 curve: Curves.easeInOut,
                 child: Obx(
                   () => Visibility(
+                    visible:
+                        controller.isHost() && !controller.isInvitationSend(),
+                    child: AppButton(
+                      buttonText: 'Pick your crew',
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          SvgPicture.asset(
+                            width: 18.w,
+                            height: 18.h,
+                            AppImages.shareIcon,
+                            colorFilter: const ColorFilter.mode(
+                              AppColors.kffffff,
+                              BlendMode.srcIn,
+                            ),
+                          ),
+                          8.horizontalSpace,
+                          Text(
+                            'Pick your crew',
+                            style: AppTextStyle.openRunde(
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.kffffff,
+                            ),
+                          ),
+                        ],
+                      ),
+                      onPressed: () {
+                        controller.shareUri();
+                      },
+                    ).paddingSymmetric(horizontal: 24),
+                  ),
+                ),
+              ),
+              AnimatedSize(
+                duration: const Duration(milliseconds: 300),
+                alignment: Alignment.bottomCenter,
+                curve: Curves.easeInOut,
+                child: Obx(
+                  () => Visibility(
                     replacement: const SizedBox(
                       width: double.infinity,
                     ),
-                    visible: !controller.isCurrentUserSelfieTaken() &&
-                        controller.secondsLeft() > 0,
+                    visible: controller.isHost()
+                        ? controller.isInvitationSend() &&
+                            (!controller.isCurrentUserSelfieTaken() &&
+                                controller.secondsLeft() > 0)
+                        : (!controller.isCurrentUserSelfieTaken() &&
+                            controller.secondsLeft() > 0),
                     child: AppButton(
                       buttonText: 'Snap Selfie',
                       isLoading: controller.submittingSelfie(),
@@ -125,7 +169,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                 child: AnimatedListView(
                   children: <Widget>[
                     CommonAppBar(
-                      onBack: () {
+                      onTapOfLeading: () {
                         DialogHelper.onBackOfAiChoosing(
                           onPositiveClick: () {
                             Get.offAllNamed(
@@ -193,7 +237,8 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                       child: Obx(
                         () => Visibility(
                           visible: controller.secondsLeft() > 0 &&
-                              controller.isHost(),
+                              controller.isHost() &&
+                              controller.isInvitationSend(),
                           child: TextButton(
                             onPressed: () {
                               controller.shareUri();

@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:fvf_flutter/app/modules/create_bet/widgets/bets_wrapper.dart';
@@ -44,16 +45,14 @@ class CreateBetView extends GetView<CreateBetController> {
                     padding: REdgeInsets.symmetric(horizontal: 24),
                     children: <Widget>[
                       CommonAppBar(
-                        onBack: () {
-                          if (controller.createRoundLoading()) {
-                            appSnackbar(
-                              message: 'Please wait, creating round...',
-                              snackbarState: SnackbarState.warning,
-                            );
-                            return;
-                          }
-                          Get.back();
-                        },
+                        leadingIcon: AppImages.menuIcon,
+                        actions: <Widget>[
+                          SvgPicture.asset(
+                            height: 24.h,
+                            width: 24.w,
+                            AppImages.notificationIcon,
+                          ),
+                        ],
                       ),
                       64.verticalSpace,
                       GradientCard(

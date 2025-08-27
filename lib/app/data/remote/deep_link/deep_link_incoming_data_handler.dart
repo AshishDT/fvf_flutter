@@ -5,7 +5,7 @@ import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:fvf_flutter/app/utils/app_loader.dart';
 import 'package:get/get.dart';
-import '../../../modules/pick_crew/repositories/pick_crew_api_repo.dart';
+import '../../../modules/snap_selfies/repositories/snap_selfie_api_repo.dart';
 import '../../config/logger.dart';
 import '../../models/md_deep_link_data.dart';
 import '../../models/md_join_invitation.dart';
@@ -67,7 +67,7 @@ Future<void> joinProjectInvitation(String invitationId) async {
   Loader.show();
 
   try {
-    final MdJoinInvitation? _joinedData = await PickCrewApiRepo.joinInvitation(
+    final MdJoinInvitation? _joinedData = await SnapSelfieApiRepo.joinInvitation(
       roundId: invitationId,
     );
 

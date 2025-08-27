@@ -1,12 +1,15 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
+import 'package:fvf_flutter/app/modules/ai_choosing/enums/round_status_enum.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_bet.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_round.dart';
 import 'package:fvf_flutter/app/modules/create_bet/repositories/create_bet_api_repo.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
+import '../../../data/models/md_join_invitation.dart';
 import '../../../data/remote/deep_link/deep_link_service.dart';
 import '../../../routes/app_pages.dart';
+import '../models/md_participant.dart';
 
 /// Create Bet Controller
 class CreateBetController extends GetxController with WidgetsBindingObserver {
@@ -147,8 +150,31 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
       if (_round != null) {
         unawaited(
           Get.toNamed(
-            Routes.PICK_CREW,
-            arguments: _round,
+            Routes.SNAP_SELFIES,
+            arguments: MdJoinInvitation(
+              id: _round.id ?? '',
+              createdAt: _round.createdAt?.toIso8601String(),
+              type: _round.id,
+              prompt: _round.prompt ?? '',
+              isCustomPrompt: _round.isCustomPrompt ?? false,
+              isActive: _round.isActive ?? false,
+              isDeleted: _round.isDeleted ?? false,
+              status: _round.status?.value,
+              updatedAt: _round.updatedAt?.toIso8601String(),
+              roundJoinedEndAt: _round.roundJoinedEndAt,
+              participants: <MdParticipant>[
+                MdParticipant(
+                  createdAt: DateTime.now().toIso8601String(),
+                  id: _round.host?.id ?? '',
+                  isActive: true,
+                  isDeleted: false,
+                  isHost: true,
+                  joinedAt: DateTime.now().toIso8601String(),
+                  userData: _round.host,
+                ),
+              ],
+              host: _round.host,
+            ),
           ),
         );
 

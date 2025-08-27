@@ -18,46 +18,51 @@ class CameraView extends GetView<PickSelfieCameraController> {
   @override
   Widget build(BuildContext context) => Scaffold(
         backgroundColor: AppColors.kF5FCFF,
+        bottomNavigationBar: Container(
+          height: 154.h,
+          width: Get.width,
+          color: AppColors.k000000,
+          child: Stack(
+            alignment: Alignment.center,
+            children: <Widget>[
+              GestureDetector(
+                onTap: (){
+                  controller.takePicture();
+                },
+                child: SvgPicture.asset(
+                  AppImages.clickSelfieIcon,
+                ),
+              ),
+
+              Positioned(
+                right: Get.width / 2 - 150,
+                child: GestureDetector(
+                  onTap: (){
+                    controller.flipCamera();
+                  },
+                  child: SvgPicture.asset(
+                    AppImages.flipCamera,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
         body: Obx(
           () {
             if (!controller.isCameraInitialized()) {
               return const Center(child: CircularProgressIndicator());
             }
 
-            return Stack(
-              fit: StackFit.expand,
-              children: <Widget>[
-                CameraPreview(
-                  controller.cameraController!,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      32.verticalSpace,
-                      _appBar(),
-                    ],
-                  ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: GestureDetector(
-                    onTap: () {
-                      controller.takePicture();
-                    },
-                    child: Container(
-                      height: 154.h,
-                      width: Get.width,
-                      color: AppColors.k000000.withValues(alpha: 0.12),
-                      child: Center(
-                        child: SvgPicture.asset(
-                          AppImages.clickSelfieIcon,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+            return CameraPreview(
+              controller.cameraController!,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  32.verticalSpace,
+                  _appBar(),
+                ],
+              ),
             );
           },
         ),

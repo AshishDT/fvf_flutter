@@ -4,7 +4,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
-import '../../../routes/app_pages.dart';
 import '../../../ui/components/animated_list_view.dart';
 import '../../../ui/components/app_button.dart';
 import '../../../ui/components/common_app_bar.dart';
@@ -24,12 +23,7 @@ class FailedRoundView extends GetView<FailedRoundController> {
         floatingActionButton: AppButton(
           buttonText: 'Let’s Go Again',
           onPressed: () {
-            Get
-              ..back()
-              ..toNamed(
-                Routes.PICK_CREW,
-                arguments: controller.round,
-              );
+            controller.onLetsGoAgain();
           },
         ).paddingSymmetric(horizontal: 24),
         body: GradientCard(

@@ -5,6 +5,8 @@ import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:get/get.dart';
 
+import '../../../routes/app_pages.dart';
+
 /// Selfie Avatar widget
 class SelfieAvatar extends StatelessWidget {
   /// Constructor for SelfieAvatar
@@ -93,36 +95,45 @@ class SelfieAvatar extends StatelessWidget {
 
     return Opacity(
       opacity: 1,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          if (showBorder)
-            AnimatedContainer(
-              duration: 300.milliseconds,
-              width: size.w + 4.w,
-              height: size.h + 4.w,
-              padding: REdgeInsets.all(2),
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                image: DecorationImage(
-                  image: AssetImage(AppImages.gradientCardBg),
-                  fit: BoxFit.cover,
+      child: GestureDetector(
+        onTap: () {
+          if (participant.isCurrentUser) {
+            Get.toNamed(
+              Routes.PROFILE,
+            );
+          }
+        },
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            if (showBorder)
+              AnimatedContainer(
+                duration: 300.milliseconds,
+                width: size.w + 4.w,
+                height: size.h + 4.w,
+                padding: REdgeInsets.all(2),
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    image: AssetImage(AppImages.gradientCardBg),
+                    fit: BoxFit.cover,
+                  ),
                 ),
+                child: avatarContent,
+              )
+            else
+              SizedBox(width: size.w, height: size.h, child: avatarContent),
+            2.verticalSpace,
+            Text(
+              participant.isCurrentUser ? 'You' : _userName(),
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
               ),
-              child: avatarContent,
-            )
-          else
-            SizedBox(width: size.w, height: size.h, child: avatarContent),
-          2.verticalSpace,
-          Text(
-            participant.isCurrentUser ? 'You' : _userName(),
-            style: TextStyle(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w500,
-              color: Colors.white,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

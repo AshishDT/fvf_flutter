@@ -115,4 +115,46 @@ class PickSelfieCameraController extends GetxController {
       isCapturing(false);
     }
   }
+
+  /// Flip camera
+  Future<void> flipCamera() async {
+    if (cameraController == null || !cameraController!.value.isInitialized) {
+      logE('Camera not ready');
+      return;
+    }
+
+    try {
+      final CameraLensDirection currentDirection =
+          cameraController!.description.lensDirection;
+
+      final List<CameraDescription> cameras = await availableCameras();
+
+      CameraDescription newCamera;
+
+      if (currentDirection == CameraLensDirection.front) {
+        newCamera = cameras.firstWhere(
+          (CameraDescription cam) =>
+              cam.lensDirection == CameraLensDirection.back,
+        );
+      } else {
+        newCamera = cameras.firstWhere(
+          (CameraDescription cam) =>
+              cam.lensDirection == CameraLensDirection.front,
+        );
+      }
+
+      cameraController = CameraController(
+        newCamera,
+        ResolutionPreset.high,
+        enableAudio: false,
+      );
+
+      initializeControllerFuture = cameraController!.initialize();
+
+      await initializeControllerFuture;
+      isCameraInitialized.value = true;
+    } on Exception catch (e) {
+      logE('Flip camera error: $e');
+    }
+  }
 }

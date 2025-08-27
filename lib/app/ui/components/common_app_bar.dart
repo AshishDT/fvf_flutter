@@ -10,7 +10,7 @@ class CommonAppBar extends StatelessWidget {
   const CommonAppBar({
     super.key,
     this.actions,
-    this.onBack,
+    this.onTapOfLeading,
     this.leadingIconColor,
     this.leadingIcon,
   });
@@ -19,7 +19,7 @@ class CommonAppBar extends StatelessWidget {
   final List<Widget>? actions;
 
   /// On Back
-  final void Function()? onBack;
+  final void Function()? onTapOfLeading;
 
   /// leadingIconColor
   final Color? leadingIconColor;
@@ -36,7 +36,7 @@ class CommonAppBar extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             GestureDetector(
-              onTap: onBack ?? () => Get.back(),
+              onTap: onTapOfLeading ?? () => Get.back(),
               child: SvgPicture.asset(
                 leadingIcon ?? AppImages.backIcon,
                 width: 24.w,

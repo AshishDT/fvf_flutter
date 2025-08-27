@@ -75,6 +75,7 @@ class SnapSelfiesController extends GetxController {
     stopTimer();
     _textsTimer?.cancel();
     socketIoRepo.dispose();
+    stopTimer();
     super.onClose();
   }
 
@@ -121,6 +122,9 @@ class SnapSelfiesController extends GetxController {
 
   /// Submitting selfie
   RxBool submittingSelfie = false.obs;
+
+  /// Is invitation send
+  RxBool isInvitationSend = false.obs;
 
   /// Socket IO repository
   final SocketIoRepo socketIoRepo = SocketIoRepo();
@@ -193,33 +197,32 @@ class SnapSelfiesController extends GetxController {
 
   /// Fallback to start again
   void _fallBackToStartAgain() {
-    Get
-      ..until(
-        (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
-      )
-      ..toNamed(
-        Routes.FAILED_ROUND,
-        arguments: <String, dynamic>{
-          'reason': 'Not enough selfies taken to start the round!',
-          'round': MdRound(
-            createdAt:
-                DateTime.tryParse(joinedInvitationData().createdAt ?? ''),
-            isActive: joinedInvitationData().isActive,
-            isDeleted: joinedInvitationData().isDeleted,
-            status:
-                RoundStatusX.fromString(joinedInvitationData().status ?? ''),
-            participants: <MdParticipant>[],
-            isCustomPrompt: joinedInvitationData().isCustomPrompt,
-            updatedAt:
-                DateTime.tryParse(joinedInvitationData().updatedAt ?? ''),
-            host: joinedInvitationData().host,
-            id: joinedInvitationData().id,
-            prompt: joinedInvitationData().prompt,
-            roundJoinedEndAt: joinedInvitationData().roundJoinedEndAt,
-          ),
-          'sub_reason': ' Please ask your friends to join again.',
-        },
-      );
+    final Map<String, dynamic> currentArgs = <String, dynamic>{
+      'reason': 'Not enough selfies taken to start the round!',
+      'round': MdRound(
+        createdAt: DateTime.tryParse(joinedInvitationData().createdAt ?? ''),
+        isActive: joinedInvitationData().isActive,
+        isDeleted: joinedInvitationData().isDeleted,
+        status: RoundStatusX.fromString(joinedInvitationData().status ?? ''),
+        participants: <MdParticipant>[],
+        isCustomPrompt: joinedInvitationData().isCustomPrompt,
+        updatedAt: DateTime.tryParse(joinedInvitationData().updatedAt ?? ''),
+        host: joinedInvitationData().host,
+        id: joinedInvitationData().id,
+        prompt: joinedInvitationData().prompt,
+        roundJoinedEndAt: joinedInvitationData().roundJoinedEndAt,
+      ),
+      'sub_reason': ' Please ask your friends to join again.',
+    };
+
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        Get.offNamed(
+          Routes.FAILED_ROUND,
+          arguments: currentArgs,
+        );
+      },
+    );
   }
 
   /// Stops the timer
@@ -298,12 +301,18 @@ class SnapSelfiesController extends GetxController {
       final Uri uri = Uri.parse(_invitationLink);
 
       unawaited(
-        SharePlus.instance.share(
+        SharePlus.instance
+            .share(
           ShareParams(
             uri: uri,
             title: 'Slay',
             subject: 'Slay Invitation',
           ),
+        )
+            .then(
+          (ShareResult result) {
+            isInvitationSend(true);
+          },
         ),
       );
     } on Exception {

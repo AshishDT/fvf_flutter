@@ -100,4 +100,13 @@ class AppImages {
 
   /// Share Icon Shadow
   static const String shareIconShadow = '$_svgPath/share_icon_shadow.svg';
+
+  /// Flip camera icon
+  static const String flipCamera = '$_svgPath/flip_camera.svg';
+
+  /// Menu icon
+  static const String menuIcon = '$_svgPath/menu_icon.svg';
+
+  /// Notification icon
+  static const String notificationIcon = '$_svgPath/notification_icon.svg';
 }

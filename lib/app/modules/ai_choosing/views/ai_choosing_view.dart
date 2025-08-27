@@ -79,7 +79,7 @@ class AiChoosingView extends GetView<AiChoosingController> {
                   children: <Widget>[
                     CommonAppBar(
                       leadingIcon: AppImages.closeIconWhite,
-                      onBack: () {
+                      onTapOfLeading: () {
                         DialogHelper.onBackOfAiChoosing(
                           onPositiveClick: () {
                             Get.offAllNamed(

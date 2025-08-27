@@ -150,7 +150,7 @@ class WinnerView extends GetView<WinnerController> {
   /// App bar
   Widget _appBar() => CommonAppBar(
         leadingIcon: AppImages.closeIconWhite,
-        onBack: () {
+        onTapOfLeading: () {
           DialogHelper.onBackOfWinner(
             onPositiveClick: () {
               Get.offAllNamed(

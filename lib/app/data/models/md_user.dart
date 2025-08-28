@@ -27,6 +27,8 @@ class MdUser {
     this.isActive,
     this.isDeleted,
     this.token,
+    this.bio,
+    this.badge,
   });
 
   /// From JSON
@@ -64,6 +66,8 @@ class MdUser {
         isActive: json['is_active'],
         isDeleted: json['is_deleted'],
         token: json['token'],
+        bio: json['bio'],
+        badge: json['badge'],
       );
 
   /// Su
@@ -135,6 +139,12 @@ class MdUser {
   /// Token
   String? token;
 
+  /// Bio
+  String? bio;
+
+  /// Badge
+  String? badge;
+
   /// To JSON
   Map<String, dynamic> toJson() => <String, dynamic>{
         'supabase_id': supabaseId,
@@ -160,6 +170,8 @@ class MdUser {
         'is_active': isActive,
         'is_deleted': isDeleted,
         'token': token,
+        'bio': bio,
+        'badge': badge,
       };
 
   /// To json

@@ -36,7 +36,7 @@ class ProfileView extends GetView<ProfileController> {
                             .participants()[controller.currentRank()]
                             .selfieUrl ??
                         ''
-                    : controller.profile()?.user?.profileUrl ?? '',
+                    : controller.profile().user?.profileUrl ?? '',
                 width: 1.sw,
                 height: 1.sh,
                 fit: BoxFit.cover,
@@ -137,5 +137,5 @@ class ProfileView extends GetView<ProfileController> {
 
   /// Can show empty profile
   bool _canShowEmptyProfile() => !controller.isLoading() &&
-        (controller.profile()?.user?.profileUrl?.isEmpty ?? true);
+        (controller.profile().user?.profileUrl?.isEmpty ?? true);
 }

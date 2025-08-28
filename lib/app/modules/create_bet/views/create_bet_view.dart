@@ -6,6 +6,7 @@ import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:fvf_flutter/app/modules/create_bet/widgets/bets_wrapper.dart';
 import 'package:fvf_flutter/app/modules/create_bet/widgets/keyboard_aware_sheet.dart';
+import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/animated_list_view.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
 import 'package:fvf_flutter/app/ui/components/chat_field_sheet_repo.dart';
@@ -47,10 +48,17 @@ class CreateBetView extends GetView<CreateBetController> {
                       CommonAppBar(
                         leadingIcon: AppImages.menuIcon,
                         actions: <Widget>[
-                          SvgPicture.asset(
-                            height: 24.h,
-                            width: 24.w,
-                            AppImages.notificationIcon,
+                          GestureDetector(
+                            onTap: (){
+                              Get.toNamed(
+                                Routes.PROFILE,
+                              );
+                            },
+                            child: SvgPicture.asset(
+                              height: 24.h,
+                              width: 24.w,
+                              AppImages.notificationIcon,
+                            ),
                           ),
                         ],
                       ),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fvf_flutter/app/ui/components/app_placeholder.dart';
 import 'package:fvf_flutter/app/ui/components/placeholder_card.dart';
-import 'package:get/get.dart';
 
 /// Profile Wrapper Widget
 class ProfileWrapper extends StatelessWidget {
@@ -27,42 +26,82 @@ class ProfileWrapper extends StatelessWidget {
         placeHolder: Align(
           child: Column(
             children: <Widget>[
-              36.verticalSpace,
+              24.verticalSpace,
               PlaceholderCard(
-                height: 100.h,
-                width: 100.w,
-                radius: 500.r,
+                height: 30.h,
+                width: 150.w,
+                radius: 12,
               ),
-              30.verticalSpace,
-              _buildPlaceholderCard(width: 100.w),
-              16.verticalSpace,
+              8.verticalSpace,
               Row(
-                spacing: 10.w,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  const Spacer(),
-                  _buildPlaceholderCard(),
-                  _buildPlaceholderCard(),
-                  _buildPlaceholderCard(),
-                  const Spacer(),
+                  PlaceholderCard(
+                    height: 25.h,
+                    width: 100.w,
+                    radius: 12,
+                  ),
+                  10.horizontalSpace,
+                  PlaceholderCard(
+                    height: 25.h,
+                    width: 100.w,
+                    radius: 12,
+                  ),
+                  10.horizontalSpace,
+                  PlaceholderCard(
+                    height: 25.h,
+                    width: 100.w,
+                    radius: 12,
+                  ),
                 ],
               ),
-              50.verticalSpace,
-              ...List.generate(
-                3,
-                (int index) => PlaceholderCard(
-                  height: 100.h,
-                  width: 1.sw,
-                  radius: 15,
-                ).paddingOnly(bottom: 8.h),
-              ).toList(),
+              24.verticalSpace,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  PlaceholderCard(
+                    height: 45.h,
+                    width: 45.w,
+                    radius: 5,
+                  ),
+                  10.horizontalSpace,
+                  PlaceholderCard(
+                    height: 45.h,
+                    width: 45.w,
+                    radius: 5,
+                  ),
+                  10.horizontalSpace,
+                  PlaceholderCard(
+                    height: 45.h,
+                    width: 45.w,
+                    radius: 5,
+                  ),
+                ],
+              ),
+              24.verticalSpace,
+              const Expanded(
+                child: PlaceholderCard(
+                  height: double.infinity,
+                  width: double.infinity,
+                  radius: 16,
+                ),
+              ),
+              24.verticalSpace,
+              PlaceholderCard(
+                height: 25.h,
+                width: 200.w,
+                radius: 12,
+              ),
+              20.verticalSpace,
+              PlaceholderCard(
+                height: 25.h,
+                width: 25.w,
+                radius: 12,
+              ),
+              36.verticalSpace,
             ],
           ),
         ),
       );
 
-  Widget _buildPlaceholderCard({double? width}) => PlaceholderCard(
-        height: 15.h,
-        width: width ?? 80.w,
-        radius: 2,
-      );
 }

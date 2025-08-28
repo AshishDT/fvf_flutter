@@ -29,12 +29,17 @@ class ProfileHeaderSection extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text(
-                controller.profile()?.user?.username ?? 'Add Name',
-                style: AppTextStyle.openRunde(
-                  color: AppColors.kffffff,
-                  fontSize: 32.sp,
-                  fontWeight: FontWeight.w600,
+              GestureDetector(
+                onTap: () => EditProfileSheetRepo.openEditProfile(
+                  const EditDataSheet(),
+                ),
+                child: Text(
+                  controller.profile()?.user?.username ?? 'Add Name',
+                  style: AppTextStyle.openRunde(
+                    color: AppColors.kffffff,
+                    fontSize: 32.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
               if (controller.isCurrentUser) ...<Widget>[

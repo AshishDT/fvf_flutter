@@ -18,7 +18,7 @@ class EditDataSheet extends GetView<ProfileController> {
   @override
   Widget build(BuildContext context) {
     controller.nameInputController.text =
-        controller.profile()?.user?.username ?? 'Anonymous';
+        controller.profile()?.user?.username ?? '';
     return GradientCard(
       alignment: AlignmentDirectional.topStart,
       borderRadius: BorderRadius.vertical(
@@ -59,7 +59,7 @@ class EditDataSheet extends GetView<ProfileController> {
               ),
               textInputAction: TextInputAction.go,
               decoration: InputDecoration(
-                hintText: 'Update your name',
+                hintText: 'Name',
                 prefixIconConstraints: BoxConstraints(
                   maxHeight: 24.h,
                   maxWidth: 24.w,

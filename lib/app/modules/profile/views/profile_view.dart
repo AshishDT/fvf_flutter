@@ -110,13 +110,7 @@ class ProfileView extends GetView<ProfileController> {
                                 24.verticalSpace,
                                 Obx(
                                   () => Visibility(
-                                    visible: !controller.isLoading() &&
-                                        (controller
-                                                .profile()
-                                                ?.user
-                                                ?.profileUrl
-                                                ?.isEmpty ??
-                                            true),
+                                    visible: _canShowEmptyProfile(),
                                     child: const EmptyProfilePlaceholder(),
                                   ),
                                 ),
@@ -140,4 +134,8 @@ class ProfileView extends GetView<ProfileController> {
           ],
         ),
       );
+
+  /// Can show empty profile
+  bool _canShowEmptyProfile() => !controller.isLoading() &&
+        (controller.profile()?.user?.profileUrl?.isEmpty ?? true);
 }

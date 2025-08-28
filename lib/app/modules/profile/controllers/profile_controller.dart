@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/data/models/md_join_invitation.dart';
@@ -225,10 +226,14 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
           profilePic: _uploadedUrl,
         );
       }
-    } on Exception catch (e) {
+    } on DioException catch (e) {
       logE('Error getting upload file: $e');
       image(File(''));
       Loader.dismiss();
+      appSnackbar(
+        message: 'Profile upload failed, please try again.',
+        snackbarState: SnackbarState.danger,
+      );
     } finally {
       Loader.dismiss();
     }

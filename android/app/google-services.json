@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "109736745561",
+    "project_id": "slay-bf688",
+    "storage_bucket": "slay-bf688.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:109736745561:android:c15c7b4066879420b16f48",
+        "android_client_info": {
+          "package_name": "com.slay.org.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHFihn2Mt6mvQK1Hd78mDc-133rEGLFAs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

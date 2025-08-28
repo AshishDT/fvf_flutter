@@ -1,11 +1,15 @@
 import 'dart:async';
-import 'package:flutter/cupertino.dart';
+
+import 'package:flutter/material.dart';
+import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/enums/round_status_enum.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_bet.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_round.dart';
 import 'package:fvf_flutter/app/modules/create_bet/repositories/create_bet_api_repo.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
+import 'package:smart_auth/smart_auth.dart';
+
 import '../../../data/config/logger.dart';
 import '../../../data/local/user_provider.dart';
 import '../../../data/models/md_join_invitation.dart';
@@ -17,6 +21,18 @@ import '../models/md_participant.dart';
 
 /// Create Bet Controller
 class CreateBetController extends GetxController with WidgetsBindingObserver {
+  /// Scaffold key
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
+  /// Phone controller
+  final TextEditingController phoneController = TextEditingController();
+
+  /// Smart auth instance
+  final SmartAuth smartAuth = SmartAuth.instance;
+
+  /// isSmartAuthShowed
+  RxBool isSmartAuthShowed = false.obs;
+
   /// On init
   @override
   void onInit() {
@@ -217,4 +233,27 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
       logE(st);
     }
   }
+
+  /// Request phone hint
+  Future<void> requestPhoneHint(TextEditingController controller) async {
+    try {
+      if (isSmartAuthShowed()) {
+        return;
+      }
+      final SmartAuthResult<String> result =
+          await smartAuth.requestPhoneNumberHint();
+      isSmartAuthShowed(true);
+      if (result.hasData) {
+        logI('Phone number hint: ${result.data}');
+        // final String phone = removeUSIndiaCountryCode(result.data ?? '');
+        controller.text = result.data ?? '';
+      }
+    } catch (e) {
+      logE('SmartAuth error: $e');
+    }
+  }
+
+  /// Remove US/India country code from phone number
+  String removeUSIndiaCountryCode(String input) =>
+      input.replaceFirst(RegExp(r'^\+?(1|91)\s?'), '').trim();
 }

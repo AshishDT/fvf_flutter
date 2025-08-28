@@ -34,7 +34,7 @@ class ProfileHeaderSection extends StatelessWidget {
                   const EditDataSheet(),
                 ),
                 child: Text(
-                  controller.profile()?.user?.username ?? 'Add Name',
+                  controller.profile().user?.username ?? 'Add Name',
                   style: AppTextStyle.openRunde(
                     color: AppColors.kffffff,
                     fontSize: 32.sp,
@@ -77,44 +77,55 @@ class ProfileHeaderSection extends StatelessWidget {
           8.verticalSpace,
 
           /// Streak Chips
-          Row(
-            spacing: 8.w,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              StreakChip(
-                iconPath: AppImages.trophyIcon,
-                title: '${controller.profile()?.user?.totalWins ?? 0} Winner',
-                bgColor: AppColors.k09DB84.withValues(alpha: .58),
-              ),
-              StreakChip(
-                iconPath: AppImages.fireIcon,
-                title:
-                    '${controller.profile()?.user?.winnerStreakCount ?? 0} Days',
-                bgColor: AppColors.kFFC300.withValues(alpha: .87),
-              ),
-              StreakChip(
-                iconPath: AppImages.emojiIcon,
-                title: 'Funniest',
-                bgColor: AppColors.kEE4AD1.withValues(alpha: .88),
-              ),
-            ],
-          ),
-          24.verticalSpace,
+          if (_canShowBadge() ||
+              _canShowDailyFvf() ||
+              _canShowWinnerStreak()) ...<Widget>[
+            Row(
+              spacing: 8.w,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                if (_canShowWinnerStreak()) ...<Widget>[
+                  StreakChip(
+                    iconPath: AppImages.trophyIcon,
+                    title:
+                        '${controller.profile().user?.winnerStreakCount ?? 0}x Winner',
+                    bgColor: AppColors.k09DB84.withValues(alpha: .58),
+                  ),
+                ],
+                if (_canShowDailyFvf()) ...<Widget>[
+                  StreakChip(
+                    iconPath: AppImages.fireIcon,
+                    title:
+                        '${controller.profile().user?.dailyTeamFvfCount ?? 0} Days',
+                    bgColor: AppColors.kFFC300.withValues(alpha: .87),
+                  ),
+                ],
+                if (_canShowBadge()) ...<Widget>[
+                  StreakChip(
+                    iconPath: AppImages.emojiIcon,
+                    title: controller.profile().user?.badge ?? '',
+                    bgColor: AppColors.kEE4AD1.withValues(alpha: .88),
+                  ),
+                ],
+              ],
+            ),
+            24.verticalSpace,
+          ],
 
           /// Stats
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               ProfileInfoCard(
-                value: '${controller.profile()?.round?.winsCount ?? 0}',
+                value: '${controller.profile().round?.winsCount ?? 0}',
                 title: 'Wins',
               ),
               ProfileInfoCard(
-                value: '${controller.profile()?.round?.totalRound ?? 0}',
+                value: '${controller.profile().round?.totalRound ?? 0}',
                 title: 'Rounds',
               ),
-              const ProfileInfoCard(
-                value: '91',
+               ProfileInfoCard(
+                value: '${controller.profile().round?.emojiCount ?? 0}',
                 title: 'Reactions',
               ),
             ],
@@ -122,4 +133,14 @@ class ProfileHeaderSection extends StatelessWidget {
           152.verticalSpace,
         ],
       );
+
+  bool _canShowBadge() =>
+      controller.profile().user?.badge != null &&
+      (controller.profile().user?.badge?.isNotEmpty ?? false);
+
+  bool _canShowDailyFvf() =>
+      (controller.profile().user?.dailyTeamFvfCount ?? 0) > 0;
+
+  bool _canShowWinnerStreak() =>
+      (controller.profile().user?.winnerStreakCount ?? 0) > 0;
 }

@@ -18,51 +18,62 @@ class CameraView extends GetView<PickSelfieCameraController> {
   @override
   Widget build(BuildContext context) => Scaffold(
         backgroundColor: AppColors.kF5FCFF,
-        bottomNavigationBar: Container(
-          height: 154.h,
-          width: Get.width,
-          color: AppColors.k000000,
-          child: Stack(
-            alignment: Alignment.center,
-            children: <Widget>[
-              GestureDetector(
-                onTap: (){
-                  controller.takePicture();
-                },
-                child: SvgPicture.asset(
-                  AppImages.clickSelfieIcon,
-                ),
-              ),
-
-              Positioned(
-                right: Get.width / 2 - 150,
-                child: GestureDetector(
-                  onTap: (){
-                    controller.flipCamera();
-                  },
-                  child: SvgPicture.asset(
-                    AppImages.flipCamera,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
         body: Obx(
           () {
             if (!controller.isCameraInitialized()) {
               return const Center(child: CircularProgressIndicator());
             }
 
-            return CameraPreview(
-              controller.cameraController!,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  32.verticalSpace,
-                  _appBar(),
-                ],
-              ),
+            return Column(
+              children: <Widget>[
+                CameraPreview(
+                  controller.cameraController!,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      32.verticalSpace,
+                      _appBar(),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    width: Get.width,
+                    color: AppColors.k000000,
+                    constraints: BoxConstraints(
+                      maxHeight: 155.h,
+                      minHeight: 152.h,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        SizedBox(
+                          width: 56.w,
+                          height: 56.h,
+                        ),
+                        50.horizontalSpace,
+                        GestureDetector(
+                          onTap: (){
+                            controller.takePicture();
+                          },
+                          child: SvgPicture.asset(
+                            AppImages.clickSelfieIcon,
+                          ),
+                        ),
+                        50.horizontalSpace,
+                        GestureDetector(
+                          onTap: (){
+                            controller.flipCamera();
+                          },
+                          child: SvgPicture.asset(
+                            AppImages.flipCamera,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             );
           },
         ),

@@ -41,11 +41,21 @@ class CommonAppBar extends StatelessWidget {
                 leadingIcon ?? AppImages.backIcon,
                 width: 24.w,
                 height: 24.h,
-                color: leadingIconColor,
+                colorFilter: leadingIconColor != null
+                    ? ColorFilter.mode(
+                        leadingIconColor!,
+                        BlendMode.srcIn,
+                      )
+                    : null,
               ),
             ),
             40.horizontalSpace,
-            if (actions != null) ...actions!,
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                if (actions != null) ...actions!,
+              ],
+            )
           ],
         ),
       );

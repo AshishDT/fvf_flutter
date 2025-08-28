@@ -23,7 +23,7 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
   Rx<File> image = File('').obs;
 
   /// User
-  Rxn<MdProfile> profile = Rxn<MdProfile>();
+  Rx<MdProfile> profile = MdProfile().obs;
 
   /// isLoading
   RxBool isLoading = false.obs;
@@ -116,7 +116,7 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
 
   /// isCurrentUser
   bool get isCurrentUser =>
-      profile.value?.user?.supabaseId == SupaBaseService.userId;
+      profile.value.user?.supabaseId == SupaBaseService.userId;
 
   /// Observable to track keyboard visibility
   RxBool isKeyboardVisible = false.obs;

@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/modules/snap_selfies/widgets/animated_switcher.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
@@ -15,7 +16,8 @@ import '../../../ui/components/common_app_bar.dart';
 import '../../../utils/app_text_style.dart';
 import '../../../utils/dialog_helper.dart';
 import '../controllers/snap_selfies_controller.dart';
-import '../widgets/selfie_avatar.dart';
+import '../widgets/selfie_avatar_icon.dart';
+import '../widgets/user_self_participant_card.dart';
 
 /// Snap selfies view
 class SnapSelfiesView extends GetView<SnapSelfiesController> {
@@ -45,17 +47,28 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-                        Text(
-                          '${controller.secondsLeft().toString()}s',
-                          style: AppTextStyle.openRunde(
-                            fontSize: 24.sp,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.kF6FCFE,
-                          ),
-                        ).paddingSymmetric(horizontal: 24),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            SvgPicture.asset(
+                              AppImages.timerIcon,
+                              height: 24.h,
+                              width: 24.w,
+                            ),
+                            Text(
+                              '${controller.secondsLeft().toString()}s',
+                              style: AppTextStyle.openRunde(
+                                fontSize: 24.sp,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.kF6FCFE,
+                              ),
+                            ),
+                          ],
+                        ),
                         16.verticalSpace
                       ],
-                    ),
+                    ).paddingSymmetric(horizontal: 24),
                   ),
                 ),
               ),
@@ -89,7 +102,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                     visible:
                         controller.isHost() && !controller.isInvitationSend(),
                     child: AppButton(
-                      buttonText: 'Pick your crew',
+                      buttonText: 'Add Friends',
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
@@ -104,7 +117,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                           ),
                           8.horizontalSpace,
                           Text(
-                            'Pick your crew',
+                            'Add Friends',
                             style: AppTextStyle.openRunde(
                               fontSize: 18.sp,
                               fontWeight: FontWeight.w700,
@@ -136,7 +149,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                         : (!controller.isCurrentUserSelfieTaken() &&
                             controller.secondsLeft() > 0),
                     child: AppButton(
-                      buttonText: 'Snap Selfie',
+                      buttonText: 'Snap Pic',
                       isLoading: controller.submittingSelfie(),
                       onPressed: controller.onSnapSelfie,
                     ).paddingSymmetric(horizontal: 24),
@@ -187,14 +200,6 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                       ],
                     ).paddingSymmetric(horizontal: 24),
                     64.verticalSpace,
-                    Image(
-                      height: 147.h,
-                      width: 150.w,
-                      image: const AssetImage(
-                        AppImages.appLogo,
-                      ),
-                    ),
-                    24.verticalSpace,
                     ConstrainedBox(
                       constraints: BoxConstraints(maxHeight: 120.h),
                       child: Obx(
@@ -212,15 +217,26 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                       ).paddingSymmetric(horizontal: 24),
                     ),
                     48.verticalSpace,
+                    Obx(
+                      () => CurrentUserSelfieAvatar(
+                        participant: controller.selfParticipant(),
+                        userName: UserProvider.currentUser?.username,
+                      ),
+                    ),
+                    24.verticalSpace,
                     Align(
                       child: SingleChildScrollView(
+                        padding: EdgeInsets.zero,
                         scrollDirection: Axis.horizontal,
                         child: Obx(
                           () => Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
-                              ...controller.participants().map(
-                                    (MdParticipant participant) => SelfieAvatar(
+                              ...controller
+                                  .participantsWithoutCurrentUser()
+                                  .map(
+                                    (MdParticipant participant) =>
+                                        SelfieAvatarIcon(
                                       participant: participant,
                                     ).paddingOnly(right: 32),
                                   ),

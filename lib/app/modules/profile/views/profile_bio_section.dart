@@ -13,7 +13,8 @@ import '../controllers/profile_controller.dart';
 class ProfileBioSection extends StatelessWidget {
   /// Constructor
   const ProfileBioSection({
-    required this.controller, super.key,
+    required this.controller,
+    super.key,
   });
 
   /// Controller
@@ -22,16 +23,20 @@ class ProfileBioSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
         children: <Widget>[
-          Text(
-            'This is tom, he is cool. BDE frfr.',
-            textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 20.sp,
-              color: AppColors.kffffff,
-              fontWeight: FontWeight.w600,
+          if (controller.profile().user?.bio != null &&
+              (controller.profile().user?.bio?.isNotEmpty ??
+                  false)) ...<Widget>[
+            Text(
+              controller.profile().user?.bio ?? '',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(
+                fontSize: 20.sp,
+                color: AppColors.kffffff,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
-          16.verticalSpace,
+            16.verticalSpace,
+          ],
           IconButton(
             padding: EdgeInsets.zero,
             constraints: BoxConstraints(minWidth: 56.w, minHeight: 56.w),

@@ -83,7 +83,7 @@ class MdJoinInvitation {
   final bool? isDeleted;
 
   /// Round joined end at
-  final DateTime? roundJoinedEndAt;
+  DateTime? roundJoinedEndAt;
 
   /// Reveal at
   final String? revealAt;

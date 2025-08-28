@@ -27,6 +27,9 @@ class MdUser {
     this.isActive,
     this.isDeleted,
     this.token,
+    this.bio,
+    this.badge,
+    this.emojiCount,
   });
 
   /// From JSON
@@ -64,6 +67,9 @@ class MdUser {
         isActive: json['is_active'],
         isDeleted: json['is_deleted'],
         token: json['token'],
+        bio: json['bio'],
+        badge: json['badge'],
+        emojiCount: json['emoji_count'],
       );
 
   /// Su
@@ -135,6 +141,15 @@ class MdUser {
   /// Token
   String? token;
 
+  /// Bio
+  String? bio;
+
+  /// Badge
+  String? badge;
+
+  /// Emoji count
+  int? emojiCount;
+
   /// To JSON
   Map<String, dynamic> toJson() => <String, dynamic>{
         'supabase_id': supabaseId,
@@ -146,9 +161,9 @@ class MdUser {
         'profile_pic': profilePic,
         'profile_url': profileUrl,
         'link_supabase_id': linkSupabaseId,
-        'last_team_fvf_round_at': lastTeamFvfRoundAt,
-        'winner_streak_updated_at': winnerStreakUpdatedAt,
-        'last_active_at': lastActiveAt,
+        'last_team_fvf_round_at': lastTeamFvfRoundAt?.toIso8601String(),
+        'winner_streak_updated_at': winnerStreakUpdatedAt?.toIso8601String(),
+        'last_active_at': lastActiveAt?.toIso8601String(),
         'id': id,
         'createdAt': createdAt?.toIso8601String(),
         'updatedAt': updatedAt?.toIso8601String(),
@@ -160,6 +175,9 @@ class MdUser {
         'is_active': isActive,
         'is_deleted': isDeleted,
         'token': token,
+        'bio': bio,
+        'badge': badge,
+        'emoji_count': emojiCount,
       };
 
   /// To json

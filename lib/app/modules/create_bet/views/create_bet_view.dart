@@ -7,6 +7,7 @@ import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:fvf_flutter/app/modules/create_bet/widgets/bets_wrapper.dart';
 import 'package:fvf_flutter/app/modules/create_bet/widgets/drawer.dart';
 import 'package:fvf_flutter/app/modules/create_bet/widgets/keyboard_aware_sheet.dart';
+import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/animated_list_view.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
 import 'package:fvf_flutter/app/ui/components/chat_field_sheet_repo.dart';
@@ -19,6 +20,7 @@ import '../../../ui/components/common_app_bar.dart';
 import '../../../ui/components/gradient_card.dart';
 import '../controllers/create_bet_controller.dart';
 import '../widgets/dice_roller.dart';
+import '../widgets/profile_avatar.dart';
 
 /// Create Bet View
 class CreateBetView extends GetView<CreateBetController> {
@@ -59,6 +61,18 @@ class CreateBetView extends GetView<CreateBetController> {
                             height: 24.h,
                             width: 24.w,
                             AppImages.notificationIcon,
+                          ),
+                          10.horizontalSpace,
+                          Obx(
+                            () => ProfileAvatar(
+                              profileUrl:
+                                  controller.profile().user?.profileUrl ?? '',
+                              onTap: () {
+                                Get.toNamed(
+                                  Routes.PROFILE,
+                                );
+                              },
+                            ),
                           ),
                         ],
                       ),

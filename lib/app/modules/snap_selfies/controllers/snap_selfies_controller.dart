@@ -5,9 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/data/config/env_config.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
-import 'package:fvf_flutter/app/modules/ai_choosing/enums/round_status_enum.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
-import 'package:fvf_flutter/app/modules/create_bet/models/md_round.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
@@ -86,6 +84,14 @@ class SnapSelfiesController extends GetxController {
   RxBool get isHost =>
       (joinedInvitationData().host?.supabaseId == SupaBaseService.userId).obs;
 
+  /// Self participant
+  Rx<MdParticipant> get selfParticipant => participants()
+      .firstWhere(
+        (MdParticipant participant) => participant.isCurrentUser,
+        orElse: () => MdParticipant(),
+      )
+      .obs;
+
   /// Participants
   RxList<MdParticipant> get participants {
     final List<MdParticipant> list =
@@ -105,8 +111,20 @@ class SnapSelfiesController extends GetxController {
     return list.obs;
   }
 
+  /// Participants without current user
+  RxList<MdParticipant> get participantsWithoutCurrentUser {
+    final List<MdParticipant> list = joinedInvitationData()
+            .participants
+            ?.where(
+              (MdParticipant participant) => !participant.isCurrentUser,
+            )
+            .toList() ??
+        <MdParticipant>[];
+    return list.obs;
+  }
+
   /// Seconds left for the timer
-  RxInt secondsLeft = 300.obs;
+  RxInt secondsLeft = 0.obs;
 
   /// Timer for countdown
   Timer? _timer;
@@ -152,28 +170,23 @@ class SnapSelfiesController extends GetxController {
       secondsLeft.value = 300;
     } else {
       final DateTime localEndTime = endTime.toLocal();
-      final int diffInSeconds =
-          localEndTime.difference(DateTime.now()).inSeconds;
 
-      if (diffInSeconds <= 0) {
-        _handleTimeUp();
-        return;
-      }
+      _timer = Timer.periodic(
+        const Duration(seconds: 1),
+        (Timer timer) {
+          final int diffInSeconds =
+              localEndTime.difference(DateTime.now()).inSeconds;
 
-      secondsLeft.value = diffInSeconds;
+          if (diffInSeconds <= 0) {
+            secondsLeft.value = 0;
+            _handleTimeUp();
+            timer.cancel();
+          } else {
+            secondsLeft.value = diffInSeconds;
+          }
+        },
+      );
     }
-
-    _timer = Timer.periodic(
-      const Duration(seconds: 1),
-      (Timer timer) {
-        if (secondsLeft.value > 0) {
-          secondsLeft.value--;
-        } else {
-          _handleTimeUp();
-          timer.cancel();
-        }
-      },
-    );
   }
 
   /// Handles what happens when timer finishes
@@ -198,21 +211,10 @@ class SnapSelfiesController extends GetxController {
   /// Fallback to start again
   void _fallBackToStartAgain() {
     final Map<String, dynamic> currentArgs = <String, dynamic>{
-      'reason': 'Not enough selfies taken to start the round!',
-      'round': MdRound(
-        createdAt: DateTime.tryParse(joinedInvitationData().createdAt ?? ''),
-        isActive: joinedInvitationData().isActive,
-        isDeleted: joinedInvitationData().isDeleted,
-        status: RoundStatusX.fromString(joinedInvitationData().status ?? ''),
-        participants: <MdParticipant>[],
-        isCustomPrompt: joinedInvitationData().isCustomPrompt,
-        updatedAt: DateTime.tryParse(joinedInvitationData().updatedAt ?? ''),
-        host: joinedInvitationData().host,
-        id: joinedInvitationData().id,
-        prompt: joinedInvitationData().prompt,
-        roundJoinedEndAt: joinedInvitationData().roundJoinedEndAt,
-      ),
-      'sub_reason': ' Please ask your friends to join again.',
+      'reason': 'Only you joined..',
+      'round_id': joinedInvitationData().id,
+      'is_host': isHost(),
+      'sub_reason': 'Go again with your friends',
     };
 
     WidgetsBinding.instance.addPostFrameCallback(
@@ -322,11 +324,26 @@ class SnapSelfiesController extends GetxController {
 
   /// Socket IO data parser
   void socketIoDataParser(MdSocketData updatedData) {
+    if (updatedData.error != null && updatedData.error!.isNotEmpty) {
+      Get.until(
+        (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
+      );
+      appSnackbar(
+        message: updatedData.error!,
+        snackbarState: SnackbarState.danger,
+      );
+      return;
+    }
+
     if (updatedData.round?.participants != null &&
         (updatedData.round?.participants?.isNotEmpty ?? false)) {
       joinedInvitationData().participants = updatedData.round?.participants;
-      joinedInvitationData.refresh();
-      participants.refresh();
+      if (updatedData.round?.roundJoinedEndAt != null) {
+        joinedInvitationData().roundJoinedEndAt =
+            updatedData.round?.roundJoinedEndAt;
+        joinedInvitationData.refresh();
+        participants.refresh();
+      }
     }
   }
 

@@ -121,4 +121,10 @@ class AppImages {
 
   /// Phone icon
   static const String phoneIcon = '$_svgPath/phone_icon.svg';
+
+  /// Personal placeholder icon
+  static const String personalPlaceholder = '$_svgPath/person_placeholder.svg';
+
+  /// Timer icon
+  static const String timerIcon = '$_svgPath/timer_icon.svg';
 }

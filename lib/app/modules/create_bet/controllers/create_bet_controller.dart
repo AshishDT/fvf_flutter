@@ -10,9 +10,13 @@ import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
 import 'package:smart_auth/smart_auth.dart';
 
+import '../../../data/config/logger.dart';
+import '../../../data/local/user_provider.dart';
 import '../../../data/models/md_join_invitation.dart';
 import '../../../data/remote/deep_link/deep_link_service.dart';
 import '../../../routes/app_pages.dart';
+import '../../profile/models/md_profile.dart';
+import '../../profile/repositories/profile_api_repo.dart';
 import '../models/md_participant.dart';
 
 /// Create Bet Controller
@@ -43,6 +47,8 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
     rollDice(
       fromInit: true,
     );
+
+    getUser();
 
     super.onInit();
   }
@@ -95,6 +101,9 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
 
   /// Is create round loading
   RxBool createRoundLoading = false.obs;
+
+  /// User profile
+  Rx<MdProfile> profile = MdProfile().obs;
 
   /// Question for the bet
   RxString bet = ''.obs;
@@ -202,6 +211,26 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
       }
     } finally {
       createRoundLoading(false);
+    }
+  }
+
+  /// User profile
+  Future<void> getUser() async {
+    try {
+      final MdProfile? _user = await ProfileApiRepo.getUser();
+      if (_user != null) {
+        profile(_user);
+
+        final String? userAuthToken = UserProvider.authToken;
+
+        UserProvider.onLogin(
+          user: profile().user!,
+          userAuthToken: userAuthToken ?? '',
+        );
+      }
+    } on Exception catch (e, st) {
+      logE('Error getting user: $e');
+      logE(st);
     }
   }
 

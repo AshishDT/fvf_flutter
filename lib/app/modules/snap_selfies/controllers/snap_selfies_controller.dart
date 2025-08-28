@@ -178,7 +178,7 @@ class SnapSelfiesController extends GetxController {
       _timer = Timer.periodic(
         const Duration(seconds: 1),
         (Timer timer) {
-           int diffInSeconds =
+          final int diffInSeconds =
               localEndTime.difference(DateTime.now()).inSeconds;
 
           if (diffInSeconds <= 0) {
@@ -333,7 +333,6 @@ class SnapSelfiesController extends GetxController {
     }
     return false;
   }
-
 
   /// Update participants
   void _updateParticipants(MdSocketData data) {

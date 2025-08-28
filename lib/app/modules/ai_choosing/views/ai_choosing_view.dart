@@ -175,7 +175,7 @@ class AiChoosingView extends GetView<AiChoosingController> {
                             ],
                           ),
                         ),
-                      ).paddingOnly(left: 24),
+                      ).paddingOnly(left: 32),
                       AnimatedSize(
                         duration: 300.milliseconds,
                         alignment: Alignment.topCenter,
@@ -195,8 +195,11 @@ class AiChoosingView extends GetView<AiChoosingController> {
                           () => Visibility(
                             visible: controller.isAiFailed(),
                             child: AppButton(
+                              isLoading: controller.isWakingUp(),
                               buttonText: 'Wake it up',
-                              onPressed: () {},
+                              onPressed: () {
+                                controller.wakeItUp();
+                              },
                             ),
                           ),
                         ),

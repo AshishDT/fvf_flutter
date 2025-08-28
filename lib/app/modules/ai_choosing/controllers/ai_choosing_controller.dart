@@ -5,6 +5,8 @@ import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:get/get.dart';
 import '../../../data/remote/socket_io_repo.dart';
 import '../../../routes/app_pages.dart';
+import '../../create_bet/models/md_round.dart';
+import '../../failed_round/repositories/failed_round_api_repo.dart';
 import '../models/md_ai_result.dart';
 
 /// AiChoosingController
@@ -44,6 +46,9 @@ class AiChoosingController extends GetxController {
 
   /// Observable for AI failure state
   RxBool isAiFailed = false.obs;
+
+  /// Is waking up
+  RxBool isWakingUp = false.obs;
 
   /// On init
   void _onInit() {
@@ -117,6 +122,29 @@ class AiChoosingController extends GetxController {
       isAiFailed(true);
       isAiFailed.refresh();
       return;
+    }
+  }
+
+  /// Wake it up
+  Future<void> wakeItUp() async {
+    isWakingUp(true);
+    try {
+      final MdRound? _round = await FailedRoundApiRepo.reRun(
+        roundId: resultData.value.id ?? '',
+      );
+
+      if (_round != null) {
+        isAiFailed(false);
+        isAiFailed.refresh();
+
+        resultsRepo.listenForRoundProcess(
+          (dynamic data) {
+            _onResults(data);
+          },
+        );
+      }
+    } finally {
+      isWakingUp(false);
     }
   }
 }

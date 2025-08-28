@@ -5,6 +5,7 @@ import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:fvf_flutter/app/modules/create_bet/controllers/create_bet_controller.dart';
 import 'package:fvf_flutter/app/modules/create_bet/widgets/phone_number_sheet.dart';
+import 'package:fvf_flutter/app/ui/components/animated_column.dart';
 import 'package:fvf_flutter/app/ui/components/common_app_bar.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
@@ -22,7 +23,8 @@ class MenuDrawer extends StatelessWidget {
         child: GradientCard(
           padding: REdgeInsets.symmetric(horizontal: 24),
           child: SafeArea(
-            child: Column(
+            child: AnimatedColumn(
+              showScaleAnimation: true,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 const CommonAppBar(

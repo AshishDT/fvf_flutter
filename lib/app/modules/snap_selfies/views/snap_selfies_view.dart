@@ -258,7 +258,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                             ],
                           ),
                         ),
-                      ).paddingOnly(left: 24),
+                      ).paddingOnly(left: 32),
                     ),
                     16.verticalSpace,
                     AnimatedSize(

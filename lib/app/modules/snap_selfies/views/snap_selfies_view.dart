@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/modules/snap_selfies/widgets/animated_switcher.dart';
+import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:get/get.dart';
 import '../../../data/config/app_colors.dart';
@@ -165,10 +166,24 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                     replacement: const SizedBox(
                       width: double.infinity,
                     ),
-                    visible: controller.isTimesUp(),
+                    visible:
+                        controller.isTimesUp() && controller.isProcessing(),
                     child: AppButton(
-                      buttonText: 'Let’s Go',
-                      onPressed: controller.onLetGo,
+                      buttonText: controller.isProcessing()
+                          ? 'Processing...'
+                          : 'Let’s Go',
+                      onPressed: () {
+                        if (controller.isProcessing()) {
+                          appSnackbar(
+                            message:
+                                'Please wait, your selfies are being processed.',
+                            snackbarState: SnackbarState.warning,
+                          );
+                          return;
+                        } else {
+                          controller.onLetGo();
+                        }
+                      },
                     ).paddingSymmetric(horizontal: 24),
                   ),
                 ),

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/data/config/env_config.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
+import 'package:fvf_flutter/app/modules/ai_choosing/enums/round_status_enum.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:get/get.dart';
@@ -138,6 +139,9 @@ class SnapSelfiesController extends GetxController {
   /// Indicates if all selfies are taken
   RxBool isTimesUp = false.obs;
 
+  /// Indicates if processing
+  RxBool isProcessing = false.obs;
+
   /// Submitting selfie
   RxBool submittingSelfie = false.obs;
 
@@ -174,37 +178,19 @@ class SnapSelfiesController extends GetxController {
       _timer = Timer.periodic(
         const Duration(seconds: 1),
         (Timer timer) {
-          final int diffInSeconds =
+           int diffInSeconds =
               localEndTime.difference(DateTime.now()).inSeconds;
 
           if (diffInSeconds <= 0) {
             secondsLeft.value = 0;
-            _handleTimeUp();
+            isTimesUp(true);
+            isProcessing(true);
             timer.cancel();
           } else {
             secondsLeft.value = diffInSeconds;
           }
         },
       );
-    }
-  }
-
-  /// Handles what happens when timer finishes
-  void _handleTimeUp() {
-    final List<MdParticipant> participantsWithSelfies = participants()
-        .where((MdParticipant participant) =>
-            participant.selfieUrl != null && participant.selfieUrl!.isNotEmpty)
-        .toList();
-
-    final bool canStartRound = participantsWithSelfies.isNotEmpty &&
-        participantsWithSelfies.length >= 2;
-
-    if (canStartRound) {
-      isTimesUp(true);
-      socketIoRepo.disposeRoundUpdate();
-      onLetGo();
-    } else {
-      _fallBackToStartAgain();
     }
   }
 
@@ -324,26 +310,78 @@ class SnapSelfiesController extends GetxController {
 
   /// Socket IO data parser
   void socketIoDataParser(MdSocketData updatedData) {
-    if (updatedData.error != null && updatedData.error!.isNotEmpty) {
-      Get.until(
-        (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
-      );
-      appSnackbar(
-        message: updatedData.error!,
-        snackbarState: SnackbarState.danger,
-      );
+    if (_hasError(updatedData)) {
       return;
     }
 
-    if (updatedData.round?.participants != null &&
-        (updatedData.round?.participants?.isNotEmpty ?? false)) {
-      joinedInvitationData().participants = updatedData.round?.participants;
-      if (updatedData.round?.roundJoinedEndAt != null) {
-        joinedInvitationData().roundJoinedEndAt =
-            updatedData.round?.roundJoinedEndAt;
+    _updateParticipants(updatedData);
+    _handleRoundStatus(updatedData);
+  }
+
+  /// Check if there is an error in the data
+  bool _hasError(MdSocketData data) {
+    if (data.error != null && data.error!.isNotEmpty) {
+      Get.until(
+        (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
+      );
+
+      appSnackbar(
+        message: data.error!,
+        snackbarState: SnackbarState.danger,
+      );
+      return true;
+    }
+    return false;
+  }
+
+
+  /// Update participants
+  void _updateParticipants(MdSocketData data) {
+    if (data.round?.participants != null &&
+        (data.round?.participants?.isNotEmpty ?? false)) {
+      joinedInvitationData().participants = data.round?.participants;
+
+      if (data.round?.roundJoinedEndAt != null) {
+        joinedInvitationData().roundJoinedEndAt = data.round?.roundJoinedEndAt;
         joinedInvitationData.refresh();
         participants.refresh();
       }
+    }
+  }
+
+  /// Handle round status
+  void _handleRoundStatus(MdSocketData data) {
+    final RoundStatus? status = data.round?.status;
+
+    switch (status) {
+      case RoundStatus.processing:
+        isProcessing(true);
+        _handleProcessingRound();
+        break;
+
+      case RoundStatus.failed:
+        _fallBackToStartAgain();
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  /// Handle processing round
+  void _handleProcessingRound() {
+    final List<MdParticipant> participantsWithSelfies = participants()
+        .where((MdParticipant participant) =>
+            participant.selfieUrl != null && participant.selfieUrl!.isNotEmpty)
+        .toList();
+
+    final bool canStartRound = participantsWithSelfies.length >= 2;
+
+    if (canStartRound) {
+      socketIoRepo.disposeRoundUpdate();
+      onLetGo();
+    } else {
+      _fallBackToStartAgain();
     }
   }
 
@@ -390,7 +428,7 @@ class SnapSelfiesController extends GetxController {
         emitDate();
         setUpTextTimer();
         appSnackbar(
-          message: 'Selfie submitted successfully!',
+          message: 'Snap submitted successfully!',
           snackbarState: SnackbarState.success,
         );
       }

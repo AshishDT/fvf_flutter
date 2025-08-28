@@ -1,5 +1,7 @@
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 
+import '../../ai_choosing/enums/round_status_enum.dart';
+
 /// Socket data model
 class MdSocketData {
   /// Constructor
@@ -56,7 +58,9 @@ class Round {
         id: json['id'] as String?,
         createdAt: json['createdAt'] as String?,
         updatedAt: json['updatedAt'] as String?,
-        status: json['status'] as String?,
+        status: json['status'] != null
+            ? RoundStatusX.fromString(json['status'] as String)
+            : null,
         type: json['type'] as String?,
         prompt: json['prompt'] as String?,
         isCustomPrompt: json['is_custom_prompt'] as bool?,
@@ -81,7 +85,7 @@ class Round {
   final String? updatedAt;
 
   /// Status of the round
-  final String? status;
+  final RoundStatus? status;
 
   /// Type of the round
   final String? type;
@@ -112,7 +116,7 @@ class Round {
         'id': id,
         'createdAt': createdAt,
         'updatedAt': updatedAt,
-        'status': status,
+        'status': status?.value,
         'type': type,
         'prompt': prompt,
         'is_custom_prompt': isCustomPrompt,

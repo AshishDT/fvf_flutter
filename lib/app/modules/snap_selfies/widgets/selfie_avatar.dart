@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
+import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
 
 import '../../../routes/app_pages.dart';
@@ -122,13 +123,17 @@ class SelfieAvatar extends StatelessWidget {
                 child: avatarContent,
               )
             else
-              SizedBox(width: size.w, height: size.h, child: avatarContent),
-            2.verticalSpace,
+              SizedBox(
+                width: size.w,
+                height: size.h,
+                child: avatarContent,
+              ),
+            4.verticalSpace,
             Text(
               participant.isCurrentUser ? 'You' : _userName(),
-              style: TextStyle(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w500,
+              style: AppTextStyle.openRunde(
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w600,
                 color: Colors.white,
               ),
             ),

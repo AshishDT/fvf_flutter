@@ -109,4 +109,10 @@ class AppImages {
 
   /// Notification icon
   static const String notificationIcon = '$_svgPath/notification_icon.svg';
+
+  /// Personal placeholder icon
+  static const String personalPlaceholder = '$_svgPath/person_placeholder.svg';
+
+  /// Timer icon
+  static const String timerIcon = '$_svgPath/timer_icon.svg';
 }

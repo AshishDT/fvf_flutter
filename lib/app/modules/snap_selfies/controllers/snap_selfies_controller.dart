@@ -84,6 +84,14 @@ class SnapSelfiesController extends GetxController {
   RxBool get isHost =>
       (joinedInvitationData().host?.supabaseId == SupaBaseService.userId).obs;
 
+  /// Self participant
+  Rx<MdParticipant> get selfParticipant => participants()
+      .firstWhere(
+        (MdParticipant participant) => participant.isCurrentUser,
+        orElse: () => MdParticipant(),
+      )
+      .obs;
+
   /// Participants
   RxList<MdParticipant> get participants {
     final List<MdParticipant> list =
@@ -100,6 +108,18 @@ class SnapSelfiesController extends GetxController {
             },
           );
 
+    return list.obs;
+  }
+
+  /// Participants without current user
+  RxList<MdParticipant> get participantsWithoutCurrentUser {
+    final List<MdParticipant> list = joinedInvitationData()
+            .participants
+            ?.where(
+              (MdParticipant participant) => !participant.isCurrentUser,
+            )
+            .toList() ??
+        <MdParticipant>[];
     return list.obs;
   }
 
@@ -191,10 +211,10 @@ class SnapSelfiesController extends GetxController {
   /// Fallback to start again
   void _fallBackToStartAgain() {
     final Map<String, dynamic> currentArgs = <String, dynamic>{
-      'reason': 'Not enough selfies taken to start the round!',
+      'reason': 'Only you joined..',
       'round_id': joinedInvitationData().id,
       'is_host': isHost(),
-      'sub_reason': ' Please ask your friends to join again.',
+      'sub_reason': 'Go again with your friends',
     };
 
     WidgetsBinding.instance.addPostFrameCallback(

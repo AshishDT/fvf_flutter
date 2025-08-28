@@ -7,6 +7,7 @@ import 'package:fvf_flutter/app/modules/create_bet/repositories/create_bet_api_r
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
 import '../../../data/config/logger.dart';
+import '../../../data/local/user_provider.dart';
 import '../../../data/models/md_join_invitation.dart';
 import '../../../data/remote/deep_link/deep_link_service.dart';
 import '../../../routes/app_pages.dart';
@@ -203,6 +204,13 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
       final MdProfile? _user = await ProfileApiRepo.getUser();
       if (_user != null) {
         profile(_user);
+
+        final String? userAuthToken = UserProvider.authToken;
+
+        UserProvider.onLogin(
+          user: profile().user!,
+          userAuthToken: userAuthToken ?? '',
+        );
       }
     } on Exception catch (e, st) {
       logE('Error getting user: $e');

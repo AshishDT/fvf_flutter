@@ -40,6 +40,10 @@ class CameraView extends GetView<PickSelfieCameraController> {
                   child: Container(
                     width: Get.width,
                     color: AppColors.k000000,
+                    constraints: BoxConstraints(
+                      maxHeight: 155.h,
+                      minHeight: 152.h,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[

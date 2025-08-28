@@ -124,8 +124,8 @@ class ProfileHeaderSection extends StatelessWidget {
                 value: '${controller.profile().round?.totalRound ?? 0}',
                 title: 'Rounds',
               ),
-              const ProfileInfoCard(
-                value: '0',
+               ProfileInfoCard(
+                value: '${controller.profile().round?.emojiCount ?? 0}',
                 title: 'Reactions',
               ),
             ],

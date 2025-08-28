@@ -104,7 +104,7 @@ class SnapSelfiesController extends GetxController {
   }
 
   /// Seconds left for the timer
-  RxInt secondsLeft = 300.obs;
+  RxInt secondsLeft = 0.obs;
 
   /// Timer for countdown
   Timer? _timer;
@@ -323,8 +323,6 @@ class SnapSelfiesController extends GetxController {
             updatedData.round?.roundJoinedEndAt;
         joinedInvitationData.refresh();
         participants.refresh();
-
-        startTimer();
       }
     }
   }

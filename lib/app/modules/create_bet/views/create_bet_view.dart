@@ -17,6 +17,7 @@ import '../../../ui/components/common_app_bar.dart';
 import '../../../ui/components/gradient_card.dart';
 import '../controllers/create_bet_controller.dart';
 import '../widgets/dice_roller.dart';
+import '../widgets/profile_avatar.dart';
 
 /// Create Bet View
 class CreateBetView extends GetView<CreateBetController> {
@@ -48,16 +49,21 @@ class CreateBetView extends GetView<CreateBetController> {
                       CommonAppBar(
                         leadingIcon: AppImages.menuIcon,
                         actions: <Widget>[
-                          GestureDetector(
-                            onTap: (){
-                              Get.toNamed(
-                                Routes.PROFILE,
-                              );
-                            },
-                            child: SvgPicture.asset(
-                              height: 24.h,
-                              width: 24.w,
-                              AppImages.notificationIcon,
+                          SvgPicture.asset(
+                            height: 24.h,
+                            width: 24.w,
+                            AppImages.notificationIcon,
+                          ),
+                          10.horizontalSpace,
+                          Obx(
+                            () => ProfileAvatar(
+                              profileUrl:
+                                  controller.profile().user?.profileUrl ?? '',
+                              onTap: () {
+                                Get.toNamed(
+                                  Routes.PROFILE,
+                                );
+                              },
                             ),
                           ),
                         ],

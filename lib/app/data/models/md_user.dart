@@ -29,6 +29,7 @@ class MdUser {
     this.token,
     this.bio,
     this.badge,
+    this.emojiCount,
   });
 
   /// From JSON
@@ -68,6 +69,7 @@ class MdUser {
         token: json['token'],
         bio: json['bio'],
         badge: json['badge'],
+        emojiCount: json['emoji_count'],
       );
 
   /// Su
@@ -145,6 +147,9 @@ class MdUser {
   /// Badge
   String? badge;
 
+  /// Emoji count
+  int? emojiCount;
+
   /// To JSON
   Map<String, dynamic> toJson() => <String, dynamic>{
         'supabase_id': supabaseId,
@@ -172,6 +177,7 @@ class MdUser {
         'token': token,
         'bio': bio,
         'badge': badge,
+        'emoji_count': emojiCount,
       };
 
   /// To json

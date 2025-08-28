@@ -32,11 +32,13 @@ class MdProfile {
 
 /// Round model
 class Round {
+  /// Constructor
   Round({
     this.userId,
     this.totalRound,
     this.winsCount,
     this.wins,
+    this.emojiCount,
   });
 
   /// From JSON
@@ -44,8 +46,9 @@ class Round {
     userId: json['userId'],
     totalRound: json['total_round'],
     winsCount: json['wins_count'],
+    emojiCount: json['emoji_count'],
     wins: json['wins'] == null
-        ? []
+        ? <dynamic>[]
         : List<dynamic>.from(json['wins'].map((x) => x)),
   );
 
@@ -58,6 +61,9 @@ class Round {
   /// Wins count
   int? winsCount;
 
+  /// Emoji count
+  int? emojiCount;
+
   /// Wins list
   List<dynamic>? wins;
 
@@ -66,6 +72,7 @@ class Round {
     'userId': userId,
     'total_round': totalRound,
     'wins_count': winsCount,
-    'wins': wins == null ? [] : List<dynamic>.from(wins!.map((x) => x)),
+    'emoji_count': emojiCount,
+    'wins': wins == null ? <dynamic>[] : List<dynamic>.from(wins!.map((x) => x)),
   };
 }

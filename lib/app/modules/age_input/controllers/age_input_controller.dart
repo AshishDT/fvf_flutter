@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/data/models/md_user.dart';
+import 'package:fvf_flutter/app/data/remote/notification_service/notification_service.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
@@ -64,6 +65,18 @@ class AgeInputController extends GetxController {
   Future<void> createAnonymousUser(int age) async {
     creatingUser(true);
     try {
+
+      final String? _fcmToken = await NotificationService().getToken();
+      logI('FCM Token: $_fcmToken');
+
+      if (_fcmToken == null || _fcmToken.isEmpty) {
+        appSnackbar(
+          message: 'Something went wrong! Please try again later.',
+          snackbarState: SnackbarState.danger,
+        );
+        return;
+      }
+
       final String? supabaseId = await signInAnonymously();
 
       if (supabaseId == null || supabaseId.isEmpty) {
@@ -74,6 +87,7 @@ class AgeInputController extends GetxController {
       final MdUser? _user = await AuthApiRepo.createUser(
         supabaseId: supabaseId,
         age: age,
+        fcmToken: _fcmToken,
       );
 
       if (_user != null && (_user.id?.isNotEmpty ?? false)) {

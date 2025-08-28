@@ -11,6 +11,7 @@ class AuthApiRepo {
   static Future<MdUser?> createUser({
     required String supabaseId,
     required int age,
+    required String fcmToken,
   }) async =>
       APIWrapper.handleApiCall<MdUser>(
         APIService.post<Map<String, dynamic>>(
@@ -18,6 +19,7 @@ class AuthApiRepo {
           data: <String, dynamic>{
             'supabase_id': supabaseId,
             'age': age,
+            'fcm_token': fcmToken,
           },
         ).then(
           (Response<Map<String, dynamic>>? response) {

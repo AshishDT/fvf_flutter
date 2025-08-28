@@ -5,12 +5,15 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:fvf_flutter/app/modules/create_bet/widgets/bets_wrapper.dart';
+import 'package:fvf_flutter/app/modules/create_bet/widgets/drawer.dart';
 import 'package:fvf_flutter/app/modules/create_bet/widgets/keyboard_aware_sheet.dart';
 import 'package:fvf_flutter/app/ui/components/animated_list_view.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
 import 'package:fvf_flutter/app/ui/components/chat_field_sheet_repo.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 import '../../../ui/components/app_snackbar.dart';
 import '../../../ui/components/common_app_bar.dart';
 import '../../../ui/components/gradient_card.dart';
@@ -27,7 +30,9 @@ class CreateBetView extends GetView<CreateBetController> {
         () => PopScope(
           canPop: !controller.createRoundLoading(),
           child: Scaffold(
+            key: controller.scaffoldKey,
             backgroundColor: AppColors.kF5FCFF,
+            drawer: const MenuDrawer(),
             floatingActionButton: Obx(
               () => AppButton(
                 buttonText: 'Bet',
@@ -46,6 +51,9 @@ class CreateBetView extends GetView<CreateBetController> {
                     children: <Widget>[
                       CommonAppBar(
                         leadingIcon: AppImages.menuIcon,
+                        onTapOfLeading: () {
+                          controller.scaffoldKey.currentState?.openDrawer();
+                        },
                         actions: <Widget>[
                           SvgPicture.asset(
                             height: 24.h,

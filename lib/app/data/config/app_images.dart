@@ -109,4 +109,16 @@ class AppImages {
 
   /// Notification icon
   static const String notificationIcon = '$_svgPath/notification_icon.svg';
+
+  /// Billing icon
+  static const String billingIcon = '$_svgPath/billing_icon.svg';
+
+  /// Help icon
+  static const String helpIcon = '$_svgPath/help_icon.svg';
+
+  /// Mail icon
+  static const String mailIcon = '$_svgPath/mail_icon.svg';
+
+  /// Phone icon
+  static const String phoneIcon = '$_svgPath/phone_icon.svg';
 }

@@ -20,11 +20,19 @@ class FailedRoundView extends GetView<FailedRoundController> {
   Widget build(BuildContext context) => Scaffold(
         backgroundColor: AppColors.kF5FCFF,
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: AppButton(
-          buttonText: 'Let’s Go Again',
-          onPressed: () {
-            controller.onLetsGoAgain();
-          },
+        floatingActionButton: Obx(
+          () => AppButton(
+            isLoading: controller.isLoading(),
+            buttonText: controller.isHost ? 'Let’s Go Again' : 'Close',
+            onPressed: () {
+              if (controller.isHost) {
+                controller.onLetsGoAgain();
+                return;
+              }
+
+              Get.back();
+            },
+          ),
         ).paddingSymmetric(horizontal: 24),
         body: GradientCard(
           child: Align(
@@ -62,7 +70,9 @@ class FailedRoundView extends GetView<FailedRoundController> {
                   ),
                   24.verticalSpace,
                   Text(
-                    controller.subReason,
+                    controller.isHost
+                        ? controller.subReason
+                        : 'Please ask your friend to start a new round.',
                     textAlign: TextAlign.center,
                     style: AppTextStyle.openRunde(
                       fontSize: 20.sp,

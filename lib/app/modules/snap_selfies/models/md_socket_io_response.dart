@@ -6,12 +6,14 @@ class MdSocketData {
   MdSocketData({
     this.round,
     this.hasAccess,
+    this.error,
   });
 
   /// Factory constructor from JSON
   factory MdSocketData.fromJson(Map<String, dynamic> json) => MdSocketData(
         round: json['round'] != null ? Round.fromJson(json['round']) : null,
         hasAccess: json['hasAccess'] as bool?,
+        error: json['error'],
       );
 
   /// Round object
@@ -20,10 +22,14 @@ class MdSocketData {
   /// Access flag
   final bool? hasAccess;
 
+  /// Error message
+  final String? error;
+
   /// Convert object to JSON
   Map<String, dynamic> toJson() => <String, dynamic>{
         'round': round?.toJson(),
         'hasAccess': hasAccess,
+        'error': error,
       };
 }
 
@@ -56,26 +62,52 @@ class Round {
         isCustomPrompt: json['is_custom_prompt'] as bool?,
         isActive: json['is_active'] as bool?,
         isDeleted: json['is_deleted'] as bool?,
-        roundJoinedEndAt: json['round_joined_end_at'] as String?,
+        roundJoinedEndAt: json['round_joined_end_at'] == null
+            ? null
+            : DateTime.tryParse(json['round_joined_end_at']),
         revealAt: json['revealAt'] as String?,
         participants: (json['participants'] as List<dynamic>?)
             ?.map((e) => MdParticipant.fromJson(e as Map<String, dynamic>))
             .toList(),
       );
 
+  /// Properties
   final String? id;
+
+  /// Creation timestamp
   final String? createdAt;
+
+  /// Update timestamp
   final String? updatedAt;
+
+  /// Status of the round
   final String? status;
+
+  /// Type of the round
   final String? type;
+
+  /// Prompt for the round
   final String? prompt;
+
+  /// Indicates if the prompt is custom
   final bool? isCustomPrompt;
+
+  /// Indicates if the round is active
   final bool? isActive;
+
+  /// Indicates if the round is deleted
   final bool? isDeleted;
-  final String? roundJoinedEndAt;
+
+  /// End time for joining the round
+  final DateTime? roundJoinedEndAt;
+
+  /// Reveal time for the round
   final String? revealAt;
+
+  /// List of participants
   final List<MdParticipant>? participants;
 
+  /// Convert object to JSON
   Map<String, dynamic> toJson() => <String, dynamic>{
         'id': id,
         'createdAt': createdAt,
@@ -86,8 +118,8 @@ class Round {
         'is_custom_prompt': isCustomPrompt,
         'is_active': isActive,
         'is_deleted': isDeleted,
-        'round_joined_end_at': roundJoinedEndAt,
+        'round_joined_end_at': roundJoinedEndAt?.toIso8601String(),
         'revealAt': revealAt,
-        'participants': participants?.map((e) => e.toJson()).toList(),
+        'participants': participants?.map((MdParticipant e) => e.toJson()).toList(),
       };
 }

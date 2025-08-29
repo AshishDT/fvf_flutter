@@ -57,7 +57,6 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
   @override
   void onClose() {
     WidgetsBinding.instance.removeObserver(this);
-    messageInputFocusNode.dispose();
     super.onClose();
   }
 
@@ -80,9 +79,6 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
 
   /// Previous bottom inset for keyboard
   final RxDouble _prevBottomInset = 0.0.obs;
-
-  /// Focus node for chat input field
-  final FocusNode messageInputFocusNode = FocusNode();
 
   /// Text editing controller for chat input field
   TextEditingController messageInputController = TextEditingController();

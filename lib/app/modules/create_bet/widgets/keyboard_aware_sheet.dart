@@ -46,7 +46,6 @@ class KeyboardAwareSheet extends GetView<CreateBetController> {
                 borderRadius: BorderRadius.circular(28).r,
               ),
               child: TextFormField(
-                focusNode: controller.messageInputFocusNode,
                 controller: controller.messageInputController,
                 maxLines: 7,
                 minLines: 1,
@@ -54,7 +53,7 @@ class KeyboardAwareSheet extends GetView<CreateBetController> {
                 autofocus: true,
                 cursorColor: AppColors.kffffff,
                 onFieldSubmitted: (String value) {
-                  controller.messageInputFocusNode.unfocus();
+                  FocusScope.of(context).unfocus();
 
                   if (value.isNotEmpty) {
                     controller.enteredBet(value);

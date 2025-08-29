@@ -235,7 +235,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                     Obx(
                       () => CurrentUserSelfieAvatar(
                         participant: controller.selfParticipant(),
-                        userName: UserProvider.currentUser?.username,
+                        userName: globalUser().username,
                       ),
                     ),
                     24.verticalSpace,

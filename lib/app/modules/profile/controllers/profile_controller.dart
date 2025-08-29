@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/data/models/md_join_invitation.dart';
 import 'package:fvf_flutter/app/data/remote/api_service/init_api_service.dart';
+import 'package:fvf_flutter/app/data/remote/revenue_cat/revenue_cat_service.dart';
 import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_highlight.dart';
@@ -14,6 +15,7 @@ import 'package:fvf_flutter/app/modules/profile/repositories/profile_api_repo.da
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 
 import '../../../utils/app_loader.dart';
 
@@ -75,6 +77,9 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
   /// currentIndex
   RxInt currentIndex = 0.obs;
 
+  /// Packages
+  RxList<StoreProduct> packages = <StoreProduct>[].obs;
+
   /// On init
   @override
   void onInit() {
@@ -86,6 +91,7 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
     );
     super.onInit();
     getUser();
+    _loadProducts();
   }
 
   /// On close
@@ -257,5 +263,14 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
         curve: Curves.easeInOut,
       );
     }
+  }
+
+  Future<void> _loadProducts() async {
+
+    final List<Package> products =
+        await RevenueCatService.instance.fetchOfferings();
+    // final List<StoreProduct> products =
+    //     await RevenueCatService.instance.fetchProducts();
+    // packages(products);
   }
 }

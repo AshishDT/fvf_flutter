@@ -96,6 +96,21 @@ class ResultCard extends StatelessWidget {
                 ),
               ),
               16.verticalSpace,
+              Align(
+                alignment: Alignment.centerRight,
+                child: GestureDetector(
+                  onTap: () {},
+                  child: SvgPicture.asset(
+                    AppImages.shareIconShadow,
+                    height: 32.w,
+                    colorFilter: const ColorFilter.mode(
+                      AppColors.kffffff,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                ),
+              ),
+              16.verticalSpace,
               Column(
                 children: <Widget>[
                   Row(
@@ -139,10 +154,10 @@ class ResultCard extends StatelessWidget {
                       GestureDetector(
                         onTap: () {},
                         child: SvgPicture.asset(
-                          AppImages.shareIconShadow,
-                          height: 32.w,
+                          AppImages.addIcon,
+                          height: 36.w,
                           colorFilter: const ColorFilter.mode(
-                            AppColors.kffffff,
+                            AppColors.kF1F2F2,
                             BlendMode.srcIn,
                           ),
                         ),

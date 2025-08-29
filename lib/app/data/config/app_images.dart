@@ -92,6 +92,9 @@ class AppImages {
   /// Loader Animation
   static const String loader = '$_lottiePath/loader.json';
 
+  /// Button Loader Animation
+  static const String buttonLoader = '$_lottiePath/button_loader.json';
+
   /// Dice Roll Animation
   static const String diceRoll = '$_lottiePath/dice_roll.json';
 

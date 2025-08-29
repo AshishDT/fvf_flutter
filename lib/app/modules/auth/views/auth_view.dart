@@ -5,6 +5,7 @@ import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/animated_column.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
+import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:fvf_flutter/app/utils/widget_ext.dart';
 import 'package:get/get.dart';
@@ -19,99 +20,104 @@ class AuthView extends GetView<AuthController> {
   @override
   Widget build(BuildContext context) => Scaffold(
         backgroundColor: AppColors.kF5FCFF,
-        body: Padding(
-          padding: REdgeInsets.symmetric(horizontal: 24),
-          child: AnimatedColumn(
-            children: <Widget>[
-              125.verticalSpace,
-              Align(
-                child: Image(
-                  image: const AssetImage(
-                    AppImages.appLogo,
-                  ),
-                  height: 195.h,
-                  width: 200.w,
-                ),
-              ),
-              16.verticalSpace,
-              Align(
-                child: RichText(
-                  text: TextSpan(
-                    text: 'Will',
-                    style: AppTextStyle.openRunde(
-                      color: AppColors.k3D4445,
-                      fontSize: 40.sp,
-                      fontWeight: FontWeight.w600,
+        body: GradientCard(
+          child: Padding(
+            padding: REdgeInsets.symmetric(horizontal: 24),
+            child: AnimatedColumn(
+              children: <Widget>[
+                125.verticalSpace,
+                Align(
+                  child: Image(
+                    image: const AssetImage(
+                      AppImages.appLogo,
                     ),
-                    children: <TextSpan>[
-                      TextSpan(
-                        text: ' AI',
-                        style: AppTextStyle.openRunde(
-                          color: AppColors.k2A2E2F,
-                          fontSize: 40.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      TextSpan(
-                        text: ' pick',
-                        style: AppTextStyle.openRunde(
-                          color: AppColors.k3D4445,
-                          fontSize: 40.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      TextSpan(
-                        text: ' you',
-                        style: AppTextStyle.openRunde(
-                          color: AppColors.k2A2E2F,
-                          fontSize: 40.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      TextSpan(
-                        text: '?',
-                        style: AppTextStyle.openRunde(
-                          color: AppColors.k3D4445,
-                          fontSize: 40.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
+                    height: 108.h,
+                    width: 190.w,
                   ),
                 ),
-              ),
-              const Spacer(),
-              AppButton(
-                buttonText: 'Let’s Goooo!',
-                onPressed: () {
-                  Get.toNamed(Routes.AGE_INPUT);
-                },
-                decoration: BoxDecoration(
-                  image: const DecorationImage(
-                    image: AssetImage(AppImages.buttonBg),
-                    fit: BoxFit.cover,
+                16.verticalSpace,
+                Align(
+                  child: RichText(
+                    text: TextSpan(
+                      text: 'Will',
+                      style: AppTextStyle.openRunde(
+                        color: AppColors.kffffff,
+                        fontSize: 40.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: ' AI',
+                          style: AppTextStyle.openRunde(
+                            color: AppColors.kffffff,
+                            fontSize: 40.sp,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        TextSpan(
+                          text: ' pick',
+                          style: AppTextStyle.openRunde(
+                            color: AppColors.kffffff,
+                            fontSize: 40.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        TextSpan(
+                          text: ' you',
+                          style: AppTextStyle.openRunde(
+                            color: AppColors.kffffff,
+                            fontSize: 40.sp,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        TextSpan(
+                          text: '?',
+                          style: AppTextStyle.openRunde(
+                            color: AppColors.kffffff,
+                            fontSize: 40.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  borderRadius: BorderRadius.circular(28).r,
                 ),
-              ),
-              16.verticalSpace,
-              AppButton(
-                buttonText: 'Login',
-                onPressed: () {
-                  Get.toNamed(Routes.AGE_INPUT);
-                },
-                style: AppTextStyle.openRunde(
-                  color: AppColors.kA8B3B5,
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w700,
+                const Spacer(),
+                AppButton(
+                  buttonText: 'Let’s Goooo!',
+                  onPressed: () {
+                    Get.toNamed(Routes.AGE_INPUT);
+                  },
                 ),
-                decoration: BoxDecoration(
-                  color: AppColors.kF5FCFF,
-                  borderRadius: BorderRadius.circular(28).r,
+                16.verticalSpace,
+                AppButton(
+                  buttonText: 'Login',
+                  onPressed: () {
+                    Get.toNamed(Routes.AGE_INPUT);
+                  },
+                  style: AppTextStyle.openRunde(
+                    color: AppColors.kF1F2F2,
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(28).r,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ).withGPad(context);
+      ).withGPad(
+        context,
+        decoration: const BoxDecoration(
+          color: Colors.black,
+          image: DecorationImage(
+            image: AssetImage(
+              AppImages.gradientCardBg,
+            ),
+          ),
+        ),
+      );
 }

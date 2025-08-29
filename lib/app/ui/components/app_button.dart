@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import '../../data/config/app_colors.dart';
 
 /// A customizable elevated button with loading state,
@@ -101,13 +103,11 @@ class AppButton extends StatelessWidget {
               ],
               if (isLoading) ...<Widget>[
                 15.horizontalSpace,
-                Center(
-                  child: SizedBox(
-                    height: btnHeight - 30.h,
-                    width: btnHeight - 30.w,
-                    child: const CircularProgressIndicator(
-                      color: AppColors.kffffff,
-                    ),
+                Transform.scale(
+                  scale: 1.7,
+                  child: Lottie.asset(
+                    fit: BoxFit.fitWidth,
+                    AppImages.buttonLoader,
                   ),
                 )
               ]

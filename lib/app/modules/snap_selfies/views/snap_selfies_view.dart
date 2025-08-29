@@ -178,10 +178,9 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                         controller.isTimesUp() && controller.isProcessing() ||
                             controller.isStartingRound(),
                     child: AppButton(
-                      buttonText: controller.isProcessing() ||
-                              controller.isStartingRound()
-                          ? 'Processing...'
-                          : 'Let’s Go',
+                      buttonText: 'Let’s Go',
+                      isLoading: controller.isProcessing() ||
+                          controller.isStartingRound(),
                       onPressed: () {
                         if (controller.isProcessing() ||
                             controller.isStartingRound()) {
@@ -208,6 +207,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                 child: AnimatedListView(
                   children: <Widget>[
                     CommonAppBar(
+                      leadingIcon: AppImages.closeIconWhite,
                       onTapOfLeading: () {
                         DialogHelper.onBackOfAiChoosing(
                           onPositiveClick: () {

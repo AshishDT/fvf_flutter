@@ -24,7 +24,8 @@ class CameraView extends GetView<PickSelfieCameraController> {
               return const Center(child: CircularProgressIndicator());
             }
 
-            return Column(
+            return Stack(
+              fit: StackFit.expand,
               children: <Widget>[
                 CameraPreview(
                   controller.cameraController!,
@@ -36,40 +37,41 @@ class CameraView extends GetView<PickSelfieCameraController> {
                     ],
                   ),
                 ),
-                Expanded(
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
                   child: Container(
+                    height: 154.h,
                     width: Get.width,
-                    color: AppColors.k000000,
-                    constraints: BoxConstraints(
-                      maxHeight: 155.h,
-                      minHeight: 152.h,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        SizedBox(
-                          width: 56.w,
-                          height: 56.h,
-                        ),
-                        50.horizontalSpace,
-                        GestureDetector(
-                          onTap: (){
-                            controller.takePicture();
-                          },
-                          child: SvgPicture.asset(
-                            AppImages.clickSelfieIcon,
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          SizedBox(
+                            height: 24.h,
+                            width: 24.w,
                           ),
-                        ),
-                        50.horizontalSpace,
-                        GestureDetector(
-                          onTap: (){
-                            controller.flipCamera();
-                          },
-                          child: SvgPicture.asset(
-                            AppImages.flipCamera,
+                          50.horizontalSpace,
+                          GestureDetector(
+                            onTap: () {
+                              controller.takePicture();
+                            },
+                            child: SvgPicture.asset(
+                              AppImages.clickSelfieIcon,
+                            ),
                           ),
-                        ),
-                      ],
+                          50.horizontalSpace,
+                          GestureDetector(
+                            onTap: () {
+                              controller.flipCamera();
+                            },
+                            child: SvgPicture.asset(
+                              AppImages.flipCamera,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

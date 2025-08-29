@@ -94,6 +94,13 @@ class _CustomTypewriterTextState extends State<CustomTypewriterText> {
               fontSize: 40.sp,
               fontWeight: FontWeight.w700,
               color: AppColors.kffffff,
+              shadows: <Shadow>[
+                const Shadow(
+                  offset: Offset(0, 2),
+                  blurRadius: 2,
+                  color: Color(0x55000000),
+                ),
+              ],
             ),
         overflow: TextOverflow.ellipsis,
         maxLines: widget.maxLines,

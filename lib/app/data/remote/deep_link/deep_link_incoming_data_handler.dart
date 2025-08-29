@@ -18,28 +18,25 @@ void handleDeepLinkIncomingData(Map<dynamic, dynamic> data) {
   final MdDeepLinkData deepLinkData = MdDeepLinkData.fromJson(data);
 
   if (deepLinkData.clickedBranchLink == true) {
-    switch (deepLinkData.canonicalIdentifier) {
-      case 'slay_invite':
-        if (deepLinkData.invitationId?.isNotEmpty ?? false) {
-          if (SupaBaseService.isLoggedIn &&
-              SupaBaseService.currentUser != null) {
-            joinProjectInvitation(
-              deepLinkData.invitationId!,
-            );
-            invitationId('');
-          } else {
-            invitationId(deepLinkData.invitationId!);
-            appSnackbar(
-              message: 'Please log in to join the invitation.',
-              snackbarState: SnackbarState.info,
-            );
-          }
+    if ((deepLinkData.tags?.contains('slay_invite') ?? false) ||
+        deepLinkData.canonicalIdentifier == 'slay_invite') {
+      if (deepLinkData.invitationId?.isNotEmpty ?? false) {
+        if (SupaBaseService.isLoggedIn && SupaBaseService.currentUser != null) {
+          joinProjectInvitation(
+            deepLinkData.invitationId!,
+          );
+          invitationId('');
+        } else {
+          invitationId(deepLinkData.invitationId!);
+          appSnackbar(
+            message: 'Please log in to join the invitation.',
+            snackbarState: SnackbarState.info,
+          );
         }
-        break;
-
-      default:
-        logW('Unknown active deep link canonicalIdentifier: $data');
-        break;
+      }
+      return;
+    } else {
+      logW('Unknown active deep link canonicalIdentifier: $data');
     }
   } else {
     const List<String> branchDomains = <String>[
@@ -67,7 +64,8 @@ Future<void> joinProjectInvitation(String invitationId) async {
   Loader.show();
 
   try {
-    final MdJoinInvitation? _joinedData = await SnapSelfieApiRepo.joinInvitation(
+    final MdJoinInvitation? _joinedData =
+        await SnapSelfieApiRepo.joinInvitation(
       roundId: invitationId,
     );
 

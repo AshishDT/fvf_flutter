@@ -13,6 +13,7 @@ class CommonAppBar extends StatelessWidget {
     this.onTapOfLeading,
     this.leadingIconColor,
     this.leadingIcon,
+    this.leadingIconSize,
   });
 
   /// Actions to display in the app bar.
@@ -27,6 +28,9 @@ class CommonAppBar extends StatelessWidget {
   /// leadingIcon
   final String? leadingIcon;
 
+  /// leadingIconSize
+  final double? leadingIconSize;
+
   @override
   Widget build(BuildContext context) => Container(
         width: Get.width,
@@ -39,8 +43,8 @@ class CommonAppBar extends StatelessWidget {
               onTap: onTapOfLeading ?? () => Get.back(),
               child: SvgPicture.asset(
                 leadingIcon ?? AppImages.backIcon,
-                width: 24.w,
-                height: 24.h,
+                width: leadingIconSize ?? 24.w,
+                height: leadingIconSize ?? 24.h,
                 colorFilter: leadingIconColor != null
                     ? ColorFilter.mode(
                         leadingIconColor!,

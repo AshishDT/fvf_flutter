@@ -32,6 +32,18 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
       joinedInvitationData.refresh();
       participants.refresh();
       getPreSelfieStrings();
+
+      if (joinedInvitationData().isFromInvitation ?? false) {
+        DateTime? endAt = joinedInvitationData().roundJoinedEndAt;
+
+        if (endAt != null && endAt.second > 2) {
+          endAt = endAt.subtract(const Duration(seconds: 2));
+        }
+
+        startTimer(
+          endTime: endAt,
+        );
+      }
     }
 
     socketIoRepo
@@ -548,10 +560,6 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
       );
       if (_isUpdated != null) {
         await getUser();
-        // appSnackbar(
-        //   message: 'Username updated successfully',
-        //   snackbarState: SnackbarState.success,
-        // );
       }
     } on Exception catch (e, st) {
       logE('Error getting update name: $e');

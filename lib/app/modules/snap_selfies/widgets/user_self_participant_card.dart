@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
-import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/modules/snap_selfies/widgets/edit_name_sheet.dart';
@@ -18,7 +17,7 @@ import '../../../routes/app_pages.dart';
 /// Selfie Avatar widget
 class CurrentUserSelfieAvatar extends StatelessWidget {
   /// Constructor for SelfieAvatar
-  CurrentUserSelfieAvatar({
+  const CurrentUserSelfieAvatar({
     required this.participant,
     super.key,
     this.onAddName,
@@ -40,54 +39,37 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
   final String? userName;
 
   /// isFromFailedView
-  bool isFromFailedView;
+  final bool isFromFailedView;
 
   @override
   Widget build(BuildContext context) {
-    final bool hasNetworkImage =
-        participant.selfieUrl != null && participant.selfieUrl!.isNotEmpty;
+    final String? selfieUrl = participant.selfieUrl;
+    final String? profileUrl = globalUser().profileUrl;
+
+    final String? imageUrl = (selfieUrl != null && selfieUrl.isNotEmpty)
+        ? selfieUrl
+        : (profileUrl != null && profileUrl.isNotEmpty)
+            ? profileUrl
+            : null;
+
+    final bool hasImage = imageUrl != null && imageUrl.isNotEmpty;
 
     Widget avatarContent;
-
-    if (isFromFailedView || hasNetworkImage) {
+    if (hasImage) {
       avatarContent = ClipOval(
         child: CachedNetworkImage(
-          imageUrl: participant.selfieUrl ?? globalUser().profileUrl ?? '',
+          imageUrl: imageUrl,
           width: size.w,
           height: size.h,
           fit: BoxFit.cover,
           placeholder: (_, __) => Center(
             child: CircularProgressIndicator(strokeWidth: 2.w),
           ),
-          errorWidget: (_, __, ___) => Container(
-            width: size.w,
-            height: size.h,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.kF1F2F2.withValues(alpha: 0.36),
-            ),
-            child: Center(
-              child: SvgPicture.asset(
-                AppImages.personalPlaceholder,
-              ),
-            ),
-          ),
+          errorWidget: (_, __, ___) => _buildPlaceholder(),
         ),
       );
     } else {
-      avatarContent = Container(
-        width: size.w,
-        height: size.h,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: AppColors.kF1F2F2.withValues(alpha: 0.36),
-        ),
-        child: Center(
-          child: SvgPicture.asset(
-            AppImages.personalPlaceholder,
-          ),
-        ),
-      );
+      avatarContent = _buildPlaceholder();
     }
 
     return Align(
@@ -97,42 +79,31 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            if (hasNetworkImage)
-              GestureDetector(
-                onTap: () {
-                  Get.toNamed(
-                    Routes.PROFILE,
-                  );
-                },
-                child: AnimatedContainer(
-                  duration: 300.milliseconds,
-                  width: size.w + 4.w,
-                  height: size.h + 4.w,
-                  padding: REdgeInsets.all(2),
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                      image: AssetImage(AppImages.gradientCardBg),
-                      fit: BoxFit.cover,
+            GestureDetector(
+              onTap: () => Get.toNamed(Routes.PROFILE),
+              child: hasImage
+                  ? AnimatedContainer(
+                      duration: 300.milliseconds,
+                      width: size.w + 4.w,
+                      height: size.h + 4.w,
+                      padding: REdgeInsets.all(2),
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          image: AssetImage(AppImages.gradientCardBg),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      child: avatarContent,
+                    )
+                  : SizedBox(
+                      width: size.w,
+                      height: size.h,
+                      child: avatarContent,
                     ),
-                  ),
-                  child: avatarContent,
-                ),
-              )
-            else
-              GestureDetector(
-                onTap: () {
-                  Get.toNamed(
-                    Routes.PROFILE,
-                  );
-                },
-                child: SizedBox(
-                  width: size.w,
-                  height: size.h,
-                  child: avatarContent,
-                ),
-              ),
-            if (isFromFailedView || name != null && name!.isNotEmpty) ...<Widget>[
+            ),
+            if (isFromFailedView ||
+                name != null && name!.isNotEmpty) ...<Widget>[
               8.verticalSpace,
               Text(
                 name ?? 'You',
@@ -142,7 +113,7 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
                   color: Colors.white,
                 ),
               ),
-            ] else if(!isFromFailedView)...<Widget>[
+            ] else if (!isFromFailedView) ...<Widget>[
               12.verticalSpace,
               IntrinsicWidth(
                 child: GestureDetector(
@@ -190,6 +161,19 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
       ),
     );
   }
+
+  /// Fallback placeholder
+  Widget _buildPlaceholder() => Container(
+        width: size.w,
+        height: size.h,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: AppColors.kF1F2F2.withValues(alpha: 0.36),
+        ),
+        child: Center(
+          child: SvgPicture.asset(AppImages.personalPlaceholder),
+        ),
+      );
 
   /// Name
   String? get name => userName ?? participant.userData?.username;

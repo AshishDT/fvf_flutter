@@ -86,6 +86,8 @@ Future<void> joinProjectInvitation(String invitationId) async {
         snackbarState: SnackbarState.success,
       );
 
+      _joinedData.isFromInvitation = true;
+
       unawaited(
         Get.toNamed(
           Routes.SNAP_SELFIES,

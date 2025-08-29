@@ -4,7 +4,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
+import 'package:fvf_flutter/app/data/config/logger.dart';
+import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
+import 'package:fvf_flutter/app/modules/snap_selfies/widgets/edit_name_sheet.dart';
+import 'package:fvf_flutter/app/ui/components/chat_field_sheet_repo.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -14,12 +18,13 @@ import '../../../routes/app_pages.dart';
 /// Selfie Avatar widget
 class CurrentUserSelfieAvatar extends StatelessWidget {
   /// Constructor for SelfieAvatar
-  const CurrentUserSelfieAvatar({
+  CurrentUserSelfieAvatar({
     required this.participant,
     super.key,
     this.onAddName,
     this.userName,
     this.size = 100,
+    this.isFromFailedView = false,
   });
 
   /// SelfieAvatar constructor
@@ -34,6 +39,9 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
   /// User name
   final String? userName;
 
+  /// isFromFailedView
+  bool isFromFailedView;
+
   @override
   Widget build(BuildContext context) {
     final bool hasNetworkImage =
@@ -41,10 +49,10 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
 
     Widget avatarContent;
 
-    if (hasNetworkImage) {
+    if (isFromFailedView || hasNetworkImage) {
       avatarContent = ClipOval(
         child: CachedNetworkImage(
-          imageUrl: participant.selfieUrl!,
+          imageUrl: participant.selfieUrl ?? globalUser().profileUrl ?? '',
           width: size.w,
           height: size.h,
           fit: BoxFit.cover,
@@ -75,18 +83,18 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
     return Align(
       child: Opacity(
         opacity: 1,
-        child: GestureDetector(
-          onTap: () {
-            Get.toNamed(
-              Routes.PROFILE,
-            );
-          },
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              if (hasNetworkImage)
-                AnimatedContainer(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            if (hasNetworkImage)
+              GestureDetector(
+                onTap: () {
+                  Get.toNamed(
+                    Routes.PROFILE,
+                  );
+                },
+                child: AnimatedContainer(
                   duration: 300.milliseconds,
                   width: size.w + 4.w,
                   height: size.h + 4.w,
@@ -99,26 +107,40 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
                     ),
                   ),
                   child: avatarContent,
-                )
-              else
-                SizedBox(
+                ),
+              )
+            else
+              GestureDetector(
+                onTap: () {
+                  Get.toNamed(
+                    Routes.PROFILE,
+                  );
+                },
+                child: SizedBox(
                   width: size.w,
                   height: size.h,
                   child: avatarContent,
                 ),
-              if (name != null && name!.isNotEmpty) ...<Widget>[
-                8.verticalSpace,
-                Text(
-                  'You',
-                  style: AppTextStyle.openRunde(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
+              ),
+            if (name != null && name!.isNotEmpty) ...<Widget>[
+              8.verticalSpace,
+              Text(
+                name ?? 'You',
+                style: AppTextStyle.openRunde(
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
                 ),
-              ] else ...<Widget>[
-                12.verticalSpace,
-                IntrinsicWidth(
+              ),
+            ] else ...<Widget>[
+              12.verticalSpace,
+              IntrinsicWidth(
+                child: GestureDetector(
+                  onTap: () {
+                    ChatFieldSheetRepo.openChatField(
+                      const EditNameSheet(),
+                    );
+                  },
                   child: Container(
                     height: 32.h,
                     padding: REdgeInsets.symmetric(horizontal: 8),
@@ -140,7 +162,7 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
                         ),
                         4.horizontalSpace,
                         Text(
-                          'Add Name',
+                          'Your Name',
                           style: GoogleFonts.fredoka(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.w500,
@@ -150,10 +172,10 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
                       ],
                     ),
                   ),
-                )
-              ],
+                ),
+              )
             ],
-          ),
+          ],
         ),
       ),
     );

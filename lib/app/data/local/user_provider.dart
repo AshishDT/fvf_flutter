@@ -1,7 +1,11 @@
 import 'dart:convert';
 import 'package:fvf_flutter/app/data/local/store/local_store.dart';
+import 'package:get/get.dart';
 import '../config/encryption.dart';
 import '../models/md_user.dart';
+
+/// Current user observable
+Rx<MdUser> globalUser = Rx<MdUser>(MdUser());
 
 /// Helper class for local stored User
 class UserProvider {
@@ -26,6 +30,7 @@ class UserProvider {
     _isLoggedIn = true;
     _userEntity = user;
     _authToken = userAuthToken;
+    globalUser(user);
     LocalStore.user(AppEncryption.encrypt(plainText: user.asString()));
     LocalStore.authToken(userAuthToken);
   }
@@ -39,6 +44,7 @@ class UserProvider {
       _userEntity = MdUser.fromJson(
           jsonDecode(AppEncryption.decrypt(cipherText: encryptedUserData))
               as Map<String, dynamic>);
+      globalUser(_userEntity);
       _authToken = LocalStore.authToken();
     } else {
       _isLoggedIn = false;
@@ -50,6 +56,7 @@ class UserProvider {
     _isLoggedIn = false;
     _userEntity = null;
     _authToken = null;
+    globalUser(MdUser());
     LocalStore.user.erase();
     LocalStore.authToken.erase();
   }

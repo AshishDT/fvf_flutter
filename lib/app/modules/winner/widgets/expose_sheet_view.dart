@@ -181,9 +181,12 @@ class ExposeSheetView extends GetView<WinnerController> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(28.r),
                       gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        stops: const [0.0, 0.0],
                         colors: <Color>[
                           AppColors.kFFC300,
-                          AppColors.kFFC300.withValues(alpha: .42),
+                          AppColors.kFFC300.withValues(alpha: .72),
                         ],
                       ),
                       boxShadow: <BoxShadow>[
@@ -211,9 +214,9 @@ class ExposeSheetView extends GetView<WinnerController> {
                       );*/
                     },
                     style: AppTextStyle.openRunde(
-                      fontSize: 16.sp,
-                      color: AppColors.k2A2E2F,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 18.sp,
+                      color: AppColors.kffffff,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
           ],

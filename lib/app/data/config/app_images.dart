@@ -127,4 +127,7 @@ class AppImages {
 
   /// Timer icon
   static const String timerIcon = '$_svgPath/timer_icon.svg';
+
+  /// Add icon
+  static const String addIcon = '$_svgPath/add_icon.svg';
 }

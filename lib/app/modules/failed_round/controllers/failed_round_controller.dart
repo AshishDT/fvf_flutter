@@ -11,6 +11,12 @@ import '../repositories/failed_round_api_repo.dart';
 
 /// Failed round controller
 class FailedRoundController extends GetxController {
+  /// participantsWithoutCurrentUser
+  RxList<MdParticipant> participantsWithoutCurrentUser = <MdParticipant>[].obs;
+
+  /// Self Participant
+  Rx<MdParticipant> selfParticipant = MdParticipant().obs;
+
   /// On init
   @override
   void onInit() {
@@ -29,6 +35,23 @@ class FailedRoundController extends GetxController {
 
       if (Get.arguments['is_host'] != null) {
         isHost = Get.arguments['is_host'] as bool;
+      }
+
+      if (Get.arguments['self_participant'] != null) {
+        selfParticipant(Get.arguments['self_participant']);
+      }
+
+      if (Get.arguments['participants_without_current_user'] != null) {
+        participantsWithoutCurrentUser.clear();
+        participantsWithoutCurrentUser(
+            Get.arguments['participants_without_current_user']);
+        if (participantsWithoutCurrentUser().isEmpty) {
+          participantsWithoutCurrentUser(<MdParticipant>[
+            MdParticipant(),
+            MdParticipant(),
+            MdParticipant(),
+          ]);
+        }
       }
     }
     super.onInit();

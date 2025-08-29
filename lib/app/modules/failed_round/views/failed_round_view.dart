@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fvf_flutter/app/data/local/user_provider.dart';
+import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
+import 'package:fvf_flutter/app/modules/snap_selfies/widgets/selfie_avatar_icon.dart';
+import 'package:fvf_flutter/app/modules/snap_selfies/widgets/user_self_participant_card.dart';
 import 'package:get/get.dart';
+
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
 import '../../../ui/components/animated_list_view.dart';
@@ -51,14 +56,6 @@ class FailedRoundView extends GetView<FailedRoundController> {
                     ],
                   ),
                   64.verticalSpace,
-                  Image(
-                    height: 147.h,
-                    width: 150.w,
-                    image: const AssetImage(
-                      AppImages.appLogo,
-                    ),
-                  ),
-                  8.verticalSpace,
                   Text(
                     controller.reason,
                     textAlign: TextAlign.center,
@@ -68,7 +65,7 @@ class FailedRoundView extends GetView<FailedRoundController> {
                       color: AppColors.kffffff,
                     ),
                   ),
-                  24.verticalSpace,
+                  16.verticalSpace,
                   Text(
                     controller.isHost
                         ? controller.subReason
@@ -80,7 +77,34 @@ class FailedRoundView extends GetView<FailedRoundController> {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  32.verticalSpace,
+                  44.verticalSpace,
+                  Obx(
+                    () => CurrentUserSelfieAvatar(
+                      participant: controller.selfParticipant(),
+                      userName: globalUser().username,
+                      isFromFailedView: true,
+                    ),
+                  ),
+                  24.verticalSpace,
+                  Align(
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.zero,
+                      scrollDirection: Axis.horizontal,
+                      child: Obx(
+                        () => Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            ...controller.participantsWithoutCurrentUser().map(
+                                  (MdParticipant participant) =>
+                                      SelfieAvatarIcon(
+                                    participant: participant,
+                                  ).paddingOnly(right: 32),
+                                ),
+                          ],
+                        ),
+                      ),
+                    ).paddingOnly(left: 32),
+                  ),
                 ],
               ),
             ),

@@ -4,9 +4,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/data/config/env_config.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
+import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/enums/round_status_enum.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
+import 'package:fvf_flutter/app/modules/profile/models/md_profile.dart';
+import 'package:fvf_flutter/app/modules/profile/repositories/profile_api_repo.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_round.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:get/get.dart';
@@ -20,7 +23,7 @@ import '../repositories/snap_selfie_api_repo.dart';
 import '../../../data/remote/socket_io_repo.dart';
 
 /// Snap Selfies Controller
-class SnapSelfiesController extends GetxController {
+class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
   /// On init
   @override
   void onInit() {
@@ -49,7 +52,24 @@ class SnapSelfiesController extends GetxController {
         },
       );
 
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        _prevBottomInset.value = View.of(Get.context!).viewInsets.bottom;
+      },
+    );
     super.onInit();
+
+    // Debounce enteredName updates
+    debounce(
+      enteredName,
+      (_) {
+        if (enteredName.isNotEmpty) {
+          updateUser(username: enteredName.value);
+        }
+      },
+      time: 400.milliseconds,
+    );
   }
 
   /// Call emit with custom payload
@@ -74,8 +94,41 @@ class SnapSelfiesController extends GetxController {
     _textsTimer?.cancel();
     socketIoRepo.dispose();
     stopTimer();
+    WidgetsBinding.instance.removeObserver(this);
+    nameInputFocusNode.dispose();
     super.onClose();
   }
+
+  @override
+  void didChangeMetrics() {
+    final double currentViewInsets = View.of(Get.context!).viewInsets.bottom;
+
+    if (_prevBottomInset() > 0 && currentViewInsets == 0) {
+      if (Get.isOverlaysOpen) {
+        Get.back();
+      }
+    }
+
+    _prevBottomInset.value = currentViewInsets;
+  }
+
+  /// Observable to track keyboard visibility
+  RxBool isKeyboardVisible = false.obs;
+
+  /// Entered name
+  RxString enteredName = ''.obs;
+
+  /// Previous bottom inset for keyboard
+  final RxDouble _prevBottomInset = 0.0.obs;
+
+  /// Focus node for name input field
+  final FocusNode nameInputFocusNode = FocusNode();
+
+  /// Text editing controller for name input field
+  TextEditingController nameInputController = TextEditingController();
+
+  /// User profile
+  Rx<MdProfile> profile = MdProfile().obs;
 
   /// Joined invitation data
   Rx<MdJoinInvitation> joinedInvitationData = MdJoinInvitation().obs;
@@ -205,6 +258,8 @@ class SnapSelfiesController extends GetxController {
       'round_id': joinedInvitationData().id,
       'is_host': isHost(),
       'sub_reason': 'Go again with your friends',
+      'self_participant': selfParticipant(),
+      'participants_without_current_user': participantsWithoutCurrentUser(),
     };
 
     WidgetsBinding.instance.addPostFrameCallback(
@@ -477,6 +532,47 @@ class SnapSelfiesController extends GetxController {
       return null;
     } finally {
       isStartingRound(false);
+    }
+  }
+
+  /// Update User
+  Future<void> updateUser({
+    String? username,
+  }) async {
+    try {
+      final bool? _isUpdated = await ProfileApiRepo.updateUser(
+        username: username,
+      );
+      if (_isUpdated != null) {
+        await getUser();
+        // appSnackbar(
+        //   message: 'Username updated successfully',
+        //   snackbarState: SnackbarState.success,
+        // );
+      }
+    } on Exception catch (e, st) {
+      logE('Error getting update name: $e');
+      logE(st);
+    } finally {}
+  }
+
+  /// User profile
+  Future<void> getUser() async {
+    try {
+      final MdProfile? _user = await ProfileApiRepo.getUser();
+      if (_user != null) {
+        profile(_user);
+
+        final String? userAuthToken = UserProvider.authToken;
+
+        UserProvider.onLogin(
+          user: profile().user!,
+          userAuthToken: userAuthToken ?? '',
+        );
+      }
+    } on Exception catch (e, st) {
+      logE('Error getting user: $e');
+      logE(st);
     }
   }
 }

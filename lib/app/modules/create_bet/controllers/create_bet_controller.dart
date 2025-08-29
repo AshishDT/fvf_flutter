@@ -41,10 +41,7 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
       },
     );
 
-    rollDice(
-      fromInit: true,
-    );
-
+    getBets();
     getUser();
 
     super.onInit();
@@ -102,13 +99,17 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
   /// User profile
   Rx<MdProfile> profile = MdProfile().obs;
 
-  /// Question for the bet
+  /// All bets fetched from API (original copy)
+  final RxList<MdBet> _allBets = <MdBet>[].obs;
+
+  /// Remaining bets pool
+  final RxList<MdBet> _betsPool = <MdBet>[].obs;
+
+  /// Question for the bet (currently shown)
   RxString bet = ''.obs;
 
-  /// Roll dice
-  void rollDice({
-    bool fromInit = false,
-  }) {
+  /// Show next bet when rolling dice
+  void rollDice() {
     if (createRoundLoading()) {
       appSnackbar(
         message: 'Please wait, creating round...',
@@ -117,40 +118,49 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
       return;
     }
 
-    getBets(
-      fromInit: fromInit,
-    );
+    if (_betsPool.isEmpty && _allBets.isNotEmpty) {
+      _betsPool.assignAll(_allBets);
+    }
+
+    showNextBet();
   }
 
   /// Get bets from API
-  Future<void> getBets({
-    bool fromInit = false,
-  }) async {
-    if (!fromInit) {
-      rollCounter.value++;
-    }
-
+  Future<void> getBets() async {
     isLoading(true);
     try {
-      if (fromInit) {
-        Future<void>.delayed(
-          const Duration(milliseconds: 300),
-          () {
-            rollCounter.value++;
-          },
-        );
-      }
-      final MdBet? _bet = await CreateBetApiRepo.getQuestion();
+      final List<MdBet>? bets = await CreateBetApiRepo.getQuestion();
 
-      if (_bet != null && _bet.question != null && _bet.question!.isNotEmpty) {
-        bet.value = _bet.question!;
-      }
+      if (bets != null && bets.isNotEmpty) {
+        _allBets.assignAll(bets);
+        _betsPool.assignAll(bets);
 
-      enteredBet('');
-      messageInputController.clear();
+        showNextBet();
+      }
     } finally {
       isLoading(false);
     }
+  }
+
+  /// Show next bet from the pool
+  void showNextBet() {
+    if (_betsPool.isEmpty) {
+      bet.value = '';
+      return;
+    }
+
+    rollCounter.value++;
+
+    final int randomIndex = _betsPool.length > 1
+        ? (DateTime.now().millisecondsSinceEpoch % _betsPool.length)
+        : 0;
+
+    final MdBet nextBet = _betsPool.removeAt(randomIndex);
+
+    bet.value = nextBet.question ?? '';
+
+    enteredBet('');
+    messageInputController.clear();
   }
 
   /// On bet pressed

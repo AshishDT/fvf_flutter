@@ -4,6 +4,7 @@ import '../../../data/models/md_join_invitation.dart';
 import '../../../data/remote/api_service/api_wrapper.dart';
 import '../../../data/remote/api_service/init_api_service.dart';
 import '../../../ui/components/app_snackbar.dart';
+import '../../create_bet/models/md_round.dart';
 
 /// Snap Selfie API Repository
 class SnapSelfieApiRepo {
@@ -96,6 +97,42 @@ class SnapSelfieApiRepo {
               response!.data!,
               fromJsonT: (dynamic json) =>
                   MdJoinInvitation.fromJson(json as Map<String, dynamic>),
+            );
+
+            if (data.success == true) {
+              return data.data;
+            }
+
+            appSnackbar(
+              message:
+                  data.message ?? 'Something went wrong, please try again.',
+              snackbarState: SnackbarState.danger,
+            );
+            return null;
+          },
+        ),
+      );
+
+  /// Start Round
+  static Future<MdRound?> startRound({
+    required String roundId,
+  }) async =>
+      APIWrapper.handleApiCall<MdRound?>(
+        APIService.post<Map<String, dynamic>>(
+          path: 'round/start',
+          data: <String, dynamic>{
+            'round_id': roundId,
+          },
+        ).then(
+          (Response<Map<String, dynamic>>? response) {
+            if (response?.isOk != true || response?.data == null) {
+              return null;
+            }
+
+            final ApiResponse<MdRound> data = ApiResponse<MdRound>.fromJson(
+              response!.data!,
+              fromJsonT: (dynamic json) =>
+                  MdRound.fromJson(json as Map<String, dynamic>),
             );
 
             if (data.success == true) {

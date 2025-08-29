@@ -13,8 +13,6 @@ import 'package:fvf_flutter/app/ui/components/app_button.dart';
 import 'package:fvf_flutter/app/ui/components/chat_field_sheet_repo.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
-
 import '../../../ui/components/app_snackbar.dart';
 import '../../../ui/components/common_app_bar.dart';
 import '../../../ui/components/gradient_card.dart';
@@ -172,7 +170,7 @@ class CreateBetView extends GetView<CreateBetController> {
                 ),
               )
             : AnimatedSwitcher(
-                duration: const Duration(milliseconds: 400),
+                duration: const Duration(milliseconds: 600),
                 transitionBuilder:
                     (Widget child, Animation<double> animation) =>
                         FadeTransition(

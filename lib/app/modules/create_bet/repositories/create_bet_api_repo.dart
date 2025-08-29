@@ -9,7 +9,8 @@ import '../models/md_round.dart';
 /// Create bet api repository
 class CreateBetApiRepo {
   /// Get question
-  static Future<MdBet?> getQuestion() async => APIWrapper.handleApiCall<MdBet?>(
+  static Future<List<MdBet>?> getQuestion() async =>
+      APIWrapper.handleApiCall<List<MdBet>?>(
         APIService.get<Map<String, dynamic>>(
           path: 'question/weekly',
         ).then(
@@ -18,9 +19,14 @@ class CreateBetApiRepo {
               return null;
             }
 
-            final ApiResponse<MdBet> data = ApiResponse<MdBet>.fromJson(
+            final ApiResponse<List<MdBet>> data =
+                ApiResponse<List<MdBet>>.fromJson(
               response!.data!,
-              fromJsonT: (dynamic json) => MdBet.fromJson(json),
+              fromJsonT: (dynamic json) => List<MdBet>.from(
+                (json as List<dynamic>).map<MdBet>(
+                  (dynamic x) => MdBet.fromJson(x as Map<String, dynamic>),
+                ),
+              ),
             );
 
             if (data.success ?? false) {

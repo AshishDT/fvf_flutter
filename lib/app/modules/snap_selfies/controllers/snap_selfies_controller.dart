@@ -7,6 +7,7 @@ import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/enums/round_status_enum.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
+import 'package:fvf_flutter/app/modules/create_bet/models/md_round.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
@@ -27,8 +28,6 @@ class SnapSelfiesController extends GetxController {
       joinedInvitationData.value = Get.arguments as MdJoinInvitation;
       joinedInvitationData.refresh();
       participants.refresh();
-
-      startTimer();
       getPreSelfieStrings();
     }
 
@@ -142,6 +141,9 @@ class SnapSelfiesController extends GetxController {
   /// Indicates if processing
   RxBool isProcessing = false.obs;
 
+  /// Is starting round
+  RxBool isStartingRound = false.obs;
+
   /// Submitting selfie
   RxBool submittingSelfie = false.obs;
 
@@ -165,13 +167,15 @@ class SnapSelfiesController extends GetxController {
   }
 
   /// Starts the timer from `roundJoinedEndAt`
-  void startTimer() {
+  void startTimer({
+    DateTime? endTime,
+  }) {
     _timer?.cancel();
 
-    final DateTime? endTime = joinedInvitationData().roundJoinedEndAt;
-
     if (endTime == null) {
-      secondsLeft.value = 300;
+      secondsLeft.value = 0;
+      isTimesUp(true);
+      isProcessing(true);
     } else {
       final DateTime localEndTime = endTime.toLocal();
 
@@ -298,8 +302,12 @@ class SnapSelfiesController extends GetxController {
           ),
         )
             .then(
-          (ShareResult result) {
+          (ShareResult result) async {
+            final DateTime? _timeEndAt = await startRound();
             isInvitationSend(true);
+            startTimer(
+              endTime: _timeEndAt,
+            );
           },
         ),
       );
@@ -449,6 +457,26 @@ class SnapSelfiesController extends GetxController {
       }
     } finally {
       submittingSelfie(false);
+    }
+  }
+
+  /// Start round
+  Future<DateTime?> startRound() async {
+    isStartingRound(true);
+    try {
+      final MdRound? _round = await SnapSelfieApiRepo.startRound(
+        roundId: joinedInvitationData().id ?? '',
+      );
+
+      if (_round != null) {
+        joinedInvitationData().roundJoinedEndAt = _round.roundJoinedEndAt;
+        joinedInvitationData.refresh();
+        return _round.roundJoinedEndAt;
+      }
+
+      return null;
+    } finally {
+      isStartingRound(false);
     }
   }
 }

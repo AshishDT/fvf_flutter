@@ -25,6 +25,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.7.1"
+  animated_digit:
+    dependency: "direct main"
+    description:
+      name: animated_digit
+      sha256: d39c4a23269d02452cd82397cce627d158294dd96a4bd2199f8f0f5922b1db34
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.3.1+2"
   app_links:
     dependency: transitive
     description:

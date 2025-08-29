@@ -6,6 +6,7 @@ class MdDeepLinkData {
     this.tags,
     this.canonicalIdentifier,
     this.clickedBranchLink,
+    this.hostId,
   });
 
   /// From JSON
@@ -16,10 +17,14 @@ class MdDeepLinkData {
             .toList(),
         canonicalIdentifier: json[r'$canonical_identifier'] as String?,
         clickedBranchLink: json[r'+clicked_branch_link'] == true,
+        hostId: json['host_id'] as String?,
       );
 
   /// Invitation ID
   final String? invitationId;
+
+  /// Host ID
+  final String? hostId;
 
   /// Tags
   final List<String>? tags;
@@ -36,5 +41,6 @@ class MdDeepLinkData {
         r'~tags': tags,
         r'$canonical_identifier': canonicalIdentifier,
         r'+clicked_branch_link': clickedBranchLink,
+        'host_id': hostId,
       };
 }

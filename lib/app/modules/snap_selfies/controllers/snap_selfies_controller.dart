@@ -329,12 +329,13 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
   }
 
   /// Share uri
-  Future<void> shareUri() async {
+  Future<void> shareUri({bool fromResend = false}) async {
     try {
       final String? _invitationLink =
           await DeepLinkService.generateSlayInviteLink(
         title: joinedInvitationData().prompt ?? '',
         invitationId: joinedInvitationData().id ?? '',
+        hostId: joinedInvitationData().host?.supabaseId ?? '',
       );
 
       if (_invitationLink == null || _invitationLink.isEmpty) {
@@ -358,11 +359,13 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
         )
             .then(
           (ShareResult result) async {
-            final DateTime? _timeEndAt = await startRound();
-            isInvitationSend(true);
-            startTimer(
-              endTime: _timeEndAt,
-            );
+            if (!fromResend) {
+              final DateTime? _timeEndAt = await startRound();
+              isInvitationSend(true);
+              startTimer(
+                endTime: _timeEndAt,
+              );
+            }
           },
         ),
       );

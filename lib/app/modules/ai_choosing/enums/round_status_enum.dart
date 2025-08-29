@@ -41,7 +41,7 @@ extension RoundStatusX on RoundStatus {
       case 'FAILED':
         return RoundStatus.failed;
       default:
-        throw ArgumentError('Invalid RoundStatus: $status');
+        return RoundStatus.pending;
     }
   }
 }

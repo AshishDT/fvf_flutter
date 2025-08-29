@@ -171,7 +171,7 @@ class CreateBetView extends GetView<CreateBetController> {
                 ),
               )
             : AnimatedSwitcher(
-                duration: const Duration(milliseconds: 400),
+                duration: const Duration(milliseconds: 600),
                 transitionBuilder:
                     (Widget child, Animation<double> animation) =>
                         FadeTransition(

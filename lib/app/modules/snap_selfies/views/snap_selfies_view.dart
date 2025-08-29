@@ -1,4 +1,4 @@
-import 'package:auto_size_text/auto_size_text.dart';
+import 'package:animated_digit/animated_digit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -14,6 +14,7 @@ import '../../../routes/app_pages.dart';
 import '../../../ui/components/animated_list_view.dart';
 import '../../../ui/components/app_button.dart';
 import '../../../ui/components/common_app_bar.dart';
+import '../../../ui/components/custom_type_writer.dart';
 import '../../../utils/app_text_style.dart';
 import '../../../utils/dialog_helper.dart';
 import '../controllers/snap_selfies_controller.dart';
@@ -57,12 +58,18 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                               height: 24.h,
                               width: 24.w,
                             ),
-                            Text(
-                              '${controller.secondsLeft().toString()}s',
-                              style: AppTextStyle.openRunde(
-                                fontSize: 24.sp,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.kF6FCFE,
+                            Obx(
+                              () => AnimatedDigitWidget(
+                                duration: const Duration(milliseconds: 600),
+                                separateLength: 1,
+                                loop: false,
+                                value: controller.secondsLeft(),
+                                suffix: 's',
+                                textStyle: AppTextStyle.openRunde(
+                                  fontSize: 24.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.kF6FCFE,
+                                ),
                               ),
                             ),
                           ],
@@ -100,8 +107,9 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                 curve: Curves.easeInOut,
                 child: Obx(
                   () => Visibility(
-                    visible:
-                        controller.isHost() && !controller.isInvitationSend(),
+                    visible: controller.isHost() &&
+                        !controller.isInvitationSend() &&
+                        !controller.isTimesUp() && !controller.isStartingRound(),
                     child: AppButton(
                       buttonText: 'Add Friends',
                       child: Row(
@@ -167,13 +175,16 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                       width: double.infinity,
                     ),
                     visible:
-                        controller.isTimesUp() && controller.isProcessing(),
+                        controller.isTimesUp() && controller.isProcessing() ||
+                            controller.isStartingRound(),
                     child: AppButton(
-                      buttonText: controller.isProcessing()
+                      buttonText: controller.isProcessing() ||
+                              controller.isStartingRound()
                           ? 'Processing...'
                           : 'Let’s Go',
                       onPressed: () {
-                        if (controller.isProcessing()) {
+                        if (controller.isProcessing() ||
+                            controller.isStartingRound()) {
                           appSnackbar(
                             message:
                                 'Please wait, your selfies are being processed.',
@@ -218,16 +229,8 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                     ConstrainedBox(
                       constraints: BoxConstraints(maxHeight: 120.h),
                       child: Obx(
-                        () => AutoSizeText(
-                          controller.joinedInvitationData().prompt ?? '',
-                          textAlign: TextAlign.center,
-                          style: AppTextStyle.openRunde(
-                            fontSize: 40.sp,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.kffffff,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 20,
+                        () => CustomTypewriterText(
+                          text: controller.joinedInvitationData().prompt ?? '',
                         ),
                       ).paddingSymmetric(horizontal: 24),
                     ),

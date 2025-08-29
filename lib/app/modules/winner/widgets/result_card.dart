@@ -2,6 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fvf_flutter/app/routes/app_pages.dart';
+import 'package:get/get.dart';
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
 import '../../../utils/app_text_style.dart';
@@ -152,7 +154,10 @@ class ResultCard extends StatelessWidget {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          Get.until((Route<dynamic> route) =>
+                              route.settings.name == Routes.CREATE_BET);
+                        },
                         child: SvgPicture.asset(
                           AppImages.addIcon,
                           height: 36.w,

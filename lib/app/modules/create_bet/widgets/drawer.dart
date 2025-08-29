@@ -58,10 +58,6 @@ class MenuDrawer extends StatelessWidget {
                   },
                 ),
                 _drawerTile(
-                  icon: AppImages.helpIcon,
-                  title: 'Help',
-                ),
-                _drawerTile(
                   icon: AppImages.mailIcon,
                   title: 'Give us feedback!',
                 ),

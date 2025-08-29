@@ -16,9 +16,10 @@ class DeepLinkService {
     final BranchUniversalObject buo = BranchUniversalObject(
       canonicalIdentifier: 'slay_invite',
       title: title,
+      contentDescription: 'Slay invite deep link',
       expirationDateInMilliSec: _expiryTime,
       contentMetadata: BranchContentMetaData()
-        ..addCustomMetadata('invitation_id', invitationId)
+        ..addCustomMetadata('invitation_id', invitationId),
     );
 
     final BranchLinkProperties lp = BranchLinkProperties(
@@ -43,7 +44,7 @@ class DeepLinkService {
   /// Get the expiry time for the link
   static int get _expiryTime => DateTime.now()
       .toUtc()
-      .add(const Duration(seconds: 300))
+      .add(const Duration(seconds: 69))
       .millisecondsSinceEpoch;
 
   /// Initialize deep link listener

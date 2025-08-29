@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../data/config/app_colors.dart';
@@ -41,7 +42,11 @@ class ProfileBioSection extends StatelessWidget {
             padding: EdgeInsets.zero,
             constraints: BoxConstraints(minWidth: 56.w, minHeight: 56.w),
             onPressed: () {
-              controller.pageController.jumpToPage(1);
+              controller.pageController.animateToPage(
+                1,
+                duration: 500.milliseconds,
+                curve: Curves.easeInOut,
+              );
               controller.currentIndex(1);
             },
             icon: Transform.rotate(

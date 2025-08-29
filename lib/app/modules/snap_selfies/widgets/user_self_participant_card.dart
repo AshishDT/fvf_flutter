@@ -59,8 +59,18 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
           placeholder: (_, __) => Center(
             child: CircularProgressIndicator(strokeWidth: 2.w),
           ),
-          errorWidget: (_, __, ___) => Center(
-            child: CircularProgressIndicator(strokeWidth: 2.w),
+          errorWidget: (_, __, ___) => Container(
+            width: size.w,
+            height: size.h,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.kF1F2F2.withValues(alpha: 0.36),
+            ),
+            child: Center(
+              child: SvgPicture.asset(
+                AppImages.personalPlaceholder,
+              ),
+            ),
           ),
         ),
       );
@@ -122,7 +132,7 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
                   child: avatarContent,
                 ),
               ),
-            if (name != null && name!.isNotEmpty) ...<Widget>[
+            if (isFromFailedView || name != null && name!.isNotEmpty) ...<Widget>[
               8.verticalSpace,
               Text(
                 name ?? 'You',
@@ -132,7 +142,7 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
                   color: Colors.white,
                 ),
               ),
-            ] else ...<Widget>[
+            ] else if(!isFromFailedView)...<Widget>[
               12.verticalSpace,
               IntrinsicWidth(
                 child: GestureDetector(

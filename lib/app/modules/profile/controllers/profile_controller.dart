@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
+import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/data/models/md_join_invitation.dart';
 import 'package:fvf_flutter/app/data/remote/api_service/init_api_service.dart';
 import 'package:fvf_flutter/app/data/remote/revenue_cat/revenue_cat_service.dart';
@@ -181,6 +182,12 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
       if (_user != null) {
         log('User fetched: ${_user.toJson()}');
         profile(_user);
+        final String? userAuthToken = UserProvider.authToken;
+
+        UserProvider.onLogin(
+          user: profile().user!,
+          userAuthToken: userAuthToken ?? '',
+        );
       }
     } on Exception catch (e, st) {
       isLoading(false);

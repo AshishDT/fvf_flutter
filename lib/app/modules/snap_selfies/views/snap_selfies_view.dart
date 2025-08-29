@@ -109,7 +109,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                   () => Visibility(
                     visible: controller.isHost() &&
                         !controller.isInvitationSend() &&
-                        !controller.isTimesUp(),
+                        !controller.isTimesUp() && !controller.isStartingRound(),
                     child: AppButton(
                       buttonText: 'Add Friends',
                       child: Row(

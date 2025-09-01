@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fvf_flutter/app/data/config/app_colors.dart';
-import 'package:fvf_flutter/app/modules/winner/controllers/winner_controller.dart';
-import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
-import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:fvf_flutter/app/utils/widget_ext.dart';
-import 'package:get/get.dart';
 
 /// AIPlan enum
 enum AIPlan {
@@ -17,10 +13,25 @@ enum AIPlan {
 }
 
 /// ExposeSheetView
-class ExposeSheetView extends GetView<WinnerController> {
+class ExposeSheetView extends StatefulWidget {
   /// ExposeSheetView Constructor
-  const ExposeSheetView({super.key});
+  ExposeSheetView({
+    super.key,
+    this.onExposed,
+    this.onRoundExpose,
+  });
 
+  /// On round expose callback
+  VoidCallback? onRoundExpose;
+
+  /// On exposed callback
+  VoidCallback? onExposed;
+
+  @override
+  State<ExposeSheetView> createState() => _ExposeSheetViewState();
+}
+
+class _ExposeSheetViewState extends State<ExposeSheetView> {
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
         padding: EdgeInsets.only(
@@ -50,7 +61,7 @@ class ExposeSheetView extends GetView<WinnerController> {
                 ),
               ),
               24.verticalSpace,
-              _planInfoCard(AIPlan.PLAN1, controller),
+              _planInfoCard(AIPlan.PLAN1),
               24.verticalSpace,
               Row(
                 children: <Widget>[
@@ -69,7 +80,7 @@ class ExposeSheetView extends GetView<WinnerController> {
                 ],
               ),
               20.verticalSpace,
-              _planInfoCard(AIPlan.PLAN2, controller),
+              _planInfoCard(AIPlan.PLAN2),
             ],
           ),
         ).withGPad(context,
@@ -82,7 +93,7 @@ class ExposeSheetView extends GetView<WinnerController> {
       );
 
   /// _divider
-  static Expanded _divider() => Expanded(
+  Expanded _divider() => Expanded(
         child: Divider(
           thickness: 2.h,
           radius: BorderRadius.circular(1),
@@ -91,8 +102,7 @@ class ExposeSheetView extends GetView<WinnerController> {
       );
 
   /// _planInfoCard
-  static Container _planInfoCard(AIPlan plan, WinnerController controller) =>
-      Container(
+  Container _planInfoCard(AIPlan plan) => Container(
         padding: REdgeInsets.symmetric(vertical: 16, horizontal: 24),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(28.r),
@@ -156,19 +166,7 @@ class ExposeSheetView extends GetView<WinnerController> {
                       ],
                     ),
                     onPressed: () {
-                      Get.back();
-                      appSnackbar(
-                        message: 'You have successfully exposed this round!',
-                        snackbarState: SnackbarState.success,
-                      );
-                      controller.isExposed(true);
-                      /*Get.toNamed(
-                        Routes.PREMIUM_WINNER,
-                        arguments: <String, dynamic>{
-                          'participants': controller.participants(),
-                          'bet': controller.bet(),
-                        },
-                      );*/
+                      widget.onRoundExpose?.call();
                     },
                     style: AppTextStyle.openRunde(
                       fontSize: 16.sp,
@@ -198,20 +196,7 @@ class ExposeSheetView extends GetView<WinnerController> {
                       ],
                     ),
                     onPressed: () {
-                      Get.back();
-                      appSnackbar(
-                        message:
-                            'You have successfully subscribed to the unlimited plan!',
-                        snackbarState: SnackbarState.success,
-                      );
-                      controller.isExposed(true);
-                      /*Get.toNamed(
-                        Routes.PREMIUM_WINNER,
-                        arguments: <String, dynamic>{
-                          'participants': controller.participants(),
-                          'bet': controller.bet(),
-                        },
-                      );*/
+                      widget.onExposed?.call();
                     },
                     style: AppTextStyle.openRunde(
                       fontSize: 18.sp,

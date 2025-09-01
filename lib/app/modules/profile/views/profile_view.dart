@@ -39,16 +39,22 @@ class ProfileView extends GetView<ProfileController> {
             resizeToAvoidBottomInset: false,
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.centerFloat,
-            floatingActionButton: ExposeButton(controller: controller),
+            floatingActionButton: Obx(
+              () => controller.isRoundsLoading() || controller.rounds().isEmpty
+                  ? const SizedBox.shrink()
+                  : ExposeButton(controller: controller),
+            ),
             body: Stack(
               children: <Widget>[
                 /// Profile Background Image
                 Obx(
                   () => CachedNetworkImage(
-                    imageUrl: controller.currentIndex() == 1
+                    imageUrl: controller.currentIndex() == 1 &&
+                            controller.rounds().isNotEmpty
                         ? controller
-                                .participants()[controller.currentRank()]
+                                .rounds()[controller.currentRound()]
                                 .selfieUrl ??
+                            controller.profile().user?.profileUrl ??
                             ''
                         : controller.profile().user?.profileUrl ?? '',
                     width: 1.sw,
@@ -108,12 +114,9 @@ class ProfileView extends GetView<ProfileController> {
                         child: PageView(
                           controller: controller.pageController,
                           scrollDirection: Axis.vertical,
-                          // physics: controller.currentIndex() == 0
-                          //     ? const NeverScrollableScrollPhysics()
-                          //     : null,
                           onPageChanged: (int value) {
                             controller.currentIndex(value);
-                            controller.currentRank(0);
+                            controller.currentRound(0);
                           },
                           children: <Widget>[
                             /// Profile Page

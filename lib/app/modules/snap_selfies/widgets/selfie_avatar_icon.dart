@@ -50,10 +50,15 @@ class SelfieAvatarIcon extends StatelessWidget {
           width: size.w,
           height: size.h,
           fit: BoxFit.cover,
-          placeholder: (_, __) =>
-              Center(child: CircularProgressIndicator(strokeWidth: 2.w)),
-          errorWidget: (_, __, ___) =>
-              Center(child: CircularProgressIndicator(strokeWidth: 2.w)),
+          placeholder: (_, __) => Center(
+            child: CircularProgressIndicator(strokeWidth: 2.w),
+          ),
+          errorWidget: (_, __, ___) => const Center(
+            child: Icon(
+              Icons.error,
+              color: AppColors.kffffff,
+            ),
+          ),
         ),
       );
     } else {

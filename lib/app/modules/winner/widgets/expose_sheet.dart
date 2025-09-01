@@ -6,7 +6,8 @@ import 'package:get/get.dart';
 /// ExposeSheet
 class ExposeSheet {
   /// Opens the expose bottom sheet
-  static void openExposeSheet() {
+  static void openExposeSheet(
+      {VoidCallback? onRoundExpose, VoidCallback? onExposed}) {
     showModalBottomSheet(
       context: Get.context!,
       useSafeArea: true,
@@ -18,7 +19,10 @@ class ExposeSheet {
           top: Radius.circular(24),
         ).r,
       ),
-      builder: (BuildContext context) => const ExposeSheetView(),
+      builder: (BuildContext context) => ExposeSheetView(
+        onExposed: onExposed,
+        onRoundExpose: onRoundExpose,
+      ),
     );
   }
 }

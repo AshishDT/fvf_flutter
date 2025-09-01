@@ -7,17 +7,27 @@ import '../../ai_choosing/models/md_ai_result.dart';
 
 /// Winner Controller
 class WinnerController extends GetxController {
+  /// roundId
+  RxString roundId = ''.obs;
+
   /// On init
   @override
   void onInit() {
     if (Get.arguments != null) {
-      _resultData.value = Get.arguments as MdAiResultData;
-      _resultData.refresh();
+      if (Get.arguments['isFromProfile'] != null) {
+        isFromProfile(true);
+      }
+      if (Get.arguments['roundId'] != null) {
+        roundId(Get.arguments['roundId']);
+        getRoundDetails(Get.arguments['roundId']);
+      } else {
+        _resultData.value = Get.arguments as MdAiResultData;
+        _resultData.refresh();
 
-      getRoundDetails(
-        _resultData().id ?? '',
-      );
-
+        getRoundDetails(
+          _resultData().id ?? '',
+        );
+      }
       WidgetsBinding.instance.addPostFrameCallback(
         (Duration timeStamp) {
           pageController = PageController();
@@ -42,6 +52,9 @@ class WinnerController extends GetxController {
 
   /// isExposed
   RxBool isExposed = false.obs;
+
+  /// isFromProfile
+  RxBool isFromProfile = false.obs;
 
   /// Current rank
   RxInt currentRank = 0.obs;

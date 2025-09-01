@@ -66,7 +66,10 @@ class AiChoosingView extends GetView<AiChoosingController> {
                           placeholder: (_, __) => const Center(
                               child: CircularProgressIndicator(strokeWidth: 2)),
                           errorWidget: (_, __, ___) => const Center(
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                            child: Icon(
+                              Icons.error,
+                              color: AppColors.kffffff,
+                            ),
                           ),
                         ),
                       ),

@@ -39,9 +39,8 @@ class EditNameSheet extends GetView<SnapSelfiesController> {
             ),
             16.verticalSpace,
             AnimatedContainer(
-              height: 56.h,
               duration: const Duration(milliseconds: 300),
-              padding: REdgeInsets.symmetric(horizontal: 16),
+              padding: REdgeInsets.symmetric(horizontal: 16, vertical: 6),
               decoration: BoxDecoration(
                 color: AppColors.kF1F2F2.withValues(alpha: 0.36),
                 borderRadius: BorderRadius.circular(28).r,

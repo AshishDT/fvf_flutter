@@ -11,6 +11,7 @@ class PlaceholderCard extends StatelessWidget {
     required this.width,
     this.radius,
     this.child,
+    this.bgColor,
     Key? key,
   }) : super(key: key);
 
@@ -26,12 +27,15 @@ class PlaceholderCard extends StatelessWidget {
   /// Child widget
   final Widget? child;
 
+  /// bgColor
+  final Color? bgColor;
+
   @override
   Widget build(BuildContext context) => Container(
     height: height,
     width: width,
     decoration: BoxDecoration(
-      color: AppColors.kF5FCFF,
+      color: bgColor ?? AppColors.kffffff,
       borderRadius: BorderRadius.circular(radius ?? 24).r,
     ),
     child: child,

@@ -183,7 +183,7 @@ class APIService {
   ///
   /// set [encrypt] to true if the body needs to be encrypted. Make sure the
   /// encryption keys in the backend matches with the one in frontend
-  static Future<Response<T>?> post<T>({
+  static Future<Response<T>?>  post<T>({
     required String path,
     dynamic data,
     Map<String, dynamic>? params,

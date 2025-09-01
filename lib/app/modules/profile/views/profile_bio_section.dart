@@ -38,22 +38,23 @@ class ProfileBioSection extends StatelessWidget {
             ),
             16.verticalSpace,
           ],
-          IconButton(
-            padding: EdgeInsets.zero,
-            constraints: BoxConstraints(minWidth: 56.w, minHeight: 56.w),
-            onPressed: () {
-              controller.pageController.animateToPage(
-                1,
-                duration: 500.milliseconds,
-                curve: Curves.easeInOut,
-              );
-              controller.currentIndex(1);
-            },
-            icon: Transform.rotate(
-              angle: -math.pi / 2,
-              child: SvgPicture.asset(AppImages.backwardArrow),
+          if (controller.rounds().isNotEmpty)
+            IconButton(
+              padding: EdgeInsets.zero,
+              constraints: BoxConstraints(minWidth: 56.w, minHeight: 56.w),
+              onPressed: () {
+                controller.pageController.animateToPage(
+                  1,
+                  duration: 500.milliseconds,
+                  curve: Curves.easeInOut,
+                );
+                controller.currentIndex(1);
+              },
+              icon: Transform.rotate(
+                angle: -math.pi / 2,
+                child: SvgPicture.asset(AppImages.backwardArrow),
+              ),
             ),
-          ),
           24.verticalSpace,
         ],
       );

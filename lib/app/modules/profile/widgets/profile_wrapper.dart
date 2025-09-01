@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/ui/components/app_placeholder.dart';
 import 'package:fvf_flutter/app/ui/components/placeholder_card.dart';
 
@@ -22,83 +23,83 @@ class ProfileWrapper extends StatelessWidget {
   Widget build(BuildContext context) => AppPlaceHolder(
         isLoading: isLoading,
         child: child,
+        baseColor: AppColors.kffffff,
         padding: REdgeInsets.symmetric(horizontal: 24),
         placeHolder: Align(
           child: Column(
             children: <Widget>[
-              24.verticalSpace,
+              16.verticalSpace,
               PlaceholderCard(
-                height: 30.h,
-                width: 150.w,
-                radius: 12,
+                height: 36.h,
+                width: 230.w,
+                radius: 28.r,
+                bgColor: AppColors.kffffff.withValues(alpha: .36),
               ),
-              8.verticalSpace,
+              10.verticalSpace,
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                spacing: 14.w,
                 children: <Widget>[
                   PlaceholderCard(
-                    height: 25.h,
-                    width: 100.w,
-                    radius: 12,
+                    height: 24.h,
+                    width: 90.w,
+                    radius: 12.r,
+                    bgColor: AppColors.kffffff.withValues(alpha: .36),
                   ),
-                  10.horizontalSpace,
                   PlaceholderCard(
                     height: 25.h,
-                    width: 100.w,
+                    width: 90.w,
                     radius: 12,
+                    bgColor: AppColors.kffffff.withValues(alpha: .36),
                   ),
-                  10.horizontalSpace,
                   PlaceholderCard(
                     height: 25.h,
-                    width: 100.w,
+                    width: 90.w,
                     radius: 12,
+                    bgColor: AppColors.kffffff.withValues(alpha: .36),
                   ),
                 ],
               ),
-              24.verticalSpace,
+              22.verticalSpace,
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                spacing: 14.w,
                 children: <Widget>[
                   PlaceholderCard(
-                    height: 45.h,
-                    width: 45.w,
-                    radius: 5,
+                    height: 56.h,
+                    width: 56.w,
+                    radius: 500.r,
+                    bgColor: AppColors.kffffff.withValues(alpha: .36),
                   ),
-                  10.horizontalSpace,
                   PlaceholderCard(
-                    height: 45.h,
-                    width: 45.w,
-                    radius: 5,
+                    height: 56.h,
+                    width: 56.w,
+                    radius: 500.r,
+                    bgColor: AppColors.kffffff.withValues(alpha: .36),
                   ),
-                  10.horizontalSpace,
                   PlaceholderCard(
-                    height: 45.h,
-                    width: 45.w,
-                    radius: 5,
+                    height: 56.h,
+                    width: 56.w,
+                    radius: 500.r,
+                    bgColor: AppColors.kffffff.withValues(alpha: .36),
                   ),
                 ],
               ),
-              24.verticalSpace,
-              const Expanded(
-                child: PlaceholderCard(
-                  height: double.infinity,
-                  width: double.infinity,
-                  radius: 16,
-                ),
-              ),
-              24.verticalSpace,
+              const Spacer(),
               PlaceholderCard(
-                height: 25.h,
-                width: 200.w,
-                radius: 12,
+                height: 24.h,
+                width: double.infinity,
+                radius: 12.r,
+                bgColor: AppColors.kffffff.withValues(alpha: .36),
               ),
-              20.verticalSpace,
+              16.verticalSpace,
               PlaceholderCard(
-                height: 25.h,
-                width: 25.w,
-                radius: 12,
+                height: 56.h,
+                width: 56.w,
+                radius: 500.r,
+                bgColor: AppColors.kffffff.withValues(alpha: .36),
               ),
-              36.verticalSpace,
+              24.verticalSpace,
             ],
           ),
         ),

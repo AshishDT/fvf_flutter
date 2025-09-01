@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:fvf_flutter/app/data/models/md_user.dart';
 import '../../../data/models/api_reponse.dart';
 import '../../../data/remote/api_service/api_wrapper.dart';
 import '../../../data/remote/api_service/init_api_service.dart';
@@ -67,6 +68,49 @@ class CreateBetApiRepo {
             );
 
             if (data.success == true) {
+              return data.data;
+            }
+
+            appSnackbar(
+              message:
+                  data.message ?? 'Something went wrong, please try again.',
+              snackbarState: SnackbarState.danger,
+            );
+            return null;
+          },
+        ),
+      );
+
+  /// User Claim
+  static Future<MdUser?> userClaim({
+    required String phone,
+    required String countryCode,
+    required String supabaseId,
+  }) async =>
+      APIWrapper.handleApiCall<MdUser>(
+        APIService.post<Map<String, dynamic>>(
+          path: 'user/claim',
+          data: <String, dynamic>{
+            'phone': phone,
+            'country_code': countryCode,
+            'supabase_id': supabaseId,
+          },
+        ).then(
+          (Response<Map<String, dynamic>>? response) {
+            if (response?.isOk != true || response?.data == null) {
+              return null;
+            }
+
+            final ApiResponse<MdUser> data = ApiResponse<MdUser>.fromJson(
+              response!.data!,
+              fromJsonT: (dynamic json) => MdUser.fromJson(json),
+            );
+
+            if (data.success == true) {
+              appSnackbar(
+                message: data.message ?? '',
+                snackbarState: SnackbarState.success,
+              );
               return data.data;
             }
 

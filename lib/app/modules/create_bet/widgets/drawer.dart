@@ -42,11 +42,11 @@ class MenuDrawer extends StatelessWidget {
                 ),
                 22.verticalSpace,
                 _drawerTile(
-                  icon: AppImages.billingIcon,
-                  title: 'Billing',
+                  icon: AppImages.phoneIcon,
+                  title: 'Verify phone number',
                   onTap: () {
                     final CreateBetController controller =
-                        Get.find<CreateBetController>();
+                    Get.find<CreateBetController>();
                     controller.isSmartAuthShowed(false);
                     controller.phoneController.clear();
                     showModalBottomSheet(
@@ -56,6 +56,10 @@ class MenuDrawer extends StatelessWidget {
                       builder: (BuildContext context) => const PhoneNumberSheet(),
                     );
                   },
+                ),_drawerTile(
+                  icon: AppImages.billingIcon,
+                  title: 'Billing',
+                  onTap: () {},
                 ),
                 _drawerTile(
                   icon: AppImages.mailIcon,

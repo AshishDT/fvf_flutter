@@ -203,14 +203,35 @@ class ParticipantsPage extends StatelessWidget {
                     Positioned(
                       left: 24.w,
                       right: 24.w,
-                      child: Text(
-                        controller.rounds()[controller.currentRound()].prompt ??
-                            '',
-                        textAlign: TextAlign.center,
-                        style: AppTextStyle.openRunde(
-                          fontSize: 32.sp,
-                          color: AppColors.kffffff,
-                          fontWeight: FontWeight.w700,
+                      child: AnimatedSwitcher(
+                        duration: 400.milliseconds,
+                        reverseDuration: 300.milliseconds,
+                        transitionBuilder:
+                            (Widget child, Animation<double> animation) =>
+                                FadeTransition(
+                          opacity: animation,
+                          child: ScaleTransition(
+                            scale: Tween<double>(begin: 0.7, end: 1).animate(
+                              CurvedAnimation(
+                                parent: animation,
+                                curve: Curves.easeInOut,
+                              ),
+                            ),
+                            child: child,
+                          ),
+                        ),
+                        child: Text(
+                          controller
+                                  .rounds()[controller.currentRound()]
+                                  .prompt ??
+                              '',
+                          key: ValueKey(controller.currentRound()),
+                          textAlign: TextAlign.center,
+                          style: AppTextStyle.openRunde(
+                            fontSize: 32.sp,
+                            color: AppColors.kffffff,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),

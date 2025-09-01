@@ -21,7 +21,16 @@ void handleDeepLinkIncomingData(Map<dynamic, dynamic> data) {
     if ((deepLinkData.tags?.contains('slay_invite') ?? false) ||
         deepLinkData.canonicalIdentifier == 'slay_invite') {
       if (deepLinkData.invitationId?.isNotEmpty ?? false) {
-        if (SupaBaseService.isLoggedIn && SupaBaseService.currentUser != null) {
+        final bool isHost =
+            deepLinkData.hostId == SupaBaseService.currentUser?.id;
+
+        final bool isUserLoggedIn =
+            SupaBaseService.isLoggedIn && SupaBaseService.currentUser != null;
+
+        if (isUserLoggedIn) {
+          if (isHost) {
+            return;
+          }
           joinProjectInvitation(
             deepLinkData.invitationId!,
           );
@@ -76,6 +85,8 @@ Future<void> joinProjectInvitation(String invitationId) async {
         message: 'You have successfully joined the project!',
         snackbarState: SnackbarState.success,
       );
+
+      _joinedData.isFromInvitation = true;
 
       unawaited(
         Get.toNamed(

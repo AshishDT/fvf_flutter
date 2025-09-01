@@ -113,11 +113,6 @@ class AuthView extends GetView<AuthController> {
         context,
         decoration: const BoxDecoration(
           color: Colors.black,
-          image: DecorationImage(
-            image: AssetImage(
-              AppImages.gradientCardBg,
-            ),
-          ),
         ),
       );
 }

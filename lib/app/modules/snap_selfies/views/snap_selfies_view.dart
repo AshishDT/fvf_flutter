@@ -273,7 +273,9 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                               controller.isInvitationSend(),
                           child: TextButton(
                             onPressed: () {
-                              controller.shareUri();
+                              controller.shareUri(
+                                fromResend: true,
+                              );
                             },
                             child: Text(
                               'Resend Invites',

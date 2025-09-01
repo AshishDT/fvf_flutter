@@ -18,7 +18,7 @@ class SelfieAvatarIcon extends StatelessWidget {
     this.size = 56,
   });
 
-  /// SelfieAvatar constructor
+  /// Participant data
   final MdParticipant participant;
 
   /// Size of the avatar
@@ -29,15 +29,24 @@ class SelfieAvatarIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool hasNetworkImage =
-        participant.selfieUrl != null && participant.selfieUrl!.isNotEmpty;
+    final String? selfieUrl = participant.selfieUrl;
+    final String? profileUrl = participant.userData?.profileUrl;
+
+    final String? imageUrl = (selfieUrl != null && selfieUrl.isNotEmpty)
+        ? selfieUrl
+        : (profileUrl != null && profileUrl.isNotEmpty)
+        ? profileUrl
+        : null;
+
+    final bool hasSelfie = selfieUrl != null && selfieUrl.isNotEmpty;
+    final bool hasProfile = profileUrl != null && profileUrl.isNotEmpty;
+    final bool hasImage = imageUrl != null && imageUrl.isNotEmpty;
 
     Widget avatarContent;
-
-    if (hasNetworkImage) {
+    if (hasImage) {
       avatarContent = ClipOval(
         child: CachedNetworkImage(
-          imageUrl: participant.selfieUrl!,
+          imageUrl: imageUrl,
           width: size.w,
           height: size.h,
           fit: BoxFit.cover,
@@ -53,51 +62,49 @@ class SelfieAvatarIcon extends StatelessWidget {
         ),
       );
     } else {
-      avatarContent = Container(
-        width: size.w,
-        height: size.h,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: AppColors.k2A2E2F.withValues(alpha: 0.20),
-        ),
-        child: Center(
-          child: SvgPicture.asset(
-            height: 42.h,
-            width: 43.w,
-            AppImages.personalPlaceholder,
-            colorFilter: ColorFilter.mode(
-              Colors.white.withValues(alpha: 0.20),
-              BlendMode.srcIn,
-            ),
-          ),
-        ),
-      );
+      avatarContent = _buildPlaceholder();
     }
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        if (hasNetworkImage)
-          AnimatedContainer(
-            duration: 300.milliseconds,
-            width: size.w + 4.w,
-            height: size.h + 4.w,
-            padding: REdgeInsets.all(2),
-            decoration: BoxDecoration(
-              color: AppColors.k2A2E2F.withValues(alpha: 0.20),
-              shape: BoxShape.circle,
-            ),
-            child: avatarContent,
-          )
-        else
-          SizedBox(
-            width: size.w,
-            height: size.h,
-            child: avatarContent,
-          ),
+        Stack(
+          clipBehavior: Clip.none,
+          children: <Widget>[
+            if (hasImage)
+              AnimatedContainer(
+                duration: 300.milliseconds,
+                width: size.w + 4.w,
+                height: size.h + 4.w,
+                padding: REdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  color: AppColors.k2A2E2F.withValues(alpha: 0.20),
+                  shape: BoxShape.circle,
+                ),
+                child: avatarContent,
+              )
+            else
+              SizedBox(
+                width: size.w,
+                height: size.h,
+                child: avatarContent,
+              ),
+
+            if (!hasSelfie && hasProfile)
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: SvgPicture.asset(
+                  height: 24.h,
+                  width: 24.w,
+                  AppImages.plusIcon,
+                ),
+              ),
+          ],
+        ),
         6.verticalSpace,
-        if (name != null && name!.isNotEmpty) ...<Widget>[
+        if (name != null && name!.isNotEmpty)
           Text(
             name!,
             style: AppTextStyle.openRunde(
@@ -106,10 +113,30 @@ class SelfieAvatarIcon extends StatelessWidget {
               color: Colors.white,
             ),
           ),
-        ],
       ],
     );
   }
+
+  /// Placeholder when no selfie/profile available
+  Widget _buildPlaceholder() => Container(
+      width: size.w,
+      height: size.h,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: AppColors.k2A2E2F.withValues(alpha: 0.20),
+      ),
+      child: Center(
+        child: SvgPicture.asset(
+          height: 42.h,
+          width: 43.w,
+          AppImages.personalPlaceholder,
+          colorFilter: ColorFilter.mode(
+            Colors.white.withValues(alpha: 0.20),
+            BlendMode.srcIn,
+          ),
+        ),
+      ),
+    );
 
   /// Name
   String? get name => participant.userData?.username;

@@ -19,6 +19,7 @@ class MdJoinInvitation {
     this.revealAt,
     this.host,
     this.participants,
+    this.isFromInvitation,
   });
 
   /// From JSON
@@ -93,6 +94,9 @@ class MdJoinInvitation {
 
   /// Participants
   List<MdParticipant>? participants;
+
+  /// Is from invitation
+  bool? isFromInvitation;
 
   /// To JSON
   Map<String, dynamic> toJson() => <String, dynamic>{

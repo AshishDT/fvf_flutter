@@ -12,6 +12,7 @@ class DeepLinkService {
   static Future<String?> generateSlayInviteLink({
     required String title,
     required String invitationId,
+    required String hostId,
   }) async {
     final BranchUniversalObject buo = BranchUniversalObject(
       canonicalIdentifier: 'slay_invite',
@@ -19,7 +20,8 @@ class DeepLinkService {
       contentDescription: 'Slay invite deep link',
       expirationDateInMilliSec: _expiryTime,
       contentMetadata: BranchContentMetaData()
-        ..addCustomMetadata('invitation_id', invitationId),
+        ..addCustomMetadata('invitation_id', invitationId)
+        ..addCustomMetadata('host_id', hostId),
     );
 
     final BranchLinkProperties lp = BranchLinkProperties(

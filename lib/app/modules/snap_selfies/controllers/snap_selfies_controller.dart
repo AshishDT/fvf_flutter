@@ -32,6 +32,18 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
       joinedInvitationData.refresh();
       participants.refresh();
       getPreSelfieStrings();
+
+      if (joinedInvitationData().isFromInvitation ?? false) {
+        DateTime? endAt = joinedInvitationData().roundJoinedEndAt;
+
+        if (endAt != null && endAt.second > 2) {
+          endAt = endAt.subtract(const Duration(seconds: 2));
+        }
+
+        startTimer(
+          endTime: endAt,
+        );
+      }
     }
 
     socketIoRepo
@@ -329,12 +341,13 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
   }
 
   /// Share uri
-  Future<void> shareUri() async {
+  Future<void> shareUri({bool fromResend = false}) async {
     try {
       final String? _invitationLink =
           await DeepLinkService.generateSlayInviteLink(
         title: joinedInvitationData().prompt ?? '',
         invitationId: joinedInvitationData().id ?? '',
+        hostId: joinedInvitationData().host?.supabaseId ?? '',
       );
 
       if (_invitationLink == null || _invitationLink.isEmpty) {
@@ -358,11 +371,13 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
         )
             .then(
           (ShareResult result) async {
-            final DateTime? _timeEndAt = await startRound();
-            isInvitationSend(true);
-            startTimer(
-              endTime: _timeEndAt,
-            );
+            if (!fromResend) {
+              final DateTime? _timeEndAt = await startRound();
+              isInvitationSend(true);
+              startTimer(
+                endTime: _timeEndAt,
+              );
+            }
           },
         ),
       );
@@ -545,10 +560,6 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
       );
       if (_isUpdated != null) {
         await getUser();
-        // appSnackbar(
-        //   message: 'Username updated successfully',
-        //   snackbarState: SnackbarState.success,
-        // );
       }
     } on Exception catch (e, st) {
       logE('Error getting update name: $e');

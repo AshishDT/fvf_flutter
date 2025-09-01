@@ -190,6 +190,7 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
               status: _round.status?.value,
               updatedAt: _round.updatedAt?.toIso8601String(),
               roundJoinedEndAt: _round.roundJoinedEndAt,
+              previousParticipants: _round.previousParticipants,
               participants: <MdParticipant>[
                 MdParticipant(
                   createdAt: DateTime.now().toIso8601String(),

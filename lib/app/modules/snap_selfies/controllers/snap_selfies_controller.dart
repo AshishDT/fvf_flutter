@@ -8,6 +8,7 @@ import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/enums/round_status_enum.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
+import 'package:fvf_flutter/app/modules/create_bet/models/md_previous_participant.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_profile.dart';
 import 'package:fvf_flutter/app/modules/profile/repositories/profile_api_repo.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_round.dart';
@@ -192,6 +193,33 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
 
     return uniqueList.obs;
   }
+
+  /// Previous participants
+  RxList<MdPreviousParticipant> get previousParticipants {
+    final List<MdPreviousParticipant> list =
+        joinedInvitationData().previousParticipants ??
+            <MdPreviousParticipant>[];
+
+    final List<MdPreviousParticipant> filteredList =
+        list.where((MdPreviousParticipant p) {
+      final bool hasName = p.userName != null && p.userName!.trim().isNotEmpty;
+      final bool hasProfile =
+          p.userProfileUrl != null && p.userProfileUrl!.trim().isNotEmpty;
+      return hasName || hasProfile;
+    }).toList();
+
+    final Map<String?, MdPreviousParticipant> uniqueMap =
+        <String?, MdPreviousParticipant>{
+      for (final MdPreviousParticipant p in filteredList) p.userSupabaseId: p
+    };
+
+    return uniqueMap.values.toList().obs;
+  }
+
+  /// Check if previous participants is empty
+  RxBool get isAddedPreviousParticipants => previousParticipants()
+      .any((MdPreviousParticipant p) => p.isAdded == true)
+      .obs;
 
   /// Participants without current user
   RxList<MdParticipant> get participantsWithoutCurrentUser {
@@ -640,5 +668,54 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
       logE('Error getting user: $e');
       logE(st);
     }
+  }
+
+  /// On add previous participant
+  void onAddPreviousParticipant(MdPreviousParticipant participant) {
+    for (final MdPreviousParticipant p in previousParticipants) {
+      if (p.userSupabaseId == participant.userSupabaseId) {
+        if (p.isAdded == true) {
+          p.isAdded = false;
+        } else {
+          p.isAdded = true;
+        }
+      }
+      previousParticipants.refresh();
+      joinedInvitationData.refresh();
+    }
+  }
+
+  /// Add previous participants
+  Future<void> addPreviousParticipants() async {
+    final List<MdPreviousParticipant> toAdd = previousParticipants
+        .where((MdPreviousParticipant p) => p.isAdded == true)
+        .toList();
+
+    if (toAdd.isEmpty) {
+      await shareUri();
+      return;
+    }
+
+    final List<Future<void>> futures = <Future<void>>[];
+
+    for (final MdPreviousParticipant p in toAdd) {
+      if (p.userId != null && p.userId!.isNotEmpty) {
+        futures.add(
+          SnapSelfieApiRepo.addParticipants(
+            roundId: joinedInvitationData().id ?? '',
+            userId: p.userId!,
+          ),
+        );
+      }
+    }
+
+    await Future.wait(futures);
+
+    final DateTime? _timeEndAt = await startRound();
+    isInvitationSend(true);
+
+    startTimer(
+      endTime: _timeEndAt,
+    );
   }
 }

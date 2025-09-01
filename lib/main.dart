@@ -14,6 +14,7 @@ import 'app/routes/app_pages.dart';
 import 'app/utils/app_utils.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await runZonedGuarded(
     () async {
       Get.put(AppTranslations());

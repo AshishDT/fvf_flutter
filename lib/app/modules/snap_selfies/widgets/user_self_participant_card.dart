@@ -8,6 +8,7 @@ import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/modules/snap_selfies/widgets/edit_name_sheet.dart';
 import 'package:fvf_flutter/app/ui/components/chat_field_sheet_repo.dart';
+import 'package:fvf_flutter/app/ui/components/vibrate_wiggle.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -24,6 +25,8 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
     this.userName,
     this.size = 100,
     this.isFromFailedView = false,
+    this.showWiggle = false,
+    this.isInvitationSend = false,
   });
 
   /// SelfieAvatar constructor
@@ -40,6 +43,12 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
 
   /// isFromFailedView
   final bool isFromFailedView;
+
+  /// Is from Add Friend View
+  final bool isInvitationSend;
+
+  /// Whether to show wiggle animation
+  final bool showWiggle;
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +112,7 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
                     ),
             ),
             if (isFromFailedView ||
-                name != null && name!.isNotEmpty) ...<Widget>[
+                name != null && name!.isNotEmpty || !isInvitationSend) ...<Widget>[
               8.verticalSpace,
               Text(
                 name ?? 'You',
@@ -122,35 +131,38 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
                       const EditNameSheet(),
                     );
                   },
-                  child: Container(
-                    height: 32.h,
-                    padding: REdgeInsets.symmetric(horizontal: 8),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16.r),
-                      color: AppColors.kF1F2F2.withValues(alpha: 0.36),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        SvgPicture.asset(
-                          height: 20.h,
-                          width: 20.w,
-                          AppImages.penIcon,
-                          colorFilter: const ColorFilter.mode(
-                            AppColors.kffffff,
-                            BlendMode.srcIn,
+                  child: VibrateWiggle(
+                    trigger: showWiggle,
+                    child: Container(
+                      height: 32.h,
+                      padding: REdgeInsets.symmetric(horizontal: 8),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16.r),
+                        color: AppColors.kF1F2F2.withValues(alpha: 0.36),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          SvgPicture.asset(
+                            height: 20.h,
+                            width: 20.w,
+                            AppImages.penIcon,
+                            colorFilter: const ColorFilter.mode(
+                              AppColors.kffffff,
+                              BlendMode.srcIn,
+                            ),
                           ),
-                        ),
-                        4.horizontalSpace,
-                        Text(
-                          'Your Name',
-                          style: GoogleFonts.fredoka(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.kffffff,
+                          4.horizontalSpace,
+                          Text(
+                            'Your Name',
+                            style: GoogleFonts.fredoka(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.kffffff,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),

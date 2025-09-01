@@ -7,6 +7,7 @@ import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/modules/snap_selfies/widgets/animated_switcher.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
+import 'package:fvf_flutter/app/ui/components/vibrate_wiggle.dart';
 import 'package:get/get.dart';
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
@@ -157,11 +158,15 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                                 controller.secondsLeft() > 0)
                         : (!controller.isCurrentUserSelfieTaken() &&
                             controller.secondsLeft() > 0),
-                    child: AppButton(
-                      buttonText: 'Snap Pic',
-                      isLoading: controller.submittingSelfie(),
-                      onPressed: controller.onSnapSelfie,
-                    ).paddingSymmetric(horizontal: 24),
+                    child: VibrateWiggle(
+                      trigger: controller.shouldWiggleSnapPick(),
+                      wiggleDuration: 800,
+                      child: AppButton(
+                        buttonText: 'Snap Pic',
+                        isLoading: controller.submittingSelfie(),
+                        onPressed: controller.onSnapSelfie,
+                      ).paddingSymmetric(horizontal: 24),
+                    ),
                   ),
                 ),
               ),
@@ -235,11 +240,39 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                     48.verticalSpace,
                     Obx(
                       () => CurrentUserSelfieAvatar(
+                        showWiggle: controller.shouldWiggleAddName(),
                         participant: controller.selfParticipant(),
                         userName: globalUser().username,
+                        isInvitationSend: controller.isInvitationSend(),
                       ),
                     ),
                     24.verticalSpace,
+                    AnimatedSize(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      child: Obx(
+                        () => Visibility(
+                          visible: !controller.isInvitationSend() ||
+                              (controller.isInvitationSend() &&
+                                  controller
+                                      .participantsWithoutCurrentUser()
+                                      .isEmpty),
+                          replacement: const SizedBox(
+                            width: double.infinity,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              _emptyUsersPlaceholder(),
+                              24.horizontalSpace,
+                              _emptyUsersPlaceholder(),
+                              24.horizontalSpace,
+                              _emptyUsersPlaceholder(),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                     Align(
                       child: SingleChildScrollView(
                         padding: EdgeInsets.zero,
@@ -292,6 +325,27 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                   ],
                 ),
               ),
+            ),
+          ),
+        ),
+      );
+
+  /// Empty users placeholder
+  Container _emptyUsersPlaceholder() => Container(
+        width: 56.w,
+        height: 56.h,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: AppColors.k2A2E2F.withValues(alpha: 0.20),
+        ),
+        child: Center(
+          child: SvgPicture.asset(
+            height: 42.h,
+            width: 43.w,
+            AppImages.personalPlaceholder,
+            colorFilter: ColorFilter.mode(
+              Colors.white.withValues(alpha: 0.20),
+              BlendMode.srcIn,
             ),
           ),
         ),

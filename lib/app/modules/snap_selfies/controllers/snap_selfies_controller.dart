@@ -139,6 +139,12 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
   /// Text editing controller for name input field
   TextEditingController nameInputController = TextEditingController();
 
+  /// Should wiggle add name
+  RxBool shouldWiggleAddName = false.obs;
+
+  /// Should wiggle snap pick
+  RxBool shouldWiggleSnapPick = false.obs;
+
   /// User profile
   Rx<MdProfile> profile = MdProfile().obs;
 
@@ -386,6 +392,35 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
     }
   }
 
+  /// Check and add name wiggle
+  void _checkAddNameWiggle() {
+    if (selfParticipant().userData?.username == null ||
+        (selfParticipant().userData?.username?.isEmpty ?? true)) {
+      Future<void>.delayed(
+        const Duration(seconds: 2),
+        () {
+          shouldWiggleAddName(true);
+        },
+      );
+    } else {
+      shouldWiggleAddName(false);
+    }
+  }
+
+  void _checkSnapPickWiggle() {
+    if (selfParticipant().selfieUrl == null ||
+        (selfParticipant().selfieUrl?.isEmpty ?? true)) {
+      Future<void>.delayed(
+        const Duration(seconds: 2),
+        () {
+          shouldWiggleSnapPick(true);
+        },
+      );
+    } else {
+      shouldWiggleSnapPick(false);
+    }
+  }
+
   /// Socket IO data parser
   void socketIoDataParser(MdSocketData updatedData) {
     if (_hasError(updatedData)) {
@@ -423,6 +458,9 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
         joinedInvitationData.refresh();
         participants.refresh();
       }
+
+      _checkAddNameWiggle();
+      _checkSnapPickWiggle();
     }
   }
 

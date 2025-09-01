@@ -133,4 +133,10 @@ class AppImages {
 
   /// Add icon
   static const String addIcon = '$_svgPath/add_icon.svg';
+
+  /// Question mark icon
+  static const String questionMarkIcon = '$_svgPath/question_mark_icon.svg';
+
+  /// Add PNG icon
+  static const String addPngIcon = '$_path/add_png_icon.png';
 }

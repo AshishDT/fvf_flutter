@@ -2,14 +2,17 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fvf_flutter/app/data/local/user_provider.dart';
+import 'package:fvf_flutter/app/modules/profile/widgets/participant_wrapper.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:get/utils.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
 import '../../../utils/app_text_style.dart';
-import '../../create_bet/models/md_participant.dart';
 import '../controllers/profile_controller.dart';
+import '../models/md_user_rounds.dart';
 
 /// PARTICIPANTS PAGE
 class ParticipantsPage extends StatelessWidget {
@@ -23,129 +26,251 @@ class ParticipantsPage extends StatelessWidget {
   final ProfileController controller;
 
   @override
-  Widget build(BuildContext context) => Stack(
-        children: <Widget>[
-          PageView.builder(
-            controller: controller.participantPageController,
-            itemCount: controller.participants().length,
-            onPageChanged: (int i) => controller.currentRank(i),
-            itemBuilder: (BuildContext context, int index) {
-              final MdParticipant participant = controller.participants[index];
-              return Obx(
-                () => Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget build(BuildContext context) => Obx(
+        () => ParticipantWrapper(
+          isLoading: controller.isRoundsLoading(),
+          child: controller.rounds().isNotEmpty
+              ? Stack(
                   children: <Widget>[
-                    Text(
-                      'Most likely to start a cult?',
-                      textAlign: TextAlign.center,
-                      style: AppTextStyle.openRunde(
-                        fontSize: 32.sp,
-                        color: AppColors.kffffff,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    Column(
-                      children: <Widget>[
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {},
-                            child: SvgPicture.asset(
-                              AppImages.smilyIcon,
-                              height: 32.w,
-                            ),
-                          ),
-                        ),
-                        16.verticalSpace,
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                    PageView.builder(
+                      controller: controller.roundPageController,
+                      itemCount: controller.rounds().length,
+                      onPageChanged: (int i) => controller.currentRound(i),
+                      itemBuilder: (BuildContext context, int index) {
+                        final MdRound round = controller.rounds[index];
+                        return Obx(
+                          () => Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              round.rank != null
+                                  ? Align(
+                                      alignment: Alignment.centerRight,
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: <Widget>[
+                                          Text(
+                                            '${round.rank ?? 0}',
+                                            style: AppTextStyle.openRunde(
+                                              fontSize: 40.sp,
+                                              fontWeight: FontWeight.w700,
+                                              color: AppColors.kffffff,
+                                              shadows: <Shadow>[
+                                                const Shadow(
+                                                  offset: Offset(0, 4),
+                                                  blurRadius: 4,
+                                                  color: Color(0x33000000),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: REdgeInsets.only(top: 5),
+                                            child: Text(
+                                              getOrdinalSuffix(
+                                                      round.rank ?? 0) ??
+                                                  '',
+                                              style: AppTextStyle.openRunde(
+                                                fontSize: 20.sp,
+                                                fontWeight: FontWeight.w700,
+                                                color: AppColors.kffffff,
+                                                shadows: <Shadow>[
+                                                  const Shadow(
+                                                    offset: Offset(0, 4),
+                                                    blurRadius: 4,
+                                                    color: Color(0x33000000),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  : Align(
+                                      alignment: Alignment.centerRight,
+                                      child: SvgPicture.asset(
+                                        AppImages.questionMarkIcon,
+                                      ),
+                                    ).paddingOnly(right: 2.w),
+                              16.verticalSpace,
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: GestureDetector(
+                                  onTap: () {},
+                                  child: SvgPicture.asset(
+                                    AppImages.smilyIcon,
+                                    height: 32.w,
+                                  ),
+                                ),
+                              ),
+                              16.verticalSpace,
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: GestureDetector(
+                                  onTap: () {},
+                                  child: SvgPicture.asset(
+                                    AppImages.shareIconShadow,
+                                    height: 32.w,
+                                    width: 32.w,
+                                  ),
+                                ),
+                              ),
+                              16.verticalSpace,
+                              Row(
                                 children: <Widget>[
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(500.r),
-                                    child: CachedNetworkImage(
-                                      imageUrl: participant.selfieUrl ?? '',
-                                      width: 24.w,
-                                      height: 24.w,
-                                      fit: BoxFit.cover,
-                                      placeholder: (_, __) => const Center(
-                                          child: CircularProgressIndicator(
-                                              strokeWidth: 2)),
-                                      errorWidget: (_, __, ___) => const Center(
-                                          child: CircularProgressIndicator(
-                                              strokeWidth: 2)),
+                                  Expanded(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(500.r),
+                                          child: CachedNetworkImage(
+                                            imageUrl:
+                                                globalUser().profileUrl ?? '',
+                                            width: 24.w,
+                                            height: 24.w,
+                                            fit: BoxFit.cover,
+                                            placeholder: (_, __) => const Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                        strokeWidth: 2)),
+                                            errorWidget: (_, __, ___) =>
+                                                Container(
+                                              height: 24.w,
+                                              width: 24.w,
+                                              color: Colors.grey.shade200,
+                                              child: const Icon(
+                                                Icons.person,
+                                                size: 16,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        4.horizontalSpace,
+                                        Flexible(
+                                          child: Text(
+                                            globalUser().username ?? '',
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: AppTextStyle.openRunde(
+                                              fontSize: 24.sp,
+                                              fontWeight: FontWeight.w600,
+                                              color: AppColors.kffffff,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  4.horizontalSpace,
-                                  Flexible(
-                                    child: Text(
-                                      participant.userData?.username ?? '',
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: AppTextStyle.openRunde(
-                                        fontSize: 24.sp,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.kffffff,
-                                      ),
+                                  GestureDetector(
+                                    onTap: () {},
+                                    child: Image.asset(
+                                      AppImages.addPngIcon,
+                                      height: 36.w,
                                     ),
                                   ),
                                 ],
                               ),
-                            ),
-                            GestureDetector(
-                              onTap: () {},
-                              child: SvgPicture.asset(AppImages.shareIcon,
-                                  height: 32.w),
-                            ),
-                          ],
-                        ),
-                      ],
+                              if (round.reason != null &&
+                                  round.reason!.isNotEmpty) ...<Widget>[
+                                16.verticalSpace,
+                                Text(
+                                  round.reason ?? '',
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 20.sp,
+                                    color: AppColors.kffffff,
+                                    fontWeight: FontWeight.w700,
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ).paddingOnly(
+                            right: 24.w,
+                            left: 24.w,
+                            bottom: 117.h,
+                          ),
+                        );
+                      },
                     ),
-                  ],
-                ).paddingOnly(
-                    right: 24.w,
-                    left: 24.w,
-                    bottom: controller.isExposed() ? 36.h : 117.h),
-              );
-            },
-          ),
-
-          /// Navigation
-          Obx(
-            () => controller.currentRank() != 0
-                ? Positioned(
-                    left: 12.w,
-                    top: -28.h,
-                    bottom: 0,
-                    child: Center(
-                      child: IconButton(
-                        padding: EdgeInsets.zero,
-                        onPressed: controller.prevPage,
-                        icon: SvgPicture.asset(AppImages.backwardArrow),
+                    Positioned(
+                      left: 24.w,
+                      right: 24.w,
+                      child: Text(
+                        controller.rounds()[controller.currentRound()].prompt ??
+                            '',
+                        textAlign: TextAlign.center,
+                        style: AppTextStyle.openRunde(
+                          fontSize: 32.sp,
+                          color: AppColors.kffffff,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
-                  )
-                : const SizedBox.shrink(),
-          ),
-          Obx(
-            () =>
-                controller.currentRank() < controller.participants().length - 1
-                    ? Positioned(
-                        right: 12.w,
-                        top: -28.h,
-                        bottom: 0,
-                        child: Center(
-                          child: IconButton(
-                            padding: EdgeInsets.zero,
-                            onPressed: controller.nextPage,
-                            icon: SvgPicture.asset(AppImages.forwardArrow),
-                          ),
-                        ),
-                      )
-                    : const SizedBox.shrink(),
-          ),
-        ],
+
+                    /// Navigation
+                    Obx(
+                      () => controller.currentRound() != 0
+                          ? Positioned(
+                              left: 12.w,
+                              top: -28.h,
+                              bottom: 0,
+                              child: Center(
+                                child: IconButton(
+                                  padding: EdgeInsets.zero,
+                                  onPressed: controller.prevPage,
+                                  icon:
+                                      SvgPicture.asset(AppImages.backwardArrow),
+                                ),
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                    Obx(
+                      () => controller.currentRound() <
+                              controller.rounds().length - 1
+                          ? Positioned(
+                              right: 12.w,
+                              top: -28.h,
+                              bottom: 0,
+                              child: Center(
+                                child: IconButton(
+                                  padding: EdgeInsets.zero,
+                                  onPressed: controller.nextPage,
+                                  icon:
+                                      SvgPicture.asset(AppImages.forwardArrow),
+                                ),
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                  ],
+                )
+              : const SizedBox.shrink(),
+        ),
       );
+
+  /// getOrdinalSuffix
+  String getOrdinalSuffix(int number) {
+    if (number >= 11 && number <= 13) {
+      return '${number}th';
+    }
+    switch (number % 10) {
+      case 1:
+        return 'st';
+      case 2:
+        return 'nd';
+      case 3:
+        return 'rd';
+      default:
+        return 'th';
+    }
+  }
 }

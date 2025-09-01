@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:get/get.dart';
+
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
 import '../../../utils/app_text_style.dart';
@@ -19,6 +20,8 @@ class ResultCard extends StatelessWidget {
     this.selfieUrl,
     this.userName,
     this.reason,
+    this.isExposed = false,
+    this.isFromProfile = false,
   });
 
   /// Controller
@@ -39,39 +42,29 @@ class ResultCard extends StatelessWidget {
   /// Reason
   final String? reason;
 
+  /// Is exposed
+  final bool isExposed;
+
+  /// Is from profile
+  final bool isFromProfile;
+
   @override
   Widget build(BuildContext context) => Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           Column(
             children: <Widget>[
-              Align(
-                alignment: Alignment.centerRight,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    Text(
-                      '${rank ?? 0}',
-                      style: AppTextStyle.openRunde(
-                        fontSize: 40.sp,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.kffffff,
-                        shadows: <Shadow>[
-                          const Shadow(
-                            offset: Offset(0, 4),
-                            blurRadius: 4,
-                            color: Color(0x33000000),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: REdgeInsets.only(top: 5),
-                      child: Text(
-                        ordinalSuffix ?? '',
+              if (isFromProfile || isExposed || rank == 1)
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      Text(
+                        '${rank ?? 0}',
                         style: AppTextStyle.openRunde(
-                          fontSize: 20.sp,
+                          fontSize: 40.sp,
                           fontWeight: FontWeight.w700,
                           color: AppColors.kffffff,
                           shadows: <Shadow>[
@@ -83,10 +76,34 @@ class ResultCard extends StatelessWidget {
                           ],
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
+                      Padding(
+                        padding: REdgeInsets.only(top: 5),
+                        child: Text(
+                          ordinalSuffix ?? '',
+                          style: AppTextStyle.openRunde(
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.kffffff,
+                            shadows: <Shadow>[
+                              const Shadow(
+                                offset: Offset(0, 4),
+                                blurRadius: 4,
+                                color: Color(0x33000000),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: SvgPicture.asset(
+                    AppImages.questionMarkIcon,
+                  ),
+                ).paddingOnly(right: 4.w),
               16.verticalSpace,
               Align(
                 alignment: Alignment.centerRight,
@@ -94,6 +111,8 @@ class ResultCard extends StatelessWidget {
                   onTap: () {},
                   child: SvgPicture.asset(
                     AppImages.smilyIcon,
+                    height: 32.w,
+                    width: 32.w,
                   ),
                 ),
               ),
@@ -105,10 +124,7 @@ class ResultCard extends StatelessWidget {
                   child: SvgPicture.asset(
                     AppImages.shareIconShadow,
                     height: 32.w,
-                    colorFilter: const ColorFilter.mode(
-                      AppColors.kffffff,
-                      BlendMode.srcIn,
-                    ),
+                    width: 32.w,
                   ),
                 ),
               ),
@@ -117,6 +133,7 @@ class ResultCard extends StatelessWidget {
                 children: <Widget>[
                   Row(
                     children: <Widget>[
+                      36.horizontalSpace,
                       Expanded(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -132,24 +149,29 @@ class ResultCard extends StatelessWidget {
                                     child: CircularProgressIndicator(
                                         strokeWidth: 2)),
                                 errorWidget: (_, __, ___) => const Center(
-                                  child:
-                                      CircularProgressIndicator(strokeWidth: 2),
+                                  child: Icon(
+                                    Icons.error,
+                                    color: AppColors.kffffff,
+                                  ),
                                 ),
                               ),
                             ),
-                            4.horizontalSpace,
-                            Flexible(
-                              child: Text(
-                                userName ?? '',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: AppTextStyle.openRunde(
-                                  fontSize: 24.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.kffffff,
+                            if (userName != null &&
+                                (userName?.isNotEmpty ?? false)) ...<Widget>[
+                              4.horizontalSpace,
+                              Flexible(
+                                child: Text(
+                                  userName ?? '',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTextStyle.openRunde(
+                                    fontSize: 24.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.kffffff,
+                                  ),
                                 ),
                               ),
-                            ),
+                            ]
                           ],
                         ),
                       ),
@@ -158,28 +180,26 @@ class ResultCard extends StatelessWidget {
                           Get.until((Route<dynamic> route) =>
                               route.settings.name == Routes.CREATE_BET);
                         },
-                        child: SvgPicture.asset(
-                          AppImages.addIcon,
+                        child: Image.asset(
+                          AppImages.addPngIcon,
                           height: 36.w,
-                          colorFilter: const ColorFilter.mode(
-                            AppColors.kF1F2F2,
-                            BlendMode.srcIn,
-                          ),
                         ),
                       ),
                     ],
                   ),
-                  16.verticalSpace,
-                  Text(
-                    reason ?? '',
-                    textAlign: TextAlign.center,
-                    style: AppTextStyle.openRunde(
-                      fontSize: 20.sp,
-                      fontStyle: FontStyle.italic,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.kffffff,
+                  if (isFromProfile || isExposed || rank == 1) ...<Widget>[
+                    16.verticalSpace,
+                    Text(
+                      reason ?? '',
+                      textAlign: TextAlign.center,
+                      style: AppTextStyle.openRunde(
+                        fontSize: 20.sp,
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.kffffff,
+                      ),
                     ),
-                  ),
+                  ]
                 ],
               ),
             ],

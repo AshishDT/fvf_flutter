@@ -6,9 +6,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/models/md_result.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/expose_sheet.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
+import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
+import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/utils/dialog_helper.dart';
 import 'package:fvf_flutter/app/utils/widget_ext.dart';
 import 'package:get/get.dart';
+
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
 import '../../../routes/app_pages.dart';
@@ -29,120 +32,133 @@ class WinnerView extends GetView<WinnerController> {
           backgroundColor: AppColors.kF5FCFF,
           extendBody: true,
           bottomNavigationBar: Obx(
-            () => !controller.isExposed()
+            () => !controller.isExposed() && !controller.isFromProfile()
                 ? _exposeButton()
                 : const SizedBox.shrink(),
           ),
-          body: Stack(
-            children: <Widget>[
-              Obx(
-                () => controller.results().isNotEmpty
-                    ? AnimatedSize(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                        child: CachedNetworkImage(
-                          imageUrl: _currentRankImageUrl(),
-                          width: 1.sw,
-                          height: 1.sh,
-                          fit: BoxFit.cover,
-                          placeholder: (_, __) => const Center(
-                              child: CircularProgressIndicator(strokeWidth: 2)),
-                          errorWidget: (_, __, ___) => const Center(
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          ),
-                        ),
-                      )
-                    : const SizedBox.shrink(),
-              ),
-              Obx(
-                () {
-                  if (controller.results.isEmpty ||
-                      controller.pageController == null) {
-                    return const SizedBox.shrink();
-                  }
-                  return SizedBox(
-                    height: 1.sh,
-                    child: Stack(
-                      children: <Widget>[
-                        PageView.builder(
-                          controller: controller.pageController,
-                          itemCount: controller.results().length,
-                          onPageChanged: (int i) => controller.currentRank(i),
-                          itemBuilder: (BuildContext context, int index) {
-                            final MdResult result = controller.results()[index];
-
-                            return Obx(
-                              () => ResultCard(
-                                rank: result.rank ?? 0,
-                                reason: result.reason ?? '',
-                                isCurrentRankIs1:
-                                    controller.isExposed() || result.rank == 1,
-                                ordinalSuffix:
-                                    getOrdinalSuffix(result.rank ?? 0),
-                                selfieUrl: result.selfieUrl,
-                                userName: result.userName,
-                              ).paddingOnly(
-                                right: 24.w,
-                                left: 24.w,
-                                bottom: controller.isExposed() ? 36.h : 117.h,
+          body: GradientCard(
+            child: Stack(
+              children: <Widget>[
+                Obx(
+                  () => controller.results().isNotEmpty
+                      ? AnimatedSize(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                          child: CachedNetworkImage(
+                            imageUrl: _currentRankImageUrl(),
+                            width: 1.sw,
+                            height: 1.sh,
+                            fit: BoxFit.cover,
+                            placeholder: (_, __) => const Center(
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2)),
+                            errorWidget: (_, __, ___) => const Center(
+                              child: Icon(
+                                Icons.error,
+                                color: AppColors.kffffff,
                               ),
-                            );
-                          },
-                        ),
-                        Obx(
-                          () => controller.currentRank() != 0
-                              ? _backwardButton()
-                              : const SizedBox.shrink(),
-                        ),
-                        Obx(
-                          () => controller.currentRank() <
-                                  controller.results().length - 1
-                              ? forwardButton()
-                              : const SizedBox.shrink(),
-                        ),
-                        Positioned(
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          child: Column(
-                            children: <Widget>[
-                              32.verticalSpace,
-                              _appBar(),
-                              8.verticalSpace,
-                              Center(
-                                child: ConstrainedBox(
-                                  constraints: BoxConstraints(maxHeight: 120.h),
-                                  child: Obx(
-                                    () => AutoSizeText(
-                                      controller.prompt(),
-                                      textAlign: TextAlign.center,
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 40,
-                                      style: AppTextStyle.openRunde(
-                                        fontSize: 32.sp,
-                                        color: AppColors.kffffff,
-                                        fontWeight: FontWeight.w700,
-                                        shadows: <Shadow>[
-                                          const Shadow(
-                                            offset: Offset(0, 4),
-                                            blurRadius: 4,
-                                            color: Color(0x33000000),
-                                          ),
-                                        ],
+                            ),
+                          ),
+                        )
+                      : const SizedBox.shrink(),
+                ),
+                Obx(
+                  () {
+                    if (controller.results.isEmpty ||
+                        controller.pageController == null) {
+                      return const SizedBox.shrink();
+                    }
+                    return SizedBox(
+                      height: 1.sh,
+                      child: Stack(
+                        children: <Widget>[
+                          PageView.builder(
+                            controller: controller.pageController,
+                            itemCount: controller.results().length,
+                            onPageChanged: (int i) => controller.currentRank(i),
+                            itemBuilder: (BuildContext context, int index) {
+                              final MdResult result =
+                                  controller.results()[index];
+
+                              return Obx(
+                                () => ResultCard(
+                                  isExposed: controller.isExposed(),
+                                  isFromProfile: controller.isFromProfile(),
+                                  rank: result.rank ?? 0,
+                                  reason: result.reason ?? '',
+                                  isCurrentRankIs1: controller.isExposed() ||
+                                      result.rank == 1,
+                                  ordinalSuffix:
+                                      getOrdinalSuffix(result.rank ?? 0),
+                                  selfieUrl: result.selfieUrl,
+                                  userName: result.userName,
+                                ).paddingOnly(
+                                  right: 24.w,
+                                  left: 24.w,
+                                  bottom: controller.isExposed() ||
+                                          controller.isFromProfile()
+                                      ? 36.h
+                                      : 117.h,
+                                ),
+                              );
+                            },
+                          ),
+                          Obx(
+                            () => controller.currentRank() != 0
+                                ? _backwardButton()
+                                : const SizedBox.shrink(),
+                          ),
+                          Obx(
+                            () => controller.currentRank() <
+                                    controller.results().length - 1
+                                ? forwardButton()
+                                : const SizedBox.shrink(),
+                          ),
+                          Positioned(
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            child: Column(
+                              children: <Widget>[
+                                32.verticalSpace,
+                                _appBar(),
+                                8.verticalSpace,
+                                Center(
+                                  child: ConstrainedBox(
+                                    constraints:
+                                        BoxConstraints(maxHeight: 120.h),
+                                    child: Obx(
+                                      () => AutoSizeText(
+                                        controller.prompt(),
+                                        textAlign: TextAlign.center,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 40,
+                                        style: AppTextStyle.openRunde(
+                                          fontSize: 32.sp,
+                                          color: AppColors.kffffff,
+                                          fontWeight: FontWeight.w700,
+                                          shadows: <Shadow>[
+                                            const Shadow(
+                                              offset: Offset(0, 4),
+                                              blurRadius: 4,
+                                              color: Color(0x33000000),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ).paddingSymmetric(horizontal: 24.w),
-                            ],
+                                ).paddingSymmetric(horizontal: 24.w),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ],
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ).withGPad(context, color: Colors.black),
       );
@@ -151,13 +167,15 @@ class WinnerView extends GetView<WinnerController> {
   Widget _appBar() => CommonAppBar(
         leadingIcon: AppImages.closeIconWhite,
         onTapOfLeading: () {
-          DialogHelper.onBackOfWinner(
-            onPositiveClick: () {
-              Get.offAllNamed(
-                Routes.CREATE_BET,
-              );
-            },
-          );
+          controller.roundId().isNotEmpty
+              ? Get.back()
+              : DialogHelper.onBackOfWinner(
+                  onPositiveClick: () {
+                    Get.offAllNamed(
+                      Routes.CREATE_BET,
+                    );
+                  },
+                );
         },
         actions: <Widget>[
           Container(
@@ -213,7 +231,22 @@ class WinnerView extends GetView<WinnerController> {
         buttonText: '',
         height: 57.h,
         onPressed: () {
-          ExposeSheet.openExposeSheet();
+          ExposeSheet.openExposeSheet(onExposed: () {
+            Get.back();
+            appSnackbar(
+              message:
+                  'You have successfully subscribed to the unlimited plan!',
+              snackbarState: SnackbarState.success,
+            );
+            controller.isExposed(true);
+          }, onRoundExpose: () {
+            Get.back();
+            appSnackbar(
+              message: 'You have successfully exposed this round!',
+              snackbarState: SnackbarState.success,
+            );
+            controller.isExposed(true);
+          });
         },
         decoration: BoxDecoration(
           image: const DecorationImage(

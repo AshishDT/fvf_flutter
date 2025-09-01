@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fvf_flutter/app/modules/winner/widgets/expose_sheet.dart';
+import 'package:fvf_flutter/app/routes/app_pages.dart';
+import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
 
 import '../../../data/config/app_colors.dart';
@@ -24,11 +27,42 @@ class ExposeButton extends StatelessWidget {
         () => AnimatedSize(
           duration: 300.milliseconds,
           child: Visibility(
-            visible: !controller.isExposed() && controller.currentIndex() == 1,
+            visible: controller.currentIndex() == 1,
             child: AppButton(
               buttonText: '',
               height: 57.h,
-              onPressed: () {},
+              onPressed: () {
+                controller.rounds()[controller.currentRound()].hasAccessed ??
+                        false
+                    ? Get.toNamed(
+                        Routes.WINNER,
+                        arguments: <String, dynamic>{
+                          'roundId': controller
+                                  .rounds()[controller.currentRound()]
+                                  .roundId ??
+                              '',
+                          'isFromProfile': true,
+                        },
+                      )
+                    : ExposeSheet.openExposeSheet(
+                        onExposed: () {
+                          Get.back();
+                          appSnackbar(
+                            message:
+                                'You have successfully subscribed to the unlimited plan!',
+                            snackbarState: SnackbarState.success,
+                          );
+                        },
+                        onRoundExpose: () {
+                          Get.back();
+                          appSnackbar(
+                            message:
+                                'You have successfully exposed this round!',
+                            snackbarState: SnackbarState.success,
+                          );
+                        },
+                      );
+              },
               decoration: BoxDecoration(
                 image: const DecorationImage(
                   image: AssetImage(AppImages.buttonBg),

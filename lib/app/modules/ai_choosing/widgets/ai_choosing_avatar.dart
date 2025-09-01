@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
@@ -50,7 +51,10 @@ class AiChoosingAvatar extends StatelessWidget {
                         placeholder: (_, __) => const Center(
                             child: CircularProgressIndicator(strokeWidth: 2)),
                         errorWidget: (_, __, ___) => const Center(
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                          child: Icon(
+                            Icons.error,
+                            color: AppColors.kffffff,
+                          ),
                         ),
                       ),
                     ),

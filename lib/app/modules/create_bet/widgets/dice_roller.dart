@@ -68,8 +68,6 @@ class _DiceRollerState extends State<DiceRoller>
         left: 0,
         top: 0,
         child: Container(
-          height: 50.h,
-          width: 50.w,
           decoration:  BoxDecoration(
             color: AppColors.kF1F2F2.withValues(alpha: 0.36),
             shape: BoxShape.circle,
@@ -77,7 +75,7 @@ class _DiceRollerState extends State<DiceRoller>
         ),
       ),
       Padding(
-        padding: REdgeInsets.only(bottom: 15),
+        padding: REdgeInsets.only(bottom: 17),
         child: GestureDetector(
           onTap: widget.onTap,
           child: Lottie.asset(

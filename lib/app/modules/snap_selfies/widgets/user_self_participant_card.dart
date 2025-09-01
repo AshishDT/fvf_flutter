@@ -112,7 +112,9 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
                     ),
             ),
             if (isFromFailedView ||
-                name != null && name!.isNotEmpty || !isInvitationSend) ...<Widget>[
+                name != null && name!.isNotEmpty ||
+                (!isInvitationSend &&
+                    (participant.isHost ?? false))) ...<Widget>[
               8.verticalSpace,
               Text(
                 name ?? 'You',

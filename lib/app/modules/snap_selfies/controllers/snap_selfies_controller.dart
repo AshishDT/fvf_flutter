@@ -166,32 +166,40 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
   /// Participants
   RxList<MdParticipant> get participants {
     final List<MdParticipant> list =
-        joinedInvitationData().participants ?? <MdParticipant>[]
-          ..sort(
-            (MdParticipant a, MdParticipant b) {
-              if (a.isCurrentUser) {
-                return -1;
-              }
-              if (b.isCurrentUser) {
-                return 1;
-              }
-              return 0;
-            },
-          );
+        joinedInvitationData().participants ?? <MdParticipant>[];
 
-    return list.obs;
+    final Map<String?, MdParticipant> uniqueMap = <String?, MdParticipant>{
+      for (final MdParticipant p in list) p.userData?.supabaseId: p
+    };
+
+    final List<MdParticipant> uniqueList = uniqueMap.values.toList()
+      ..sort(
+        (MdParticipant a, MdParticipant b) {
+          if (a.isCurrentUser) {
+            return -1;
+          }
+          if (b.isCurrentUser) {
+            return 1;
+          }
+          return 0;
+        },
+      );
+
+    return uniqueList.obs;
   }
 
   /// Participants without current user
   RxList<MdParticipant> get participantsWithoutCurrentUser {
-    final List<MdParticipant> list = joinedInvitationData()
-            .participants
-            ?.where(
-              (MdParticipant participant) => !participant.isCurrentUser,
-            )
-            .toList() ??
-        <MdParticipant>[];
-    return list.obs;
+    final List<MdParticipant> list =
+        (joinedInvitationData().participants ?? <MdParticipant>[])
+            .where((MdParticipant participant) => !participant.isCurrentUser)
+            .toList();
+
+    final Map<String?, MdParticipant> uniqueMap = <String?, MdParticipant>{
+      for (final MdParticipant p in list) p.userData?.supabaseId: p
+    };
+
+    return uniqueMap.values.toList().obs;
   }
 
   /// Seconds left for the timer

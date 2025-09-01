@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/models/md_result.dart';
 import 'package:fvf_flutter/app/modules/winner/models/md_round_details.dart';
 import 'package:fvf_flutter/app/modules/winner/repositories/winner_api_repo.dart';
+import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
 import '../../ai_choosing/models/md_ai_result.dart';
 
@@ -19,9 +20,13 @@ class WinnerController extends GetxController {
       }
       if (Get.arguments['roundId'] != null) {
         roundId(Get.arguments['roundId']);
-        getRoundDetails(Get.arguments['roundId']);
-      } else {
-        _resultData.value = Get.arguments as MdAiResultData;
+        getRoundDetails(
+          Get.arguments['roundId'],
+        );
+      }
+
+      if (Get.arguments['result_data'] != null) {
+        _resultData.value = Get.arguments['result_data'] as MdAiResultData;
         _resultData.refresh();
 
         getRoundDetails(
@@ -61,6 +66,9 @@ class WinnerController extends GetxController {
 
   /// Is data loading
   RxBool isLoading = true.obs;
+
+  /// Wiggle question mark
+  RxBool wiggleQuestionMark = false.obs;
 
   /// Result data
   RxList<MdResult> get results {
@@ -116,6 +124,36 @@ class WinnerController extends GetxController {
       roundDetails.refresh();
     } finally {
       isLoading(false);
+    }
+  }
+
+  /// Add reaction
+  Future<void> addReaction({
+    required String emoji,
+    required String participantId,
+  }) async {
+    final bool? _isAdded = await WinnerApiRepo.addReaction(
+      roundId: _resultData().id ?? '',
+      emoji: emoji,
+      participantId: participantId,
+    );
+
+    if (_isAdded == true) {
+      for (final MdResult result in results) {
+        if (participantId == result.userId) {
+          if (_isAdded == true) {
+            result.reaction = emoji;
+          }
+          results.refresh();
+          roundDetails.refresh();
+          break;
+        }
+      }
+    } else {
+      appSnackbar(
+        message: 'Failed to add reaction. Please try again.',
+        snackbarState: SnackbarState.danger,
+      );
     }
   }
 }

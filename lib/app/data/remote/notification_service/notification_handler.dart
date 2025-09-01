@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -94,6 +95,16 @@ class NotificationHandler {
     );
   }
 
-  /// Get FCM token
-  Future<String?> getToken() async => firebaseMessaging.getToken();
+  /// Get FCM token (safe for iOS + Android)
+  Future<String?> getToken() async {
+    if (Platform.isIOS) {
+      final String? apnsToken = await firebaseMessaging.getAPNSToken();
+      if (apnsToken == null) {
+        logI('APNS token not yet available (likely simulator)');
+        return null;
+      }
+    }
+
+    return firebaseMessaging.getToken();
+  }
 }

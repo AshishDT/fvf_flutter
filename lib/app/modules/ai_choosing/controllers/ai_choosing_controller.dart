@@ -113,7 +113,9 @@ class AiChoosingController extends GetxController {
         )
         ..toNamed(
           Routes.WINNER,
-          arguments: resultData,
+          arguments: <String, dynamic>{
+            'result_data':resultData,
+          },
         );
       return;
     }

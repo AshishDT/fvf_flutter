@@ -37,32 +37,16 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
         DateTime? endAt = joinedInvitationData().roundJoinedEndAt;
 
         if (endAt != null && endAt.second > 2) {
-          endAt = endAt.subtract(const Duration(seconds: 2));
+          endAt = endAt.subtract(const Duration(seconds: 1));
         }
+
+        _initWebSocket();
 
         startTimer(
           endTime: endAt,
         );
       }
     }
-
-    socketIoRepo
-      ..initSocket(url: EnvConfig.socketUrl)
-      ..listenForDateEvent(
-        (dynamic data) {
-          log('🎯 Controller got update: $data');
-          log('Current user Id : ${SupaBaseService.userId}');
-          final MdSocketData updatedData = MdSocketData.fromJson(data);
-
-          socketIoDataParser(updatedData);
-        },
-      )
-      ..startAutoEmit(
-        <String, dynamic>{
-          'user_id': SupaBaseService.userId,
-          'round_id': joinedInvitationData().id,
-        },
-      );
 
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback(
@@ -82,6 +66,27 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
       },
       time: 400.milliseconds,
     );
+  }
+
+  /// Initialize WebSocket connection and listeners
+  void _initWebSocket() {
+    socketIoRepo
+      ..initSocket(url: EnvConfig.socketUrl)
+      ..listenForDateEvent(
+        (dynamic data) {
+          log('🎯 Controller got update: $data');
+          log('Current user Id : ${SupaBaseService.userId}');
+          final MdSocketData updatedData = MdSocketData.fromJson(data);
+
+          socketIoDataParser(updatedData);
+        },
+      )
+      ..startAutoEmit(
+        <String, dynamic>{
+          'user_id': SupaBaseService.userId,
+          'round_id': joinedInvitationData().id,
+        },
+      );
   }
 
   /// Call emit with custom payload
@@ -139,6 +144,12 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
   /// Text editing controller for name input field
   TextEditingController nameInputController = TextEditingController();
 
+  /// Should wiggle add name
+  RxBool shouldWiggleAddName = false.obs;
+
+  /// Should wiggle snap pick
+  RxBool shouldWiggleSnapPick = false.obs;
+
   /// User profile
   Rx<MdProfile> profile = MdProfile().obs;
 
@@ -160,32 +171,40 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
   /// Participants
   RxList<MdParticipant> get participants {
     final List<MdParticipant> list =
-        joinedInvitationData().participants ?? <MdParticipant>[]
-          ..sort(
-            (MdParticipant a, MdParticipant b) {
-              if (a.isCurrentUser) {
-                return -1;
-              }
-              if (b.isCurrentUser) {
-                return 1;
-              }
-              return 0;
-            },
-          );
+        joinedInvitationData().participants ?? <MdParticipant>[];
 
-    return list.obs;
+    final Map<String?, MdParticipant> uniqueMap = <String?, MdParticipant>{
+      for (final MdParticipant p in list) p.userData?.supabaseId: p
+    };
+
+    final List<MdParticipant> uniqueList = uniqueMap.values.toList()
+      ..sort(
+        (MdParticipant a, MdParticipant b) {
+          if (a.isCurrentUser) {
+            return -1;
+          }
+          if (b.isCurrentUser) {
+            return 1;
+          }
+          return 0;
+        },
+      );
+
+    return uniqueList.obs;
   }
 
   /// Participants without current user
   RxList<MdParticipant> get participantsWithoutCurrentUser {
-    final List<MdParticipant> list = joinedInvitationData()
-            .participants
-            ?.where(
-              (MdParticipant participant) => !participant.isCurrentUser,
-            )
-            .toList() ??
-        <MdParticipant>[];
-    return list.obs;
+    final List<MdParticipant> list =
+        (joinedInvitationData().participants ?? <MdParticipant>[])
+            .where((MdParticipant participant) => !participant.isCurrentUser)
+            .toList();
+
+    final Map<String?, MdParticipant> uniqueMap = <String?, MdParticipant>{
+      for (final MdParticipant p in list) p.userData?.supabaseId: p
+    };
+
+    return uniqueMap.values.toList().obs;
   }
 
   /// Seconds left for the timer
@@ -374,6 +393,7 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
             if (!fromResend) {
               final DateTime? _timeEndAt = await startRound();
               isInvitationSend(true);
+
               startTimer(
                 endTime: _timeEndAt,
               );
@@ -383,6 +403,35 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
       );
     } on Exception {
       logE('Error sharing invitation link');
+    }
+  }
+
+  /// Check and add name wiggle
+  void _checkAddNameWiggle() {
+    if (selfParticipant().userData?.username == null ||
+        (selfParticipant().userData?.username?.isEmpty ?? true)) {
+      Future<void>.delayed(
+        const Duration(seconds: 2),
+        () {
+          shouldWiggleAddName(true);
+        },
+      );
+    } else {
+      shouldWiggleAddName(false);
+    }
+  }
+
+  void _checkSnapPickWiggle() {
+    if (selfParticipant().selfieUrl == null ||
+        (selfParticipant().selfieUrl?.isEmpty ?? true)) {
+      Future<void>.delayed(
+        const Duration(seconds: 2),
+        () {
+          shouldWiggleSnapPick(true);
+        },
+      );
+    } else {
+      shouldWiggleSnapPick(false);
     }
   }
 
@@ -423,6 +472,9 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
         joinedInvitationData.refresh();
         participants.refresh();
       }
+
+      _checkAddNameWiggle();
+      _checkSnapPickWiggle();
     }
   }
 
@@ -541,6 +593,9 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
       if (_round != null) {
         joinedInvitationData().roundJoinedEndAt = _round.roundJoinedEndAt;
         joinedInvitationData.refresh();
+
+        _initWebSocket();
+
         return _round.roundJoinedEndAt;
       }
 

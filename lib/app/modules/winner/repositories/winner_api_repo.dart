@@ -39,4 +39,42 @@ class WinnerApiRepo {
           },
         ),
       );
+
+  /// Add reaction
+  static Future<bool?> addReaction({
+    required String roundId,
+    required String emoji,
+    required String participantId,
+  }) async =>
+      APIWrapper.handleApiCall<bool?>(
+        APIService.post<Map<String, dynamic>>(
+          path: 'round/react',
+          data: <String, dynamic>{
+            'round_id': roundId,
+            'emoji': emoji,
+            'participant_user_id': participantId,
+          },
+        ).then(
+          (Response<Map<String, dynamic>>? response) {
+            if (response?.isOk != true || response?.data == null) {
+              return null;
+            }
+
+            final ApiResponse<bool> data = ApiResponse<bool>.fromJson(
+              response!.data!,
+            );
+
+            if (data.success ?? false) {
+              return true;
+            }
+
+            appSnackbar(
+              message:
+                  data.message ?? 'Something went wrong, please try again.',
+              snackbarState: SnackbarState.danger,
+            );
+            return null;
+          },
+        ),
+      );
 }

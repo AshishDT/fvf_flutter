@@ -95,14 +95,11 @@ class CreateBetView extends GetView<CreateBetController> {
                               ),
                             ),
                             16.horizontalSpace,
-                            Padding(
-                              padding: REdgeInsets.only(bottom: 16.h),
-                              child: Obx(
-                                () => DiceRoller(
-                                  isLoading: controller.isLoading(),
-                                  rollTrigger: controller.rollCounter(),
-                                  onTap: controller.rollDice,
-                                ),
+                            Obx(
+                              () => DiceRoller(
+                                isLoading: controller.isLoading(),
+                                rollTrigger: controller.rollCounter(),
+                                onTap: controller.rollDice,
                               ),
                             ),
                           ],

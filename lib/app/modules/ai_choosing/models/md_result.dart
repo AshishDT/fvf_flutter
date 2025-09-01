@@ -10,6 +10,7 @@ class MdResult {
     this.score,
     this.status,
     this.userName,
+    this.reaction,
   });
 
   /// From JSON
@@ -47,6 +48,9 @@ class MdResult {
 
   /// User name
   String? userName;
+
+  /// Reaction by current user
+  String? reaction;
 
   /// To JSON
   Map<String, dynamic> toJson() => <String, dynamic>{

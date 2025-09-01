@@ -259,7 +259,8 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                       curve: Curves.easeInOut,
                       child: Obx(
                         () => Visibility(
-                          visible: (controller.previousParticipants().isEmpty &&
+                          visible: (!controller.isInvitationSend() &&
+                                  controller.previousParticipants().isEmpty &&
                                   controller
                                       .participantsWithoutCurrentUser()
                                       .isEmpty) ||

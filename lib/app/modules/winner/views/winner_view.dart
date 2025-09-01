@@ -64,7 +64,7 @@ class WinnerView extends GetView<WinnerController> {
                 ),
                 Obx(
                   () {
-                    if (controller.results.isEmpty ||
+                    if (controller.results().isEmpty ||
                         controller.pageController == null) {
                       return const SizedBox.shrink();
                     }
@@ -75,7 +75,18 @@ class WinnerView extends GetView<WinnerController> {
                           PageView.builder(
                             controller: controller.pageController,
                             itemCount: controller.results().length,
-                            onPageChanged: (int i) => controller.currentRank(i),
+                            onPageChanged: (int i) {
+                              controller.currentRank(i);
+                              if (!controller.isExposed()) {
+                                Future<void>.delayed(
+                                  const Duration(seconds: 1),
+                                  () {
+                                    controller.wiggleQuestionMark(true);
+                                    controller.wiggleQuestionMark.refresh();
+                                  },
+                                );
+                              }
+                            },
                             itemBuilder: (BuildContext context, int index) {
                               final MdResult result =
                                   controller.results()[index];
@@ -83,6 +94,8 @@ class WinnerView extends GetView<WinnerController> {
                               return Obx(
                                 () => ResultCard(
                                   isExposed: controller.isExposed(),
+                                  triggerQuestionMark:
+                                      controller.wiggleQuestionMark(),
                                   isFromProfile: controller.isFromProfile(),
                                   rank: result.rank ?? 0,
                                   reason: result.reason ?? '',
@@ -90,8 +103,15 @@ class WinnerView extends GetView<WinnerController> {
                                       result.rank == 1,
                                   ordinalSuffix:
                                       getOrdinalSuffix(result.rank ?? 0),
+                                  reaction: result.reaction,
                                   selfieUrl: result.selfieUrl,
                                   userName: result.userName,
+                                  onReactionSelected: (String emoji) {
+                                    controller.addReaction(
+                                      emoji: emoji,
+                                      participantId: result.userId ?? '',
+                                    );
+                                  },
                                 ).paddingOnly(
                                   right: 24.w,
                                   left: 24.w,

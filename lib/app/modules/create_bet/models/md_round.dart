@@ -52,7 +52,7 @@ class MdRound {
             : List<MdResult>.from(
                 json['results']!.map((x) => MdResult.fromJson(x))),
         revealAt:
-            json['revealAt'] == null ? null : DateTime.parse(json["revealAt"]),
+            json['revealAt'] == null ? null : DateTime.parse(json['revealAt']),
       );
 
   /// Prompt

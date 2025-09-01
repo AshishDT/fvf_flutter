@@ -37,32 +37,16 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
         DateTime? endAt = joinedInvitationData().roundJoinedEndAt;
 
         if (endAt != null && endAt.second > 2) {
-          endAt = endAt.subtract(const Duration(seconds: 2));
+          endAt = endAt.subtract(const Duration(seconds: 1));
         }
+
+        _initWebSocket();
 
         startTimer(
           endTime: endAt,
         );
       }
     }
-
-    socketIoRepo
-      ..initSocket(url: EnvConfig.socketUrl)
-      ..listenForDateEvent(
-        (dynamic data) {
-          log('🎯 Controller got update: $data');
-          log('Current user Id : ${SupaBaseService.userId}');
-          final MdSocketData updatedData = MdSocketData.fromJson(data);
-
-          socketIoDataParser(updatedData);
-        },
-      )
-      ..startAutoEmit(
-        <String, dynamic>{
-          'user_id': SupaBaseService.userId,
-          'round_id': joinedInvitationData().id,
-        },
-      );
 
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback(
@@ -82,6 +66,27 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
       },
       time: 400.milliseconds,
     );
+  }
+
+  /// Initialize WebSocket connection and listeners
+  void _initWebSocket() {
+    socketIoRepo
+      ..initSocket(url: EnvConfig.socketUrl)
+      ..listenForDateEvent(
+        (dynamic data) {
+          log('🎯 Controller got update: $data');
+          log('Current user Id : ${SupaBaseService.userId}');
+          final MdSocketData updatedData = MdSocketData.fromJson(data);
+
+          socketIoDataParser(updatedData);
+        },
+      )
+      ..startAutoEmit(
+        <String, dynamic>{
+          'user_id': SupaBaseService.userId,
+          'round_id': joinedInvitationData().id,
+        },
+      );
   }
 
   /// Call emit with custom payload
@@ -388,6 +393,7 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
             if (!fromResend) {
               final DateTime? _timeEndAt = await startRound();
               isInvitationSend(true);
+
               startTimer(
                 endTime: _timeEndAt,
               );
@@ -587,6 +593,9 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
       if (_round != null) {
         joinedInvitationData().roundJoinedEndAt = _round.roundJoinedEndAt;
         joinedInvitationData.refresh();
+
+        _initWebSocket();
+
         return _round.roundJoinedEndAt;
       }
 

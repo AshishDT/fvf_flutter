@@ -2,8 +2,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fvf_flutter/app/modules/winner/widgets/reaction_menu.dart';
+import 'package:fvf_flutter/app/modules/winner/widgets/rotate_and_wiggle.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
@@ -22,6 +25,9 @@ class ResultCard extends StatelessWidget {
     this.reason,
     this.isExposed = false,
     this.isFromProfile = false,
+    this.onReactionSelected,
+    this.reaction,
+    this.triggerQuestionMark = false,
   });
 
   /// Controller
@@ -47,6 +53,15 @@ class ResultCard extends StatelessWidget {
 
   /// Is from profile
   final bool isFromProfile;
+
+  /// On reaction selected
+  final void Function(String)? onReactionSelected;
+
+  /// Reaction
+  final String? reaction;
+
+  /// Trigger question mark animation
+  final bool triggerQuestionMark;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -100,20 +115,51 @@ class ResultCard extends StatelessWidget {
               else
                 Align(
                   alignment: Alignment.centerRight,
-                  child: SvgPicture.asset(
-                    AppImages.questionMarkIcon,
+                  child: RotateThenWiggle(
+                    trigger: triggerQuestionMark,
+                    child: Text(
+                      '?',
+                      style:GoogleFonts.fredoka(
+                        fontSize: 36.sp,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.kF1F2F2,
+                        shadows: <Shadow>[
+                          const Shadow(
+                            offset: Offset(0, 4),
+                            blurRadius: 4,
+                            color: Color(0x33000000),
+                          ),
+                        ],
+                      ),
+                    ).paddingOnly(right: 4.w),
                   ),
-                ).paddingOnly(right: 4.w),
+                ),
               16.verticalSpace,
               Align(
                 alignment: Alignment.centerRight,
                 child: GestureDetector(
-                  onTap: () {},
-                  child: SvgPicture.asset(
-                    AppImages.smilyIcon,
-                    height: 32.w,
-                    width: 32.w,
-                  ),
+                  onTapDown: (TapDownDetails details) {
+                    ReactionMenu.show(
+                      context: context,
+                      position: details.globalPosition,
+                      onReactionSelected: (String emoji) {
+                        onReactionSelected?.call(emoji);
+                      },
+                    );
+                  },
+                  child: reaction == null || (reaction?.isEmpty ?? true)
+                      ? SvgPicture.asset(
+                          AppImages.smilyIcon,
+                          height: 32.w,
+                          width: 32.w,
+                        )
+                      : Text(
+                          reaction!,
+                          style: GoogleFonts.fredoka(
+                            fontSize: 24.sp,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                 ),
               ),
               16.verticalSpace,

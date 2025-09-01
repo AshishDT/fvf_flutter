@@ -113,9 +113,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                         !controller.isTimesUp() &&
                         !controller.isStartingRound(),
                     child: AppButton(
-                      buttonText: !controller.isAddedPreviousParticipants()
-                          ? 'Add Friends'
-                          : "Let's go...",
+                      buttonText: 'Add Friends',
                       child: controller.isAddedPreviousParticipants()
                           ? null
                           : Row(

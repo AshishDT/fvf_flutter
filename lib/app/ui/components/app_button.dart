@@ -11,7 +11,7 @@ import '../../data/config/app_colors.dart';
 class AppButton extends StatelessWidget {
   /// Creates a custom button.
   const AppButton({
-    required this.buttonText,
+    required this. buttonText,
     required this.onPressed,
     this.height,
     this.style,

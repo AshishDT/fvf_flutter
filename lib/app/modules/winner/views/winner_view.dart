@@ -1,9 +1,11 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/models/md_result.dart';
+import 'package:fvf_flutter/app/modules/profile/enums/subscription_enum.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/expose_sheet.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
@@ -32,7 +34,9 @@ class WinnerView extends GetView<WinnerController> {
           backgroundColor: AppColors.kF5FCFF,
           extendBody: true,
           bottomNavigationBar: Obx(
-            () => !controller.isExposed() && !controller.isFromProfile()
+            () => !controller.isLoading() &&
+                    !controller.isExposed() &&
+                    !controller.isFromProfile()
                 ? _exposeButton()
                 : const SizedBox.shrink(),
           ),
@@ -106,11 +110,13 @@ class WinnerView extends GetView<WinnerController> {
                                   reaction: result.reaction,
                                   selfieUrl: result.selfieUrl,
                                   userName: result.userName,
+                                  reactions: result.reactions,
                                   onReactionSelected: (String emoji) {
                                     controller.addReaction(
                                       emoji: emoji,
                                       participantId: result.userId ?? '',
                                     );
+                                    HapticFeedback.mediumImpact();
                                   },
                                 ).paddingOnly(
                                   right: 24.w,
@@ -251,22 +257,43 @@ class WinnerView extends GetView<WinnerController> {
         buttonText: '',
         height: 57.h,
         onPressed: () {
-          ExposeSheet.openExposeSheet(onExposed: () {
-            Get.back();
-            appSnackbar(
-              message:
-                  'You have successfully subscribed to the unlimited plan!',
-              snackbarState: SnackbarState.success,
-            );
-            controller.isExposed(true);
-          }, onRoundExpose: () {
-            Get.back();
-            appSnackbar(
-              message: 'You have successfully exposed this round!',
-              snackbarState: SnackbarState.success,
-            );
-            controller.isExposed(true);
-          });
+          ExposeSheet.openExposeSheet(
+            onExposed: () async {
+              final bool _isPurchase = await controller.roundSubscription(
+                roundId: controller.roundDetails().round?.id ?? '',
+                paymentId: '',
+                type: SubscriptionPlanEnum.WEEKLY,
+              );
+              if (_isPurchase) {
+                controller.isExposed(true);
+                Get.close(0);
+                appSnackbar(
+                  message:
+                      'You have successfully subscribed to the unlimited plan!',
+                  snackbarState: SnackbarState.success,
+                );
+              } else {
+                Get.close(0);
+              }
+            },
+            onRoundExpose: () async {
+              final bool _isPurchase = await controller.roundSubscription(
+                roundId: controller.roundDetails().round?.id ?? '',
+                paymentId: '',
+                type: SubscriptionPlanEnum.ONE_TIME,
+              );
+              if (_isPurchase) {
+                controller.isExposed(true);
+                Get.close(0);
+                appSnackbar(
+                  message: 'You have successfully exposed this round!',
+                  snackbarState: SnackbarState.success,
+                );
+              } else {
+                Get.close(0);
+              }
+            },
+          );
         },
         decoration: BoxDecoration(
           image: const DecorationImage(

@@ -1,15 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/models/md_result.dart';
+import 'package:fvf_flutter/app/modules/profile/enums/subscription_enum.dart';
+import 'package:fvf_flutter/app/modules/profile/repositories/profile_api_repo.dart';
 import 'package:fvf_flutter/app/modules/winner/models/md_round_details.dart';
 import 'package:fvf_flutter/app/modules/winner/repositories/winner_api_repo.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
+
 import '../../ai_choosing/models/md_ai_result.dart';
 
 /// Winner Controller
 class WinnerController extends GetxController {
   /// roundId
   RxString roundId = ''.obs;
+
+  /// RxList<MdResult>
+  RxList<MdResult> results = <MdResult>[].obs;
+
+  /// isPurchasing
+  RxBool isPurchasing = false.obs;
 
   /// On init
   @override
@@ -71,15 +80,23 @@ class WinnerController extends GetxController {
   RxBool wiggleQuestionMark = false.obs;
 
   /// Result data
-  RxList<MdResult> get results {
-    final List<MdResult> sorted =
-        (roundDetails().round?.results ?? <MdResult>[]).toList()
-          ..sort(
-            (MdResult a, MdResult b) => (a.rank ?? 0).compareTo(b.rank ?? 0),
-          );
+  /*RxList<MdResult> get results {
+    final List<MdResult> allResults =
+        (roundDetails().round?.results ?? <MdResult>[]).toList();
 
-    return sorted.obs;
-  }
+    final MdResult? firstRank =
+        allResults.firstWhereOrNull((MdResult r) => r.rank == 1);
+
+    final List<MdResult> others =
+        allResults.where((MdResult r) => r.rank != 1).toList()..shuffle();
+
+    final List<MdResult> finalList = <MdResult>[
+      if (firstRank != null) firstRank,
+      ...others,
+    ];
+
+    return finalList.obs;
+  }*/
 
   /// Prompt
   RxString get prompt => (roundDetails().round?.prompt ?? '').obs;
@@ -122,6 +139,23 @@ class WinnerController extends GetxController {
 
       roundDetails(_roundDetails);
       roundDetails.refresh();
+      isExposed(_roundDetails?.hasAccess ?? false);
+      isExposed.refresh();
+      final List<MdResult> allResults =
+          (roundDetails().round?.results ?? <MdResult>[]).toList();
+
+      final MdResult? firstRank =
+          allResults.firstWhereOrNull((MdResult r) => r.rank == 1);
+
+      final List<MdResult> others =
+          allResults.where((MdResult r) => r.rank != 1).toList()..shuffle();
+
+      final List<MdResult> finalList = <MdResult>[
+        if (firstRank != null) firstRank,
+        ...others,
+      ];
+      results(finalList);
+      results.refresh();
     } finally {
       isLoading(false);
     }
@@ -154,6 +188,31 @@ class WinnerController extends GetxController {
         message: 'Failed to add reaction. Please try again.',
         snackbarState: SnackbarState.danger,
       );
+    }
+  }
+
+  /// Round Subscription
+  Future<bool> roundSubscription({
+    required String roundId,
+    required String paymentId,
+    required SubscriptionPlanEnum type,
+  }) async {
+    try {
+      isPurchasing(true);
+      final bool _isPurchase = await ProfileApiRepo.roundSubscription(
+        roundId: roundId,
+        paymentId: paymentId,
+        type: type,
+      );
+      if (_isPurchase) {
+        return _isPurchase;
+      }
+      return false;
+    } on Exception catch (e) {
+      isPurchasing(false);
+      return false;
+    } finally {
+      isPurchasing(false);
     }
   }
 }

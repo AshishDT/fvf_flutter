@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../config/env_config.dart';
 
@@ -27,6 +28,26 @@ class SupaBaseService {
   /// Sign in anonymously
   static Future<AuthResponse> signInAnonymously() async {
     final AuthResponse response = await _instance.auth.signInAnonymously();
+    return response;
+  }
+
+  /// Send OTP to phone number
+  static Future<void> sendOtp(String phoneNumber) async {
+    await _instance.auth.signInWithOtp(
+      phone: phoneNumber,
+    );
+  }
+
+  /// Verify OTP
+  static Future<AuthResponse> verifyOtp({
+    required String phoneNumber,
+    required String token,
+  }) async {
+    final AuthResponse response = await _instance.auth.verifyOTP(
+      phone: phoneNumber,
+      token: token,
+      type: OtpType.sms,
+    );
     return response;
   }
 }

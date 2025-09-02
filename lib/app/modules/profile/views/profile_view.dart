@@ -44,115 +44,127 @@ class ProfileView extends GetView<ProfileController> {
                   ? const SizedBox.shrink()
                   : ExposeButton(controller: controller),
             ),
-            body: Stack(
-              children: <Widget>[
-                /// Profile Background Image
-                Obx(
-                  () => CachedNetworkImage(
-                    imageUrl: controller.currentIndex() == 1 &&
-                            controller.rounds().isNotEmpty
-                        ? controller
-                                .rounds()[controller.currentRound()]
-                                .selfieUrl ??
-                            controller.profile().user?.profileUrl ??
-                            ''
-                        : controller.profile().user?.profileUrl ?? '',
-                    width: 1.sw,
-                    height: 1.sh,
-                    fit: BoxFit.cover,
-                    placeholder: (_, __) => Obx(
-                      () => Visibility(
-                        visible: !controller.isLoading(),
-                        child: const GradientCard(child: SizedBox()),
+            body: GradientCard(
+              child: RefreshIndicator(
+                color: AppColors.k000000,
+                onRefresh: () async {
+                  await controller.getUser();
+                  await controller.getRounds(isRefresh: true);
+                },
+                child: Stack(
+                  children: <Widget>[
+                    /// Profile Background Image
+                    Obx(
+                      () => CachedNetworkImage(
+                        imageUrl: controller.currentIndex() == 1 &&
+                                controller.rounds().isNotEmpty
+                            ? controller
+                                    .rounds()[controller.currentRound()]
+                                    .selfieUrl ??
+                                controller.profile().user?.profileUrl ??
+                                ''
+                            : controller.profile().user?.profileUrl ?? '',
+                        width: 1.sw,
+                        height: 1.sh,
+                        fit: BoxFit.cover,
+                        placeholder: (_, __) => Obx(
+                          () => Visibility(
+                            visible: !controller.isLoading(),
+                            child: const GradientCard(child: SizedBox()),
+                          ),
+                        ),
+                        errorWidget: (_, __, ___) => Obx(
+                          () => Visibility(
+                            visible: !controller.isLoading(),
+                            child: const GradientCard(child: SizedBox()),
+                          ),
+                        ),
                       ),
                     ),
-                    errorWidget: (_, __, ___) => Obx(
-                      () => Visibility(
-                        visible: !controller.isLoading(),
-                        child: const GradientCard(child: SizedBox()),
-                      ),
-                    ),
-                  ),
-                ),
 
-                /// Body
-                SafeArea(
-                  child: Column(
-                    children: <Widget>[
-                      /// AppBar
-                      CommonAppBar(
-                        leadingIconColor: AppColors.kFAFBFB,
-                        onTapOfLeading: () {
-                          if (controller.currentIndex() == 1) {
-                            controller.pageController.animateToPage(
-                              0,
-                              duration: 500.milliseconds,
-                              curve: Curves.easeInOut,
-                            );
-                          } else {
-                            Get.back();
-                          }
-                        },
-                        actions: <Widget>[
-                          GestureDetector(
-                            onTap: () {},
-                            child: SvgPicture.asset(
-                              AppImages.shareIcon,
-                              width: 24.w,
-                              height: 24.h,
-                              colorFilter: const ColorFilter.mode(
-                                AppColors.kFAFBFB,
-                                BlendMode.srcIn,
+                    /// Body
+                    SafeArea(
+                      child: Column(
+                        children: <Widget>[
+                          /// AppBar
+                          CommonAppBar(
+                            leadingIconColor: AppColors.kFAFBFB,
+                            onTapOfLeading: () {
+                              if (controller.currentIndex() == 1) {
+                                controller.pageController.animateToPage(
+                                  0,
+                                  duration: 500.milliseconds,
+                                  curve: Curves.easeInOut,
+                                );
+                              } else {
+                                Get.back();
+                              }
+                            },
+                            actions: <Widget>[
+                              GestureDetector(
+                                onTap: () {},
+                                child: SvgPicture.asset(
+                                  AppImages.shareIcon,
+                                  width: 24.w,
+                                  height: 24.h,
+                                  colorFilter: const ColorFilter.mode(
+                                    AppColors.kFAFBFB,
+                                    BlendMode.srcIn,
+                                  ),
+                                ),
                               ),
+                            ],
+                          ).paddingSymmetric(horizontal: 24.w),
+
+                          /// Content
+                          Expanded(
+                            child: PageView(
+                              controller: controller.pageController,
+                              physics: const BouncingScrollPhysics(),
+                              scrollDirection: Axis.vertical,
+                              onPageChanged: (int value) {
+                                controller.currentIndex(value);
+                                controller.currentRound(0);
+                              },
+                              children: <Widget>[
+                                /// Profile Page
+                                Obx(
+                                  () => ProfileWrapper(
+                                    isLoading: controller.isLoading(),
+                                    child: Column(
+                                      children: <Widget>[
+                                        ProfileHeaderSection(
+                                          controller: controller,
+                                        ),
+                                        24.verticalSpace,
+                                        Obx(
+                                          () => Visibility(
+                                            visible: _canShowEmptyProfile(),
+                                            child:
+                                                const EmptyProfilePlaceholder(),
+                                          ),
+                                        ),
+                                        const Spacer(),
+                                        ProfileBioSection(
+                                          controller: controller,
+                                        ),
+                                      ],
+                                    ).paddingSymmetric(horizontal: 24.w),
+                                  ),
+                                ),
+
+                                /// Participants Page
+                                if (controller.rounds().isNotEmpty)
+                                  ParticipantsPage(controller: controller),
+                              ],
                             ),
                           ),
                         ],
-                      ).paddingSymmetric(horizontal: 24.w),
-
-                      /// Content
-                      Expanded(
-                        child: PageView(
-                          controller: controller.pageController,
-                          scrollDirection: Axis.vertical,
-                          onPageChanged: (int value) {
-                            controller.currentIndex(value);
-                            controller.currentRound(0);
-                          },
-                          children: <Widget>[
-                            /// Profile Page
-                            Obx(
-                              () => ProfileWrapper(
-                                isLoading: controller.isLoading(),
-                                child: Column(
-                                  children: <Widget>[
-                                    ProfileHeaderSection(
-                                      controller: controller,
-                                    ),
-                                    24.verticalSpace,
-                                    Obx(
-                                      () => Visibility(
-                                        visible: _canShowEmptyProfile(),
-                                        child: const EmptyProfilePlaceholder(),
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    ProfileBioSection(
-                                      controller: controller,
-                                    ),
-                                  ],
-                                ).paddingSymmetric(horizontal: 24.w),
-                              ),
-                            ),
-
-                            /// Participants Page
-                            ParticipantsPage(controller: controller),
-                          ],
-                        ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),

@@ -9,6 +9,8 @@ class AppPlaceHolder extends StatelessWidget {
     required this.child,
     required this.placeHolder,
     this.padding,
+    this.baseColor,
+    this.highlightColor,
     Key? key,
   }) : super(key: key);
 
@@ -24,14 +26,20 @@ class AppPlaceHolder extends StatelessWidget {
   /// Padding
   final EdgeInsets? padding;
 
+  /// Base color
+  final Color? baseColor;
+
+  /// Highlight color
+  final Color? highlightColor;
+
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
       return Padding(
         padding: padding ?? EdgeInsets.zero,
         child: Shimmer.fromColors(
-          baseColor: const Color(0xFF6C75FF).withValues(alpha: 0.3),
-          highlightColor: const Color(0xFFFB46CD).withValues(alpha: 0.4),
+          baseColor: baseColor ?? const Color(0xFF6C75FF).withValues(alpha: 0.3),
+          highlightColor: highlightColor ?? const Color(0xFFFB46CD).withValues(alpha: 0.4),
           child: placeHolder,
         ),
       );

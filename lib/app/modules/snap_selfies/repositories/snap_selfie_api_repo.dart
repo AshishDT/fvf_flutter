@@ -148,4 +148,40 @@ class SnapSelfieApiRepo {
           },
         ),
       );
+
+  /// Add Participants from Previous Rounds
+  static Future<bool?> addParticipants({
+    required String roundId,
+    required String userId,
+  }) async =>
+      APIWrapper.handleApiCall<bool?>(
+        APIService.post<Map<String, dynamic>>(
+          path: 'round/join-previous-rounds-participants',
+          data: <String, dynamic>{
+            'round_id': roundId,
+            'user_id': userId,
+          },
+        ).then(
+          (Response<Map<String, dynamic>>? response) {
+            if (response?.isOk != true || response?.data == null) {
+              return null;
+            }
+
+            final ApiResponse<bool> data = ApiResponse<bool>.fromJson(
+              response!.data!,
+            );
+
+            if (data.success == true) {
+              return true;
+            }
+
+            appSnackbar(
+              message:
+                  data.message ?? 'Something went wrong, please try again.',
+              snackbarState: SnackbarState.danger,
+            );
+            return null;
+          },
+        ),
+      );
 }

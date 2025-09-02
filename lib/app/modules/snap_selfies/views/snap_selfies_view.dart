@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/modules/snap_selfies/widgets/animated_switcher.dart';
+import 'package:fvf_flutter/app/modules/snap_selfies/widgets/previous_participant_avatar.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/ui/components/vibrate_wiggle.dart';
@@ -113,30 +114,36 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                         !controller.isStartingRound(),
                     child: AppButton(
                       buttonText: 'Add Friends',
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          SvgPicture.asset(
-                            width: 18.w,
-                            height: 18.h,
-                            AppImages.shareIcon,
-                            colorFilter: const ColorFilter.mode(
-                              AppColors.kffffff,
-                              BlendMode.srcIn,
+                      child: controller.isAddedPreviousParticipants()
+                          ? null
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                SvgPicture.asset(
+                                  width: 18.w,
+                                  height: 18.h,
+                                  AppImages.shareIcon,
+                                  colorFilter: const ColorFilter.mode(
+                                    AppColors.kffffff,
+                                    BlendMode.srcIn,
+                                  ),
+                                ),
+                                8.horizontalSpace,
+                                Text(
+                                  'Add Friends',
+                                  style: AppTextStyle.openRunde(
+                                    fontSize: 18.sp,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.kffffff,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                          8.horizontalSpace,
-                          Text(
-                            'Add Friends',
-                            style: AppTextStyle.openRunde(
-                              fontSize: 18.sp,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.kffffff,
-                            ),
-                          ),
-                        ],
-                      ),
                       onPressed: () {
+                        if (controller.isAddedPreviousParticipants()) {
+                          controller.addPreviousParticipants();
+                          return;
+                        }
                         controller.shareUri();
                       },
                     ).paddingSymmetric(horizontal: 24),
@@ -252,9 +259,15 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                       curve: Curves.easeInOut,
                       child: Obx(
                         () => Visibility(
-                          visible: controller
-                              .participantsWithoutCurrentUser()
-                              .isEmpty,
+                          visible: (!controller.isInvitationSend() &&
+                                  controller.previousParticipants().isEmpty &&
+                                  controller
+                                      .participantsWithoutCurrentUser()
+                                      .isEmpty) ||
+                              (controller.isInvitationSend() &&
+                                  controller
+                                      .participantsWithoutCurrentUser()
+                                      .isEmpty),
                           replacement: const SizedBox(
                             width: double.infinity,
                           ),
@@ -267,6 +280,41 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                               24.horizontalSpace,
                               _emptyUsersPlaceholder(),
                             ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    AnimatedSize(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      child: Obx(
+                        () => Visibility(
+                          visible:
+                              controller.previousParticipants().isNotEmpty &&
+                                  !controller.isInvitationSend(),
+                          replacement: const SizedBox(
+                            width: double.infinity,
+                          ),
+                          child: Align(
+                            child: SingleChildScrollView(
+                              padding: EdgeInsets.zero,
+                              scrollDirection: Axis.horizontal,
+                              child: Obx(
+                                () => Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: List<Widget>.generate(
+                                    controller.previousParticipants().length,
+                                    (int index) =>
+                                        PreviousParticipantAvatarIcon(
+                                      participant: controller
+                                          .previousParticipants()[index],
+                                      onAddTap:
+                                          controller.onAddPreviousParticipant,
+                                    ).paddingOnly(right: 32),
+                                  ),
+                                ),
+                              ),
+                            ).paddingOnly(left: 32),
                           ),
                         ),
                       ),

@@ -1,10 +1,13 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/modules/profile/widgets/participant_wrapper.dart';
-import 'package:fvf_flutter/app/modules/profile/widgets/show_reaction_menu.dart';
+import 'package:fvf_flutter/app/modules/winner/widgets/reaction_menu.dart';
+import 'package:fvf_flutter/app/modules/winner/widgets/rotate_and_wiggle.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -36,11 +39,19 @@ class ParticipantsPage extends StatelessWidget {
                     PageView.builder(
                       controller: controller.roundPageController,
                       itemCount: controller.rounds().length,
-                      onPageChanged: (int i) => controller.currentRound(i),
-                      itemBuilder: (BuildContext context, int index) {
-                        final MdRound round = controller.rounds[index];
-                        return Obx(
-                          () => Column(
+                      onPageChanged: (int i) {
+                        controller.currentRound(i);
+                        if (controller.rounds[i].rank == null) {
+                          controller.animatedIndex(i);
+                        }
+                      },
+                      itemBuilder: (BuildContext context, int index) => Obx(
+                        () {
+                          final MdRound round = controller.rounds[index];
+                          final bool shouldAnimate =
+                              controller.animatedIndex() == index &&
+                                  controller.currentIndex() == 1;
+                          return Column(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: <Widget>[
                               round.rank != null
@@ -92,8 +103,23 @@ class ParticipantsPage extends StatelessWidget {
                                     )
                                   : Align(
                                       alignment: Alignment.centerRight,
-                                      child: SvgPicture.asset(
-                                        AppImages.questionMarkIcon,
+                                      child: RotateThenWiggle(
+                                        trigger: shouldAnimate,
+                                        child: Text(
+                                          '?',
+                                          style: GoogleFonts.fredoka(
+                                            fontSize: 36.sp,
+                                            fontWeight: FontWeight.w500,
+                                            color: AppColors.kF1F2F2,
+                                            shadows: <Shadow>[
+                                              const Shadow(
+                                                offset: Offset(0, 4),
+                                                blurRadius: 4,
+                                                color: Color(0x33000000),
+                                              ),
+                                            ],
+                                          ),
+                                        ).paddingOnly(right: 4.w),
                                       ),
                                     ).paddingOnly(right: 2.w),
                               16.verticalSpace,
@@ -101,19 +127,32 @@ class ParticipantsPage extends StatelessWidget {
                                 alignment: Alignment.centerRight,
                                 child: GestureDetector(
                                   onTapDown: (TapDownDetails details) {
-                                    ShowReactionMenu.show(
+                                    ReactionMenu.show(
                                       context: context,
                                       position: details.globalPosition,
-                                      onReactionSelected: (String emoji) {},
-                                      reactions: round.reactions ??
-                                          <String, dynamic>{},
+                                      onReactionSelected: (String emoji) {
+                                        controller.addReaction(
+                                          roundId: round.roundId ?? '',
+                                          emoji: emoji,
+                                          participantId: globalUser().id ?? '',
+                                        );
+                                        HapticFeedback.mediumImpact();
+                                      },
                                     );
                                   },
-                                  child: SvgPicture.asset(
-                                    AppImages.smilyIcon,
-                                    height: 32.w,
-                                    width: 32.w,
-                                  ),
+                                  child: round.reactions == null
+                                      ? SvgPicture.asset(
+                                          AppImages.smilyIcon,
+                                          height: 32.w,
+                                          width: 32.w,
+                                        )
+                                      : Text(
+                                          round.reactions ?? '',
+                                          style: GoogleFonts.fredoka(
+                                            fontSize: 24.sp,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
                                 ),
                               ),
                               16.verticalSpace,
@@ -203,9 +242,12 @@ class ParticipantsPage extends StatelessWidget {
                               if (round.reason != null &&
                                   round.reason!.isNotEmpty) ...<Widget>[
                                 16.verticalSpace,
-                                Text(
+                                AutoSizeText(
                                   round.reason ?? '',
                                   textAlign: TextAlign.center,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 2,
+                                  // maxFontSize: 20.sp,
                                   style: GoogleFonts.inter(
                                     fontSize: 20.sp,
                                     color: AppColors.kffffff,
@@ -219,9 +261,9 @@ class ParticipantsPage extends StatelessWidget {
                             right: 24.w,
                             left: 24.w,
                             bottom: 117.h,
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
                     Positioned(
                       left: 24.w,

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:fvf_flutter/app/data/config/logger.dart';
+import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/models/md_result.dart';
 import 'package:fvf_flutter/app/modules/profile/enums/subscription_enum.dart';
 import 'package:fvf_flutter/app/modules/profile/repositories/profile_api_repo.dart';
@@ -17,8 +19,11 @@ class WinnerController extends GetxController {
   /// RxList<MdResult>
   RxList<MdResult> results = <MdResult>[].obs;
 
-  /// isPurchasing
-  RxBool isPurchasing = false.obs;
+  /// isRoundSubLoading
+  RxBool isRoundSubLoading = false.obs;
+
+  /// isWeeklySubLoading
+  RxBool isWeeklySubLoading = false.obs;
 
   /// On init
   @override
@@ -101,6 +106,11 @@ class WinnerController extends GetxController {
   /// Prompt
   RxString get prompt => (roundDetails().round?.prompt ?? '').obs;
 
+  /// currentUserResult
+  MdResult? get currentUserResult => roundDetails().round?.results?.firstWhere(
+        (MdResult element) => element.userId == globalUser().id,
+      );
+
   /// pageController
   PageController? pageController = PageController(initialPage: 0);
 
@@ -167,22 +177,30 @@ class WinnerController extends GetxController {
     required String participantId,
   }) async {
     final bool? _isAdded = await WinnerApiRepo.addReaction(
-      roundId: _resultData().id ?? '',
+      roundId: roundDetails().round?.id ?? '',
       emoji: emoji,
       participantId: participantId,
     );
 
     if (_isAdded == true) {
-      for (final MdResult result in results) {
+      results()[currentRank()].reactions = emoji;
+      results.refresh();
+      /*for (final MdResult result in results) {
         if (participantId == result.userId) {
-          if (_isAdded == true) {
-            result.reaction = emoji;
+          result
+            ..reaction = emoji
+            ..reactions = emoji;
+          final String? activeEmoji = result.reaction;
+
+          if (activeEmoji == emoji) {
+            return;
           }
+
           results.refresh();
           roundDetails.refresh();
           break;
         }
-      }
+      }*/
     } else {
       appSnackbar(
         message: 'Failed to add reaction. Please try again.',
@@ -198,7 +216,9 @@ class WinnerController extends GetxController {
     required SubscriptionPlanEnum type,
   }) async {
     try {
-      isPurchasing(true);
+      type == SubscriptionPlanEnum.ONE_TIME
+          ? isRoundSubLoading(true)
+          : isWeeklySubLoading(true);
       final bool _isPurchase = await ProfileApiRepo.roundSubscription(
         roundId: roundId,
         paymentId: paymentId,
@@ -208,11 +228,17 @@ class WinnerController extends GetxController {
         return _isPurchase;
       }
       return false;
-    } on Exception catch (e) {
-      isPurchasing(false);
+    } on Exception catch (e, st) {
+      logE('Error During Subscription: $e');
+      logE(st);
+      type == SubscriptionPlanEnum.ONE_TIME
+          ? isRoundSubLoading(false)
+          : isWeeklySubLoading(false);
       return false;
     } finally {
-      isPurchasing(false);
+      type == SubscriptionPlanEnum.ONE_TIME
+          ? isRoundSubLoading(false)
+          : isWeeklySubLoading(false);
     }
   }
 }

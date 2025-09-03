@@ -42,8 +42,10 @@ class ShowReactionMenu {
             ),
           ),
           Positioned(
-            right: 54.w,
-            top: position.dy - 38.h,
+            left: position.dx - 30.w,
+            top: position.dy - 258.h,
+            // right: 54.w,
+            // top: position.dy - 38.h,
             child: Material(
               color: Colors.transparent,
               child: ClipRRect(
@@ -51,7 +53,10 @@ class ShowReactionMenu {
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
                   child: Container(
-                    padding: REdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    width: 48.w,
+                    // height: 258.h,
+                    // alignment: Alignment.center,
+                    padding: REdgeInsets.symmetric(vertical: 8),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.36),
                       borderRadius: BorderRadius.circular(28.r),
@@ -63,9 +68,9 @@ class ShowReactionMenu {
                         ),
                       ],
                     ),
-                    child: Row(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      spacing: 14.w,
+                      spacing: 10.h,
                       children: mergedReactions.entries
                           .map(
                             (MapEntry<String, dynamic> e) => Column(
@@ -73,18 +78,19 @@ class ShowReactionMenu {
                                 Text(
                                   e.key,
                                   style: GoogleFonts.fredoka(
-                                    fontSize: 20.sp,
+                                    fontSize: 24.sp,
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
-                                Text(
-                                  '${e.value ?? ''}',
-                                  style: AppTextStyle.openRunde(
-                                    fontSize: 13.sp,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.kffffff,
+                                if (e.value > 0)
+                                  Text(
+                                    '${e.value ?? ''}',
+                                    style: AppTextStyle.openRunde(
+                                      fontSize: 13.sp,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.kffffff,
+                                    ),
                                   ),
-                                ),
                               ],
                             ),
                           )

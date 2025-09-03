@@ -13,6 +13,7 @@ import 'package:fvf_flutter/app/modules/profile/models/md_highlight.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_profile.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_user_rounds.dart';
 import 'package:fvf_flutter/app/modules/profile/repositories/profile_api_repo.dart';
+import 'package:fvf_flutter/app/modules/winner/repositories/winner_api_repo.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -61,8 +62,14 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
   /// Packages
   RxList<StoreProduct> packages = <StoreProduct>[].obs;
 
-  /// isPurchasing
-  RxBool isPurchasing = false.obs;
+  /// isRoundSubLoading
+  RxBool isRoundSubLoading = false.obs;
+
+  /// isWeeklySubLoading
+  RxBool isWeeklySubLoading = false.obs;
+
+  /// animatedIndex
+  RxInt animatedIndex = 0.obs;
 
   /// On init
   @override
@@ -308,7 +315,9 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
     required SubscriptionPlanEnum type,
   }) async {
     try {
-      isPurchasing(true);
+      type == SubscriptionPlanEnum.ONE_TIME
+          ? isRoundSubLoading(true)
+          : isWeeklySubLoading(true);
       final bool _isPurchase = await ProfileApiRepo.roundSubscription(
         roundId: roundId,
         paymentId: paymentId,
@@ -319,12 +328,16 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
       }
       return false;
     } on Exception catch (e, st) {
-      isPurchasing(false);
+      type == SubscriptionPlanEnum.ONE_TIME
+          ? isRoundSubLoading(false)
+          : isWeeklySubLoading(false);
       logE('Error getting purchase: $e');
       logE(st);
       return false;
     } finally {
-      isPurchasing(false);
+      type == SubscriptionPlanEnum.ONE_TIME
+          ? isRoundSubLoading(false)
+          : isWeeklySubLoading(false);
     }
   }
 
@@ -334,5 +347,36 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
     // final List<StoreProduct> products =
     //     await RevenueCatService.instance.fetchProducts();
     // packages(products);
+  }
+
+  /// Add reaction
+  Future<void> addReaction({
+    required String roundId,
+    required String emoji,
+    required String participantId,
+  }) async {
+    final bool? _isAdded = await WinnerApiRepo.addReaction(
+      roundId: roundId,
+      emoji: emoji,
+      participantId: participantId,
+    );
+
+    if (_isAdded == true && rounds().isNotEmpty) {
+      rounds()[currentRound()].reactions = emoji;
+      rounds.refresh();
+      /*for (final MdRound item in rounds()) {
+        logI('Round ID: ${item.roundId}, Target Round ID: $roundId');
+        if (item.roundId == roundId) {
+          item.reactions = emoji;
+          rounds.refresh();
+        }
+        break;
+      }*/
+    } else {
+      appSnackbar(
+        message: 'Failed to add reaction. Please try again.',
+        snackbarState: SnackbarState.danger,
+      );
+    }
   }
 }

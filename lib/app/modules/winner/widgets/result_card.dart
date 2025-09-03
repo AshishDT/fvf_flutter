@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:fvf_flutter/app/modules/profile/widgets/show_reaction_menu.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/reaction_menu.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/rotate_and_wiggle.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
@@ -27,7 +26,6 @@ class ResultCard extends StatelessWidget {
     this.isExposed = false,
     this.isFromProfile = false,
     this.onReactionSelected,
-    this.reaction,
     this.triggerQuestionMark = false,
     this.reactions,
   });
@@ -59,14 +57,11 @@ class ResultCard extends StatelessWidget {
   /// On reaction selected
   final void Function(String)? onReactionSelected;
 
-  /// Reaction
-  final String? reaction;
-
   /// Trigger question mark animation
   final bool triggerQuestionMark;
 
   /// Reactions
-  final Map<String, dynamic>? reactions;
+  final String? reactions;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -124,7 +119,7 @@ class ResultCard extends StatelessWidget {
                     trigger: triggerQuestionMark,
                     child: Text(
                       '?',
-                      style:GoogleFonts.fredoka(
+                      style: GoogleFonts.fredoka(
                         fontSize: 36.sp,
                         fontWeight: FontWeight.w500,
                         color: AppColors.kF1F2F2,
@@ -140,51 +135,37 @@ class ResultCard extends StatelessWidget {
                   ),
                 ),
               16.verticalSpace,
-              isFromProfile? Align(
-                alignment: Alignment.centerRight,
-                child: GestureDetector(
-                  onTapDown: (TapDownDetails details) {
-                    ShowReactionMenu.show(
-                      context: context,
-                      position: details.globalPosition,
-                      onReactionSelected: (String emoji) {},
-                      reactions: reactions ??
-                          <String, dynamic>{},
-                    );
-                  },
-                  child: SvgPicture.asset(
-                    AppImages.smilyIcon,
-                    height: 32.w,
-                    width: 32.w,
-                  ),
-                ),
-              ) : Align(
-                alignment: Alignment.centerRight,
-                child: GestureDetector(
-                  onTapDown: (TapDownDetails details) {
-                    ReactionMenu.show(
-                      context: context,
-                      position: details.globalPosition,
-                      onReactionSelected: (String emoji) {
-                        onReactionSelected?.call(emoji);
-                      },
-                    );
-                  },
-                  child: reaction == null || (reaction?.isEmpty ?? true)
-                      ? SvgPicture.asset(
-                          AppImages.smilyIcon,
-                          height: 32.w,
-                          width: 32.w,
-                        )
-                      : Text(
-                          reaction!,
-                          style: GoogleFonts.fredoka(
-                            fontSize: 24.sp,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                ),
-              ),
+              Align(
+                      alignment: Alignment.centerRight,
+                      child: GestureDetector(
+                        onTapDown: (TapDownDetails details) {
+                          ReactionMenu.show(
+                            context: context,
+                            position: details.globalPosition,
+                            onReactionSelected: (String emoji) {
+                              final String? activeEmoji = reactions;
+                              if (activeEmoji == emoji) {
+                                return;
+                              }
+                              onReactionSelected?.call(emoji);
+                            },
+                          );
+                        },
+                        child: reactions == null || (reactions?.isEmpty ?? true)
+                            ? SvgPicture.asset(
+                                AppImages.smilyIcon,
+                                height: 32.w,
+                                width: 32.w,
+                              )
+                            : Text(
+                                reactions ?? '',
+                                style: GoogleFonts.fredoka(
+                                  fontSize: 24.sp,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                      ),
+                    ),
               16.verticalSpace,
               Align(
                 alignment: Alignment.centerRight,

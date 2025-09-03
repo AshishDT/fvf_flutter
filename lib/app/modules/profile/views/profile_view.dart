@@ -124,7 +124,11 @@ class ProfileView extends GetView<ProfileController> {
                               scrollDirection: Axis.vertical,
                               onPageChanged: (int value) {
                                 controller.currentIndex(value);
-                                controller.currentRound(0);
+                                if (controller.rounds().isNotEmpty) {
+                                  controller.roundPageController.jumpToPage(
+                                    controller.currentRound(),
+                                  );
+                                }
                               },
                               children: <Widget>[
                                 /// Profile Page

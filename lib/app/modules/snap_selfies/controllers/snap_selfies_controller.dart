@@ -693,6 +693,14 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
       return;
     }
 
+    if (toAdd.length < 2) {
+      appSnackbar(
+        message: 'Please add at least 2 friends to start the round.',
+        snackbarState: SnackbarState.warning,
+      );
+      return;
+    }
+
     final List<Future<void>> futures = <Future<void>>[];
 
     for (final MdPreviousParticipant p in toAdd) {

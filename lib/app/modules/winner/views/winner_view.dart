@@ -107,7 +107,6 @@ class WinnerView extends GetView<WinnerController> {
                                       result.rank == 1,
                                   ordinalSuffix:
                                       getOrdinalSuffix(result.rank ?? 0),
-                                  reaction: result.reaction,
                                   selfieUrl: result.selfieUrl,
                                   userName: result.userName,
                                   reactions: result.reactions,
@@ -194,7 +193,7 @@ class WinnerView extends GetView<WinnerController> {
         leadingIcon: AppImages.closeIconWhite,
         onTapOfLeading: () {
           controller.roundId().isNotEmpty
-              ? Get.back()
+              ? Get.back(result: controller.currentUserResult)
               : DialogHelper.onBackOfWinner(
                   onPositiveClick: () {
                     Get.offAllNamed(
@@ -258,41 +257,17 @@ class WinnerView extends GetView<WinnerController> {
         height: 57.h,
         onPressed: () {
           ExposeSheet.openExposeSheet(
-            onExposed: () async {
-              final bool _isPurchase = await controller.roundSubscription(
-                roundId: controller.roundDetails().round?.id ?? '',
-                paymentId: '',
-                type: SubscriptionPlanEnum.WEEKLY,
-              );
-              if (_isPurchase) {
-                controller.isExposed(true);
-                Get.close(0);
-                appSnackbar(
-                  message:
-                      'You have successfully subscribed to the unlimited plan!',
-                  snackbarState: SnackbarState.success,
-                );
-              } else {
-                Get.close(0);
-              }
-            },
-            onRoundExpose: () async {
-              final bool _isPurchase = await controller.roundSubscription(
-                roundId: controller.roundDetails().round?.id ?? '',
-                paymentId: '',
-                type: SubscriptionPlanEnum.ONE_TIME,
-              );
-              if (_isPurchase) {
-                controller.isExposed(true);
-                Get.close(0);
-                appSnackbar(
-                  message: 'You have successfully exposed this round!',
-                  snackbarState: SnackbarState.success,
-                );
-              } else {
-                Get.close(0);
-              }
-            },
+            onExposedLoading: controller.isWeeklySubLoading,
+            onRoundExposeLoading: controller.isRoundSubLoading,
+            onExposed: () => _handleSimpleSubscription(
+              type: SubscriptionPlanEnum.WEEKLY,
+              successMessage:
+                  'You have successfully subscribed to the weekly unlimited plan!',
+            ),
+            onRoundExpose: () => _handleSimpleSubscription(
+              type: SubscriptionPlanEnum.ONE_TIME,
+              successMessage: 'You have successfully exposed this round!',
+            ),
           );
         },
         decoration: BoxDecoration(
@@ -345,6 +320,31 @@ class WinnerView extends GetView<WinnerController> {
         return 'rd';
       default:
         return 'th';
+    }
+  }
+
+  /// _handleSimpleSubscription
+  Future<void> _handleSimpleSubscription({
+    required SubscriptionPlanEnum type,
+    required String successMessage,
+  }) async {
+    final String roundId = controller.roundDetails().round?.id ?? '';
+
+    final bool isPurchase = await controller.roundSubscription(
+      roundId: roundId,
+      paymentId: '',
+      type: type,
+    );
+
+    if (isPurchase) {
+      controller.isExposed(true);
+      Get.close(0);
+      appSnackbar(
+        message: successMessage,
+        snackbarState: SnackbarState.success,
+      );
+    } else {
+      Get.close(0);
     }
   }
 }

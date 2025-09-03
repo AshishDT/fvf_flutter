@@ -5,6 +5,7 @@ import 'package:fvf_flutter/app/ui/components/app_button.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:fvf_flutter/app/utils/widget_ext.dart';
+import 'package:get/get.dart';
 
 /// AIPlan enum
 enum AIPlan {
@@ -13,12 +14,14 @@ enum AIPlan {
 }
 
 /// ExposeSheetView
-class ExposeSheetView extends StatefulWidget {
+class ExposeSheetView extends StatelessWidget {
   /// ExposeSheetView Constructor
   ExposeSheetView({
     super.key,
     this.onExposed,
     this.onRoundExpose,
+    this.onExposedLoading,
+    this.onRoundExposeLoading,
   });
 
   /// On round expose callback
@@ -27,11 +30,12 @@ class ExposeSheetView extends StatefulWidget {
   /// On exposed callback
   VoidCallback? onExposed;
 
-  @override
-  State<ExposeSheetView> createState() => _ExposeSheetViewState();
-}
+  /// onExposedLoading
+  RxBool? onExposedLoading = false.obs;
 
-class _ExposeSheetViewState extends State<ExposeSheetView> {
+  /// onRoundExposeLoading
+  RxBool? onRoundExposeLoading = false.obs;
+
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
         padding: EdgeInsets.only(
@@ -151,57 +155,63 @@ class _ExposeSheetViewState extends State<ExposeSheetView> {
             ),
             plan == AIPlan.PLAN1 ? 16.verticalSpace : 11.verticalSpace,
             plan == AIPlan.PLAN1
-                ? AppButton(
-                    height: 42.h,
-                    buttonText: '👀 Expose This Round',
-                    decoration: BoxDecoration(
-                      color: AppColors.kFFC300,
-                      borderRadius: BorderRadius.circular(28.r),
-                      boxShadow: <BoxShadow>[
-                        BoxShadow(
-                          offset: const Offset(0, 2),
-                          blurRadius: 2,
-                          color: AppColors.k000000.withValues(alpha: 0.2),
-                        ),
-                      ],
-                    ),
-                    onPressed: () {
-                      widget.onRoundExpose?.call();
-                    },
-                    style: AppTextStyle.openRunde(
-                      fontSize: 16.sp,
-                      color: AppColors.k2A2E2F,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  )
-                : AppButton(
-                    buttonText: '🔥 Go Unlimited',
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(28.r),
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        stops: const [0.0, 0.0],
-                        colors: <Color>[
-                          AppColors.kFFC300,
-                          AppColors.kFFC300.withValues(alpha: .72),
+                ? Obx(
+                    () => AppButton(
+                      height: 42.h,
+                      isLoading: onRoundExposeLoading?.value ?? false,
+                      buttonText: '👀 Expose This Round',
+                      decoration: BoxDecoration(
+                        color: AppColors.kFFC300,
+                        borderRadius: BorderRadius.circular(28.r),
+                        boxShadow: <BoxShadow>[
+                          BoxShadow(
+                            offset: const Offset(0, 2),
+                            blurRadius: 2,
+                            color: AppColors.k000000.withValues(alpha: 0.2),
+                          ),
                         ],
                       ),
-                      boxShadow: <BoxShadow>[
-                        BoxShadow(
-                          offset: const Offset(0, 2),
-                          blurRadius: 2,
-                          color: AppColors.k000000.withValues(alpha: 0.2),
-                        ),
-                      ],
+                      onPressed: () {
+                        onRoundExpose?.call();
+                      },
+                      style: AppTextStyle.openRunde(
+                        fontSize: 16.sp,
+                        color: AppColors.k2A2E2F,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                    onPressed: () {
-                      widget.onExposed?.call();
-                    },
-                    style: AppTextStyle.openRunde(
-                      fontSize: 18.sp,
-                      color: AppColors.kffffff,
-                      fontWeight: FontWeight.w700,
+                  )
+                : Obx(
+                    () => AppButton(
+                      buttonText: '🔥 Go Unlimited',
+                      isLoading: onExposedLoading?.value ?? false,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(28.r),
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          stops: const [0.0, 0.0],
+                          colors: <Color>[
+                            AppColors.kFFC300,
+                            AppColors.kFFC300.withValues(alpha: .72),
+                          ],
+                        ),
+                        boxShadow: <BoxShadow>[
+                          BoxShadow(
+                            offset: const Offset(0, 2),
+                            blurRadius: 2,
+                            color: AppColors.k000000.withValues(alpha: 0.2),
+                          ),
+                        ],
+                      ),
+                      onPressed: () {
+                        onExposed?.call();
+                      },
+                      style: AppTextStyle.openRunde(
+                        fontSize: 18.sp,
+                        color: AppColors.kffffff,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
           ],

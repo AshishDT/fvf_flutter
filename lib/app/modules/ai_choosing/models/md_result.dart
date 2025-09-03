@@ -10,7 +10,6 @@ class MdResult {
     this.score,
     this.status,
     this.userName,
-    this.reaction,
     this.reactions,
   });
 
@@ -51,11 +50,8 @@ class MdResult {
   /// User name
   String? userName;
 
-  /// Reaction by current user
-  String? reaction;
-
   /// Reactions
-  Map<String, dynamic>? reactions;
+  String? reactions;
 
   /// To JSON
   Map<String, dynamic> toJson() => <String, dynamic>{

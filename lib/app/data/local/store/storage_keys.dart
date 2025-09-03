@@ -24,4 +24,12 @@ class LocalStore {
   static Future<void> erase() async {
     await _Store.erase();
   }
+
+  /// Bet Valid To
+  static final _StoreObject<String> betValidTo =
+      _StoreObject<String>(key: 'valid_to');
+
+  /// All bets (as JSON string)
+  static final _StoreObject<String> betsJson =
+      _StoreObject<String>(key: 'bets_json');
 }

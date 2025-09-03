@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
+import 'package:fvf_flutter/app/data/local/store/local_store.dart';
 import 'package:fvf_flutter/app/data/models/md_user.dart';
 import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/enums/round_status_enum.dart';
@@ -152,6 +154,24 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
   Future<void> getBets() async {
     isLoading(true);
     try {
+      final String? savedBetsJson = LocalStore.betsJson();
+      final String? betValidTo = LocalStore.betValidTo();
+
+      final DateTime now = DateTime.now();
+      final DateTime? validTo =
+          betValidTo != null ? DateTime.tryParse(betValidTo)?.toLocal() : null;
+      if (savedBetsJson != null && validTo != null && validTo.isAfter(now)) {
+        final List<dynamic> decoded = jsonDecode(savedBetsJson);
+        final List<MdBet> savedBets =
+            decoded.map((e) => MdBet.fromJson(e)).toList();
+
+        _allBets.assignAll(savedBets);
+        _betsPool.assignAll(savedBets);
+
+        showNextBet();
+        return;
+      }
+
       final List<MdBet>? bets = await CreateBetApiRepo.getQuestion();
 
       if (bets != null && bets.isNotEmpty) {
@@ -159,6 +179,12 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
         _betsPool.assignAll(bets);
 
         showNextBet();
+
+        final String betsJsonStr =
+            jsonEncode(bets.map((b) => b.toJson()).toList());
+
+        LocalStore.betsJson(betsJsonStr);
+        LocalStore.betValidTo(bets.first.validTo?.toIso8601String() ?? '');
       }
     } finally {
       isLoading(false);
@@ -275,9 +301,6 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
           await smartAuth.requestPhoneNumberHint();
       isSmartAuthShowed(true);
       if (result.hasData) {
-        final nu = extractLocalNumber(result.data ?? '');
-        final cc = extractCountryCode(result.data ?? '');
-        logI('Phone hint: $nu, Country Code: $cc');
         controller.text = result.data ?? '';
       }
     } catch (e) {

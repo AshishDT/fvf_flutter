@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fvf_flutter/app/modules/profile/widgets/show_reaction_menu.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/reaction_menu.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/rotate_and_wiggle.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
@@ -28,6 +29,7 @@ class ResultCard extends StatelessWidget {
     this.onReactionSelected,
     this.reaction,
     this.triggerQuestionMark = false,
+    this.reactions,
   });
 
   /// Controller
@@ -62,6 +64,9 @@ class ResultCard extends StatelessWidget {
 
   /// Trigger question mark animation
   final bool triggerQuestionMark;
+
+  /// Reactions
+  final Map<String, dynamic>? reactions;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -135,7 +140,25 @@ class ResultCard extends StatelessWidget {
                   ),
                 ),
               16.verticalSpace,
-              Align(
+              isFromProfile? Align(
+                alignment: Alignment.centerRight,
+                child: GestureDetector(
+                  onTapDown: (TapDownDetails details) {
+                    ShowReactionMenu.show(
+                      context: context,
+                      position: details.globalPosition,
+                      onReactionSelected: (String emoji) {},
+                      reactions: reactions ??
+                          <String, dynamic>{},
+                    );
+                  },
+                  child: SvgPicture.asset(
+                    AppImages.smilyIcon,
+                    height: 32.w,
+                    width: 32.w,
+                  ),
+                ),
+              ) : Align(
                 alignment: Alignment.centerRight,
                 child: GestureDetector(
                   onTapDown: (TapDownDetails details) {
@@ -194,10 +217,14 @@ class ResultCard extends StatelessWidget {
                                 placeholder: (_, __) => const Center(
                                     child: CircularProgressIndicator(
                                         strokeWidth: 2)),
-                                errorWidget: (_, __, ___) => const Center(
-                                  child: Icon(
-                                    Icons.error,
-                                    color: AppColors.kffffff,
+                                errorWidget: (_, __, ___) => Container(
+                                  height: 24.w,
+                                  width: 24.w,
+                                  color: Colors.grey.shade200,
+                                  child: const Icon(
+                                    Icons.person,
+                                    size: 16,
+                                    color: Colors.grey,
                                   ),
                                 ),
                               ),

@@ -11,6 +11,7 @@ class MdResult {
     this.status,
     this.userName,
     this.reaction,
+    this.reactions,
   });
 
   /// From JSON
@@ -23,6 +24,7 @@ class MdResult {
         score: json['score'],
         status: json['status'],
         userName: json['username'],
+        reactions: json['reactions'],
       );
 
   /// Rank
@@ -52,6 +54,9 @@ class MdResult {
   /// Reaction by current user
   String? reaction;
 
+  /// Reactions
+  Map<String, dynamic>? reactions;
+
   /// To JSON
   Map<String, dynamic> toJson() => <String, dynamic>{
         'rank': rank,
@@ -62,5 +67,6 @@ class MdResult {
         'score': score,
         'status': status,
         'username': userName,
+        'reactions': reactions,
       };
 }

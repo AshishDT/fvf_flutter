@@ -42,6 +42,7 @@ class MdRound {
     this.result,
     this.rank,
     this.selfieUrl,
+    this.reactions,
   });
 
   factory MdRound.fromJson(Map<String, dynamic> json) => MdRound(
@@ -58,6 +59,7 @@ class MdRound {
     ),
     rank: json['rank'],
     selfieUrl: json['selfie_url'],
+    reactions: json['reactions'],
   );
 
   String? roundId;
@@ -68,6 +70,7 @@ class MdRound {
   List<Result>? result;
   int? rank;
   String? selfieUrl;
+  Map<String, dynamic>? reactions;
 
   Map<String, dynamic> toJson() => {
     'roundId': roundId,
@@ -78,7 +81,31 @@ class MdRound {
     'result': result?.map((x) => x.toJson()).toList(),
     'rank': rank,
     'selfie_url': selfieUrl,
+    'reactions': reactions,
   };
+
+  /// CopyWith method
+  MdRound copyWith({
+    String? roundId,
+    String? prompt,
+    String? reason,
+    DateTime? createdAt,
+    bool? hasAccessed,
+    List<Result>? result,
+    int? rank,
+    String? selfieUrl,
+    Map<String, dynamic>? reactions,
+  }) => MdRound(
+      roundId: roundId ?? this.roundId,
+      prompt: prompt ?? this.prompt,
+      reason: reason ?? this.reason,
+      createdAt: createdAt ?? this.createdAt,
+      hasAccessed: hasAccessed ?? this.hasAccessed,
+      result: result ?? this.result,
+      rank: rank ?? this.rank,
+      selfieUrl: selfieUrl ?? this.selfieUrl,
+      reactions: reactions ?? this.reactions,
+    );
 }
 
 /// Participant model

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fvf_flutter/app/modules/profile/enums/subscription_enum.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/expose_sheet.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
@@ -10,6 +11,7 @@ import '../../../data/config/app_images.dart';
 import '../../../ui/components/app_button.dart';
 import '../../../utils/app_text_style.dart';
 import '../controllers/profile_controller.dart';
+import '../models/md_user_rounds.dart';
 
 /// EXPOSE BUTTON
 class ExposeButton extends StatelessWidget {
@@ -29,6 +31,7 @@ class ExposeButton extends StatelessWidget {
           child: Visibility(
             visible: controller.currentIndex() == 1,
             child: AppButton(
+              isLoading: controller.isPurchasing(),
               buttonText: '',
               height: 57.h,
               onPressed: () {
@@ -45,21 +48,107 @@ class ExposeButton extends StatelessWidget {
                         },
                       )
                     : ExposeSheet.openExposeSheet(
-                        onExposed: () {
-                          Get.back();
-                          appSnackbar(
-                            message:
-                                'You have successfully subscribed to the unlimited plan!',
-                            snackbarState: SnackbarState.success,
+                        onExposed: () async {
+                          final bool _isPurchase =
+                              await controller.roundSubscription(
+                            roundId: controller
+                                    .rounds()[controller.currentRound()]
+                                    .roundId ??
+                                '',
+                            paymentId: '',
+                            type: SubscriptionPlanEnum.WEEKLY,
                           );
+                          if (_isPurchase) {
+                            Get.close(0);
+                            controller
+                                .rounds(controller.rounds().map((MdRound r) {
+                              if (r.roundId ==
+                                  controller
+                                      .rounds()[controller.currentRound()]
+                                      .roundId) {
+                                return MdRound(
+                                  roundId: r.roundId,
+                                  prompt: r.prompt,
+                                  reason: r.reason,
+                                  createdAt: r.createdAt,
+                                  hasAccessed: true,
+                                  result: r.result,
+                                  rank: r.rank,
+                                  selfieUrl: r.selfieUrl,
+                                  reactions: r.reactions,
+                                );
+                              }
+                              return r;
+                            }).toList());
+                            appSnackbar(
+                              message:
+                                  'You have successfully subscribed to the unlimited plan!',
+                              snackbarState: SnackbarState.success,
+                            );
+                            await Get.toNamed(
+                              Routes.WINNER,
+                              arguments: <String, dynamic>{
+                                'roundId': controller
+                                        .rounds()[controller.currentRound()]
+                                        .roundId ??
+                                    '',
+                                'isFromProfile': true,
+                              },
+                            );
+                          } else {
+                            Get.close(0);
+                          }
                         },
-                        onRoundExpose: () {
-                          Get.back();
-                          appSnackbar(
-                            message:
-                                'You have successfully exposed this round!',
-                            snackbarState: SnackbarState.success,
+                        onRoundExpose: () async {
+                          final bool _isPurchase =
+                              await controller.roundSubscription(
+                            roundId: controller
+                                    .rounds()[controller.currentRound()]
+                                    .roundId ??
+                                '',
+                            paymentId: '',
+                            type: SubscriptionPlanEnum.ONE_TIME,
                           );
+                          if (_isPurchase) {
+                            Get.close(0);
+                            controller
+                                .rounds(controller.rounds().map((MdRound r) {
+                              if (r.roundId ==
+                                  controller
+                                      .rounds()[controller.currentRound()]
+                                      .roundId) {
+                                return MdRound(
+                                  roundId: r.roundId,
+                                  prompt: r.prompt,
+                                  reason: r.reason,
+                                  createdAt: r.createdAt,
+                                  hasAccessed: true,
+                                  result: r.result,
+                                  rank: r.rank,
+                                  selfieUrl: r.selfieUrl,
+                                  reactions: r.reactions,
+                                );
+                              }
+                              return r;
+                            }).toList());
+                            appSnackbar(
+                              message:
+                                  'You have successfully exposed this round!',
+                              snackbarState: SnackbarState.success,
+                            );
+                            await Get.toNamed(
+                              Routes.WINNER,
+                              arguments: <String, dynamic>{
+                                'roundId': controller
+                                        .rounds()[controller.currentRound()]
+                                        .roundId ??
+                                    '',
+                                'isFromProfile': true,
+                              },
+                            );
+                          } else {
+                            Get.close(0);
+                          }
                         },
                       );
               },

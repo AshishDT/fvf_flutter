@@ -8,6 +8,7 @@ import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/data/remote/api_service/init_api_service.dart';
 import 'package:fvf_flutter/app/data/remote/revenue_cat/revenue_cat_service.dart';
 import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
+import 'package:fvf_flutter/app/modules/profile/enums/subscription_enum.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_highlight.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_profile.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_user_rounds.dart';
@@ -59,6 +60,9 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
 
   /// Packages
   RxList<StoreProduct> packages = <StoreProduct>[].obs;
+
+  /// isPurchasing
+  RxBool isPurchasing = false.obs;
 
   /// On init
   @override
@@ -185,11 +189,11 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
   }) async {
     try {
       isLoading(true);
-      final bool? _isUpdated = await ProfileApiRepo.updateUser(
+      final bool _isUpdated = await ProfileApiRepo.updateUser(
         profilePic: profilePic,
         username: username,
       );
-      if (_isUpdated != null) {
+      if (_isUpdated) {
         await getUser();
         appSnackbar(
           message: 'Profile updated successfully',
@@ -297,28 +301,32 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-/*  /// Next page navigation
-  void nextPage() {
-    if (roundPageController.hasClients) {
-      roundPageController.nextPage(
-        duration: 300.milliseconds,
-        curve: Curves.easeInOut,
+  /// Round Subscription
+  Future<bool> roundSubscription({
+    required String roundId,
+    required String paymentId,
+    required SubscriptionPlanEnum type,
+  }) async {
+    try {
+      isPurchasing(true);
+      final bool _isPurchase = await ProfileApiRepo.roundSubscription(
+        roundId: roundId,
+        paymentId: paymentId,
+        type: type,
       );
-      if (currentRound() >= rounds().length - 2 && hasMore()) {
-        getRounds();
+      if (_isPurchase) {
+        return _isPurchase;
       }
+      return false;
+    } on Exception catch (e, st) {
+      isPurchasing(false);
+      logE('Error getting purchase: $e');
+      logE(st);
+      return false;
+    } finally {
+      isPurchasing(false);
     }
   }
-
-  /// Previous page navigation
-  void prevPage() {
-    if (roundPageController.hasClients) {
-      roundPageController.previousPage(
-        duration: 300.milliseconds,
-        curve: Curves.easeInOut,
-      );
-    }
-  }*/
 
   Future<void> _loadProducts() async {
     final List<Package> products =

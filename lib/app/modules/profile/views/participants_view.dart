@@ -4,8 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/modules/profile/widgets/participant_wrapper.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
-import 'package:get/utils.dart';
+import 'package:fvf_flutter/app/modules/profile/widgets/show_reaction_menu.dart';
+import 'package:fvf_flutter/app/routes/app_pages.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../data/config/app_colors.dart';
@@ -99,10 +100,19 @@ class ParticipantsPage extends StatelessWidget {
                               Align(
                                 alignment: Alignment.centerRight,
                                 child: GestureDetector(
-                                  onTap: () {},
+                                  onTapDown: (TapDownDetails details) {
+                                    ShowReactionMenu.show(
+                                      context: context,
+                                      position: details.globalPosition,
+                                      onReactionSelected: (String emoji) {},
+                                      reactions: round.reactions ??
+                                          <String, dynamic>{},
+                                    );
+                                  },
                                   child: SvgPicture.asset(
                                     AppImages.smilyIcon,
                                     height: 32.w,
+                                    width: 32.w,
                                   ),
                                 ),
                               ),
@@ -121,6 +131,7 @@ class ParticipantsPage extends StatelessWidget {
                               16.verticalSpace,
                               Row(
                                 children: <Widget>[
+                                  36.horizontalSpace,
                                   Expanded(
                                     child: Row(
                                       mainAxisAlignment:
@@ -152,24 +163,36 @@ class ParticipantsPage extends StatelessWidget {
                                             ),
                                           ),
                                         ),
-                                        4.horizontalSpace,
-                                        Flexible(
-                                          child: Text(
-                                            globalUser().username ?? '',
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: AppTextStyle.openRunde(
-                                              fontSize: 24.sp,
-                                              fontWeight: FontWeight.w600,
-                                              color: AppColors.kffffff,
+                                        if (globalUser().username != null &&
+                                            (globalUser()
+                                                    .username
+                                                    ?.isNotEmpty ??
+                                                false)) ...<Widget>[
+                                          4.horizontalSpace,
+                                          Flexible(
+                                            child: Text(
+                                              globalUser().username ?? '',
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: AppTextStyle.openRunde(
+                                                fontSize: 24.sp,
+                                                fontWeight: FontWeight.w600,
+                                                color: AppColors.kffffff,
+                                              ),
                                             ),
                                           ),
-                                        ),
+                                        ]
                                       ],
                                     ),
                                   ),
                                   GestureDetector(
-                                    onTap: () {},
+                                    onTap: () {
+                                      Get.until(
+                                        (Route<dynamic> route) =>
+                                            route.settings.name ==
+                                            Routes.CREATE_BET,
+                                      );
+                                    },
                                     child: Image.asset(
                                       AppImages.addPngIcon,
                                       height: 36.w,

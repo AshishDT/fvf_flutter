@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/enums/round_status_enum.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:get/get.dart';
+import '../../../data/config/env_config.dart';
 import '../../../data/remote/socket_io_repo.dart';
 import '../../../routes/app_pages.dart';
 import '../../create_bet/models/md_round.dart';
@@ -82,11 +83,24 @@ class AiChoosingController extends GetxController {
         bet.refresh();
       }
 
-      resultsRepo.listenForRoundProcess(
-        (dynamic data) {
-          _onResults(data);
-        },
-      );
+      final bool fromNotification =
+          (Get.arguments['from_notification'] as bool?) ?? false;
+
+      if (fromNotification) {
+        resultsRepo
+          ..initSocket(url: EnvConfig.socketUrl)
+          ..listenForRoundProcess(
+            (dynamic data) {
+              _onResults(data);
+            },
+          );
+      } else {
+        resultsRepo.listenForRoundProcess(
+          (dynamic data) {
+            _onResults(data);
+          },
+        );
+      }
     }
   }
 
@@ -114,7 +128,7 @@ class AiChoosingController extends GetxController {
         ..toNamed(
           Routes.WINNER,
           arguments: <String, dynamic>{
-            'result_data':resultData,
+            'result_data': resultData,
           },
         );
       return;

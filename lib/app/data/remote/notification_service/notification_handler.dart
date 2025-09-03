@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 
@@ -70,13 +70,13 @@ class NotificationHandler {
 
   /// Show local notification
   Future<void> showLocalNotification(RemoteMessage message) async {
-    const AndroidNotificationDetails androidDetails =
+     const AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
       'default_channel_id',
       'Default Channel',
       importance: Importance.max,
       priority: Priority.high,
-      color: Colors.grey,
+      color: AppColors.k0DBFFF,
       colorized: true,
     );
 

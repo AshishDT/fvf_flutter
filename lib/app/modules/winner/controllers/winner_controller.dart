@@ -208,7 +208,7 @@ class WinnerController extends GetxController {
         return _isPurchase;
       }
       return false;
-    } on Exception catch (e) {
+    } on Exception {
       isPurchasing(false);
       return false;
     } finally {

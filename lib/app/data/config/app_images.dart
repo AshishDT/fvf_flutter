@@ -142,4 +142,7 @@ class AppImages {
 
   /// Add PNG icon
   static const String addPngIcon = '$_path/add_png_icon.png';
+
+  /// Question card background with border
+  static const String qBgWithBorder = '$_path/q_bg_with_border.png';
 }

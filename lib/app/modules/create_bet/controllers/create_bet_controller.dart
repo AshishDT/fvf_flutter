@@ -168,7 +168,12 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
         _allBets.assignAll(savedBets);
         _betsPool.assignAll(savedBets);
 
-        showNextBet();
+        Future<void>.delayed(
+          const Duration(milliseconds: 300),
+          () {
+            showNextBet();
+          },
+        );
         return;
       }
 

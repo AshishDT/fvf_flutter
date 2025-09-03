@@ -84,25 +84,6 @@ class WinnerController extends GetxController {
   /// Wiggle question mark
   RxBool wiggleQuestionMark = false.obs;
 
-  /// Result data
-  /*RxList<MdResult> get results {
-    final List<MdResult> allResults =
-        (roundDetails().round?.results ?? <MdResult>[]).toList();
-
-    final MdResult? firstRank =
-        allResults.firstWhereOrNull((MdResult r) => r.rank == 1);
-
-    final List<MdResult> others =
-        allResults.where((MdResult r) => r.rank != 1).toList()..shuffle();
-
-    final List<MdResult> finalList = <MdResult>[
-      if (firstRank != null) firstRank,
-      ...others,
-    ];
-
-    return finalList.obs;
-  }*/
-
   /// Prompt
   RxString get prompt => (roundDetails().round?.prompt ?? '').obs;
 
@@ -185,22 +166,6 @@ class WinnerController extends GetxController {
     if (_isAdded == true) {
       results()[currentRank()].reactions = emoji;
       results.refresh();
-      /*for (final MdResult result in results) {
-        if (participantId == result.userId) {
-          result
-            ..reaction = emoji
-            ..reactions = emoji;
-          final String? activeEmoji = result.reaction;
-
-          if (activeEmoji == emoji) {
-            return;
-          }
-
-          results.refresh();
-          roundDetails.refresh();
-          break;
-        }
-      }*/
     } else {
       appSnackbar(
         message: 'Failed to add reaction. Please try again.',

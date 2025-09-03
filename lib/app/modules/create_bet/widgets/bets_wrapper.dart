@@ -28,19 +28,19 @@ class BetsWrapper extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             PlaceholderCard(
-              height: 15.h,
+              height: 8.h,
               width: 200.w,
               radius: 2,
             ),
             10.verticalSpace,
             PlaceholderCard(
-              height: 15.h,
+              height: 8.h,
               width: 150.w,
               radius: 2,
             ),
             10.verticalSpace,
             PlaceholderCard(
-              height: 15.h,
+              height: 8.h,
               width: 100.w,
               radius: 2,
             ),

@@ -38,8 +38,6 @@ class SelfieAvatarIcon extends StatelessWidget {
         ? profileUrl
         : null;
 
-    final bool hasSelfie = selfieUrl != null && selfieUrl.isNotEmpty;
-    final bool hasProfile = profileUrl != null && profileUrl.isNotEmpty;
     final bool hasImage = imageUrl != null && imageUrl.isNotEmpty;
 
     Widget avatarContent;
@@ -89,17 +87,6 @@ class SelfieAvatarIcon extends StatelessWidget {
                 width: size.w,
                 height: size.h,
                 child: avatarContent,
-              ),
-
-            if (!hasSelfie && hasProfile)
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: SvgPicture.asset(
-                  height: 24.h,
-                  width: 24.w,
-                  AppImages.plusIcon,
-                ),
               ),
           ],
         ),

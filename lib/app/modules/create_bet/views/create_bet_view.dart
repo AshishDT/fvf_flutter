@@ -18,6 +18,7 @@ import '../../../ui/components/app_snackbar.dart';
 import '../../../ui/components/common_app_bar.dart';
 import '../../../ui/components/gradient_card.dart';
 import '../controllers/create_bet_controller.dart';
+import '../widgets/question_card.dart';
 import '../widgets/dice_roller.dart';
 import '../widgets/profile_avatar.dart';
 
@@ -76,14 +77,7 @@ class CreateBetView extends GetView<CreateBetController> {
                         ],
                       ),
                       64.verticalSpace,
-                      GradientCard(
-                        padding: REdgeInsets.symmetric(
-                          vertical: 31,
-                          horizontal: 24,
-                        ),
-                        borderRadius: BorderRadius.circular(32.r),
-                        constraints: BoxConstraints(maxHeight: 135.h),
-                        bgImage: AppImages.contentCardBg,
+                      QuestionCard(
                         child: Row(
                           children: <Widget>[
                             Expanded(

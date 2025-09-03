@@ -75,7 +75,7 @@ class _DiceRollerState extends State<DiceRoller>
         ),
       ),
       Padding(
-        padding: REdgeInsets.only(bottom: 17),
+        padding: REdgeInsets.only(bottom: 13),
         child: GestureDetector(
           onTap: widget.onTap,
           child: Lottie.asset(
@@ -83,6 +83,8 @@ class _DiceRollerState extends State<DiceRoller>
             fit: BoxFit.contain,
             repeat: widget.isLoading,
             controller: _controller,
+            animate: true,
+            reverse: true,
             onLoaded: (LottieComposition composition) {
               _controller.duration = const Duration(milliseconds: 200);
               _controller.value = 0.0;

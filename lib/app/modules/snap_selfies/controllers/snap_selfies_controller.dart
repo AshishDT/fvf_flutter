@@ -419,12 +419,7 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
             .then(
           (ShareResult result) async {
             if (!fromResend) {
-              final DateTime? _timeEndAt = await startRound();
-              isInvitationSend(true);
-
-              startTimer(
-                endTime: _timeEndAt,
-              );
+              await startRound();
             }
           },
         ),
@@ -611,7 +606,7 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
   }
 
   /// Start round
-  Future<DateTime?> startRound() async {
+  Future<void> startRound() async {
     isStartingRound(true);
     try {
       final MdRound? _round = await SnapSelfieApiRepo.startRound(
@@ -624,10 +619,12 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
 
         _initWebSocket();
 
-        return _round.roundJoinedEndAt;
-      }
+        isInvitationSend(true);
 
-      return null;
+        startTimer(
+          endTime: _round.roundJoinedEndAt,
+        );
+      }
     } finally {
       isStartingRound(false);
     }
@@ -711,11 +708,6 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
 
     await Future.wait(futures);
 
-    final DateTime? _timeEndAt = await startRound();
-    isInvitationSend(true);
-
-    startTimer(
-      endTime: _timeEndAt,
-    );
+    await startRound();
   }
 }

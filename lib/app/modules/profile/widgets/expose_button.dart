@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/models/md_result.dart';
 import 'package:fvf_flutter/app/modules/profile/enums/subscription_enum.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/expose_sheet.dart';
@@ -49,7 +50,28 @@ class ExposeButton extends StatelessWidget {
                                 '',
                             'isFromProfile': true,
                           },
-                        )
+                        )?.then((dynamic value) {
+                          if (value != null && value is MdResult) {
+                            final MdResult result = value;
+                            final String roundId = controller
+                                    .rounds()[controller.currentRound()]
+                                    .roundId ??
+                                '';
+                            controller
+                                .rounds(controller.rounds().map((MdRound r) {
+                              if (r.roundId == roundId) {
+                                return r.copyWith(
+                                  hasAccessed: true,
+                                  result: <MdResult>[result],
+                                  reactions: result.reactions,
+                                  rank: result.rank,
+                                  reason: result.reason,
+                                );
+                              }
+                              return r;
+                            }).toList());
+                          }
+                        })
                       : ExposeSheet.openExposeSheet(
                           onExposedLoading: controller.isWeeklySubLoading,
                           onRoundExposeLoading: controller.isRoundSubLoading,
@@ -152,16 +174,12 @@ class ExposeButton extends StatelessWidget {
           final MdResult result = value;
           controller.rounds(controller.rounds().map((MdRound r) {
             if (r.roundId == roundId) {
-              return MdRound(
-                roundId: r.roundId,
-                prompt: r.prompt,
-                createdAt: r.createdAt,
+              return r.copyWith(
                 hasAccessed: true,
                 result: <MdResult>[result],
+                reactions: result.reactions,
                 rank: result.rank,
                 reason: result.reason,
-                selfieUrl: r.selfieUrl,
-                reactions: r.reactions,
               );
             }
             return r;

@@ -9,6 +9,7 @@ import 'package:fvf_flutter/app/modules/profile/widgets/participant_wrapper.dart
 import 'package:fvf_flutter/app/modules/winner/widgets/reaction_menu.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/rotate_and_wiggle.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
+import 'package:fvf_flutter/app/utils/emoji_ext.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -146,12 +147,10 @@ class ParticipantsPage extends StatelessWidget {
                                           height: 32.w,
                                           width: 32.w,
                                         )
-                                      : Text(
-                                          round.reactions ?? '',
-                                          style: GoogleFonts.fredoka(
-                                            fontSize: 24.sp,
-                                            fontWeight: FontWeight.w700,
-                                          ),
+                                      : Image.asset(
+                                          round.reactions?.emojiImagePath ?? '',
+                                          height: 32.w,
+                                          width: 32.w,
                                         ),
                                 ),
                               ),

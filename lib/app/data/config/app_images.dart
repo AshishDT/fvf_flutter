@@ -145,4 +145,19 @@ class AppImages {
 
   /// Question card background with border
   static const String qBgWithBorder = '$_path/q_bg_with_border.png';
+
+  /// Fire emoji
+  static const String fireEmoji = '$_path/fire_emoji.png';
+
+  /// Heart emoji
+  static const String heartEmoji = '$_path/heart_emoji.png';
+
+  /// Laughing emoji
+  static const String laughingEmoji = '$_path/laughing_emoji.png';
+
+  /// Sad emoji
+  static const String sadEmoji = '$_path/sad_emoji.png';
+
+  /// Shocking emoji
+  static const String shockingEmoji = '$_path/shocking_emoji.png';
 }

@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/reaction_menu.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/rotate_and_wiggle.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
+import 'package:fvf_flutter/app/utils/emoji_ext.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -136,36 +137,34 @@ class ResultCard extends StatelessWidget {
                 ),
               16.verticalSpace,
               Align(
-                      alignment: Alignment.centerRight,
-                      child: GestureDetector(
-                        onTapDown: (TapDownDetails details) {
-                          ReactionMenu.show(
-                            context: context,
-                            position: details.globalPosition,
-                            onReactionSelected: (String emoji) {
-                              final String? activeEmoji = reactions;
-                              if (activeEmoji == emoji) {
-                                return;
-                              }
-                              onReactionSelected?.call(emoji);
-                            },
-                          );
-                        },
-                        child: reactions == null || (reactions?.isEmpty ?? true)
-                            ? SvgPicture.asset(
-                                AppImages.smilyIcon,
-                                height: 32.w,
-                                width: 32.w,
-                              )
-                            : Text(
-                                reactions ?? '',
-                                style: GoogleFonts.fredoka(
-                                  fontSize: 24.sp,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                      ),
-                    ),
+                alignment: Alignment.centerRight,
+                child: GestureDetector(
+                  onTapDown: (TapDownDetails details) {
+                    ReactionMenu.show(
+                      context: context,
+                      position: details.globalPosition,
+                      onReactionSelected: (String emoji) {
+                        final String? activeEmoji = reactions;
+                        if (activeEmoji == emoji) {
+                          return;
+                        }
+                        onReactionSelected?.call(emoji);
+                      },
+                    );
+                  },
+                  child: reactions == null || (reactions?.isEmpty ?? true)
+                      ? SvgPicture.asset(
+                          AppImages.smilyIcon,
+                          height: 32.w,
+                          width: 32.w,
+                        )
+                      : Image.asset(
+                          reactions?.emojiImagePath ?? '',
+                          height: 32.w,
+                          width: 32.w,
+                        ),
+                ),
+              ),
               16.verticalSpace,
               Align(
                 alignment: Alignment.centerRight,

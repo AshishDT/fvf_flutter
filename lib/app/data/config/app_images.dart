@@ -160,4 +160,10 @@ class AppImages {
 
   /// Shocking emoji
   static const String shockingEmoji = '$_path/shocking_emoji.png';
+
+  /// Shine Icon
+  static const String shineIcon = '$_svgPath/shine_icon.svg';
+
+  /// Retake Icon
+  static const String retakeIcon = '$_svgPath/retake_icon.svg';
 }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
@@ -6,6 +7,9 @@ import 'package:get/get.dart';
 
 /// Controller for the Camera module.
 class PickSelfieCameraController extends GetxController {
+  /// File for preview
+  Rx<File> previewFile = File('').obs;
+
   /// On init
   @override
   void onInit() {
@@ -60,6 +64,7 @@ class PickSelfieCameraController extends GetxController {
           secondsLeft.value--;
         } else {
           timer.cancel();
+          onTimerFinished();
         }
       },
     );
@@ -72,6 +77,7 @@ class PickSelfieCameraController extends GetxController {
 
   /// Checks if the camera is initialized.
   Future<void> _setupCamera() async {
+    isCameraInitialized(false);
     try {
       final List<CameraDescription> cameras = await availableCameras();
 
@@ -92,6 +98,28 @@ class PickSelfieCameraController extends GetxController {
       isCameraInitialized.value = true;
     } on Exception catch (e) {
       logE('Camera setup error: $e');
+      isCameraInitialized(false);
+    }
+  }
+
+  /// On Retake
+  Future<void> onRetake() async {
+    previewFile(File(''));
+    isCameraInitialized(false);
+    isCapturing(false);
+    if (cameraController != null) {
+      await cameraController!.dispose();
+      cameraController = null;
+    }
+    await _setupCamera();
+  }
+
+  /// Called when timer finishes
+  void onTimerFinished() {
+    if (previewFile().path.isNotEmpty) {
+      Get.back(
+        result: XFile(previewFile().path),
+      );
     }
   }
 
@@ -106,10 +134,7 @@ class PickSelfieCameraController extends GetxController {
       isCapturing(true);
       final XFile _picture = await cameraController!.takePicture();
       isCapturing(false);
-
-      Get.back(
-        result: _picture,
-      );
+      previewFile(File(_picture.path));
     } on Exception catch (e) {
       logE('Capture failed: $e');
       isCapturing(false);

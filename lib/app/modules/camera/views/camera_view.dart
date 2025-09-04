@@ -4,9 +4,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
+import 'package:fvf_flutter/app/modules/camera/widgets/retake_button.dart';
 import 'package:fvf_flutter/app/ui/components/common_app_bar.dart';
 import 'package:fvf_flutter/app/utils/widget_ext.dart';
 import 'package:get/get.dart';
+
 import '../../../utils/app_text_style.dart';
 import '../controllers/camera_controller.dart';
 
@@ -22,6 +24,51 @@ class CameraView extends GetView<PickSelfieCameraController> {
           () {
             if (!controller.isCameraInitialized()) {
               return const Center(child: CircularProgressIndicator());
+            }
+
+            if (controller.previewFile().path.isNotEmpty) {
+              return Stack(
+                children: <Widget>[
+                  SizedBox(
+                    height: 1.sh,
+                    child: Image.file(
+                      controller.previewFile.value,
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      32.verticalSpace,
+                      _appBar(),
+                      const Spacer(),
+                      Center(
+                        child: Text(
+                          'Most Likely to Start an OF?',
+                          textAlign: TextAlign.center,
+                          style: AppTextStyle.openRunde(
+                            fontSize: 24.sp,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.kffffff,
+                            shadows: <Shadow>[
+                              BoxShadow(
+                                blurRadius: 2,
+                                offset: const Offset(0, 1),
+                                color: AppColors.k000000.withValues(alpha: .75),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ).paddingSymmetric(horizontal: 24.w),
+                      55.verticalSpace,
+                      RetakeButton(
+                        onRetake: () async => controller.onRetake(),
+                      ),
+                      49.verticalSpace,
+                    ],
+                  ),
+                ],
+              );
             }
 
             return Stack(
@@ -82,6 +129,7 @@ class CameraView extends GetView<PickSelfieCameraController> {
       ).withGPad(context, color: Colors.black);
 
   Widget _appBar() => CommonAppBar(
+        onTapOfLeading: controller.onTimerFinished,
         actions: <Widget>[
           AnimatedSize(
             duration: const Duration(milliseconds: 300),

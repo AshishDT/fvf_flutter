@@ -7,6 +7,7 @@ import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:fvf_flutter/app/modules/create_bet/widgets/bets_wrapper.dart';
 import 'package:fvf_flutter/app/modules/create_bet/widgets/drawer.dart';
 import 'package:fvf_flutter/app/modules/create_bet/widgets/keyboard_aware_sheet.dart';
+import 'package:fvf_flutter/app/modules/create_bet/widgets/slaying_sheet.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/animated_list_view.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
@@ -18,9 +19,9 @@ import '../../../ui/components/app_snackbar.dart';
 import '../../../ui/components/common_app_bar.dart';
 import '../../../ui/components/gradient_card.dart';
 import '../controllers/create_bet_controller.dart';
-import '../widgets/question_card.dart';
 import '../widgets/dice_roller.dart';
 import '../widgets/profile_avatar.dart';
+import '../widgets/question_card.dart';
 
 /// Create Bet View
 class CreateBetView extends GetView<CreateBetController> {
@@ -37,9 +38,13 @@ class CreateBetView extends GetView<CreateBetController> {
             drawer: const MenuDrawer(),
             floatingActionButton: Obx(
               () => AppButton(
-                buttonText: 'Bet',
+                buttonText: false ? 'Keep Slaying' : 'Bet',
                 isLoading: controller.createRoundLoading(),
-                onPressed: controller.onBetPressed,
+                onPressed: false
+                    ? () {
+                        SlayingSheet.openSlayingSheet();
+                      }
+                    : controller.onBetPressed,
               ),
             ).paddingSymmetric(horizontal: 24),
             floatingActionButtonLocation:

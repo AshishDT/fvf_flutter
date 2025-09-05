@@ -215,4 +215,7 @@ class AppImages {
 
   /// Shine Loader Animation
   static const String shineLoader = '$_lottiePath/shine_loader.json';
+
+  /// Question GIF
+  static const String questionGif = '$_lottiePath/question.gif';
 }

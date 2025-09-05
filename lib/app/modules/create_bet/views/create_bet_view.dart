@@ -19,7 +19,7 @@ import '../../../ui/components/app_snackbar.dart';
 import '../../../ui/components/common_app_bar.dart';
 import '../../../ui/components/gradient_card.dart';
 import '../controllers/create_bet_controller.dart';
-import '../widgets/dice_roller.dart';
+import '../widgets/question_roller.dart';
 import '../widgets/profile_avatar.dart';
 import '../widgets/question_card.dart';
 
@@ -96,7 +96,6 @@ class CreateBetView extends GetView<CreateBetController> {
                             16.horizontalSpace,
                             Obx(
                               () => QuestionRoller(
-                                isLoading: controller.isLoading(),
                                 rollTrigger: controller.rollCounter(),
                                 onTap: controller.rollDice,
                               ),

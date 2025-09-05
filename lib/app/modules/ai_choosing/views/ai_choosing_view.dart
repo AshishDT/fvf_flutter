@@ -107,18 +107,47 @@ class AiChoosingView extends GetView<AiChoosingController> {
                         ),
                       ],
                     ).paddingSymmetric(horizontal: 24),
-                    64.verticalSpace,
-                    Center(
+                    AnimatedSize(
+                      duration: 300.milliseconds,
+                      curve: Curves.easeInOut,
+                      reverseDuration: 300.milliseconds,
                       child: Obx(
-                        () => Text(
-                          controller.isAiFailed()
-                              ? 'AI fell asleep 😴'
-                              : 'AI Choosing...',
-                          style: AppTextStyle.openRunde(
-                            fontSize: 40.sp,
-                            color: AppColors.kffffff,
-                            fontWeight: FontWeight.w700,
-                            height: 1,
+                        () => Visibility(
+                          replacement: SizedBox(
+                            width: context.width,
+                          ),
+                          visible: controller.isAiFailed(),
+                          child: 64.verticalSpace,
+                        ),
+                      ),
+                    ),
+                    Center(
+                      child: AnimatedSize(
+                        duration: 300.milliseconds,
+                        curve: Curves.easeInOut,
+                        reverseDuration: 300.milliseconds,
+                        child: Obx(
+                          () => Visibility(
+                            visible: controller.isAiFailed(),
+                            replacement: SizedBox(
+                              width: context.width,
+                            ),
+                            child: Text(
+                              'AI fell asleep 😴',
+                              style: AppTextStyle.openRunde(
+                                fontSize: 40.sp,
+                                color: AppColors.kffffff,
+                                fontWeight: FontWeight.w700,
+                                height: 1,
+                                shadows: <Shadow>[
+                                  const Shadow(
+                                    offset: Offset(0, 4),
+                                    blurRadius: 4,
+                                    color: Color(0x33000000),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -136,9 +165,20 @@ class AiChoosingView extends GetView<AiChoosingController> {
                             overflow: TextOverflow.ellipsis,
                             maxLines: 20,
                             style: AppTextStyle.openRunde(
-                              fontSize: 24.sp,
-                              color: AppColors.kFAFBFB,
-                              fontWeight: FontWeight.w600,
+                              fontSize: controller.isAiFailed() ? 24.sp : 40.sp,
+                              color: controller.isAiFailed()
+                                  ? AppColors.kFAFBFB
+                                  : AppColors.kffffff,
+                              fontWeight: controller.isAiFailed()
+                                  ? FontWeight.w600
+                                  : FontWeight.w700,
+                              shadows: <Shadow>[
+                                const Shadow(
+                                  offset: Offset(0, 4),
+                                  blurRadius: 4,
+                                  color: Color(0x33000000),
+                                ),
+                              ],
                             ),
                           ),
                         ),

@@ -295,6 +295,10 @@ class SnapSelfiesController extends GetxController
         joinedInvitationData().roundJoinedEndAt = data.round?.roundJoinedEndAt;
         joinedInvitationData.refresh();
         participants.refresh();
+
+        startTimer(
+          endTime: joinedInvitationData().roundJoinedEndAt,
+        );
       }
 
       _checkAddNameWiggle();

@@ -302,6 +302,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                               child: Obx(
                                 () => Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
                                   children: List<Widget>.generate(
                                     controller.previousRounds().length,
                                     (int index) {

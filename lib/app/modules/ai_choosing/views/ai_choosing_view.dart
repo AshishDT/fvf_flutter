@@ -14,6 +14,7 @@ import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:fvf_flutter/app/utils/widget_ext.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 
 import '../../../utils/dialog_helper.dart';
 import '../../snap_selfies/widgets/selfie_avatar.dart';
@@ -147,7 +148,7 @@ class AiChoosingView extends GetView<AiChoosingController> {
                 ),
               ),
               Positioned(
-                bottom: 58.h,
+                bottom: 36.h,
                 left: 0,
                 right: 0,
                 child: Align(
@@ -210,6 +211,23 @@ class AiChoosingView extends GetView<AiChoosingController> {
                     ],
                   ),
                 ),
+              ),
+              Obx(
+                () => controller.isLoading()
+                    ? Positioned(
+                        bottom: -20.h,
+                        left: 0,
+                        right: 0,
+                        child: Center(
+                          child: Transform.scale(
+                            scale: .18,
+                            child: Lottie.asset(
+                              AppImages.shineLoader,
+                            ),
+                          ),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
               ),
             ],
           ),

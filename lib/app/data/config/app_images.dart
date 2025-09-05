@@ -194,4 +194,7 @@ class AppImages {
 
   /// BDE Icon
   static const String bdeIcon = '$_svgPath/bde_icon.svg';
+
+  /// Shine Loader Animation
+  static const String shineLoader = '$_lottiePath/shine_loader.json';
 }

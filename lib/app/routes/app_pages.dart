@@ -6,10 +6,14 @@ import '../modules/ai_choosing/bindings/ai_choosing_binding.dart';
 import '../modules/ai_choosing/views/ai_choosing_view.dart';
 import '../modules/auth/bindings/auth_binding.dart';
 import '../modules/auth/views/auth_view.dart';
+import '../modules/badge/bindings/badge_binding.dart';
+import '../modules/badge/views/badge_view.dart';
 import '../modules/camera/bindings/camera_binding.dart';
 import '../modules/camera/views/camera_view.dart';
 import '../modules/create_bet/bindings/create_bet_binding.dart';
 import '../modules/create_bet/views/create_bet_view.dart';
+import '../modules/crew_streak/bindings/crew_streak_binding.dart';
+import '../modules/crew_streak/views/crew_streak_view.dart';
 import '../modules/failed_round/bindings/failed_round_binding.dart';
 import '../modules/failed_round/views/failed_round_view.dart';
 import '../modules/hall_of_fame/bindings/hall_of_fame_binding.dart';
@@ -85,6 +89,16 @@ class AppPages {
       name: _Paths.HALL_OF_FAME,
       page: () => const HallOfFameView(),
       binding: HallOfFameBinding(),
+    ),
+    GetPage(
+      name: _Paths.CREW_STREAK,
+      page: () => const CrewStreakView(),
+      binding: CrewStreakBinding(),
+    ),
+    GetPage(
+      name: _Paths.BADGE,
+      page: () => const BadgeView(),
+      binding: BadgeBinding(),
     ),
   ];
 }

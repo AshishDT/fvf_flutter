@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fvf_flutter/app/data/config/app_colors.dart';
+import 'package:fvf_flutter/app/utils/emoji_ext.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 /// Reaction Menu Overlay
@@ -63,12 +64,10 @@ class ReactionMenu {
                               onReactionSelected(emoji);
                               hide();
                             },
-                            child: Text(
-                              emoji,
-                              style: GoogleFonts.fredoka(
-                                fontSize: 24.sp,
-                                fontWeight: FontWeight.w700,
-                              ),
+                            child: Image.asset(
+                              emoji.emojiImagePath ?? '',
+                              height: 36.w,
+                              width: 36.w,
                             ),
                           );
                         },

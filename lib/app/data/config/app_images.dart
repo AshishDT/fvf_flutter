@@ -3,6 +3,7 @@ class AppImages {
   static const String _path = 'assets/images';
   static const String _svgPath = 'assets/images/svg';
   static const String _lottiePath = 'assets/lottie';
+  static const String _gifPath = 'assets/images/gif';
 
   /// App logo
   static const String appLogo = '$_path/app_logo.png';
@@ -163,4 +164,55 @@ class AppImages {
 
   /// BDE badge
   static const String bdeBadge = '$_svgPath/bde_badge.svg';
+
+  /// Fire emoji
+  static const String fireEmoji = '$_path/fire_emoji.png';
+
+  /// Heart emoji
+  static const String heartEmoji = '$_path/heart_emoji.png';
+
+  /// Laughing emoji
+  static const String laughingEmoji = '$_path/laughing_emoji.png';
+
+  /// Sad emoji
+  static const String sadEmoji = '$_path/sad_emoji.png';
+
+  /// Shocking emoji
+  static const String shockingEmoji = '$_path/shocking_emoji.png';
+
+  /// Shine Icon
+  static const String shineIcon = '$_svgPath/shine_icon.svg';
+
+  /// Retake Icon
+  static const String retakeIcon = '$_svgPath/retake_icon.svg';
+
+  /// Fire Gif
+  static const String fireGif = '$_gifPath/fire_gif.gif';
+
+  /// Badge BG
+  static const String badgeBg = '$_path/badge_bg.png';
+
+  /// Badge Card BG
+  static const String badgeCardBg = '$_path/badge_card_bg.png';
+
+  /// Bronze Icon
+  static const String bronzeIcon = '$_svgPath/bronze_icon.svg';
+
+  /// Silver Icon
+  static const String silverIcon = '$_svgPath/silver_icon.svg';
+
+  /// Gold Icon
+  static const String goldIcon = '$_svgPath/gold_icon.svg';
+
+  /// Platinum Icon
+  static const String platinumIcon = '$_svgPath/platinum_icon.svg';
+
+  /// Flex Icon
+  static const String flexIcon = '$_svgPath/flex_icon.svg';
+
+  /// BDE Icon
+  static const String bdeIcon = '$_svgPath/bde_icon.svg';
+
+  /// Shine Loader Animation
+  static const String shineLoader = '$_lottiePath/shine_loader.json';
 }

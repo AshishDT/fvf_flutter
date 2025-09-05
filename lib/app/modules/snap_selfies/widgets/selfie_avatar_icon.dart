@@ -6,6 +6,7 @@ import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
+import 'package:fvf_flutter/app/utils/emoji_ext.dart';
 import 'package:get/get.dart';
 
 /// Selfie Avatar widget
@@ -16,6 +17,7 @@ class SelfieAvatarIcon extends StatelessWidget {
     super.key,
     this.onAddName,
     this.size = 56,
+    this.showStreakEmoji = false,
   });
 
   /// Participant data
@@ -27,6 +29,9 @@ class SelfieAvatarIcon extends StatelessWidget {
   /// Callback when add name is tapped
   final VoidCallback? onAddName;
 
+  /// Show streakEmoji
+  final bool showStreakEmoji;
+
   @override
   Widget build(BuildContext context) {
     final String? selfieUrl = participant.selfieUrl;
@@ -35,8 +40,8 @@ class SelfieAvatarIcon extends StatelessWidget {
     final String? imageUrl = (selfieUrl != null && selfieUrl.isNotEmpty)
         ? selfieUrl
         : (profileUrl != null && profileUrl.isNotEmpty)
-        ? profileUrl
-        : null;
+            ? profileUrl
+            : null;
 
     final bool hasImage = imageUrl != null && imageUrl.isNotEmpty;
 
@@ -75,11 +80,13 @@ class SelfieAvatarIcon extends StatelessWidget {
                 duration: 300.milliseconds,
                 width: size.w + 4.w,
                 height: size.h + 4.w,
-                padding: REdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  color: AppColors.k2A2E2F.withValues(alpha: 0.20),
-                  shape: BoxShape.circle,
-                ),
+                padding: showStreakEmoji ? null : REdgeInsets.all(2),
+                decoration: showStreakEmoji
+                    ? null
+                    : BoxDecoration(
+                        color: AppColors.k2A2E2F.withValues(alpha: 0.20),
+                        shape: BoxShape.circle,
+                      ),
                 child: avatarContent,
               )
             else
@@ -88,6 +95,16 @@ class SelfieAvatarIcon extends StatelessWidget {
                 height: size.h,
                 child: avatarContent,
               ),
+            if (showStreakEmoji)
+              Positioned(
+                bottom: -2,
+                right: -2,
+                child: Image.asset(
+                  '🔥'.emojiImagePath,
+                  height: 24.w,
+                  width: 24.w,
+                ),
+              )
           ],
         ),
         6.verticalSpace,
@@ -106,24 +123,24 @@ class SelfieAvatarIcon extends StatelessWidget {
 
   /// Placeholder when no selfie/profile available
   Widget _buildPlaceholder() => Container(
-      width: size.w,
-      height: size.h,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: AppColors.k2A2E2F.withValues(alpha: 0.20),
-      ),
-      child: Center(
-        child: SvgPicture.asset(
-          height: 42.h,
-          width: 43.w,
-          AppImages.personalPlaceholder,
-          colorFilter: ColorFilter.mode(
-            Colors.white.withValues(alpha: 0.20),
-            BlendMode.srcIn,
+        width: size.w,
+        height: size.h,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: AppColors.k2A2E2F.withValues(alpha: 0.20),
+        ),
+        child: Center(
+          child: SvgPicture.asset(
+            height: 42.h,
+            width: 43.w,
+            AppImages.personalPlaceholder,
+            colorFilter: ColorFilter.mode(
+              Colors.white.withValues(alpha: 0.20),
+              BlendMode.srcIn,
+            ),
           ),
         ),
-      ),
-    );
+      );
 
   /// Name
   String? get name => participant.userData?.username;

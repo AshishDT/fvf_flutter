@@ -15,6 +15,8 @@ abstract class Routes {
   static const CAMERA = _Paths.CAMERA;
   static const WINNER = _Paths.WINNER;
   static const FAILED_ROUND = _Paths.FAILED_ROUND;
+  static const CREW_STREAK = _Paths.CREW_STREAK;
+  static const BADGE = _Paths.BADGE;
   static const HALL_OF_FAME = _Paths.HALL_OF_FAME;
 }
 
@@ -30,4 +32,6 @@ abstract class _Paths {
   static const WINNER = '/winner';
   static const FAILED_ROUND = '/failed-round';
   static const HALL_OF_FAME = '/hall-of-fame';
+  static const CREW_STREAK = '/crew-streak';
+  static const BADGE = '/badge';
 }

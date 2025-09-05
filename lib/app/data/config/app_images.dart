@@ -90,9 +90,6 @@ class AppImages {
   /// Backward Arrow
   static const String backwardArrow = '$_svgPath/backward_arrow.svg';
 
-  /// Loader Animation
-  static const String loader = '$_lottiePath/loader.json';
-
   /// Button Loader Animation
   static const String buttonLoader = '$_lottiePath/button_loader.json';
 

@@ -94,10 +94,17 @@ class CreateBetView extends GetView<CreateBetController> {
                               ),
                             ),
                             16.horizontalSpace,
-                            Obx(
-                              () => QuestionRoller(
-                                rollTrigger: controller.rollCounter(),
-                                onTap: controller.rollDice,
+                            AnimatedSize(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                              child: Obx(
+                                () => Visibility(
+                                  visible: !controller.isLoading(),
+                                  child: QuestionRoller(
+                                    rollTrigger: controller.rollCounter(),
+                                    onTap: controller.rollDice,
+                                  ),
+                                ),
                               ),
                             ),
                           ],

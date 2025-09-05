@@ -35,6 +35,9 @@ mixin SnapSelfieKeysMixin on GetxController {
   /// User profile
   Rx<MdProfile> profile = MdProfile().obs;
 
+  /// Share URI
+  RxString deepLinkUri = ''.obs;
+
   /// Joined invitation data
   Rx<MdJoinInvitation> joinedInvitationData = MdJoinInvitation().obs;
 

@@ -3,10 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
-import 'package:lottie/lottie.dart';
+import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import '../data/config/app_colors.dart';
 
 /// Loader
@@ -52,10 +51,27 @@ class Loader {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Center(
-                child: Lottie.asset(
-                  AppImages.loader,
-                  width: 200.w,
-                  height: 200.h,
+                child: SizedBox(
+                  width: 45.w,
+                  height: 45.h,
+                  child: SleekCircularSlider(
+                    appearance: CircularSliderAppearance(
+                      spinnerMode: true,
+                      size: 50,
+                      customColors: CustomSliderColors(
+                        dotColor: Colors.transparent,
+                        trackColor: Colors.transparent,
+                        progressBarColor: Colors.transparent,
+                        shadowColor: Colors.black38,
+                        progressBarColors: [
+                          const Color(0xFFFFDBF6),
+                          const Color(0xFFFF70DB),
+                          const Color(0xFF6C75FF),
+                          const Color(0xFF4DD0FF),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               ),
               if ((msg?.isNotEmpty ?? false) && msg != null) ...[

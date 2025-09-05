@@ -48,6 +48,8 @@ class SnapSelfiesController extends GetxController
           endTime: endAt,
         );
       }
+
+      getShareUri();
     }
 
     WidgetsBinding.instance.addObserver(this);
@@ -166,15 +168,34 @@ class SnapSelfiesController extends GetxController
     );
   }
 
+  /// Get share uri
+  Future<void> getShareUri() async {
+    final String? _uri = await DeepLinkService.generateSlayInviteLink(
+      title: joinedInvitationData().prompt ?? '',
+      invitationId: joinedInvitationData().id ?? '',
+      hostId: joinedInvitationData().host?.supabaseId ?? '',
+    );
+
+    if (_uri != null && _uri.isNotEmpty) {
+      deepLinkUri(_uri);
+      deepLinkUri.refresh();
+    }
+  }
+
   /// Share uri
   Future<void> shareUri({bool fromResend = false}) async {
     try {
-      final String? _invitationLink =
-          await DeepLinkService.generateSlayInviteLink(
-        title: joinedInvitationData().prompt ?? '',
-        invitationId: joinedInvitationData().id ?? '',
-        hostId: joinedInvitationData().host?.supabaseId ?? '',
-      );
+      String? _invitationLink;
+
+      if (deepLinkUri().isNotEmpty) {
+        _invitationLink = deepLinkUri();
+      } else {
+        _invitationLink = await DeepLinkService.generateSlayInviteLink(
+          title: joinedInvitationData().prompt ?? '',
+          invitationId: joinedInvitationData().id ?? '',
+          hostId: joinedInvitationData().host?.supabaseId ?? '',
+        );
+      }
 
       if (_invitationLink == null || _invitationLink.isEmpty) {
         appSnackbar(
@@ -191,8 +212,6 @@ class SnapSelfiesController extends GetxController
             .share(
           ShareParams(
             uri: uri,
-            title: 'Slay',
-            subject: 'Slay Invitation',
           ),
         )
             .then(

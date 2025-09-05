@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
+import 'package:fvf_flutter/app/modules/create_bet/models/md_previous_round.dart';
 import 'package:fvf_flutter/app/modules/snap_selfies/widgets/animated_switcher.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
@@ -18,6 +19,7 @@ import '../../../ui/components/custom_type_writer.dart';
 import '../../../utils/app_text_style.dart';
 import '../../../utils/dialog_helper.dart';
 import '../controllers/snap_selfies_controller.dart';
+import '../widgets/grouped_avatar_icon.dart';
 import '../widgets/selfie_avatar_icon.dart';
 import '../widgets/user_self_participant_card.dart';
 
@@ -113,7 +115,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                         !controller.isStartingRound(),
                     child: AppButton(
                       buttonText: 'Add Friends',
-                      child: controller.isAddedPreviousParticipants()
+                      child: controller.isAddedFromPreviousRound()
                           ? null
                           : Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -139,7 +141,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                               ],
                             ),
                       onPressed: () {
-                        if (controller.isAddedPreviousParticipants()) {
+                        if (controller.isAddedFromPreviousRound()) {
                           controller.addPreviousParticipants();
                           return;
                         }
@@ -259,7 +261,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                       child: Obx(
                         () => Visibility(
                           visible: (!controller.isInvitationSend() &&
-                                  controller.previousParticipants().isEmpty &&
+                                  controller.previousRounds().isEmpty &&
                                   controller
                                       .participantsWithoutCurrentUser()
                                       .isEmpty) ||
@@ -283,63 +285,49 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                         ),
                       ),
                     ),
-                    // AnimatedSize(
-                    //   duration: const Duration(milliseconds: 300),
-                    //   curve: Curves.easeInOut,
-                    //   child: Obx(
-                    //     () => Visibility(
-                    //       visible:
-                    //           controller.previousParticipants().isNotEmpty &&
-                    //               !controller.isInvitationSend(),
-                    //       replacement: const SizedBox(
-                    //         width: double.infinity,
-                    //       ),
-                    //       child: Align(
-                    //         child: SingleChildScrollView(
-                    //           padding: EdgeInsets.zero,
-                    //           scrollDirection: Axis.horizontal,
-                    //           child: Obx(
-                    //             () => Row(
-                    //               mainAxisAlignment: MainAxisAlignment.center,
-                    //               children: List<Widget>.generate(
-                    //                 controller.previousParticipants().length,
-                    //                 (int index) =>
-                    //                     PreviousParticipantAvatarIcon(
-                    //                   participant: controller
-                    //                       .previousParticipants()[index],
-                    //                   onAddTap:
-                    //                       controller.onAddPreviousParticipant,
-                    //                 ).paddingOnly(right: 32),
-                    //               ),
-                    //             ),
-                    //           ),
-                    //         ).paddingOnly(left: 32),
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
-                    // GroupAvatarIcon(
-                    //   participants: <MdPreviousParticipant>[
-                    //     MdPreviousParticipant(
-                    //       userId: 'sds',
-                    //       userName: 'John Doe',
-                    //       userProfileUrl: 'https://picsum.photos/id/1/200/300',
-                    //       userSupabaseId: 'sds',
-                    //     ),
-                    //     MdPreviousParticipant(
-                    //       userId: 'sds',
-                    //       userName: 'John Doe',
-                    //       userProfileUrl: 'https://picsum.photos/id//200/300',
-                    //       userSupabaseId: 'sds',
-                    //     ),
-                    //     MdPreviousParticipant(
-                    //       userId: 'sds',
-                    //       userName: 'John Doe',
-                    //       userProfileUrl: 'https://picsum.photos/id/3/200/300',
-                    //       userSupabaseId: 'sds',
-                    //     ),
-                    //   ],
-                    // ),
+                    AnimatedSize(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      child: Obx(
+                        () => Visibility(
+                          visible: controller.previousRounds().isNotEmpty &&
+                              !controller.isInvitationSend(),
+                          replacement: const SizedBox(
+                            width: double.infinity,
+                          ),
+                          child: Align(
+                            child: SingleChildScrollView(
+                              padding: EdgeInsets.zero,
+                              scrollDirection: Axis.horizontal,
+                              child: Obx(
+                                () => Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: List<Widget>.generate(
+                                    controller.previousRounds().length,
+                                    (int index) {
+                                      final MdPreviousRound participant =
+                                          controller.previousRounds()[index];
+
+                                      return GroupAvatarIcon(
+                                        participants:
+                                            participant.participants ??
+                                                <MdPreviousParticipant>[],
+                                        isAdded: participant.isAdded ?? false,
+                                        onAddTap: () {
+                                          controller.onAddPreviousRound(
+                                            participant.id ?? '',
+                                          );
+                                        },
+                                      ).paddingOnly(right: 32);
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ).paddingOnly(left: 32),
+                          ),
+                        ),
+                      ),
+                    ),
                     Align(
                       child: SingleChildScrollView(
                         padding: EdgeInsets.zero,

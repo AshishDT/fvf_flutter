@@ -2,7 +2,7 @@ import 'package:fvf_flutter/app/modules/ai_choosing/enums/round_status_enum.dart
 import '../../../data/models/md_join_invitation.dart';
 import '../../ai_choosing/models/md_result.dart';
 import 'md_participant.dart';
-import 'md_previous_participant.dart';
+import 'md_previous_round.dart';
 
 /// To parse this JSON data, do
 class MdRound {
@@ -21,7 +21,7 @@ class MdRound {
     this.participants,
     this.results,
     this.revealAt,
-    this.previousParticipants,
+    this.previousRounds,
   });
 
   /// From JSON
@@ -55,10 +55,10 @@ class MdRound {
                 json['results']!.map((x) => MdResult.fromJson(x))),
         revealAt:
             json['revealAt'] == null ? null : DateTime.parse(json['revealAt']),
-        previousParticipants: json['pervios_participants'] == null
-            ? <MdPreviousParticipant>[]
+        previousRounds: json['pervios_participants'] == null
+            ? <MdPreviousRound>[]
             : (json['pervios_participants'] as List<dynamic>)
-                .map((dynamic e) => MdPreviousParticipant.fromJson(e))
+                .map((dynamic e) => MdPreviousRound.fromJson(e))
                 .toList(),
       );
 
@@ -102,7 +102,7 @@ class MdRound {
   List<MdResult>? results;
 
   /// Previous participants
-  List<MdPreviousParticipant>? previousParticipants;
+  List<MdPreviousRound>? previousRounds;
 
   /// To JSON
   Map<String, dynamic> toJson() => <String, dynamic>{
@@ -122,6 +122,6 @@ class MdRound {
             : List<dynamic>.from(results!.map((MdResult x) => x.toJson())),
         'revealAt': revealAt?.toIso8601String(),
         'pervios_participants':
-            previousParticipants?.map((e) => e.toJson()).toList(),
+            previousRounds?.map((e) => e.toJson()).toList(),
       };
 }

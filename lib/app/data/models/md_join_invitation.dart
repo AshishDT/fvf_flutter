@@ -1,5 +1,5 @@
 import '../../modules/create_bet/models/md_participant.dart';
-import '../../modules/create_bet/models/md_previous_participant.dart';
+import '../../modules/create_bet/models/md_previous_round.dart';
 
 /// Represents a round that the user joined
 class MdJoinInvitation {
@@ -21,7 +21,7 @@ class MdJoinInvitation {
     this.host,
     this.participants,
     this.isFromInvitation,
-    this.previousParticipants,
+    this.previousRounds,
   });
 
   /// From JSON
@@ -101,7 +101,7 @@ class MdJoinInvitation {
   bool? isFromInvitation;
 
   /// Previous participants
-  List<MdPreviousParticipant>? previousParticipants;
+  List<MdPreviousRound>? previousRounds;
 
   /// To JSON
   Map<String, dynamic> toJson() => <String, dynamic>{

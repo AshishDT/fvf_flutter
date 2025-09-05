@@ -59,6 +59,7 @@ flutter:
   assets:
     - assets/images/
     - assets/images/svg/
+    - assets/images/gif/
     - assets/locales/
     - assets/fonts/open_runde/
     - assets/lottie/

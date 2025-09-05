@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
-import 'package:fvf_flutter/app/modules/create_bet/models/md_previous_participant.dart';
+import 'package:fvf_flutter/app/modules/create_bet/models/md_previous_round.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 
 /// Previous participant Selfie Avatar widget
@@ -17,6 +17,7 @@ class PreviousParticipantAvatarIcon extends StatelessWidget {
     this.showName = true,
     this.isSingle = true,
     this.mainInGroup = false,
+    this.isAdded = false,
     super.key,
   });
 
@@ -35,8 +36,11 @@ class PreviousParticipantAvatarIcon extends StatelessWidget {
   /// Whether the main user is in the group
   final bool mainInGroup;
 
+  /// Is added
+  final bool isAdded;
+
   /// Callback when add is tapped
-  final void Function(MdPreviousParticipant participant)? onAddTap;
+  final void Function()? onAddTap;
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +75,7 @@ class PreviousParticipantAvatarIcon extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        onAddTap?.call(participant);
+        onAddTap?.call();
       },
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -85,7 +89,7 @@ class PreviousParticipantAvatarIcon extends StatelessWidget {
                 Positioned(
                   bottom: -7,
                   right: 0,
-                  child: (participant.isAdded ?? false)
+                  child: isAdded
                       ? Icon(
                           Icons.remove_circle,
                           color: Colors.red,
@@ -139,5 +143,5 @@ class PreviousParticipantAvatarIcon extends StatelessWidget {
       );
 
   /// Name
-  String? get name => participant.userName;
+  String? get name => participant.username;
 }

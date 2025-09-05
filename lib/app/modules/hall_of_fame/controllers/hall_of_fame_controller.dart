@@ -44,8 +44,9 @@ class HallOfFameController extends GetxController {
       id: '3',
       name: 'Gold',
       description: 'Top 25%',
-      imageUrl: AppImages.silverBadge,
+      imageUrl: AppImages.goldBadge,
       isActive: true,
+      isCurrent: true,
     ),
     MdHallOfFame(
       id: '4',

@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fvf_flutter/app/modules/snap_selfies/widgets/previous_participant_avatar.dart';
 
 import '../../../utils/app_text_style.dart';
-import '../../create_bet/models/md_previous_participant.dart';
+import '../../create_bet/models/md_previous_round.dart';
 
 /// Grouped Avatar Icon widget
 class GroupAvatarIcon extends StatelessWidget {
@@ -12,12 +12,17 @@ class GroupAvatarIcon extends StatelessWidget {
     required this.participants,
     super.key,
     this.onAddTap,
+    this.isAdded = false,
   });
+
   /// Grouped Avatar Icon constructor
   final List<MdPreviousParticipant> participants;
 
+  /// Is added
+  final bool isAdded;
+
   /// Callback when add is tapped
-  final void Function(MdPreviousParticipant participant)? onAddTap;
+  final void Function()? onAddTap;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +34,7 @@ class GroupAvatarIcon extends StatelessWidget {
       return PreviousParticipantAvatarIcon(
         participant: participants.first,
         onAddTap: onAddTap,
+        isAdded: isAdded,
       );
     }
 
@@ -53,6 +59,7 @@ class GroupAvatarIcon extends StatelessWidget {
                     showAddIcon: false,
                     showName: false,
                     isSingle: false,
+                    isAdded: isAdded,
                   ),
                 ),
               if (displayParticipants.length > 2)
@@ -64,6 +71,7 @@ class GroupAvatarIcon extends StatelessWidget {
                     showAddIcon: false,
                     showName: false,
                     isSingle: false,
+                    isAdded: isAdded,
                   ),
                 ),
               Positioned(
@@ -75,6 +83,7 @@ class GroupAvatarIcon extends StatelessWidget {
                   showName: false,
                   isSingle: false,
                   mainInGroup: true,
+                  isAdded: isAdded,
                 ),
               ),
             ],
@@ -96,12 +105,12 @@ class GroupAvatarIcon extends StatelessWidget {
 
 /// Clipper that makes a "bite" cut outside the avatar
 class CircleCutoutClipper extends CustomClipper<Path> {
-
   /// Constructor
   CircleCutoutClipper({
     this.cutoutRadius = 10,
     this.cutoutFrom = Alignment.centerLeft,
   });
+
   /// Radius of the cutout circle
   final double cutoutRadius;
 
@@ -133,9 +142,9 @@ class CircleCutoutClipper extends CustomClipper<Path> {
     }
 
     // Add the cutout
-    path..addOval(Rect.fromCircle(center: cutoutCenter, radius: cutoutRadius))
-
-    ..fillType = PathFillType.nonZero;
+    path
+      ..addOval(Rect.fromCircle(center: cutoutCenter, radius: cutoutRadius))
+      ..fillType = PathFillType.nonZero;
     return path;
   }
 

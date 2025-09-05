@@ -152,14 +152,14 @@ class SnapSelfieApiRepo {
   /// Add Participants from Previous Rounds
   static Future<bool?> addParticipants({
     required String roundId,
-    required String userId,
+    required List<String> userIds,
   }) async =>
       APIWrapper.handleApiCall<bool?>(
         APIService.post<Map<String, dynamic>>(
-          path: 'round/join-previous-rounds-participants',
+          path: 'round/join-previous-rounds-crews',
           data: <String, dynamic>{
             'round_id': roundId,
-            'user_id': userId,
+            'user_ids': <String>[...userIds],
           },
         ).then(
           (Response<Map<String, dynamic>>? response) {

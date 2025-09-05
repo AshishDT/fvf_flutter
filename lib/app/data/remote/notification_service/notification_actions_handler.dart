@@ -132,7 +132,7 @@ class NotificationActionsHandler {
         status: round.status?.value,
         updatedAt: round.updatedAt?.toIso8601String(),
         roundJoinedEndAt: round.roundJoinedEndAt,
-        previousParticipants: round.previousParticipants,
+        previousRounds: round.previousRounds,
         participants: <MdParticipant>[
           MdParticipant(
             createdAt: DateTime.now().toIso8601String(),

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fvf_flutter/app/modules/hall_of_fame/models/md_hall_of_fame.dart';
+import 'package:fvf_flutter/app/ui/components/animated_column.dart';
 import 'package:fvf_flutter/app/ui/components/animated_list_view.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
-import 'package:fvf_flutter/app/utils/widget_ext.dart';
 import 'package:get/get.dart';
 import '../../../data/config/app_colors.dart';
 import '../../../ui/components/common_app_bar.dart';
@@ -40,7 +40,7 @@ class HallOfFameView extends GetView<HallOfFameController> {
                 ),
                 42.verticalSpace,
                 Center(
-                  child: Column(
+                  child: AnimatedColumn(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: List<Widget>.generate(
@@ -51,7 +51,9 @@ class HallOfFameView extends GetView<HallOfFameController> {
                           description: fame.description ?? '',
                           imageUrl: fame.imageUrl ?? '',
                           name: fame.name ?? '',
-                        ).animate(position: index);
+                          isActive: fame.isActive ?? false,
+                          isCurrent: fame.isCurrent ?? false,
+                        );
                       },
                     ),
                   ),

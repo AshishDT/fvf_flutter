@@ -488,7 +488,29 @@ class SnapSelfiesController extends GetxController with WidgetsBindingObserver {
   void _updateParticipants(MdSocketData data) {
     if (data.round?.participants != null &&
         (data.round?.participants?.isNotEmpty ?? false)) {
-      joinedInvitationData().participants = data.round?.participants;
+      final Map<String, MdParticipant> uniqueParticipants =
+          <String, MdParticipant>{};
+
+      for (final MdParticipant participant in data.round!.participants!) {
+        final String? supabaseId = participant.userData?.supabaseId;
+        if (supabaseId == null) {
+          continue;
+        }
+
+        if (!uniqueParticipants.containsKey(supabaseId)) {
+          uniqueParticipants[supabaseId] = participant;
+        } else {
+          final MdParticipant existing = uniqueParticipants[supabaseId]!;
+
+          if ((existing.selfieUrl == null || existing.selfieUrl!.isEmpty) &&
+              (participant.selfieUrl != null &&
+                  participant.selfieUrl!.isNotEmpty)) {
+            uniqueParticipants[supabaseId] = participant;
+          }
+        }
+      }
+
+      joinedInvitationData().participants = uniqueParticipants.values.toList();
 
       if (data.round?.roundJoinedEndAt != null) {
         joinedInvitationData().roundJoinedEndAt = data.round?.roundJoinedEndAt;

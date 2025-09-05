@@ -216,7 +216,10 @@ class AppImages {
   /// BDE Icon
   static const String bdeIcon = '$_svgPath/bde_icon.svg';
 
-  /// Shine Loader Animation
+  /// Question GIF
+  static const String questionGif = '$_lottiePath/question.gif';
+
+  /// Shine Loader GIF
   static const String shineLoader = '$_gifPath/shine_loader.gif';
 
   /// Down Side Arrow

@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
-import 'package:lottie/lottie.dart';
 
-/// Dice Roller Widget
-class DiceRoller extends StatefulWidget {
-  /// Constructor
-  const DiceRoller({
+/// Question Roller Widget
+class QuestionRoller extends StatefulWidget {
+  /// Question Roller Widget Constructor
+  const QuestionRoller({
     required this.rollTrigger,
     required this.onTap,
     this.isLoading = false,
@@ -24,10 +23,10 @@ class DiceRoller extends StatefulWidget {
   final bool isLoading;
 
   @override
-  State<DiceRoller> createState() => _DiceRollerState();
+  State<QuestionRoller> createState() => _QuestionRollerState();
 }
 
-class _DiceRollerState extends State<DiceRoller>
+class _QuestionRollerState extends State<QuestionRoller>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
@@ -42,7 +41,7 @@ class _DiceRollerState extends State<DiceRoller>
   }
 
   @override
-  void didUpdateWidget(covariant DiceRoller oldWidget) {
+  void didUpdateWidget(covariant QuestionRoller oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     if (widget.rollTrigger != oldWidget.rollTrigger) {
@@ -59,39 +58,21 @@ class _DiceRollerState extends State<DiceRoller>
   }
 
   @override
-  Widget build(BuildContext context) => Stack(
-    alignment: Alignment.center,
-    children: <Widget>[
-      Positioned(
-        bottom: 0,
-        right: 0,
-        left: 0,
-        top: 0,
-        child: Container(
-          decoration:  BoxDecoration(
-            color: AppColors.kF1F2F2.withValues(alpha: 0.36),
-            shape: BoxShape.circle,
+  Widget build(BuildContext context) => Container(
+        height: 48.h,
+        width: 48.w,
+        decoration: BoxDecoration(
+          color: AppColors.kF1F2F2.withValues(alpha: 0.36),
+          shape: BoxShape.circle,
+        ),
+        child: Center(
+          child: Image(
+            height: 38.h,
+            width: 38.w,
+            image: const AssetImage(
+              AppImages.questionIcon,
+            ),
           ),
         ),
-      ),
-      Padding(
-        padding: REdgeInsets.only(bottom: 13),
-        child: GestureDetector(
-          onTap: widget.onTap,
-          child: Lottie.asset(
-            AppImages.diceRoll,
-            fit: BoxFit.contain,
-            repeat: widget.isLoading,
-            controller: _controller,
-            animate: true,
-            reverse: true,
-            onLoaded: (LottieComposition composition) {
-              _controller.duration = const Duration(milliseconds: 200);
-              _controller.value = 0.0;
-            },
-          ),
-        ),
-      ),
-    ],
-  );
+      );
 }

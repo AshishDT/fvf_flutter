@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fvf_flutter/app/routes/app_pages.dart';
+import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
@@ -86,6 +88,9 @@ class ProfileHeaderSection extends StatelessWidget {
               children: <Widget>[
                 if (_canShowWinnerStreak()) ...<Widget>[
                   StreakChip(
+                    onTap: (){
+                      Get.toNamed(Routes.HALL_OF_FAME);
+                    },
                     iconPath: AppImages.trophyIcon,
                     title:
                         '${controller.profile().user?.winnerStreakCount ?? 0}x Winner',
@@ -94,6 +99,9 @@ class ProfileHeaderSection extends StatelessWidget {
                 ],
                 if (_canShowDailyFvf()) ...<Widget>[
                   StreakChip(
+                    onTap: (){
+                      Get.toNamed(Routes.HALL_OF_FAME);
+                    },
                     iconPath: AppImages.fireIcon,
                     title:
                         '${controller.profile().user?.dailyTeamFvfCount ?? 0} Days',
@@ -102,6 +110,9 @@ class ProfileHeaderSection extends StatelessWidget {
                 ],
                 if (_canShowBadge()) ...<Widget>[
                   StreakChip(
+                    onTap: (){
+                      Get.toNamed(Routes.HALL_OF_FAME);
+                    },
                     iconPath: AppImages.emojiIcon,
                     title: controller.profile().user?.badge ?? '',
                     bgColor: AppColors.kEE4AD1.withValues(alpha: .88),

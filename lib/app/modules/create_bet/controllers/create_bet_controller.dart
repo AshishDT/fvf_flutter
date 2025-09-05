@@ -264,12 +264,6 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
             ),
           ),
         );
-
-        appSnackbar(
-          message:
-              'Round created successfully! for "$prompt", please pick a crew.',
-          snackbarState: SnackbarState.success,
-        );
       }
     } finally {
       createRoundLoading(false);

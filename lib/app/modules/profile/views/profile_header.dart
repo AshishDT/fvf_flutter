@@ -81,60 +81,65 @@ class ProfileHeaderSection extends StatelessWidget {
           ),
           16.verticalSpace,
           Align(
-            child: IntrinsicWidth(
-              child: Stack(
-                clipBehavior: Clip.none,
-                alignment: Alignment.center,
-                children: <Widget>[
-                  Container(
-                    height: 22.h,
-                    padding: REdgeInsets.only(right: 8, left: 28),
-                    alignment: AlignmentDirectional.centerEnd,
-                    decoration: BoxDecoration(
-                      color: AppColors.kF1F2F2.withValues(alpha: .36),
-                      borderRadius: BorderRadius.horizontal(
-                        left: Radius.circular(12.r),
-                        right: Radius.circular(12.r),
-                      ),
-                      /*boxShadow: <BoxShadow>[
-                        BoxShadow(
-                          offset: const Offset(0, 1),
-                          blurRadius: 2,
-                          color: AppColors.k000000.withValues(alpha: .75),
+            child: GestureDetector(
+              onTap: () {
+                Get.toNamed(Routes.BADGE);
+              },
+              child: IntrinsicWidth(
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  alignment: Alignment.center,
+                  children: <Widget>[
+                    Container(
+                      height: 22.h,
+                      padding: REdgeInsets.only(right: 8, left: 28),
+                      alignment: AlignmentDirectional.centerEnd,
+                      decoration: BoxDecoration(
+                        color: AppColors.kF1F2F2.withValues(alpha: .36),
+                        borderRadius: BorderRadius.horizontal(
+                          left: Radius.circular(12.r),
+                          right: Radius.circular(12.r),
                         ),
-                      ],*/
-                    ),
-                    child: Text(
-                      'Gold',
-                      style: GoogleFonts.fredoka(
-                        color: AppColors.kffffff,
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w500,
+                        /*boxShadow: <BoxShadow>[
+                          BoxShadow(
+                            offset: const Offset(0, 1),
+                            blurRadius: 2,
+                            color: AppColors.k000000.withValues(alpha: .75),
+                          ),
+                        ],*/
                       ),
-                    ),
-                  ),
-                  Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: Container(
-                      height: 24.h,
-                      width: 24.w,
-                      padding: REdgeInsets.all(3),
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: <Color>[
-                            AppColors.kFB46CD,
-                            AppColors.k6C75FF,
-                            AppColors.k0DBFFF,
-                          ],
+                      child: Text(
+                        'Gold',
+                        style: GoogleFonts.fredoka(
+                          color: AppColors.kffffff,
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                      child: SvgPicture.asset(AppImages.goldBadge),
                     ),
-                  ),
-                ],
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: Container(
+                        height: 24.h,
+                        width: 24.w,
+                        padding: REdgeInsets.all(3),
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: <Color>[
+                              AppColors.kFB46CD,
+                              AppColors.k6C75FF,
+                              AppColors.k0DBFFF,
+                            ],
+                          ),
+                        ),
+                        child: SvgPicture.asset(AppImages.goldBadge),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

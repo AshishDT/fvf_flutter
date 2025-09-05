@@ -3,7 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
 import '../../../utils/app_text_style.dart';
@@ -41,6 +42,13 @@ class ProfileHeaderSection extends StatelessWidget {
                     color: AppColors.kffffff,
                     fontSize: 32.sp,
                     fontWeight: FontWeight.w600,
+                    shadows: <Shadow>[
+                      BoxShadow(
+                        offset: const Offset(0, 1),
+                        blurRadius: 2,
+                        color: AppColors.k000000.withValues(alpha: .75),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -64,19 +72,78 @@ class ProfileHeaderSection extends StatelessWidget {
                             ),
                           )
                         : SvgPicture.asset(
-                            AppImages.penIcon,
-                            height: 16.h,
-                            colorFilter: const ColorFilter.mode(
-                              AppColors.kFAFBFB,
-                              BlendMode.srcIn,
-                            ),
-                          ),
+                            AppImages.penShadowIcon,
+                          ).paddingOnly(top: 20.h),
                   ),
                 ),
               ],
             ],
           ),
-          8.verticalSpace,
+          16.verticalSpace,
+          Align(
+            child: GestureDetector(
+              onTap: () {
+                Get.toNamed(Routes.BADGE);
+              },
+              child: IntrinsicWidth(
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  alignment: Alignment.center,
+                  children: <Widget>[
+                    Container(
+                      height: 22.h,
+                      padding: REdgeInsets.only(right: 8, left: 28),
+                      alignment: AlignmentDirectional.centerEnd,
+                      decoration: BoxDecoration(
+                        color: AppColors.kF1F2F2.withValues(alpha: .36),
+                        borderRadius: BorderRadius.horizontal(
+                          left: Radius.circular(12.r),
+                          right: Radius.circular(12.r),
+                        ),
+                        /*boxShadow: <BoxShadow>[
+                          BoxShadow(
+                            offset: const Offset(0, 1),
+                            blurRadius: 2,
+                            color: AppColors.k000000.withValues(alpha: .75),
+                          ),
+                        ],*/
+                      ),
+                      child: Text(
+                        'Gold',
+                        style: GoogleFonts.fredoka(
+                          color: AppColors.kffffff,
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: Container(
+                        height: 24.h,
+                        width: 24.w,
+                        padding: REdgeInsets.all(3),
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: <Color>[
+                              AppColors.kFB46CD,
+                              AppColors.k6C75FF,
+                              AppColors.k0DBFFF,
+                            ],
+                          ),
+                        ),
+                        child: SvgPicture.asset(AppImages.goldBadge),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          16.verticalSpace,
 
           /// Streak Chips
           if (_canShowBadge() ||
@@ -88,7 +155,7 @@ class ProfileHeaderSection extends StatelessWidget {
               children: <Widget>[
                 if (_canShowWinnerStreak()) ...<Widget>[
                   StreakChip(
-                    onTap: (){
+                    onTap: () {
                       Get.toNamed(Routes.HALL_OF_FAME);
                     },
                     iconPath: AppImages.trophyIcon,
@@ -99,7 +166,7 @@ class ProfileHeaderSection extends StatelessWidget {
                 ],
                 if (_canShowDailyFvf()) ...<Widget>[
                   StreakChip(
-                    onTap: (){
+                    onTap: () {
                       Get.toNamed(Routes.HALL_OF_FAME);
                     },
                     iconPath: AppImages.fireIcon,
@@ -110,7 +177,7 @@ class ProfileHeaderSection extends StatelessWidget {
                 ],
                 if (_canShowBadge()) ...<Widget>[
                   StreakChip(
-                    onTap: (){
+                    onTap: () {
                       Get.toNamed(Routes.HALL_OF_FAME);
                     },
                     iconPath: AppImages.emojiIcon,
@@ -135,7 +202,7 @@ class ProfileHeaderSection extends StatelessWidget {
                 value: '${controller.profile().round?.totalRound ?? 0}',
                 title: 'Rounds',
               ),
-               ProfileInfoCard(
+              ProfileInfoCard(
                 value: '${controller.profile().user?.emojiCount ?? 0}',
                 title: 'Reactions',
               ),

@@ -13,9 +13,6 @@ import '../models/md_ai_result.dart';
 /// AiChoosingController
 class AiChoosingController extends GetxController {
 
-  /// IsLoading
-  RxBool isLoading = false.obs;
-
   @override
   void onInit() {
     super.onInit();
@@ -113,7 +110,6 @@ class AiChoosingController extends GetxController {
 
   /// On results received
   void _onResults(dynamic data) {
-    isLoading(true);
     final Map<String, dynamic> raw = data as Map<String, dynamic>;
     final MdAiResultData resultData =
         MdAiResultData.fromJson(raw['data'] as Map<String, dynamic>);
@@ -141,7 +137,6 @@ class AiChoosingController extends GetxController {
 
     if (isFailed) {
       isAiFailed(true);
-      isLoading(false);
       isAiFailed.refresh();
       return;
     }

@@ -163,10 +163,11 @@ class WinnerView extends GetView<WinnerController> {
                                           color: AppColors.kffffff,
                                           fontWeight: FontWeight.w700,
                                           shadows: <Shadow>[
-                                            const Shadow(
-                                              offset: Offset(0, 4),
-                                              blurRadius: 4,
-                                              color: Color(0x33000000),
+                                            Shadow(
+                                              offset: const Offset(0, 1),
+                                              blurRadius: 2,
+                                              color: AppColors.k000000
+                                                  .withValues(alpha: .75),
                                             ),
                                           ],
                                         ),

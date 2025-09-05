@@ -253,16 +253,19 @@ class AiChoosingView extends GetView<AiChoosingController> {
                 ),
               ),
               Obx(
-                () => controller.isLoading()
+                () => !controller.isAiFailed()
                     ? Positioned(
-                        bottom: -20.h,
+                        bottom: -10.h,
                         left: 0,
                         right: 0,
                         child: Center(
-                          child: Transform.scale(
-                            scale: .18,
-                            child: Lottie.asset(
-                              AppImages.shineLoader,
+                          child: Opacity(
+                            opacity: .56,
+                            child: Transform.scale(
+                              scale: .24,
+                              child: Image.asset(
+                                AppImages.shineLoader,
+                              ),
                             ),
                           ),
                         ),

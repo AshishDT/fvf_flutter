@@ -95,9 +95,6 @@ class AppImages {
   /// Button Loader Animation
   static const String buttonLoader = '$_lottiePath/button_loader.json';
 
-  /// Dice Roll Animation
-  static const String diceRoll = '$_lottiePath/dice_roll.json';
-
   /// Smily Icon
   static const String smilyIcon = '$_svgPath/smily_icon.svg';
 
@@ -145,4 +142,25 @@ class AppImages {
 
   /// Question card background with border
   static const String qBgWithBorder = '$_path/q_bg_with_border.png';
+
+  /// Question icon
+  static const String questionIcon = '$_path/question_icon.png';
+
+  /// Bronze medal
+  static const String bronze = '$_svgPath/bronze.svg';
+
+  /// Silver medal
+  static const String silverBadge = '$_svgPath/silver_badge.svg';
+
+  /// Gold medal
+  static const String goldBadge = '$_svgPath/gold_badge.svg';
+
+  /// Platinum medal
+  static const String platinumBadge = '$_svgPath/platinum_badge.svg';
+
+  /// Icon bronze
+  static const String iconBadge = '$_svgPath/icon_badge.svg';
+
+  /// BDE badge
+  static const String bdeBadge = '$_svgPath/bde_badge.svg';
 }

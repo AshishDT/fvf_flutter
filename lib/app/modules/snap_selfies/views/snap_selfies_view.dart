@@ -5,7 +5,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/modules/snap_selfies/widgets/animated_switcher.dart';
-import 'package:fvf_flutter/app/modules/snap_selfies/widgets/previous_participant_avatar.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/ui/components/vibrate_wiggle.dart';
@@ -284,41 +283,63 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                         ),
                       ),
                     ),
-                    AnimatedSize(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                      child: Obx(
-                        () => Visibility(
-                          visible:
-                              controller.previousParticipants().isNotEmpty &&
-                                  !controller.isInvitationSend(),
-                          replacement: const SizedBox(
-                            width: double.infinity,
-                          ),
-                          child: Align(
-                            child: SingleChildScrollView(
-                              padding: EdgeInsets.zero,
-                              scrollDirection: Axis.horizontal,
-                              child: Obx(
-                                () => Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: List<Widget>.generate(
-                                    controller.previousParticipants().length,
-                                    (int index) =>
-                                        PreviousParticipantAvatarIcon(
-                                      participant: controller
-                                          .previousParticipants()[index],
-                                      onAddTap:
-                                          controller.onAddPreviousParticipant,
-                                    ).paddingOnly(right: 32),
-                                  ),
-                                ),
-                              ),
-                            ).paddingOnly(left: 32),
-                          ),
-                        ),
-                      ),
-                    ),
+                    // AnimatedSize(
+                    //   duration: const Duration(milliseconds: 300),
+                    //   curve: Curves.easeInOut,
+                    //   child: Obx(
+                    //     () => Visibility(
+                    //       visible:
+                    //           controller.previousParticipants().isNotEmpty &&
+                    //               !controller.isInvitationSend(),
+                    //       replacement: const SizedBox(
+                    //         width: double.infinity,
+                    //       ),
+                    //       child: Align(
+                    //         child: SingleChildScrollView(
+                    //           padding: EdgeInsets.zero,
+                    //           scrollDirection: Axis.horizontal,
+                    //           child: Obx(
+                    //             () => Row(
+                    //               mainAxisAlignment: MainAxisAlignment.center,
+                    //               children: List<Widget>.generate(
+                    //                 controller.previousParticipants().length,
+                    //                 (int index) =>
+                    //                     PreviousParticipantAvatarIcon(
+                    //                   participant: controller
+                    //                       .previousParticipants()[index],
+                    //                   onAddTap:
+                    //                       controller.onAddPreviousParticipant,
+                    //                 ).paddingOnly(right: 32),
+                    //               ),
+                    //             ),
+                    //           ),
+                    //         ).paddingOnly(left: 32),
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
+                    // GroupAvatarIcon(
+                    //   participants: <MdPreviousParticipant>[
+                    //     MdPreviousParticipant(
+                    //       userId: 'sds',
+                    //       userName: 'John Doe',
+                    //       userProfileUrl: 'https://picsum.photos/id/1/200/300',
+                    //       userSupabaseId: 'sds',
+                    //     ),
+                    //     MdPreviousParticipant(
+                    //       userId: 'sds',
+                    //       userName: 'John Doe',
+                    //       userProfileUrl: 'https://picsum.photos/id//200/300',
+                    //       userSupabaseId: 'sds',
+                    //     ),
+                    //     MdPreviousParticipant(
+                    //       userId: 'sds',
+                    //       userName: 'John Doe',
+                    //       userProfileUrl: 'https://picsum.photos/id/3/200/300',
+                    //       userSupabaseId: 'sds',
+                    //     ),
+                    //   ],
+                    // ),
                     Align(
                       child: SingleChildScrollView(
                         padding: EdgeInsets.zero,
@@ -357,7 +378,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                               );
                             },
                             child: Text(
-                              'Resend Invites',
+                              'Add Invites',
                               style: AppTextStyle.openRunde(
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w600,

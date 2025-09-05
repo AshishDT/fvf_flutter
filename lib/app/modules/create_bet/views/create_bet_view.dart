@@ -90,7 +90,7 @@ class CreateBetView extends GetView<CreateBetController> {
                             ),
                             16.horizontalSpace,
                             Obx(
-                              () => DiceRoller(
+                              () => QuestionRoller(
                                 isLoading: controller.isLoading(),
                                 rollTrigger: controller.rollCounter(),
                                 onTap: controller.rollDice,
@@ -130,9 +130,14 @@ class CreateBetView extends GetView<CreateBetController> {
                               ),
                             ),
                             4.horizontalSpace,
-                            Image.asset(
-                              AppImages.pencilIcon,
-                              height: 32.h,
+                            SvgPicture.asset(
+                              height: 20.h,
+                              width: 20.w,
+                              AppImages.penIcon,
+                              colorFilter: const ColorFilter.mode(
+                                AppColors.kffffff,
+                                BlendMode.srcIn,
+                              ),
                             ),
                           ],
                         ),

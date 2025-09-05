@@ -12,6 +12,8 @@ import '../modules/create_bet/bindings/create_bet_binding.dart';
 import '../modules/create_bet/views/create_bet_view.dart';
 import '../modules/failed_round/bindings/failed_round_binding.dart';
 import '../modules/failed_round/views/failed_round_view.dart';
+import '../modules/hall_of_fame/bindings/hall_of_fame_binding.dart';
+import '../modules/hall_of_fame/views/hall_of_fame_view.dart';
 import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/profile/views/profile_view.dart';
 import '../modules/snap_selfies/bindings/snap_selfies_binding.dart';
@@ -78,6 +80,11 @@ class AppPages {
       name: _Paths.FAILED_ROUND,
       page: () => const FailedRoundView(),
       binding: FailedRoundBinding(),
+    ),
+    GetPage(
+      name: _Paths.HALL_OF_FAME,
+      page: () => const HallOfFameView(),
+      binding: HallOfFameBinding(),
     ),
   ];
 }

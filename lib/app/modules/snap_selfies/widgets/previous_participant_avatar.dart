@@ -6,7 +6,6 @@ import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_previous_participant.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
-import 'package:get/get.dart';
 
 /// Previous participant Selfie Avatar widget
 class PreviousParticipantAvatarIcon extends StatelessWidget {
@@ -14,11 +13,27 @@ class PreviousParticipantAvatarIcon extends StatelessWidget {
   const PreviousParticipantAvatarIcon({
     required this.participant,
     this.onAddTap,
+    this.showAddIcon = true,
+    this.showName = true,
+    this.isSingle = true,
+    this.mainInGroup = false,
     super.key,
   });
 
   /// Participant data
   final MdPreviousParticipant participant;
+
+  /// Whether to show add icon
+  final bool showAddIcon;
+
+  /// Whether to show name below avatar
+  final bool showName;
+
+  /// Whether it's a single avatar (not in group)
+  final bool isSingle;
+
+  /// Whether the main user is in the group
+  final bool mainInGroup;
 
   /// Callback when add is tapped
   final void Function(MdPreviousParticipant participant)? onAddTap;
@@ -32,18 +47,22 @@ class PreviousParticipantAvatarIcon extends StatelessWidget {
       avatarContent = ClipOval(
         child: CachedNetworkImage(
           imageUrl: profileUrl,
-          width: 56.w,
-          height: 56.h,
+          width: !isSingle ? 38.w : 56.w,
+          height: !isSingle ? 38.h : 56.h,
           fit: BoxFit.cover,
-          placeholder: (_, __) => Center(
-            child: CircularProgressIndicator(strokeWidth: 2.w),
-          ),
-          errorWidget: (_, __, ___) => const Center(
-            child: Icon(
-              Icons.error,
-              color: AppColors.kffffff,
+          placeholder: (_, __) => _buildPlaceholder(),
+          imageBuilder: (_, ImageProvider imageProvider) => Container(
+            width: !isSingle ? 38.w : 56.w,
+            height: !isSingle ? 38.h : 56.h,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              image: DecorationImage(
+                image: imageProvider,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
+          errorWidget: (_, __, ___) => _buildPlaceholder(),
         ),
       );
     } else {
@@ -61,44 +80,38 @@ class PreviousParticipantAvatarIcon extends StatelessWidget {
           Stack(
             clipBehavior: Clip.none,
             children: <Widget>[
-              AnimatedContainer(
-                duration: 300.milliseconds,
-                width: 56.w + 4.w,
-                height: 56.h + 4.w,
-                padding: REdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  color: AppColors.k2A2E2F.withValues(alpha: 0.20),
-                  shape: BoxShape.circle,
+              avatarContent,
+              if (showAddIcon) ...<Widget>[
+                Positioned(
+                  bottom: -7,
+                  right: 0,
+                  child: (participant.isAdded ?? false)
+                      ? Icon(
+                          Icons.remove_circle,
+                          color: Colors.red,
+                          size: 24.sp,
+                        )
+                      : SvgPicture.asset(
+                          height: 24.h,
+                          width: 24.w,
+                          AppImages.plusIcon,
+                        ),
                 ),
-                child: avatarContent,
-              ),
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: (participant.isAdded ?? false)
-                    ? Icon(
-                        Icons.remove_circle,
-                        color: Colors.red,
-                        size: 24.sp,
-                      )
-                    : SvgPicture.asset(
-                        height: 24.h,
-                        width: 24.w,
-                        AppImages.plusIcon,
-                      ),
-              ),
+              ],
             ],
           ),
-          6.verticalSpace,
-          if (name != null && name!.isNotEmpty)
-            Text(
-              name!,
-              style: AppTextStyle.openRunde(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
+          if (showName) ...<Widget>[
+            6.verticalSpace,
+            if (name != null && name!.isNotEmpty)
+              Text(
+                name!,
+                style: AppTextStyle.openRunde(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
               ),
-            ),
+          ],
         ],
       ),
     );
@@ -106,16 +119,16 @@ class PreviousParticipantAvatarIcon extends StatelessWidget {
 
   /// Placeholder when no selfie/profile available
   Widget _buildPlaceholder() => Container(
-        width: 56.w,
-        height: 56.h,
+        width: !isSingle ? 38.w : 56.w,
+        height: !isSingle ? 38.h : 56.h,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: AppColors.k2A2E2F.withValues(alpha: 0.20),
         ),
         child: Center(
           child: SvgPicture.asset(
-            height: 42.h,
-            width: 43.w,
+            height: !isSingle ? 25.h : 42.h,
+            width: !isSingle ? 25.w : 42.w,
             AppImages.personalPlaceholder,
             colorFilter: ColorFilter.mode(
               Colors.white.withValues(alpha: 0.20),

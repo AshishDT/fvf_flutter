@@ -53,6 +53,9 @@ class AppImages {
   /// Pen icon
   static const String penIcon = '$_path/pen_icon.svg';
 
+  /// Pen Shadow icon
+  static const String penShadowIcon = '$_svgPath/pen_shadow_icon.svg';
+
   /// Profile bg image
   static const String profileBg = '$_path/profile_bg.png';
 
@@ -214,5 +217,11 @@ class AppImages {
   static const String bdeIcon = '$_svgPath/bde_icon.svg';
 
   /// Shine Loader Animation
-  static const String shineLoader = '$_lottiePath/shine_loader.json';
+  static const String shineLoader = '$_gifPath/shine_loader.gif';
+
+  /// Down Side Arrow
+  static const String downSideArrow = '$_svgPath/down_side_arrow.svg';
+
+  /// Add Person Icon
+  static const String addPersonIcon = '$_path/add_person_icon.png';
 }

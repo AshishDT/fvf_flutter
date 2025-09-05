@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -24,6 +22,12 @@ class ProfileBioSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
         children: <Widget>[
+          Image.asset(
+            AppImages.addPersonIcon,
+            height: 40.h,
+            color: AppColors.kF1F2F2,
+          ),
+          16.verticalSpace,
           if (controller.profile().user?.bio != null &&
               (controller.profile().user?.bio?.isNotEmpty ??
                   false)) ...<Widget>[
@@ -32,8 +36,16 @@ class ProfileBioSection extends StatelessWidget {
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
                 fontSize: 20.sp,
+                fontStyle: FontStyle.italic,
                 color: AppColors.kffffff,
                 fontWeight: FontWeight.w600,
+                shadows: <Shadow>[
+                  BoxShadow(
+                    offset: const Offset(0, 1),
+                    blurRadius: 2,
+                    color: AppColors.k000000.withValues(alpha: .75),
+                  ),
+                ],
               ),
             ),
             16.verticalSpace,
@@ -50,9 +62,9 @@ class ProfileBioSection extends StatelessWidget {
                 );
                 controller.currentIndex(1);
               },
-              icon: Transform.rotate(
-                angle: -math.pi / 2,
-                child: SvgPicture.asset(AppImages.backwardArrow),
+              icon: SvgPicture.asset(
+                AppImages.downSideArrow,
+                width: 42.w,
               ),
             ),
           24.verticalSpace,

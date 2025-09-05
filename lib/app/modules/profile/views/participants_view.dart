@@ -178,25 +178,37 @@ class ParticipantsPage extends StatelessWidget {
                                         ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(500.r),
-                                          child: CachedNetworkImage(
-                                            imageUrl:
-                                                globalUser().profileUrl ?? '',
-                                            width: 24.w,
-                                            height: 24.w,
-                                            fit: BoxFit.cover,
-                                            placeholder: (_, __) => const Center(
-                                                child:
-                                                    CircularProgressIndicator(
-                                                        strokeWidth: 2)),
-                                            errorWidget: (_, __, ___) =>
-                                                Container(
-                                              height: 24.w,
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              boxShadow: <BoxShadow>[
+                                                BoxShadow(
+                                                  offset: const Offset(0, 1),
+                                                  blurRadius: 2,
+                                                  color: AppColors.k000000
+                                                      .withValues(alpha: .75),
+                                                ),
+                                              ],
+                                            ),
+                                            child: CachedNetworkImage(
+                                              imageUrl:
+                                                  globalUser().profileUrl ?? '',
                                               width: 24.w,
-                                              color: Colors.grey.shade200,
-                                              child: const Icon(
-                                                Icons.person,
-                                                size: 16,
-                                                color: Colors.grey,
+                                              height: 24.w,
+                                              fit: BoxFit.cover,
+                                              placeholder: (_, __) => const Center(
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                          strokeWidth: 2)),
+                                              errorWidget: (_, __, ___) =>
+                                                  Container(
+                                                height: 24.w,
+                                                width: 24.w,
+                                                color: Colors.grey.shade200,
+                                                child: const Icon(
+                                                  Icons.person,
+                                                  size: 16,
+                                                  color: Colors.grey,
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -216,6 +228,13 @@ class ParticipantsPage extends StatelessWidget {
                                                 fontSize: 24.sp,
                                                 fontWeight: FontWeight.w600,
                                                 color: AppColors.kffffff,
+                                                shadows: <Shadow>[
+                                                  BoxShadow(
+                                                    offset: const Offset(0, 1),
+                                                    blurRadius: 2,
+                                                    color: AppColors.k000000.withValues(alpha: .75),
+                                                  ),
+                                                ],
                                               ),
                                             ),
                                           ),
@@ -252,6 +271,13 @@ class ParticipantsPage extends StatelessWidget {
                                     color: AppColors.kffffff,
                                     fontWeight: FontWeight.w700,
                                     fontStyle: FontStyle.italic,
+                                    shadows: <Shadow>[
+                                      BoxShadow(
+                                        offset: const Offset(0, 1),
+                                        blurRadius: 2,
+                                        color: AppColors.k000000.withValues(alpha: .75),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
@@ -295,6 +321,13 @@ class ParticipantsPage extends StatelessWidget {
                             fontSize: 32.sp,
                             color: AppColors.kffffff,
                             fontWeight: FontWeight.w700,
+                            shadows: <Shadow>[
+                              BoxShadow(
+                                offset: const Offset(0, 1),
+                                blurRadius: 2,
+                                color: AppColors.k000000.withValues(alpha: .75),
+                              ),
+                            ],
                           ),
                         ),
                       ),

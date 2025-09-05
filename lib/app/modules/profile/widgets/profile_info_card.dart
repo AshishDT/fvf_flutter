@@ -31,6 +31,13 @@ class ProfileInfoCard extends StatelessWidget {
                 fontSize: 24.sp,
                 color: AppColors.kFAFBFB,
                 fontWeight: FontWeight.w600,
+                shadows: <Shadow>[
+                  BoxShadow(
+                    offset: const Offset(0, 4),
+                    blurRadius: 4,
+                    color: AppColors.k000000.withValues(alpha: .25),
+                  ),
+                ],
               ),
             ),
             Text(
@@ -39,6 +46,13 @@ class ProfileInfoCard extends StatelessWidget {
                 fontSize: 14.sp,
                 color: AppColors.kFAFBFB,
                 fontWeight: FontWeight.w600,
+                shadows: <Shadow>[
+                  BoxShadow(
+                    offset: Offset(0, 2.h),
+                    blurRadius: 2.r,
+                    color: AppColors.k000000.withValues(alpha: .25),
+                  ),
+                ],
               ),
             ),
           ],

@@ -189,22 +189,34 @@ class ResultCard extends StatelessWidget {
                           children: <Widget>[
                             ClipRRect(
                               borderRadius: BorderRadius.circular(500.r),
-                              child: CachedNetworkImage(
-                                imageUrl: selfieUrl ?? '',
-                                width: 24.w,
-                                height: 24.w,
-                                fit: BoxFit.cover,
-                                placeholder: (_, __) => const Center(
-                                    child: CircularProgressIndicator(
-                                        strokeWidth: 2)),
-                                errorWidget: (_, __, ___) => Container(
-                                  height: 24.w,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  boxShadow: <BoxShadow>[
+                                    BoxShadow(
+                                      offset: const Offset(0, 1),
+                                      blurRadius: 2,
+                                      color: AppColors.k000000
+                                          .withValues(alpha: .75),
+                                    ),
+                                  ],
+                                ),
+                                child: CachedNetworkImage(
+                                  imageUrl: selfieUrl ?? '',
                                   width: 24.w,
-                                  color: Colors.grey.shade200,
-                                  child: const Icon(
-                                    Icons.person,
-                                    size: 16,
-                                    color: Colors.grey,
+                                  height: 24.w,
+                                  fit: BoxFit.cover,
+                                  placeholder: (_, __) => const Center(
+                                      child: CircularProgressIndicator(
+                                          strokeWidth: 2)),
+                                  errorWidget: (_, __, ___) => Container(
+                                    height: 24.w,
+                                    width: 24.w,
+                                    color: Colors.grey.shade200,
+                                    child: const Icon(
+                                      Icons.person,
+                                      size: 16,
+                                      color: Colors.grey,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -221,6 +233,14 @@ class ResultCard extends StatelessWidget {
                                     fontSize: 24.sp,
                                     fontWeight: FontWeight.w600,
                                     color: AppColors.kffffff,
+                                    shadows: <Shadow>[
+                                      Shadow(
+                                        offset: const Offset(0, 1),
+                                        blurRadius: 2,
+                                        color: AppColors.k000000
+                                            .withValues(alpha: .75),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -245,11 +265,18 @@ class ResultCard extends StatelessWidget {
                     Text(
                       reason ?? '',
                       textAlign: TextAlign.center,
-                      style: AppTextStyle.openRunde(
+                      style: GoogleFonts.inter(
                         fontSize: 20.sp,
                         fontStyle: FontStyle.italic,
                         fontWeight: FontWeight.w700,
                         color: AppColors.kffffff,
+                        shadows: <Shadow>[
+                          Shadow(
+                            offset: const Offset(0, 1),
+                            blurRadius: 2,
+                            color: AppColors.k000000.withValues(alpha: .75),
+                          ),
+                        ],
                       ),
                     ),
                   ]

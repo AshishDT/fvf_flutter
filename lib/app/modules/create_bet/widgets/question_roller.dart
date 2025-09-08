@@ -4,6 +4,8 @@ import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:gif/gif.dart';
 
+import '../../../utils/app_utils.dart';
+
 /// Question Roller Widget
 class QuestionRoller extends StatefulWidget {
   /// Constructor
@@ -54,7 +56,10 @@ class _QuestionRollerState extends State<QuestionRoller>
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-        onTap: widget.onTap,
+        onTap: () {
+          lightHapticFeedback();
+          widget.onTap.call();
+        },
         child: Container(
           height: 48.h,
           width: 48.w,

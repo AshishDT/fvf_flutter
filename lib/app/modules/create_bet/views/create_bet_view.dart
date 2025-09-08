@@ -38,9 +38,11 @@ class CreateBetView extends GetView<CreateBetController> {
             drawer: const MenuDrawer(),
             floatingActionButton: Obx(
               () => AppButton(
-                buttonText: false ? 'Keep Slaying' : 'Bet',
+                buttonText: !(controller.canCreateBetData().allowed ?? false)
+                    ? 'Keep Slaying'
+                    : 'Bet',
                 isLoading: controller.createRoundLoading(),
-                onPressed: false
+                onPressed: !(controller.canCreateBetData().allowed ?? false)
                     ? () {
                         SlayingSheet.openSlayingSheet();
                       }

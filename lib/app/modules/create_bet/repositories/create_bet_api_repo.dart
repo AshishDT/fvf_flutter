@@ -5,6 +5,7 @@ import '../../../data/remote/api_service/api_wrapper.dart';
 import '../../../data/remote/api_service/init_api_service.dart';
 import '../../../ui/components/app_snackbar.dart';
 import '../models/md_bet.dart';
+import '../models/md_can_create_bet.dart';
 import '../models/md_round.dart';
 
 /// Create bet api repository
@@ -80,6 +81,37 @@ class CreateBetApiRepo {
           },
         ),
       );
+
+  /// Can create round
+  static Future<MdCanCreateBet?> canCreateRound() async =>
+      APIWrapper.handleApiCall<MdCanCreateBet>(
+        APIService.post<Map<String, dynamic>>(
+          path: 'user/can-create-round',
+        ).then(
+              (Response<Map<String, dynamic>>? response) {
+            if (response?.isOk != true || response?.data == null) {
+              return null;
+            }
+
+            final ApiResponse<MdCanCreateBet> data = ApiResponse<MdCanCreateBet>.fromJson(
+              response!.data!,
+              fromJsonT: (dynamic json) => MdCanCreateBet.fromJson(json),
+            );
+
+            if (data.success == true) {
+              return data.data;
+            }
+
+            appSnackbar(
+              message:
+              data.message ?? 'Something went wrong, please try again.',
+              snackbarState: SnackbarState.danger,
+            );
+            return null;
+          },
+        ),
+      );
+
 
   /// User Claim
   static Future<MdUser?> userClaim({

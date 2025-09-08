@@ -21,6 +21,7 @@ import '../../../data/remote/deep_link/deep_link_service.dart';
 import '../../../routes/app_pages.dart';
 import '../../profile/models/md_profile.dart';
 import '../../profile/repositories/profile_api_repo.dart';
+import '../models/md_can_create_bet.dart';
 import '../models/md_participant.dart';
 
 /// Create Bet Controller
@@ -68,6 +69,7 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
 
     getBets();
     getUser();
+    checkCanCreateRound();
 
     super.onInit();
   }
@@ -132,6 +134,11 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
 
   /// Question for the bet (currently shown)
   RxString bet = ''.obs;
+
+  /// Can create bet
+  Rx<MdCanCreateBet> canCreateBetData = MdCanCreateBet(
+    allowed: true,
+  ).obs;
 
   /// Show next bet when rolling dice
   void rollDice() {
@@ -222,6 +229,20 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
     createRoundLoading(true);
 
     try {
+      final MdCanCreateBet? _canCreate = await checkCanCreateRound();
+
+      if (_canCreate != null) {
+        if (!(_canCreate.allowed ?? false)) {
+          createRoundLoading(false);
+          appSnackbar(
+            message:
+                '${_canCreate.reason ?? 'You are not allowed to create a round at this time.'}',
+            snackbarState: SnackbarState.danger,
+          );
+          return;
+        }
+      }
+
       final String prompt =
           enteredBet().trim().isNotEmpty ? enteredBet() : bet();
 
@@ -417,5 +438,20 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
       return phoneNumber.substring(phoneNumber.length - 10);
     }
     return phoneNumber;
+  }
+
+  /// Check if user can create round
+  Future<MdCanCreateBet?> checkCanCreateRound() async {
+    try {
+      final MdCanCreateBet? _canCreate =
+          await CreateBetApiRepo.canCreateRound();
+
+      canCreateBetData(_canCreate);
+      canCreateBetData.refresh();
+
+      return _canCreate;
+    } on Exception {
+      return null;
+    }
   }
 }

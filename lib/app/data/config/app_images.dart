@@ -224,4 +224,23 @@ class AppImages {
 
   /// Add Person Icon
   static const String addPersonIcon = '$_path/add_person_icon.png';
+
+  /// Ai Choosing Animation
+  static const String aiChoosing = '$_lottiePath/ai_choosing.json';
+
+  /// Badge Reveal Animation
+  static const String badgeReveal = '$_lottiePath/badge_reveal.json';
+
+  /// Crew Streak Fire Animation
+  static const String crewStreakFire = '$_lottiePath/crew_streak_fire.json';
+
+  /// Crew Streak Fire Spray Animation
+  static const String crewStreakFireSpray =
+      '$_lottiePath/crew_streak_fire_spray.json';
+
+  /// Prompt Question Animation
+  static const String promptQuestion = '$_lottiePath/prompt_question.json';
+
+  /// User First Join Animation
+  static const String userFirstJoin = '$_lottiePath/user_first_join.json';
 }

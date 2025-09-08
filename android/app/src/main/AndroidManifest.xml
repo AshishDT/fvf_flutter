@@ -145,7 +145,7 @@
         <!-- Set to `true` to use `BranchKey.test` -->
         <meta-data
             android:name="io.branch.sdk.TestMode"
-            android:value="false" />
+            android:value="true" />
 
     </application>
 </manifest>

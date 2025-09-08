@@ -34,9 +34,7 @@ Future<void> initializeCoreApp({
     onLocal: onLocal,
   );
 
-  // await RevenueCatService.instance.initRevenueCat(
-  //   'goog_cCgqhqQWSoBndKRpjClCaONIPAw',
-  // );
+  await RevenueCatService.instance.initRevenueCat();
 
   // Initialize branch
   await FlutterBranchSdk.init();

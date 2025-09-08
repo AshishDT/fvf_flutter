@@ -20,6 +20,7 @@ import '../../../utils/app_text_style.dart';
 import '../../../utils/dialog_helper.dart';
 import '../controllers/snap_selfies_controller.dart';
 import '../widgets/grouped_avatar_icon.dart';
+import '../widgets/previous_participant_avatar.dart';
 import '../widgets/selfie_avatar_icon.dart';
 import '../widgets/user_self_participant_card.dart';
 
@@ -295,37 +296,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                           replacement: const SizedBox(
                             width: double.infinity,
                           ),
-                          child: Align(
-                            child: SingleChildScrollView(
-                              padding: EdgeInsets.zero,
-                              scrollDirection: Axis.horizontal,
-                              child: Obx(
-                                () => Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: List<Widget>.generate(
-                                    controller.previousRounds().length,
-                                    (int index) {
-                                      final MdPreviousRound participant =
-                                          controller.previousRounds()[index];
-
-                                      return GroupAvatarIcon(
-                                        participants:
-                                            participant.participants ??
-                                                <MdPreviousParticipant>[],
-                                        isAdded: participant.isAdded ?? false,
-                                        onAddTap: () {
-                                          controller.onAddPreviousRound(
-                                            participant.id ?? '',
-                                          );
-                                        },
-                                      ).paddingOnly(right: 32);
-                                    },
-                                  ),
-                                ),
-                              ),
-                            ).paddingOnly(left: 32),
-                          ),
+                          child: _previousParticipants(),
                         ),
                       ),
                     ),
@@ -381,6 +352,54 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                   ],
                 ),
               ),
+            ),
+          ),
+        ),
+      );
+
+  Align _previousParticipants() => Align(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.zero,
+          scrollDirection: Axis.horizontal,
+          child: Obx(
+            () => Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: controller.previousAddedParticipants().isEmpty
+                  ? List<Widget>.generate(
+                      controller.previousRounds().length,
+                      (int index) {
+                        final MdPreviousRound participant =
+                            controller.previousRounds()[index];
+
+                        return GroupAvatarIcon(
+                          participants: participant.participants ??
+                              <MdPreviousParticipant>[],
+                          isAdded: participant.isAdded ?? false,
+                          onAddTap: () {
+                            controller.onAddPreviousRound(
+                              participant.id ?? '',
+                            );
+                          },
+                        ).paddingOnly(right: controller.previousRounds().length >= 2 ?  32 : 0);
+                      },
+                    )
+                  : List<Widget>.generate(
+                      controller.previousAddedParticipants().length,
+                      (int index) {
+                        final MdPreviousParticipant participant =
+                            controller.previousAddedParticipants()[index];
+                        return PreviousParticipantAvatarIcon(
+                          participant: participant,
+                          onAddTap: () {
+                            controller.onAddRemovePreviousParticipant(
+                              participant.supbaseId ?? '',
+                            );
+                          },
+                          isAdded: participant.isAdded ?? false,
+                        );
+                      },
+                    ),
             ),
           ),
         ),

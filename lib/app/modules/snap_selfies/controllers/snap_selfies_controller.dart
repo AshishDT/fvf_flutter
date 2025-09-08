@@ -512,26 +512,31 @@ class SnapSelfiesController extends GetxController
       previousRounds.refresh();
       joinedInvitationData.refresh();
     }
-  }
 
-  /// Add previous participants
-  Future<void> addPreviousParticipants() async {
-    final List<MdPreviousRound> toAddRounds =
-        previousRounds.where((MdPreviousRound p) => p.isAdded == true).toList();
+    final RxList<MdPreviousRound> _rounds = previousRounds()
+        .where((MdPreviousRound p) => p.isAdded == true)
+        .toList()
+        .obs;
 
-    final List<MdPreviousParticipant> toAdd = <MdPreviousParticipant>[];
-    for (final MdPreviousRound round in toAddRounds) {
-      if (round.participants != null) {
-        for (final MdPreviousParticipant p in round.participants!) {
-          if (!toAdd.any((MdPreviousParticipant existing) =>
-                  existing.supbaseId == p.supbaseId) &&
-              p.supbaseId != SupaBaseService.userId) {
-            toAdd.add(p);
+    for (final MdPreviousRound _r in _rounds) {
+      if (_r.participants != null) {
+        for (final MdPreviousParticipant _p in _r.participants!) {
+          if (!previousAddedParticipants.any((MdPreviousParticipant existing) =>
+                  existing.supbaseId == _p.supbaseId) &&
+              _p.supbaseId != SupaBaseService.userId) {
+            _p.isAdded = true;
+            previousAddedParticipants.add(_p);
           }
         }
       }
     }
+  }
 
+  /// Add previous participants
+  Future<void> addPreviousParticipants() async {
+    final List<MdPreviousParticipant> toAdd = previousAddedParticipants()
+        .where((MdPreviousParticipant p) => p.isAdded == true)
+        .toList();
     if (toAdd.isEmpty) {
       await shareUri();
       return;
@@ -560,5 +565,33 @@ class SnapSelfiesController extends GetxController
     }
 
     await startRound();
+  }
+
+  /// On add/remove previous participant
+  void onAddRemovePreviousParticipant(String s) {
+    for (final MdPreviousParticipant _pp in previousAddedParticipants()) {
+      if (_pp.supbaseId == s) {
+        if (_pp.isAdded == true) {
+          _pp.isAdded = false;
+        } else {
+          _pp.isAdded = true;
+        }
+      }
+    }
+
+    final List<MdPreviousParticipant> _pParticipants = previousAddedParticipants
+        .where((MdPreviousParticipant p) => p.isAdded == true)
+        .toList();
+
+    if (_pParticipants.isEmpty) {
+      previousAddedParticipants.clear();
+
+      for (final MdPreviousRound p in previousRounds()) {
+        p.isAdded = false;
+      }
+    }
+
+    previousAddedParticipants.refresh();
+    previousRounds.refresh();
   }
 }

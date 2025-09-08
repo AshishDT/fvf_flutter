@@ -19,12 +19,13 @@ class RevenueCatService {
   ];
 
   /// Initialize RevenueCat
-  Future<void> initRevenueCat(String apiKey, {String? userId}) async {
+  Future<void> initRevenueCat({String? userId}) async {
     await Purchases.setLogLevel(LogLevel.debug);
 
     await Purchases.configure(
-      PurchasesConfiguration(apiKey)
-        // ..appUserID = userId,
+      PurchasesConfiguration(
+        'goog_cCgqhqQWSoBndKRpjClCaONIPAw',
+      ),
     );
   }
 

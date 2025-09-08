@@ -55,6 +55,7 @@ class MdPreviousParticipant {
     this.username,
     this.supbaseId,
     this.userProfileUrl,
+    this.isAdded,
   });
 
   /// From JSON
@@ -77,6 +78,9 @@ class MdPreviousParticipant {
 
   /// User profile URL
   String? userProfileUrl;
+
+  /// Is added
+  bool? isAdded;
 
   /// To JSON
   Map<String, dynamic> toJson() => <String, dynamic>{

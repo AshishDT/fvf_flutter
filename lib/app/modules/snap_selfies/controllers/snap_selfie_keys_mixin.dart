@@ -92,6 +92,10 @@ mixin SnapSelfieKeysMixin on GetxController {
     return list.obs;
   }
 
+  /// Previous rounds added participants
+  RxList<MdPreviousParticipant> previousAddedParticipants =
+      <MdPreviousParticipant>[].obs;
+
   /// Check if previous participants is empty
   RxBool get isAddedFromPreviousRound =>
       previousRounds().any((MdPreviousRound p) => p.isAdded == true).obs;

@@ -25,7 +25,7 @@ class ProfileView extends GetView<ProfileController> {
   Widget build(BuildContext context) => Obx(
         () => PopScope(
           canPop: controller.currentIndex() == 0,
-          onPopInvoked: (bool didPop) {
+          onPopInvokedWithResult: (bool didPop, Object? value) {
             if (controller.currentIndex() == 1) {
               controller.pageController.animateToPage(
                 0,

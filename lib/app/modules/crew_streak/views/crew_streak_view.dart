@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../controllers/crew_streak_controller.dart';
+import '../widgets/lottie_sequence.dart';
 
 /// CrewStreakView
 class CrewStreakView extends GetView<CrewStreakController> {
@@ -22,7 +23,6 @@ class CrewStreakView extends GetView<CrewStreakController> {
         backgroundColor: AppColors.kF5FCFF,
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         body: GradientCard(
-          padding: REdgeInsets.symmetric(horizontal: 24),
           child: SafeArea(
             child: Column(
               children: <Widget>[
@@ -36,7 +36,7 @@ class CrewStreakView extends GetView<CrewStreakController> {
                     color: AppColors.kffffff,
                     height: 1,
                   ),
-                ),
+                ).paddingSymmetric(horizontal: 24),
                 24.verticalSpace,
                 Text(
                   '${30.streakInfo}',
@@ -46,12 +46,11 @@ class CrewStreakView extends GetView<CrewStreakController> {
                     fontWeight: FontWeight.w600,
                     color: AppColors.kffffff,
                   ),
-                ),
+                ).paddingSymmetric(horizontal: 24),
                 const Spacer(),
-                Image.asset(
-                  AppImages.fireGif,
-                  height: 161.w,
-                  width: 161.w,
+                const LottieSequence(
+                  firstLottie: AppImages.crewStreakFireSpray,
+                  loopLottie: AppImages.crewStreakFire,
                 ),
                 16.verticalSpace,
                 Container(
@@ -69,7 +68,7 @@ class CrewStreakView extends GetView<CrewStreakController> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                ),
+                ).paddingSymmetric(horizontal: 24),
                 const Spacer(),
                 Align(
                   child: SingleChildScrollView(

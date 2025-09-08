@@ -18,115 +18,118 @@ class CameraView extends GetView<PickSelfieCameraController> {
   const CameraView({super.key});
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        backgroundColor: AppColors.kF5FCFF,
-        body: Obx(
-          () {
-            if (!controller.isCameraInitialized()) {
-              return const Center(child: CircularProgressIndicator());
-            }
+  Widget build(BuildContext context) => PopScope(
+    canPop: false,
+    child: Scaffold(
+          backgroundColor: AppColors.kF5FCFF,
+          body: Obx(
+            () {
+              if (!controller.isCameraInitialized()) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-            if (controller.previewFile().path.isNotEmpty) {
+              if (controller.previewFile().path.isNotEmpty) {
+                return Stack(
+                  children: <Widget>[
+                    SizedBox(
+                      height: 1.sh,
+                      child: Image.file(
+                        controller.previewFile.value,
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        32.verticalSpace,
+                        _appBar(),
+                        const Spacer(),
+                        Center(
+                          child: Text(
+                            'Most Likely to Start an OF?',
+                            textAlign: TextAlign.center,
+                            style: AppTextStyle.openRunde(
+                              fontSize: 24.sp,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.kffffff,
+                              shadows: <Shadow>[
+                                BoxShadow(
+                                  blurRadius: 2,
+                                  offset: const Offset(0, 1),
+                                  color: AppColors.k000000.withValues(alpha: .75),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ).paddingSymmetric(horizontal: 24.w),
+                        55.verticalSpace,
+                        RetakeButton(
+                          onRetake: () async => controller.onRetake(),
+                        ),
+                        49.verticalSpace,
+                      ],
+                    ),
+                  ],
+                );
+              }
+
               return Stack(
+                fit: StackFit.expand,
                 children: <Widget>[
-                  SizedBox(
-                    height: 1.sh,
-                    child: Image.file(
-                      controller.previewFile.value,
-                      fit: BoxFit.fill,
+                  CameraPreview(
+                    controller.cameraController!,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        32.verticalSpace,
+                        _appBar(),
+                      ],
                     ),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      32.verticalSpace,
-                      _appBar(),
-                      const Spacer(),
-                      Center(
-                        child: Text(
-                          'Most Likely to Start an OF?',
-                          textAlign: TextAlign.center,
-                          style: AppTextStyle.openRunde(
-                            fontSize: 24.sp,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.kffffff,
-                            shadows: <Shadow>[
-                              BoxShadow(
-                                blurRadius: 2,
-                                offset: const Offset(0, 1),
-                                color: AppColors.k000000.withValues(alpha: .75),
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      height: 154.h,
+                      width: Get.width,
+                      child: Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            SizedBox(
+                              height: 24.h,
+                              width: 24.w,
+                            ),
+                            50.horizontalSpace,
+                            GestureDetector(
+                              onTap: () {
+                                controller.takePicture();
+                              },
+                              child: SvgPicture.asset(
+                                AppImages.clickSelfieIcon,
                               ),
-                            ],
-                          ),
+                            ),
+                            50.horizontalSpace,
+                            GestureDetector(
+                              onTap: () {
+                                controller.flipCamera();
+                              },
+                              child: SvgPicture.asset(
+                                AppImages.flipCamera,
+                              ),
+                            ),
+                          ],
                         ),
-                      ).paddingSymmetric(horizontal: 24.w),
-                      55.verticalSpace,
-                      RetakeButton(
-                        onRetake: () async => controller.onRetake(),
                       ),
-                      49.verticalSpace,
-                    ],
+                    ),
                   ),
                 ],
               );
-            }
-
-            return Stack(
-              fit: StackFit.expand,
-              children: <Widget>[
-                CameraPreview(
-                  controller.cameraController!,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      32.verticalSpace,
-                      _appBar(),
-                    ],
-                  ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: Container(
-                    height: 154.h,
-                    width: Get.width,
-                    child: Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          SizedBox(
-                            height: 24.h,
-                            width: 24.w,
-                          ),
-                          50.horizontalSpace,
-                          GestureDetector(
-                            onTap: () {
-                              controller.takePicture();
-                            },
-                            child: SvgPicture.asset(
-                              AppImages.clickSelfieIcon,
-                            ),
-                          ),
-                          50.horizontalSpace,
-                          GestureDetector(
-                            onTap: () {
-                              controller.flipCamera();
-                            },
-                            child: SvgPicture.asset(
-                              AppImages.flipCamera,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
-      ).withGPad(context, color: Colors.black);
+            },
+          ),
+        ).withGPad(context, color: Colors.black),
+  );
 
   Widget _appBar() => CommonAppBar(
         onTapOfLeading: controller.onTimerFinished,

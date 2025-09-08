@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fvf_flutter/app/modules/hall_of_fame/models/md_hall_of_fame.dart';
+import 'package:fvf_flutter/app/modules/profile/models/md_badge.dart';
 import 'package:fvf_flutter/app/ui/components/animated_column.dart';
 import 'package:fvf_flutter/app/ui/components/animated_list_view.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
@@ -22,7 +22,6 @@ class HallOfFameView extends GetView<HallOfFameController> {
         body: GradientCard(
           child: SafeArea(
             child: AnimatedListView(
-              showScaleAnimation: true,
               children: <Widget>[
                 const CommonAppBar(
                   leadingIconColor: AppColors.kFAFBFB,
@@ -44,15 +43,15 @@ class HallOfFameView extends GetView<HallOfFameController> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: List<Widget>.generate(
-                      controller.hallOfFameList.length,
-                          (int index) {
-                        final MdHallOfFame fame = controller.hallOfFameList[index];
+                      controller.badges().length,
+                      (int index) {
+                        final MdBadge badge = controller.badges()[index];
                         return FameCard(
-                          description: fame.description ?? '',
-                          imageUrl: fame.imageUrl ?? '',
-                          name: fame.name ?? '',
-                          isActive: fame.isActive ?? false,
-                          isCurrent: fame.isCurrent ?? false,
+                          description: badge.description ?? '',
+                          imageUrl: badge.imageUrl,
+                          name: badge.badge ?? '',
+                          isActive: badge.earned ?? false,
+                          isCurrent: badge.current ?? false,
                         );
                       },
                     ),

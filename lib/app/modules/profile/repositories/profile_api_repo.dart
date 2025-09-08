@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/modules/profile/enums/subscription_enum.dart';
+import 'package:fvf_flutter/app/modules/profile/models/md_badge.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_profile.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_user_rounds.dart';
 
@@ -153,5 +154,39 @@ class ProfileApiRepo {
         ),
       ).then(
         (bool? value) => value ?? false,
+      );
+
+  /// Get Badges
+  static Future<List<MdBadge>?> getBadges() async =>
+      APIWrapper.handleApiCall<List<MdBadge>>(
+        APIService.get<Map<String, dynamic>>(
+          path: 'user-badge/badges',
+        ).then(
+          (Response<Map<String, dynamic>>? response) {
+            if (response?.isOk != true || response?.data == null) {
+              return null;
+            }
+
+            final ApiResponse<List<MdBadge>> data = ApiResponse<List<MdBadge>>.fromJson(
+              response!.data!,
+              fromJsonT: (dynamic json) => List<MdBadge>.from(
+                (json as List<dynamic>).map<MdBadge>(
+                  (dynamic x) => MdBadge.fromJson(x as Map<String, dynamic>),
+                ),
+              ),
+            );
+
+            if (data.success == true) {
+              return data.data;
+            }
+
+            appSnackbar(
+              message:
+                  data.message ?? 'Something went wrong, please try again.',
+              snackbarState: SnackbarState.danger,
+            );
+            return null;
+          },
+        ),
       );
 }

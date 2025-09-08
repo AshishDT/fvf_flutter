@@ -4,7 +4,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
 import '../../../utils/app_text_style.dart';
@@ -12,7 +11,6 @@ import '../controllers/profile_controller.dart';
 import '../repositories/edit_profile_sheet_repo.dart';
 import '../widgets/edit_data_sheet.dart';
 import '../widgets/profile_info_card.dart';
-import '../widgets/streak_chip.dart';
 
 /// PROFILE HEADER
 class ProfileHeaderSection extends StatelessWidget {
@@ -80,115 +78,117 @@ class ProfileHeaderSection extends StatelessWidget {
             ],
           ),
           16.verticalSpace,
-          Align(
-            child: GestureDetector(
-              onTap: () {
-                Get.toNamed(Routes.BADGE);
-              },
-              child: IntrinsicWidth(
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  alignment: Alignment.center,
-                  children: <Widget>[
-                    Container(
-                      height: 22.h,
-                      padding: REdgeInsets.only(right: 8, left: 28),
-                      alignment: AlignmentDirectional.centerEnd,
-                      decoration: BoxDecoration(
-                        color: AppColors.kF1F2F2.withValues(alpha: .36),
-                        borderRadius: BorderRadius.horizontal(
-                          left: Radius.circular(12.r),
-                          right: Radius.circular(12.r),
-                        ),
-                        /*boxShadow: <BoxShadow>[
-                          BoxShadow(
-                            offset: const Offset(0, 1),
-                            blurRadius: 2,
-                            color: AppColors.k000000.withValues(alpha: .75),
-                          ),
-                        ],*/
-                      ),
-                      child: Text(
-                        'Gold',
-                        style: GoogleFonts.fredoka(
-                          color: AppColors.kffffff,
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                    Align(
-                      alignment: AlignmentDirectional.centerStart,
-                      child: Container(
-                        height: 24.h,
-                        width: 24.w,
-                        padding: REdgeInsets.all(3),
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: <Color>[
-                              AppColors.kFB46CD,
-                              AppColors.k6C75FF,
-                              AppColors.k0DBFFF,
-                            ],
+          if (_canShowBadge) ...<Widget>[
+            Align(
+              child: GestureDetector(
+                onTap: () {
+                  Get.toNamed(
+                    Routes.HALL_OF_FAME,
+                    arguments: controller.badges,
+                  );
+                },
+                child: IntrinsicWidth(
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    alignment: Alignment.center,
+                    children: <Widget>[
+                      Container(
+                        height: 22.h,
+                        padding: REdgeInsets.only(right: 8, left: 28),
+                        alignment: AlignmentDirectional.centerEnd,
+                        decoration: BoxDecoration(
+                          color: AppColors.kF1F2F2.withValues(alpha: .36),
+                          borderRadius: BorderRadius.horizontal(
+                            left: Radius.circular(12.r),
+                            right: Radius.circular(12.r),
                           ),
                         ),
-                        child: SvgPicture.asset(AppImages.goldBadge),
+                        child: Text(
+                          controller.currentBadge()?.badge ?? 'No Badge',
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.fredoka(
+                            color: AppColors.kffffff,
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
+                      Align(
+                        alignment: AlignmentDirectional.centerStart,
+                        child: Container(
+                          height: 24.h,
+                          width: 24.w,
+                          padding: REdgeInsets.all(3),
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: <Color>[
+                                AppColors.kFB46CD,
+                                AppColors.k6C75FF,
+                                AppColors.k0DBFFF,
+                              ],
+                            ),
+                          ),
+                          child: SvgPicture.asset(
+                            controller.currentBadge()?.imageUrl ??
+                                AppImages.bronze,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          16.verticalSpace,
-
-          /// Streak Chips
-          if (_canShowBadge() ||
-              _canShowDailyFvf() ||
-              _canShowWinnerStreak()) ...<Widget>[
-            Row(
-              spacing: 8.w,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                if (_canShowWinnerStreak()) ...<Widget>[
-                  StreakChip(
-                    onTap: () {
-                      Get.toNamed(Routes.HALL_OF_FAME);
-                    },
-                    iconPath: AppImages.trophyIcon,
-                    title:
-                        '${controller.profile().user?.winnerStreakCount ?? 0}x Winner',
-                    bgColor: AppColors.k09DB84.withValues(alpha: .58),
-                  ),
-                ],
-                if (_canShowDailyFvf()) ...<Widget>[
-                  StreakChip(
-                    onTap: () {
-                      Get.toNamed(Routes.HALL_OF_FAME);
-                    },
-                    iconPath: AppImages.fireIcon,
-                    title:
-                        '${controller.profile().user?.dailyTeamFvfCount ?? 0} Days',
-                    bgColor: AppColors.kFFC300.withValues(alpha: .87),
-                  ),
-                ],
-                if (_canShowBadge()) ...<Widget>[
-                  StreakChip(
-                    onTap: () {
-                      Get.toNamed(Routes.HALL_OF_FAME);
-                    },
-                    iconPath: AppImages.emojiIcon,
-                    title: controller.profile().user?.badge ?? '',
-                    bgColor: AppColors.kEE4AD1.withValues(alpha: .88),
-                  ),
-                ],
-              ],
-            ),
             24.verticalSpace,
           ],
+
+          // /// Streak Chips
+          // if (_canShowBadge() ||
+          //     _canShowDailyFvf() ||
+          //     _canShowWinnerStreak()) ...<Widget>[
+          //   Row(
+          //     spacing: 8.w,
+          //     mainAxisAlignment: MainAxisAlignment.center,
+          //     children: <Widget>[
+          //       if (_canShowWinnerStreak()) ...<Widget>[
+          //         StreakChip(
+          //           onTap: () {
+          //             Get.toNamed(Routes.HALL_OF_FAME);
+          //           },
+          //           iconPath: AppImages.trophyIcon,
+          //           title:
+          //               '${controller.profile().user?.winnerStreakCount ?? 0}x Winner',
+          //           bgColor: AppColors.k09DB84.withValues(alpha: .58),
+          //         ),
+          //       ],
+          //       if (_canShowDailyFvf()) ...<Widget>[
+          //         StreakChip(
+          //           onTap: () {
+          //             Get.toNamed(Routes.HALL_OF_FAME);
+          //           },
+          //           iconPath: AppImages.fireIcon,
+          //           title:
+          //               '${controller.profile().user?.dailyTeamFvfCount ?? 0} Days',
+          //           bgColor: AppColors.kFFC300.withValues(alpha: .87),
+          //         ),
+          //       ],
+          //       if (_canShowBadge()) ...<Widget>[
+          //         StreakChip(
+          //           onTap: () {
+          //             Get.toNamed(Routes.HALL_OF_FAME);
+          //           },
+          //           iconPath: AppImages.emojiIcon,
+          //           title: controller.profile().user?.badge ?? '',
+          //           bgColor: AppColors.kEE4AD1.withValues(alpha: .88),
+          //         ),
+          //       ],
+          //     ],
+          //   ),
+          //   24.verticalSpace,
+          // ],
 
           /// Stats
           Row(
@@ -212,13 +212,18 @@ class ProfileHeaderSection extends StatelessWidget {
         ],
       );
 
-  bool _canShowBadge() =>
-      controller.profile().user?.badge != null &&
-      (controller.profile().user?.badge?.isNotEmpty ?? false);
+  bool get _canShowBadge =>
+      controller.currentBadge() != null &&
+      (controller.currentBadge()?.badge != null &&
+          (controller.currentBadge()?.badge?.isNotEmpty ?? false));
 
-  bool _canShowDailyFvf() =>
-      (controller.profile().user?.dailyTeamFvfCount ?? 0) > 0;
-
-  bool _canShowWinnerStreak() =>
-      (controller.profile().user?.winnerStreakCount ?? 0) > 0;
+// bool _canShowBadge() =>
+//     controller.profile().user?.badge != null &&
+//     (controller.profile().user?.badge?.isNotEmpty ?? false);
+//
+// bool _canShowDailyFvf() =>
+//     (controller.profile().user?.dailyTeamFvfCount ?? 0) > 0;
+//
+// bool _canShowWinnerStreak() =>
+//     (controller.profile().user?.winnerStreakCount ?? 0) > 0;
 }

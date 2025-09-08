@@ -9,6 +9,7 @@ import 'package:fvf_flutter/app/data/remote/api_service/init_api_service.dart';
 import 'package:fvf_flutter/app/data/remote/revenue_cat/revenue_cat_service.dart';
 import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
 import 'package:fvf_flutter/app/modules/profile/enums/subscription_enum.dart';
+import 'package:fvf_flutter/app/modules/profile/models/md_badge.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_highlight.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_profile.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_user_rounds.dart';
@@ -83,6 +84,7 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
     super.onInit();
     getUser();
     getRounds(isRefresh: true);
+    getBadges();
     // _loadProducts();
   }
 
@@ -127,6 +129,18 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
 
   /// Text editing controller for chat input field
   TextEditingController nameInputController = TextEditingController();
+
+  /// Badges
+  RxList<MdBadge> badges = <MdBadge>[].obs;
+
+  /// Current badge
+  Rx<MdBadge?> get currentBadge {
+    final MdBadge? _badge = badges.firstWhereOrNull(
+      (MdBadge element) => element.current == true && element.earned == true,
+    );
+
+    return _badge.obs;
+  }
 
   /// Pick Image Method
   Future<File?> pickImage({required ImageSource source}) async {
@@ -376,6 +390,22 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
       appSnackbar(
         message: 'Failed to add reaction. Please try again.',
         snackbarState: SnackbarState.danger,
+      );
+    }
+  }
+
+  /// Get Badges
+  Future<void> getBadges() async {
+    try {
+      final List<MdBadge>? _badges = await ProfileApiRepo.getBadges();
+
+      if (_badges != null && _badges.isNotEmpty) {
+        badges(_badges);
+        badges.refresh();
+      }
+    } on Exception catch (e) {
+      logE(
+        'Error getting badges: $e',
       );
     }
   }

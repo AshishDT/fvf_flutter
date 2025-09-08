@@ -11,8 +11,10 @@ import 'package:fvf_flutter/app/ui/components/common_app_bar.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 
 import '../controllers/badge_controller.dart';
+import '../widgets/lottie_then_child.dart';
 
 /// Badge View
 class BadgeView extends GetView<BadgeController> {
@@ -57,21 +59,25 @@ class BadgeView extends GetView<BadgeController> {
                   ),
                 ),
                 56.verticalSpace,
-                Stack(
-                  alignment: Alignment.center,
-                  children: <Widget>[
-                    const RotatingImage(),
-                    Image.asset(
-                      AppImages.badgeCardBg,
-                      height: 120.w,
-                      width: 120.w,
-                    ),
-                    SvgPicture.asset(
-                      'Gold'.badgeIcon,
-                      height: 46.w,
-                      width: 46.w,
-                    ),
-                  ],
+                LottieThenChild(
+                  lottiePath: AppImages.badgeReveal,
+                  child: Stack(
+                    key: const ValueKey<String>('badge'),
+                    alignment: Alignment.center,
+                    children: <Widget>[
+                      const RotatingImage(),
+                      Image.asset(
+                        AppImages.badgeCardBg,
+                        height: 120.w,
+                        width: 120.w,
+                      ),
+                      SvgPicture.asset(
+                        'Gold'.badgeIcon,
+                        height: 46.w,
+                        width: 46.w,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

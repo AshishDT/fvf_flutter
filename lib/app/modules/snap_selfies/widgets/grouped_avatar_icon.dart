@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fvf_flutter/app/modules/snap_selfies/widgets/half_moon.dart';
 import 'package:fvf_flutter/app/modules/snap_selfies/widgets/previous_participant_avatar.dart';
+import 'package:fvf_flutter/app/modules/snap_selfies/widgets/row_moon_clipper.dart';
 
 import '../../../utils/app_text_style.dart';
 import '../../create_bet/models/md_previous_round.dart';
@@ -50,33 +52,40 @@ class GroupAvatarIcon extends StatelessWidget {
           child: Stack(
             clipBehavior: Clip.none,
             children: <Widget>[
-              if (displayParticipants.length > 1)
+              if (displayParticipants.length >= 3)
                 Positioned(
-                  left: 10.w,
-                  bottom: 6.h,
-                  child: PreviousParticipantAvatarIcon(
-                    participant: displayParticipants[0],
-                    showAddIcon: false,
-                    showName: false,
-                    isSingle: false,
-                    isAdded: isAdded,
+                  left: 8.w,
+                  bottom: 2.h,
+                  child: ClipPath(
+                    clipper: RowMoonClipper(),
+                    child: PreviousParticipantAvatarIcon(
+                      participant: displayParticipants[0],
+                      showAddIcon: false,
+                      showName: false,
+                      isSingle: false,
+                      isAdded: isAdded,
+                    ),
                   ),
                 ),
-              if (displayParticipants.length > 2)
+              if (displayParticipants.length >= 2)
                 Positioned(
                   left: 12.w,
-                  top: 15.h,
-                  child: PreviousParticipantAvatarIcon(
-                    participant: displayParticipants[1],
-                    showAddIcon: false,
-                    showName: false,
-                    isSingle: false,
-                    isAdded: isAdded,
+                  top: displayParticipants.length == 2 ? 20.h : 15.h,
+                  child: ClipPath(
+                    clipper: HalfMoonClipper(),
+                    child: PreviousParticipantAvatarIcon(
+                      participant: displayParticipants[
+                          displayParticipants.length == 2 ? 0 : 1],
+                      showAddIcon: false,
+                      showName: false,
+                      isSingle: false,
+                      isAdded: isAdded,
+                    ),
                   ),
                 ),
               Positioned(
-                left: 30.w,
-                bottom: displayParticipants.length == 2 ? 0 : 14.h,
+                left: 31.2.w,
+                bottom: displayParticipants.length == 2 ? 3 : 8.6.h,
                 child: PreviousParticipantAvatarIcon(
                   participant: displayParticipants.last,
                   onAddTap: onAddTap,
@@ -102,4 +111,3 @@ class GroupAvatarIcon extends StatelessWidget {
     );
   }
 }
-

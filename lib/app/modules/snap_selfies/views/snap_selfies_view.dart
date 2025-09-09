@@ -10,6 +10,7 @@ import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/ui/components/vibrate_wiggle.dart';
 import 'package:get/get.dart';
+
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
 import '../../../ui/components/animated_list_view.dart';
@@ -381,7 +382,10 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                               participant.id ?? '',
                             );
                           },
-                        ).paddingOnly(right: controller.previousRounds().length >= 2 ?  32 : 0);
+                        ).paddingOnly(
+                            right: controller.previousRounds().length >= 2
+                                ? 32
+                                : 0);
                       },
                     )
                   : List<Widget>.generate(

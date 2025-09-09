@@ -8,6 +8,7 @@ import 'package:fvf_flutter/app/modules/profile/views/participants_view.dart';
 import 'package:fvf_flutter/app/modules/profile/views/profile_bio_section.dart';
 import 'package:fvf_flutter/app/modules/profile/views/profile_header.dart';
 import 'package:fvf_flutter/app/modules/profile/widgets/profile_wrapper.dart';
+import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/common_app_bar.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:get/get.dart';
@@ -102,7 +103,9 @@ class ProfileView extends GetView<ProfileController> {
                             },
                             actions: <Widget>[
                               GestureDetector(
-                                onTap: () {},
+                                onTap: () {
+                                  Get.toNamed(Routes.RATING);
+                                },
                                 child: SvgPicture.asset(
                                   AppImages.shareIcon,
                                   width: 24.w,

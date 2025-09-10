@@ -54,6 +54,7 @@ class EditNameSheet extends GetView<SnapSelfiesController> {
                 autofocus: true,
                 cursorColor: AppColors.kF1F2F2,
                 onFieldSubmitted: (String value) {
+                  Navigator.maybePop(context);
                   controller.nameInputFocusNode.unfocus();
                   controller.enteredName(value.trim());
                   controller.updateUser(username: value.trim());
@@ -78,7 +79,10 @@ class EditNameSheet extends GetView<SnapSelfiesController> {
                     AppImages.penIcon,
                     height: 24.h,
                     width: 24.w,
-                    color: AppColors.kF1F2F2,
+                    colorFilter: const ColorFilter.mode(
+                      AppColors.kF1F2F2,
+                      BlendMode.srcIn,
+                    ),
                   ),
                   hintStyle: AppTextStyle.openRunde(
                     color: AppColors.kffffff,

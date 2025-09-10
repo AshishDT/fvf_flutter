@@ -126,7 +126,6 @@ class CreateBetView extends GetView<CreateBetController> {
                           }
                           ChatFieldSheetRepo.openChatField(
                             const KeyboardAwareSheet(),
-                            isDismissible: true,
                           );
                         },
                         child: Row(

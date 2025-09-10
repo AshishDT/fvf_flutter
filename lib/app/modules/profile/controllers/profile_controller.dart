@@ -1,12 +1,10 @@
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/data/remote/api_service/init_api_service.dart';
-import 'package:fvf_flutter/app/data/remote/revenue_cat/revenue_cat_service.dart';
 import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
 import 'package:fvf_flutter/app/modules/profile/enums/subscription_enum.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_badge.dart';
@@ -23,7 +21,7 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import '../../../utils/app_loader.dart';
 
 /// Profile Controller
-class ProfileController extends GetxController with WidgetsBindingObserver {
+class ProfileController extends GetxController {
   /// image
   Rx<File> image = File('').obs;
 
@@ -72,57 +70,38 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
   /// animatedIndex
   RxInt animatedIndex = 0.obs;
 
+  /// Entered name
+  RxString enteredName = ''.obs;
+
   /// On init
   @override
   void onInit() {
-    WidgetsBinding.instance.addObserver(this);
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) {
-        _prevBottomInset.value = View.of(Get.context!).viewInsets.bottom;
-      },
-    );
     super.onInit();
     getUser();
     getRounds(isRefresh: true);
     getBadges();
-    // _loadProducts();
+
+    debounce(
+      enteredName,
+      (_) {
+        if (enteredName.isNotEmpty) {
+          updateUser(username: enteredName.value);
+        }
+      },
+      time: 400.milliseconds,
+    );
   }
 
   /// On close
   @override
   void onClose() {
-    WidgetsBinding.instance.removeObserver(this);
     nameInputFocusNode.dispose();
     super.onClose();
-  }
-
-  @override
-  void didChangeMetrics() {
-    final double currentViewInsets = View.of(Get.context!).viewInsets.bottom;
-
-    if (_prevBottomInset() > 0 && currentViewInsets == 0) {
-      Future<void>.delayed(
-        const Duration(seconds: 1),
-        () {
-          if (Get.isBottomSheetOpen ?? false) {
-            Get.back();
-          }
-        },
-      );
-    }
-
-    _prevBottomInset.value = currentViewInsets;
   }
 
   /// isCurrentUser
   bool get isCurrentUser =>
       profile.value.user?.supabaseId == SupaBaseService.userId;
-
-  /// Observable to track keyboard visibility
-  RxBool isKeyboardVisible = false.obs;
-
-  /// Previous bottom inset for keyboard
-  final RxDouble _prevBottomInset = 0.0.obs;
 
   /// Focus node for chat input field
   final FocusNode nameInputFocusNode = FocusNode();
@@ -208,6 +187,11 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
     String? profilePic,
     String? username,
   }) async {
+    if ((username?.trim().isEmpty ?? true) &&
+        (profilePic?.trim().isEmpty ?? true)) {
+      return;
+    }
+
     try {
       isLoading(true);
       final bool _isUpdated = await ProfileApiRepo.updateUser(
@@ -216,10 +200,6 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
       );
       if (_isUpdated) {
         await getUser();
-        appSnackbar(
-          message: 'Profile updated successfully',
-          snackbarState: SnackbarState.success,
-        );
       }
     } on Exception catch (e, st) {
       logE('Error getting user: $e');
@@ -355,14 +335,6 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  Future<void> _loadProducts() async {
-    final List<Package> products =
-        await RevenueCatService.instance.fetchOfferings();
-    // final List<StoreProduct> products =
-    //     await RevenueCatService.instance.fetchProducts();
-    // packages(products);
-  }
-
   /// Add reaction
   Future<void> addReaction({
     required String roundId,
@@ -378,14 +350,6 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
     if (_isAdded == true && rounds().isNotEmpty) {
       rounds()[currentRound()].reactions = emoji;
       rounds.refresh();
-      /*for (final MdRound item in rounds()) {
-        logI('Round ID: ${item.roundId}, Target Round ID: $roundId');
-        if (item.roundId == roundId) {
-          item.reactions = emoji;
-          rounds.refresh();
-        }
-        break;
-      }*/
     } else {
       appSnackbar(
         message: 'Failed to add reaction. Please try again.',

@@ -204,16 +204,10 @@ class WinnerView extends GetView<WinnerController> {
                 );
         },
         actions: <Widget>[
-          Container(
-            height: 34.w,
-            width: 34.w,
-            decoration: BoxDecoration(
-              color: AppColors.kFAFBFB.withValues(alpha: 0.3),
-              shape: BoxShape.circle,
-            ),
-            child: Image.asset(
-              AppImages.dice,
-            ),
+          SvgPicture.asset(
+            height: 24.h,
+            width: 24.w,
+            AppImages.moreVertical,
           ),
         ],
       ).paddingOnly(left: 24.w, right: 21.w);

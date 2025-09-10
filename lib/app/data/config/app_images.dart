@@ -44,9 +44,6 @@ class AppImages {
   /// Friend profile placeholder image
   static const String friendProfile = '$_path/friend_profile.png';
 
-  /// Dice image
-  static const String dice = '$_path/dice.png';
-
   /// Pencil icon
   static const String pencilIcon = '$_path/pencil_icon.png';
 
@@ -246,4 +243,7 @@ class AppImages {
 
   /// 5 Start Rating Animation
   static const String ratingStar = '$_lottiePath/5_star_review.json';
+
+  /// More Vertical Icon
+  static const String moreVertical = '$_svgPath/more_vertical.svg';
 }

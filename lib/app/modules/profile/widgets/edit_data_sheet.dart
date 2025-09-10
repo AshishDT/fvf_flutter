@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fvf_flutter/app/modules/profile/controllers/profile_controller.dart';
-import 'package:fvf_flutter/app/ui/components/app_button.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:get/get.dart';
-
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
 import '../../../utils/app_text_style.dart';
@@ -18,7 +16,7 @@ class EditDataSheet extends GetView<ProfileController> {
   @override
   Widget build(BuildContext context) {
     controller.nameInputController.text =
-        controller.profile()?.user?.username ?? '';
+        controller.profile().user?.username ?? '';
     return GradientCard(
       alignment: AlignmentDirectional.topStart,
       borderRadius: BorderRadius.vertical(
@@ -30,7 +28,7 @@ class EditDataSheet extends GetView<ProfileController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            'Edit your name',
+            'What’s Your Name?',
             style: AppTextStyle.openRunde(
               color: AppColors.kffffff,
               fontSize: 24.sp,
@@ -57,6 +55,16 @@ class EditDataSheet extends GetView<ProfileController> {
                 fontWeight: FontWeight.w600,
                 fontSize: 16.sp,
               ),
+              onFieldSubmitted: (String value) {
+                Navigator.maybePop(context);
+                controller.enteredName(value.trim());
+                controller.updateUser(
+                  username: controller.nameInputController.text.trim(),
+                );
+              },
+              onChanged: (String value) {
+                controller.enteredName(value.trim());
+              },
               textInputAction: TextInputAction.go,
               decoration: InputDecoration(
                 hintText: 'Name',
@@ -87,19 +95,7 @@ class EditDataSheet extends GetView<ProfileController> {
               ),
             ),
           ),
-          24.verticalSpace,
-          Obx(
-            () => AppButton(
-              isLoading: controller.isLoading(),
-              buttonText: 'Save',
-              onPressed: () {
-                controller.nameInputFocusNode.unfocus();
-                controller.updateUser(
-                  username: controller.nameInputController.text.trim(),
-                );
-              },
-            ),
-          ),
+          30.verticalSpace,
         ],
       ),
     );

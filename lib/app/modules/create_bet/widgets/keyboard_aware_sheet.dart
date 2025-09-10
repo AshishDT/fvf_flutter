@@ -53,7 +53,7 @@ class KeyboardAwareSheet extends GetView<CreateBetController> {
                 autofocus: true,
                 cursorColor: AppColors.kffffff,
                 onFieldSubmitted: (String value) {
-                  FocusScope.of(context).unfocus();
+                  Navigator.maybePop(context);
 
                   if (value.isNotEmpty) {
                     controller.enteredBet(value);

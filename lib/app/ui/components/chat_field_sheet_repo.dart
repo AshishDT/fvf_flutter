@@ -5,14 +5,11 @@ import 'package:get/get.dart';
 /// Repository for handling chat related bottom sheets
 class ChatFieldSheetRepo {
   /// Opens the chat input bottom sheet and dismisses it when keyboard closes
-  static void openChatField(Widget child, {bool isDismissible = false}) {
+  static void openChatField(Widget child) {
     showModalBottomSheet(
       context: Get.context!,
       useSafeArea: true,
       isScrollControlled: true,
-      isDismissible: isDismissible,
-      useRootNavigator: true,
-      enableDrag: false,
       shape: RoundedRectangleBorder(
         borderRadius: const BorderRadius.vertical(
           top: Radius.circular(24),

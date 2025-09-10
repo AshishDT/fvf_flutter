@@ -205,7 +205,7 @@ mixin SnapSelfieKeysMixin on GetxController {
         const Duration(seconds: 1),
         (Timer timer) {
           final int diffInSeconds =
-              localEndTime.difference(DateTime.now()).inSeconds;
+              localEndTime.difference(DateTime.now().toLocal()).inSeconds;
 
           if (diffInSeconds <= 0) {
             secondsLeft.value = 0;

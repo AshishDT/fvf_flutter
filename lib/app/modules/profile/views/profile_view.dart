@@ -103,9 +103,7 @@ class ProfileView extends GetView<ProfileController> {
                             },
                             actions: <Widget>[
                               GestureDetector(
-                                onTap: () {
-                                  Get.toNamed(Routes.RATING);
-                                },
+                                onTap: () {},
                                 child: SvgPicture.asset(
                                   AppImages.shareIcon,
                                   width: 24.w,

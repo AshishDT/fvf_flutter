@@ -25,7 +25,7 @@ import '../models/md_can_create_bet.dart';
 import '../models/md_participant.dart';
 
 /// Create Bet Controller
-class CreateBetController extends GetxController with WidgetsBindingObserver {
+class CreateBetController extends GetxController {
   /// Scaffold key
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -60,12 +60,6 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
   @override
   void onInit() {
     DeepLinkService.initBranchListener();
-    WidgetsBinding.instance.addObserver(this);
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) {
-        _prevBottomInset.value = View.of(Get.context!).viewInsets.bottom;
-      },
-    );
 
     getBets();
     getUser();
@@ -83,33 +77,13 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
   /// On close
   @override
   void onClose() {
-    WidgetsBinding.instance.removeObserver(this);
     phoneController.dispose();
     otpController.dispose();
     super.onClose();
   }
 
-  @override
-  void didChangeMetrics() {
-    final double currentViewInsets = View.of(Get.context!).viewInsets.bottom;
-
-    if (_prevBottomInset() > 0 && currentViewInsets == 0) {
-      if (Get.isOverlaysOpen) {
-        Get.back();
-      }
-    }
-
-    _prevBottomInset.value = currentViewInsets;
-  }
-
-  /// Observable to track keyboard visibility
-  RxBool isKeyboardVisible = false.obs;
-
   /// Entered bet
   RxString enteredBet = ''.obs;
-
-  /// Previous bottom inset for keyboard
-  final RxDouble _prevBottomInset = 0.0.obs;
 
   /// Text editing controller for chat input field
   TextEditingController messageInputController = TextEditingController();

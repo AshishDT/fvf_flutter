@@ -44,7 +44,7 @@ class PreviousParticipantAvatarIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String? profileUrl = participant.userProfileUrl;
+    final String? profileUrl = participant.profileUrl;
 
     Widget avatarContent;
     if (profileUrl != null && profileUrl.isNotEmpty) {
@@ -91,8 +91,8 @@ class PreviousParticipantAvatarIcon extends StatelessWidget {
                   right: 0,
                   child: isAdded
                       ? Icon(
-                          Icons.remove_circle,
-                          color: Colors.red,
+                          Icons.remove_circle_sharp,
+                          color: Colors.redAccent,
                           size: 24.sp,
                         )
                       : SvgPicture.asset(

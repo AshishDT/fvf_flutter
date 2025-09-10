@@ -35,6 +35,8 @@ class SnapSelfiesController extends GetxController
       participants.refresh();
       getPreSelfieStrings();
 
+      loadPreviousRounds();
+
       if (joinedInvitationData().isFromInvitation ?? false) {
         DateTime? endAt = joinedInvitationData().roundJoinedEndAt;
 
@@ -522,8 +524,8 @@ class SnapSelfiesController extends GetxController
       if (_r.participants != null) {
         for (final MdPreviousParticipant _p in _r.participants!) {
           if (!previousAddedParticipants.any((MdPreviousParticipant existing) =>
-                  existing.supbaseId == _p.supbaseId) &&
-              _p.supbaseId != SupaBaseService.userId) {
+                  existing.supaBaseId == _p.supaBaseId) &&
+              _p.supaBaseId != SupaBaseService.userId) {
             _p.isAdded = true;
             previousAddedParticipants.add(_p);
           }
@@ -569,26 +571,23 @@ class SnapSelfiesController extends GetxController
 
   /// On add/remove previous participant
   void onAddRemovePreviousParticipant(String s) {
-    for (final MdPreviousParticipant _pp in previousAddedParticipants()) {
-      if (_pp.supbaseId == s) {
-        if (_pp.isAdded == true) {
-          _pp.isAdded = false;
-        } else {
-          _pp.isAdded = true;
-        }
+    for (final MdPreviousParticipant pp in previousAddedParticipants) {
+      if (pp.supaBaseId == s) {
+        pp.isAdded = !(pp.isAdded ?? false);
       }
     }
 
-    final List<MdPreviousParticipant> _pParticipants = previousAddedParticipants
-        .where((MdPreviousParticipant p) => p.isAdded == true)
+    final List<MdPreviousParticipant> selected = previousAddedParticipants
+        .where((MdPreviousParticipant p) => p.isAdded ?? false)
         .toList();
 
-    if (_pParticipants.isEmpty) {
+    if (selected.isEmpty) {
       previousAddedParticipants.clear();
 
-      for (final MdPreviousRound p in previousRounds()) {
-        p.isAdded = false;
+      for (final MdPreviousRound round in previousRounds) {
+        round.isAdded = false;
       }
+      previousRounds.refresh();
     }
 
     previousAddedParticipants.refresh();

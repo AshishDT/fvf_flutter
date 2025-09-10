@@ -365,7 +365,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
           child: Obx(
             () => Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: controller.previousAddedParticipants().isEmpty
                   ? List<Widget>.generate(
                       controller.previousRounds().length,
@@ -397,11 +397,14 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                           participant: participant,
                           onAddTap: () {
                             controller.onAddRemovePreviousParticipant(
-                              participant.supbaseId ?? '',
+                              participant.supaBaseId ?? '',
                             );
                           },
                           isAdded: participant.isAdded ?? false,
-                        );
+                        ).paddingOnly(
+                            right: controller.previousAddedParticipants().length >= 2
+                                ? 32
+                                : 0);
                       },
                     ),
             ),

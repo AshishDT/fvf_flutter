@@ -78,18 +78,20 @@ mixin SnapSelfieKeysMixin on GetxController {
     return uniqueList.obs;
   }
 
-  /// Previous participants
-  RxList<MdPreviousRound> get previousRounds {
+  /// Previous rounds
+  final RxList<MdPreviousRound> previousRounds = <MdPreviousRound>[].obs;
+
+  /// Load previous rounds
+  void loadPreviousRounds() {
+    previousRounds.clear();
     final List<MdPreviousRound> list = (joinedInvitationData().previousRounds ??
         <MdPreviousRound>[])
-      ..removeWhere((MdPreviousRound p) =>
-          p.participants?.any((MdPreviousParticipant u) =>
-              u.supbaseId == SupaBaseService.userId) ??
+      ..removeWhere((p) =>
+          p.participants?.any((u) => u.supaBaseId == SupaBaseService.userId) ??
           false)
-      ..removeWhere((MdPreviousRound p) =>
-          p.participants == null || p.participants!.isEmpty);
+      ..removeWhere((p) => p.participants == null || p.participants!.isEmpty);
 
-    return list.obs;
+    previousRounds.assignAll(list);
   }
 
   /// Previous rounds added participants
@@ -155,7 +157,7 @@ mixin SnapSelfieKeysMixin on GetxController {
       if (pr.participants != null) {
         for (final MdPreviousParticipant p in pr.participants!) {
           if (!_ap
-              .any((MdPreviousParticipant e) => e.supbaseId == p.supbaseId)) {
+              .any((MdPreviousParticipant e) => e.supaBaseId == p.supaBaseId)) {
             _ap.add(p);
           }
         }

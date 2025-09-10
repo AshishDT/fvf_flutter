@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:io';
-
+import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:get/get.dart';
+import 'package:image/image.dart' as img;
 
 /// Controller for the Camera module.
 class PickSelfieCameraController extends GetxController {
@@ -130,7 +131,7 @@ class PickSelfieCameraController extends GetxController {
     );
   }
 
-  /// Takes a picture using the camera.
+  /// Take picture
   Future<void> takePicture() async {
     if (cameraController == null || !cameraController!.value.isInitialized) {
       logE('Camera not ready');
@@ -139,9 +140,24 @@ class PickSelfieCameraController extends GetxController {
 
     try {
       isCapturing(true);
-      final XFile _picture = await cameraController!.takePicture();
+      final XFile picture = await cameraController!.takePicture();
+
+      final File file = File(picture.path);
+
+      if (cameraController!.description.lensDirection ==
+          CameraLensDirection.front) {
+        final Uint8List bytes = await file.readAsBytes();
+        final img.Image? capturedImage = img.decodeImage(bytes);
+
+        if (capturedImage != null) {
+          final img.Image fixedImage = img.flipHorizontal(capturedImage);
+
+          await file.writeAsBytes(img.encodeJpg(fixedImage));
+        }
+      }
+
+      previewFile(file);
       isCapturing(false);
-      previewFile(File(_picture.path));
     } on Exception catch (e) {
       logE('Capture failed: $e');
       isCapturing(false);

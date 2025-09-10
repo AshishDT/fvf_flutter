@@ -241,6 +241,9 @@ class AppImages {
   /// User First Join Animation
   static const String userFirstJoin = '$_lottiePath/user_first_join.json';
 
+  /// 5 Start Rating Animation
+  static const String ratingStar = '$_lottiePath/5_star_review.json';
+
   /// More Vertical Icon
   static const String moreVertical = '$_svgPath/more_vertical.svg';
 }

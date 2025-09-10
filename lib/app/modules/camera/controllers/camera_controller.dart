@@ -14,9 +14,15 @@ class PickSelfieCameraController extends GetxController {
   @override
   void onInit() {
     if (Get.arguments != null) {
-      secondsLeft.value = Get.arguments as int;
-      secondsLeft.refresh();
-      startTimer();
+      if (Get.arguments['seconds_left'] != null) {
+        secondsLeft.value = Get.arguments['seconds_left'] as int;
+        secondsLeft.refresh();
+        startTimer();
+      }
+
+      if (Get.arguments['prompt'] != null) {
+        prompt = Get.arguments['prompt'] as String;
+      }
     }
     _setupCamera();
     super.onInit();
@@ -41,6 +47,9 @@ class PickSelfieCameraController extends GetxController {
 
   /// Future to handle camera initialization
   late Future<void> initializeControllerFuture;
+
+  /// Prompt for the selfie
+  String prompt = '';
 
   /// Observable variables to track camera state
   final RxBool isCameraInitialized = false.obs;
@@ -116,11 +125,9 @@ class PickSelfieCameraController extends GetxController {
 
   /// Called when timer finishes
   void onTimerFinished() {
-    if (previewFile().path.isNotEmpty) {
-      Get.back(
-        result: XFile(previewFile().path),
-      );
-    }
+    Get.back(
+      result: previewFile().path.isNotEmpty ? XFile(previewFile().path) : null,
+    );
   }
 
   /// Takes a picture using the camera.

@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -19,8 +20,8 @@ class CameraView extends GetView<PickSelfieCameraController> {
 
   @override
   Widget build(BuildContext context) => PopScope(
-    canPop: false,
-    child: Scaffold(
+        canPop: false,
+        child: Scaffold(
           backgroundColor: AppColors.kF5FCFF,
           body: Obx(
             () {
@@ -45,8 +46,10 @@ class CameraView extends GetView<PickSelfieCameraController> {
                         _appBar(),
                         const Spacer(),
                         Center(
-                          child: Text(
-                            'Most Likely to Start an OF?',
+                          child: AutoSizeText(
+                            controller.prompt,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
                             textAlign: TextAlign.center,
                             style: AppTextStyle.openRunde(
                               fontSize: 24.sp,
@@ -56,7 +59,8 @@ class CameraView extends GetView<PickSelfieCameraController> {
                                 BoxShadow(
                                   blurRadius: 2,
                                   offset: const Offset(0, 1),
-                                  color: AppColors.k000000.withValues(alpha: .75),
+                                  color:
+                                      AppColors.k000000.withValues(alpha: .75),
                                 ),
                               ],
                             ),
@@ -90,38 +94,61 @@ class CameraView extends GetView<PickSelfieCameraController> {
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    child: Container(
-                      height: 154.h,
-                      width: Get.width,
-                      child: Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            SizedBox(
-                              height: 24.h,
-                              width: 24.w,
-                            ),
-                            50.horizontalSpace,
-                            GestureDetector(
-                              onTap: () {
-                                controller.takePicture();
-                              },
-                              child: SvgPicture.asset(
-                                AppImages.clickSelfieIcon,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        AutoSizeText(
+                          controller.prompt,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                          textAlign: TextAlign.center,
+                          style: AppTextStyle.openRunde(
+                            fontSize: 24.sp,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.kffffff,
+                            shadows: <Shadow>[
+                              BoxShadow(
+                                blurRadius: 2,
+                                offset: const Offset(0, 1),
+                                color: AppColors.k000000.withValues(alpha: .75),
                               ),
-                            ),
-                            50.horizontalSpace,
-                            GestureDetector(
-                              onTap: () {
-                                controller.flipCamera();
-                              },
-                              child: SvgPicture.asset(
-                                AppImages.flipCamera,
+                            ],
+                          ),
+                        ).paddingSymmetric(horizontal: 24.w),
+                        45.verticalSpace,
+                        Container(
+                          height: 100.h,
+                          width: Get.width,
+                          alignment: Alignment.topCenter,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              SizedBox(
+                                height: 24.h,
+                                width: 24.w,
                               ),
-                            ),
-                          ],
+                              50.horizontalSpace,
+                              GestureDetector(
+                                onTap: () {
+                                  controller.takePicture();
+                                },
+                                child: SvgPicture.asset(
+                                  AppImages.clickSelfieIcon,
+                                ),
+                              ),
+                              50.horizontalSpace,
+                              GestureDetector(
+                                onTap: () {
+                                  controller.flipCamera();
+                                },
+                                child: SvgPicture.asset(
+                                  AppImages.flipCamera,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 ],
@@ -129,7 +156,7 @@ class CameraView extends GetView<PickSelfieCameraController> {
             },
           ),
         ).withGPad(context, color: Colors.black),
-  );
+      );
 
   Widget _appBar() => CommonAppBar(
         onTapOfLeading: controller.onTimerFinished,

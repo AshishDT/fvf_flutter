@@ -158,7 +158,10 @@ class SnapSelfiesController extends GetxController
   Future<void> onSnapSelfie() async {
     await Get.toNamed(
       Routes.CAMERA,
-      arguments: secondsLeft(),
+      arguments: <String, dynamic>{
+        'seconds_left': secondsLeft(),
+        'prompt': joinedInvitationData().prompt,
+      },
     )?.then(
       (dynamic result) {
         if (result != null && result is XFile) {
@@ -336,6 +339,7 @@ class SnapSelfiesController extends GetxController
         break;
 
       case RoundStatus.failed:
+        submittingSelfie(false);
         _fallBackToStartAgain();
         break;
 
@@ -403,10 +407,6 @@ class SnapSelfiesController extends GetxController
       if (isSuccess == true) {
         emitDate();
         setUpTextTimer();
-        appSnackbar(
-          message: 'Snap submitted successfully!',
-          snackbarState: SnackbarState.success,
-        );
       }
     } finally {
       submittingSelfie(false);

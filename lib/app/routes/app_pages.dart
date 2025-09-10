@@ -20,6 +20,8 @@ import '../modules/hall_of_fame/bindings/hall_of_fame_binding.dart';
 import '../modules/hall_of_fame/views/hall_of_fame_view.dart';
 import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/profile/views/profile_view.dart';
+import '../modules/rating/bindings/rating_binding.dart';
+import '../modules/rating/views/rating_view.dart';
 import '../modules/snap_selfies/bindings/snap_selfies_binding.dart';
 import '../modules/snap_selfies/views/snap_selfies_view.dart';
 import '../modules/splash/bindings/splash_binding.dart';
@@ -99,6 +101,11 @@ class AppPages {
       name: _Paths.BADGE,
       page: () => const BadgeView(),
       binding: BadgeBinding(),
+    ),
+    GetPage(
+      name: _Paths.RATING,
+      page: () => const RatingView(),
+      binding: RatingBinding(),
     ),
   ];
 }

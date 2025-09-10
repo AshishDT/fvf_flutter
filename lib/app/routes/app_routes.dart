@@ -18,6 +18,7 @@ abstract class Routes {
   static const CREW_STREAK = _Paths.CREW_STREAK;
   static const BADGE = _Paths.BADGE;
   static const HALL_OF_FAME = _Paths.HALL_OF_FAME;
+  static const RATING = _Paths.RATING;
 }
 
 abstract class _Paths {
@@ -34,4 +35,5 @@ abstract class _Paths {
   static const HALL_OF_FAME = '/hall-of-fame';
   static const CREW_STREAK = '/crew-streak';
   static const BADGE = '/badge';
+  static const RATING = '/rating';
 }

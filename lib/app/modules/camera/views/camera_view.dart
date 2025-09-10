@@ -1,3 +1,4 @@
+import 'package:animated_digit/animated_digit.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -168,13 +169,37 @@ class CameraView extends GetView<PickSelfieCameraController> {
             child: Obx(
               () => Visibility(
                 visible: controller.secondsLeft() > 0,
-                child: Text(
-                  '${controller.secondsLeft().toString()}s',
-                  style: AppTextStyle.openRunde(
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.kffffff,
-                  ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    SvgPicture.asset(
+                      AppImages.timerIcon,
+                      height: 18.h,
+                      width: 18.w,
+                    ),
+                    Obx(
+                      () => AnimatedDigitWidget(
+                        duration: const Duration(milliseconds: 600),
+                        separateLength: 1,
+                        loop: false,
+                        value: controller.secondsLeft(),
+                        suffix: 's',
+                        textStyle: AppTextStyle.openRunde(
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.kF6FCFE,
+                          shadows: <Shadow>[
+                            const Shadow(
+                              offset: Offset(0, 4),
+                              blurRadius: 4,
+                              color: Color(0x33000000),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),

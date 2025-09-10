@@ -34,7 +34,6 @@ class DeepLinkService {
     );
 
     if (response.success) {
-      logI('Branch link generated: ${response.result}');
       return response.result;
     } else {
       logE(

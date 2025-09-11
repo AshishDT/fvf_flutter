@@ -49,10 +49,10 @@ void handleDeepLinkIncomingData(Map<dynamic, dynamic> data) {
     }
   } else {
     const List<String> branchDomains = <String>[
-      'ikmza.app.link',
-      'ikmza-alternate.app.link',
-      'ikmza.test-app.link',
-      'ikmza-alternate.test-app.link',
+      '0wkmj.app.link',
+      '0wkmj-alternate.app.link',
+      '0wkmj.test-app.link',
+      '0wkmj-alternate.test-app.link',
     ];
 
     final bool isNonBranchLinkPresent = data.containsKey('+non_branch_link');

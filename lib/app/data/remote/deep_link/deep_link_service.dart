@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
+import '../../../utils/app_config.dart';
 import '../../config/logger.dart';
 import 'deep_link_incoming_data_handler.dart';
 
@@ -45,7 +46,9 @@ class DeepLinkService {
   /// Get the expiry time for the link
   static int get _expiryTime => DateTime.now()
       .toUtc()
-      .add(const Duration(seconds: 69))
+      .add(
+        Duration(seconds: AppConfig.roundDurationInSeconds),
+      )
       .millisecondsSinceEpoch;
 
   /// Initialize deep link listener

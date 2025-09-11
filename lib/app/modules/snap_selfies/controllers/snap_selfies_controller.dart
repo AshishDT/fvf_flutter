@@ -15,6 +15,7 @@ import 'package:fvf_flutter/app/modules/profile/repositories/profile_api_repo.da
 import 'package:fvf_flutter/app/modules/create_bet/models/md_round.dart';
 import 'package:fvf_flutter/app/modules/snap_selfies/controllers/snap_selfie_keys_mixin.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
+import 'package:fvf_flutter/app/utils/app_config.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../data/models/md_join_invitation.dart';
@@ -391,7 +392,8 @@ class SnapSelfiesController extends GetxController
             participant.selfieUrl != null && participant.selfieUrl!.isNotEmpty)
         .toList();
 
-    final bool canStartRound = participantsWithSelfies.length >= 2;
+    final bool canStartRound =
+        participantsWithSelfies.length >= AppConfig.minSubmissions;
 
     if (canStartRound) {
       socketIoRepo.disposeRoundUpdate();
@@ -529,9 +531,10 @@ class SnapSelfiesController extends GetxController
 
   /// On add previous participant
   void onAddPreviousRound(String roundId) {
-    if (quickAddsCount() > 8) {
+    if (quickAddsCount() > AppConfig.maxPart) {
       appSnackbar(
-        message: 'You can only add up to 8 friends at a time.',
+        message:
+            'You can only add up to ${AppConfig.maxPart} friends at a time.',
         snackbarState: SnackbarState.info,
       );
       return;
@@ -578,9 +581,10 @@ class SnapSelfiesController extends GetxController
       return;
     }
 
-    if (toAdd.length < 2) {
+    if (toAdd.length < AppConfig.minPart) {
       appSnackbar(
-        message: 'Please add at least 2 friends to start the round.',
+        message:
+            'Please add at least ${AppConfig.minPart} friends to start the round.',
         snackbarState: SnackbarState.warning,
       );
       return;

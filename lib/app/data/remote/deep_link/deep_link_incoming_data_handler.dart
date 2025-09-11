@@ -81,18 +81,16 @@ Future<void> joinProjectInvitation(String invitationId) async {
     Loader.dismiss();
 
     if (_joinedData != null) {
-      appSnackbar(
-        message: 'You have successfully joined the project!',
-        snackbarState: SnackbarState.success,
-      );
-
       _joinedData.isFromInvitation = true;
 
-      unawaited(
-        Get.toNamed(
-          Routes.SNAP_SELFIES,
-          arguments: _joinedData,
-        ),
+      Future<void>.delayed(
+        const Duration(milliseconds: 100),
+        () {
+          Get.toNamed(
+            Routes.SNAP_SELFIES,
+            arguments: _joinedData,
+          );
+        },
       );
     }
   } on Exception {

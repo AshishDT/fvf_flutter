@@ -112,57 +112,68 @@ class NotificationActionsHandler {
     RoundHost? host,
   }) {
     if (Get.currentRoute != Routes.WINNER) {
-      Get
-        ..until(
-          (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
-        )
-        ..toNamed(
-          Routes.WINNER,
-          arguments: <String, dynamic>{
-            'result_data': MdAiResultData(
-              prompt: prompt,
-              host: host,
-              id: roundId,
-              results: results,
-              status: status,
-              revealAt: revealAt,
-            ),
-          },
-        );
+      Future<void>.delayed(
+        const Duration(milliseconds: 100),
+        () {
+          Get
+            ..until(
+              (Route<dynamic> route) =>
+                  route.settings.name == Routes.CREATE_BET,
+            )
+            ..toNamed(
+              Routes.WINNER,
+              arguments: <String, dynamic>{
+                'result_data': MdAiResultData(
+                  prompt: prompt,
+                  host: host,
+                  id: roundId,
+                  results: results,
+                  status: status,
+                  revealAt: revealAt,
+                ),
+              },
+            );
+        },
+      );
     }
   }
 
   /// On pending status
   static void _onPendingStatus(MdRound round) {
     if (Get.currentRoute != Routes.SNAP_SELFIES) {
-      Get.toNamed(
-        Routes.SNAP_SELFIES,
-        arguments: MdJoinInvitation(
-          id: round.id ?? '',
-          createdAt: round.createdAt?.toIso8601String(),
-          type: round.id,
-          prompt: round.prompt ?? '',
-          isCustomPrompt: round.isCustomPrompt ?? false,
-          isActive: round.isActive ?? false,
-          isDeleted: round.isDeleted ?? false,
-          status: round.status?.value,
-          updatedAt: round.updatedAt?.toIso8601String(),
-          roundJoinedEndAt: round.roundJoinedEndAt,
-          previousRounds: round.previousRounds,
-          participants: <MdParticipant>[
-            MdParticipant(
-              createdAt: DateTime.now().toIso8601String(),
-              id: round.host?.id ?? '',
-              isActive: true,
-              isDeleted: false,
-              isHost: true,
-              joinedAt: DateTime.now().toIso8601String(),
-              userData: round.host,
+      Future<void>.delayed(
+        const Duration(milliseconds: 100),
+        () {
+          Get.toNamed(
+            Routes.SNAP_SELFIES,
+            arguments: MdJoinInvitation(
+              id: round.id ?? '',
+              createdAt: round.createdAt?.toIso8601String(),
+              type: round.id,
+              prompt: round.prompt ?? '',
+              isCustomPrompt: round.isCustomPrompt ?? false,
+              isActive: round.isActive ?? false,
+              isDeleted: round.isDeleted ?? false,
+              status: round.status?.value,
+              updatedAt: round.updatedAt?.toIso8601String(),
+              roundJoinedEndAt: round.roundJoinedEndAt,
+              previousRounds: round.previousRounds,
+              participants: <MdParticipant>[
+                MdParticipant(
+                  createdAt: DateTime.now().toIso8601String(),
+                  id: round.host?.id ?? '',
+                  isActive: true,
+                  isDeleted: false,
+                  isHost: true,
+                  joinedAt: DateTime.now().toIso8601String(),
+                  userData: round.host,
+                ),
+              ],
+              isFromInvitation: true,
+              host: round.host,
             ),
-          ],
-          isFromInvitation: true,
-          host: round.host,
-        ),
+          );
+        },
       );
     }
   }
@@ -201,12 +212,17 @@ class NotificationActionsHandler {
     required String prompt,
   }) {
     if (Get.currentRoute != Routes.AI_CHOOSING) {
-      Get.toNamed(
-        Routes.AI_CHOOSING,
-        arguments: <String, dynamic>{
-          'participants': participants,
-          'bet': prompt,
-          'from_notification': true,
+      Future<void>.delayed(
+        const Duration(milliseconds: 100),
+        () {
+          Get.toNamed(
+            Routes.AI_CHOOSING,
+            arguments: <String, dynamic>{
+              'participants': participants,
+              'bet': prompt,
+              'from_notification': true,
+            },
+          );
         },
       );
     }
@@ -245,9 +261,14 @@ class NotificationActionsHandler {
     };
 
     if (Get.currentRoute != Routes.FAILED_ROUND) {
-      Get.offNamed(
-        Routes.FAILED_ROUND,
-        arguments: currentArgs,
+      Future<void>.delayed(
+        const Duration(milliseconds: 100),
+        () {
+          Get.toNamed(
+            Routes.FAILED_ROUND,
+            arguments: currentArgs,
+          );
+        },
       );
     }
   }

@@ -77,7 +77,20 @@ class NotificationActionsHandler {
             );
             break;
           case RoundStatus.failed:
-            // Navigate to error screen
+            final List<MdParticipant>? participants =
+                _roundDetails.round?.participants;
+
+            if (participants == null || participants.isEmpty) {
+              return;
+            }
+
+            final bool isHost = _roundDetails.round?.host?.supabaseId ==
+                UserProvider.currentUser?.supabaseId;
+            _fallBackToStartAgain(
+              isHost: isHost,
+              participants: participants,
+              roundId: roundId,
+            );
             break;
         }
       }
@@ -98,56 +111,60 @@ class NotificationActionsHandler {
     DateTime? revealAt,
     RoundHost? host,
   }) {
-    Get
-      ..until(
-        (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
-      )
-      ..toNamed(
-        Routes.WINNER,
-        arguments: <String, dynamic>{
-          'result_data': MdAiResultData(
-            prompt: prompt,
-            host: host,
-            id: roundId,
-            results: results,
-            status: status,
-            revealAt: revealAt,
-          ),
-        },
-      );
+    if (Get.currentRoute != Routes.WINNER) {
+      Get
+        ..until(
+          (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
+        )
+        ..toNamed(
+          Routes.WINNER,
+          arguments: <String, dynamic>{
+            'result_data': MdAiResultData(
+              prompt: prompt,
+              host: host,
+              id: roundId,
+              results: results,
+              status: status,
+              revealAt: revealAt,
+            ),
+          },
+        );
+    }
   }
 
   /// On pending status
   static void _onPendingStatus(MdRound round) {
-    Get.toNamed(
-      Routes.SNAP_SELFIES,
-      arguments: MdJoinInvitation(
-        id: round.id ?? '',
-        createdAt: round.createdAt?.toIso8601String(),
-        type: round.id,
-        prompt: round.prompt ?? '',
-        isCustomPrompt: round.isCustomPrompt ?? false,
-        isActive: round.isActive ?? false,
-        isDeleted: round.isDeleted ?? false,
-        status: round.status?.value,
-        updatedAt: round.updatedAt?.toIso8601String(),
-        roundJoinedEndAt: round.roundJoinedEndAt,
-        previousRounds: round.previousRounds,
-        participants: <MdParticipant>[
-          MdParticipant(
-            createdAt: DateTime.now().toIso8601String(),
-            id: round.host?.id ?? '',
-            isActive: true,
-            isDeleted: false,
-            isHost: true,
-            joinedAt: DateTime.now().toIso8601String(),
-            userData: round.host,
-          ),
-        ],
-        isFromInvitation: true,
-        host: round.host,
-      ),
-    );
+    if (Get.currentRoute != Routes.SNAP_SELFIES) {
+      Get.toNamed(
+        Routes.SNAP_SELFIES,
+        arguments: MdJoinInvitation(
+          id: round.id ?? '',
+          createdAt: round.createdAt?.toIso8601String(),
+          type: round.id,
+          prompt: round.prompt ?? '',
+          isCustomPrompt: round.isCustomPrompt ?? false,
+          isActive: round.isActive ?? false,
+          isDeleted: round.isDeleted ?? false,
+          status: round.status?.value,
+          updatedAt: round.updatedAt?.toIso8601String(),
+          roundJoinedEndAt: round.roundJoinedEndAt,
+          previousRounds: round.previousRounds,
+          participants: <MdParticipant>[
+            MdParticipant(
+              createdAt: DateTime.now().toIso8601String(),
+              id: round.host?.id ?? '',
+              isActive: true,
+              isDeleted: false,
+              isHost: true,
+              joinedAt: DateTime.now().toIso8601String(),
+              userData: round.host,
+            ),
+          ],
+          isFromInvitation: true,
+          host: round.host,
+        ),
+      );
+    }
   }
 
   /// Handle processing round
@@ -183,14 +200,16 @@ class NotificationActionsHandler {
     required List<MdParticipant> participants,
     required String prompt,
   }) {
-    Get.toNamed(
-      Routes.AI_CHOOSING,
-      arguments: <String, dynamic>{
-        'participants': participants,
-        'bet': prompt,
-        'from_notification': true,
-      },
-    );
+    if (Get.currentRoute != Routes.AI_CHOOSING) {
+      Get.toNamed(
+        Routes.AI_CHOOSING,
+        arguments: <String, dynamic>{
+          'participants': participants,
+          'bet': prompt,
+          'from_notification': true,
+        },
+      );
+    }
   }
 
   /// Fall back to start again
@@ -225,9 +244,11 @@ class NotificationActionsHandler {
       'participants_without_current_user': participantsWithoutCurrentUser(),
     };
 
-    Get.offNamed(
-      Routes.FAILED_ROUND,
-      arguments: currentArgs,
-    );
+    if (Get.currentRoute != Routes.FAILED_ROUND) {
+      Get.offNamed(
+        Routes.FAILED_ROUND,
+        arguments: currentArgs,
+      );
+    }
   }
 }

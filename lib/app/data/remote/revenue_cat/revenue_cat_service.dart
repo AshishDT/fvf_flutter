@@ -14,8 +14,7 @@ class RevenueCatService {
 
   /// Product identifiers (must match App Store / Play Console)
   final List<String> _productIds = <String>[
-    'one_round:round-pe-1',
-    'weekly_round:round-pe-7',
+    'slay_premium:slay-app',
   ];
 
   /// Initialize RevenueCat
@@ -24,7 +23,7 @@ class RevenueCatService {
 
     await Purchases.configure(
       PurchasesConfiguration(
-        'goog_cCgqhqQWSoBndKRpjClCaONIPAw',
+        'goog_UxAaepnPQpZBRxFejFmUKwgBzlR',
       ),
     );
   }
@@ -38,7 +37,7 @@ class RevenueCatService {
         return offerings.current!.availablePackages;
       }
       return <Package>[];
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       logE('⚠️ Error fetching offerings: $e');
       logE(st);
       return <Package>[];
@@ -52,7 +51,7 @@ class RevenueCatService {
           await Purchases.getProducts(_productIds);
       logI('Fetched products: $products');
       return products;
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       logE('⚠️ Error fetching products: $e');
       logE(st);
       return <StoreProduct>[];
@@ -66,7 +65,7 @@ class RevenueCatService {
           await Purchases.purchaseStoreProduct(storeProduct);
       return customerInfo.customerInfo.entitlements.all['premium']?.isActive ??
           false;
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       logE('⚠️ Purchase failed: $e');
       logE(st);
       return false;
@@ -78,7 +77,7 @@ class RevenueCatService {
     try {
       final CustomerInfo customerInfo = await Purchases.restorePurchases();
       return customerInfo.entitlements.all['premium']?.isActive ?? false;
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       logE('⚠️ Restore failed: $e');
       logE(st);
       return false;
@@ -90,7 +89,7 @@ class RevenueCatService {
     try {
       final CustomerInfo customerInfo = await Purchases.getCustomerInfo();
       return customerInfo.entitlements.all['premium']?.isActive ?? false;
-    } catch (e, st) {
+    } on Exception catch (e, st) {
       logE('⚠️ Error checking premium: $e');
       logE(st);
       return false;

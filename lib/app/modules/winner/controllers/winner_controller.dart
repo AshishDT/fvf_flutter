@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/data/local/user_provider.dart';
+import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/models/md_result.dart';
+import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/modules/profile/enums/subscription_enum.dart';
 import 'package:fvf_flutter/app/modules/profile/repositories/profile_api_repo.dart';
 import 'package:fvf_flutter/app/modules/winner/models/md_round_details.dart';
 import 'package:fvf_flutter/app/modules/winner/repositories/winner_api_repo.dart';
+import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
 
@@ -46,6 +49,8 @@ class WinnerController extends GetxController {
         getRoundDetails(
           _resultData().id ?? '',
         );
+
+        checkForStreaks(_resultData.value);
       }
       WidgetsBinding.instance.addPostFrameCallback(
         (Duration timeStamp) {
@@ -205,5 +210,44 @@ class WinnerController extends GetxController {
           ? isRoundSubLoading(false)
           : isWeeklySubLoading(false);
     }
+  }
+
+  /// Check for streaks
+  void checkForStreaks(MdAiResultData result) {
+    final bool isCrewNotNull =
+        result.crew != null && (result.crew?.isCrewStrekak ?? false);
+
+    if (!isCrewNotNull) {
+      return;
+    }
+
+    final List<String> _participantIds = result.participants
+            ?.map((MdParticipant e) => e.userData?.supabaseId ?? '')
+            .toList() ??
+        <String>[];
+
+    if (_participantIds.isEmpty) {
+      return;
+    }
+
+    final bool isCurrentUserInStreak =
+        _participantIds.contains(SupaBaseService.userId);
+
+    if (!isCurrentUserInStreak) {
+      return;
+    }
+
+    Future<void>.delayed(
+      const Duration(seconds: 2),
+      () {
+        Get.toNamed(
+          Routes.CREW_STREAK,
+          arguments: <String, dynamic>{
+            'crew': result.crew,
+            'participants': result.participants,
+          },
+        );
+      },
+    );
   }
 }

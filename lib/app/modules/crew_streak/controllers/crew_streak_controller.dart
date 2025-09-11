@@ -1,40 +1,59 @@
-import 'package:fvf_flutter/app/data/models/md_join_invitation.dart';
+import 'dart:async';
+
+import 'package:fvf_flutter/app/modules/ai_choosing/models/md_crew.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:get/get.dart';
 
 /// CrewStreakController
 class CrewStreakController extends GetxController {
-
-  /// List of participants
-  List<MdParticipant> participants = <MdParticipant>[
-    MdParticipant(
-      selfieUrl: 'https://plus.unsplash.com/premium_photo-1690407617542-2f210cf20d7e?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cGVyc29ufGVufDB8fDB8fHww',
-      userData: RoundHost(
-        username: 'User 1',
-      ),
-    ),
-    MdParticipant(
-      selfieUrl: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8cGVyc29ufGVufDB8fDB8fHww',
-      userData: RoundHost(
-        username: 'User 2',
-      ),
-    ),
-    MdParticipant(
-      selfieUrl: 'https://plus.unsplash.com/premium_photo-1678197937465-bdbc4ed95815?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8cGVyc29ufGVufDB8fDB8fHww',
-      userData: RoundHost(
-        username: 'User 3',
-      ),
-    ),
-    MdParticipant(
-      selfieUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cGVyc29ufGVufDB8fDB8fHww',
-      userData: RoundHost(
-        username: 'User 4',
-      ),
-    ),
-  ];
-
+  /// On init
   @override
   void onInit() {
+    if (Get.arguments != null) {
+      if (Get.arguments['crew'] != null) {
+        crew = Get.arguments['crew'] as MdCrew;
+      }
+
+      if (Get.arguments['participants'] != null) {
+        participants = Get.arguments as List<MdParticipant>;
+      }
+
+      startCountdown();
+    }
     super.onInit();
+  }
+
+  /// On close
+  @override
+  void onClose() {
+    timer?.cancel();
+    super.onClose();
+  }
+
+  /// List of participants
+  List<MdParticipant> participants = <MdParticipant>[];
+
+  /// Crew
+  MdCrew crew = MdCrew();
+
+  /// Timer for countdown
+  Timer? timer;
+
+  /// Seconds left for countdown
+  RxInt secondsLeft = 6.obs;
+
+  /// Function to be called after countdown
+  void startCountdown() {
+    timer = Timer.periodic(
+      const Duration(seconds: 1),
+      (Timer t) {
+        if (secondsLeft > 0) {
+          secondsLeft.value--;
+        } else {
+          t.cancel();
+          Get.back();
+        }
+      },
+    );
   }
 }

@@ -7,6 +7,7 @@ import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/enums/round_status_enum.dart';
+import 'package:fvf_flutter/app/modules/ai_choosing/models/md_ai_result.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_previous_round.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_profile.dart';
@@ -345,9 +346,42 @@ class SnapSelfiesController extends GetxController
         _fallBackToStartAgain();
         break;
 
+      case RoundStatus.completed:
+        _onRoundCompleted(data);
+        break;
+
       default:
         break;
     }
+  }
+
+  /// On round completed
+  void _onRoundCompleted(MdSocketData data) {
+    isProcessing(false);
+    submittingSelfie(false);
+    socketIoRepo.disposeRoundUpdate();
+
+    final DateTime? revealedAt = DateTime.tryParse(data.round?.revealAt ?? '');
+
+    Get
+      ..until(
+        (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
+      )
+      ..toNamed(
+        Routes.WINNER,
+        arguments: <String, dynamic>{
+          'result_data': MdAiResultData(
+            revealAt: revealedAt,
+            status: RoundStatus.completed,
+            id: data.round?.id,
+            host: joinedInvitationData().host,
+            participants: data.round?.participants,
+            prompt: joinedInvitationData().prompt,
+            results: data.round?.results,
+            crew: data.round?.crew,
+          ),
+        },
+      );
   }
 
   /// Handle processing round

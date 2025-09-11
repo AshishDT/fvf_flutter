@@ -229,7 +229,7 @@ mixin SnapSelfieKeysMixin on GetxController {
 
   ///  Sets up the timer for changing texts
   void setUpTextTimer() {
-    timer = Timer.periodic(
+    textsTimer = Timer.periodic(
       const Duration(seconds: 2),
       (Timer timer) {
         currentIndex.value = (currentIndex() + 1) % preSelfieStrings.length;

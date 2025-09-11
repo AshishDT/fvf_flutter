@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
-import '../../../utils/app_config.dart';
 import '../../config/logger.dart';
 import 'deep_link_incoming_data_handler.dart';
 
@@ -19,7 +18,6 @@ class DeepLinkService {
       canonicalIdentifier: 'slay_invite',
       title: title,
       contentDescription: 'Slay invite deep link',
-      expirationDateInMilliSec: _expiryTime,
       contentMetadata: BranchContentMetaData()
         ..addCustomMetadata('invitation_id', invitationId)
         ..addCustomMetadata('host_id', hostId),
@@ -42,14 +40,6 @@ class DeepLinkService {
       return null;
     }
   }
-
-  /// Get the expiry time for the link
-  static int get _expiryTime => DateTime.now()
-      .toUtc()
-      .add(
-        Duration(seconds: AppConfig.roundDurationInSeconds),
-      )
-      .millisecondsSinceEpoch;
 
   /// Initialize deep link listener
   static void initBranchListener() {

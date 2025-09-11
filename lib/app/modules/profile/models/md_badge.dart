@@ -8,14 +8,18 @@ class MdBadge {
     this.description,
     this.earned,
     this.current,
+    this.earnedAt,
   });
 
   /// From json
   factory MdBadge.fromJson(Map<String, dynamic> json) => MdBadge(
-        badge: json['badge'],
+        badge: json['badge'] ?? json['badge_type'],
         description: json['description'],
         earned: json['earned'],
         current: json['current'],
+        earnedAt: json['earned_at'] == null
+            ? null
+            : DateTime.parse(json['earned_at']),
       );
 
   /// Badge
@@ -29,6 +33,9 @@ class MdBadge {
 
   /// Current
   bool? current;
+
+  /// Earned at
+  DateTime? earnedAt;
 
   /// Image url
   String get imageUrl {
@@ -50,11 +57,32 @@ class MdBadge {
     }
   }
 
+  /// Get badge info string
+  String get badgeInfo {
+    switch (badge?.trim()) {
+      case 'BRONZE':
+        return 'Getting Started ✨';
+      case 'SILVER':
+        return 'On the Rise ✨';
+      case 'GOLD':
+        return 'Proven Winner ✨';
+      case 'PLATINUM':
+        return 'Next Level ✨';
+      case 'ICONS':
+        return 'Certified Flex ✨';
+      case 'BDE':
+        return 'Certified Flex ✨';
+      default:
+        return 'BRONZE';
+    }
+  }
+
   /// To json
   Map<String, dynamic> toJson() => <String, dynamic>{
         'badge': badge,
         'description': description,
         'earned': earned,
         'current': current,
+        'earned_at': earnedAt?.toIso8601String(),
       };
 }

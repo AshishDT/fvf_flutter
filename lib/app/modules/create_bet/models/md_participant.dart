@@ -1,6 +1,6 @@
 import 'package:fvf_flutter/app/data/models/md_join_invitation.dart';
-
 import '../../../data/remote/supabse_service/supabse_service.dart';
+import '../../profile/models/md_badge.dart';
 
 /// Participant Model
 class MdParticipant {
@@ -18,6 +18,7 @@ class MdParticipant {
     this.userData,
     this.selfieUrl,
     this.rank,
+    this.badge,
   });
 
   /// From JSON
@@ -35,6 +36,11 @@ class MdParticipant {
         userData: json['user'] == null
             ? null
             : RoundHost.fromJson(json['user'] as Map<String, dynamic>),
+        badge: json['awarded_badge'] == null
+            ? null
+            : MdBadge.fromJson(
+                json['awarded_badge'],
+              ),
       );
 
   /// Participant Id
@@ -73,6 +79,9 @@ class MdParticipant {
   /// Rank
   int? rank;
 
+  /// Badge
+  final MdBadge? badge;
+
   /// Check if the participant is the current user
   bool get isCurrentUser => userData?.supabaseId == SupaBaseService.userId;
 
@@ -89,5 +98,6 @@ class MdParticipant {
         'is_deleted': isDeleted,
         'selfie_url': selfieUrl,
         'user': userData?.toJson(),
+        'awarded_badge': badge == null ? null : badge!.toJson(),
       };
 }

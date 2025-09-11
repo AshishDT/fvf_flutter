@@ -5,6 +5,7 @@ import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart
 import 'package:fvf_flutter/app/modules/ai_choosing/models/md_result.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/modules/profile/enums/subscription_enum.dart';
+import 'package:fvf_flutter/app/modules/profile/models/md_badge.dart';
 import 'package:fvf_flutter/app/modules/profile/repositories/profile_api_repo.dart';
 import 'package:fvf_flutter/app/modules/winner/models/md_round_details.dart';
 import 'package:fvf_flutter/app/modules/winner/repositories/winner_api_repo.dart';
@@ -49,6 +50,8 @@ class WinnerController extends GetxController {
         getRoundDetails(
           _resultData().id ?? '',
         );
+
+        checkForBadge(_resultData().participants);
 
         checkForStreaks(_resultData.value);
       }
@@ -238,7 +241,7 @@ class WinnerController extends GetxController {
     }
 
     Future<void>.delayed(
-      const Duration(seconds: 2),
+      const Duration(seconds: 3),
       () {
         Get.toNamed(
           Routes.CREW_STREAK,
@@ -246,6 +249,37 @@ class WinnerController extends GetxController {
             'crew': result.crew,
             'participants': result.participants,
           },
+        );
+      },
+    );
+  }
+
+  /// Check for badge
+  void checkForBadge(List<MdParticipant>? participants) {
+    if (participants == null || participants.isEmpty) {
+      return;
+    }
+
+    final MdParticipant? currentUserParticipant = participants.firstWhereOrNull(
+      (MdParticipant p) => p.isCurrentUser,
+    );
+
+    if (currentUserParticipant == null) {
+      return;
+    }
+
+    final MdBadge? badge = currentUserParticipant.badge;
+
+    if (badge == null) {
+      return;
+    }
+
+    Future<void>.delayed(
+      const Duration(seconds: 1),
+      () {
+        Get.toNamed(
+          Routes.BADGE,
+          arguments: badge,
         );
       },
     );

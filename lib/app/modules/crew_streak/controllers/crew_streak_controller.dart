@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:fvf_flutter/app/modules/ai_choosing/models/md_crew.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
+import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:get/get.dart';
 
 /// CrewStreakController
@@ -15,7 +16,7 @@ class CrewStreakController extends GetxController {
       }
 
       if (Get.arguments['participants'] != null) {
-        participants = Get.arguments as List<MdParticipant>;
+        participants = Get.arguments['participants'] as List<MdParticipant>;
       }
 
       startCountdown();
@@ -51,7 +52,9 @@ class CrewStreakController extends GetxController {
           secondsLeft.value--;
         } else {
           t.cancel();
-          Get.back();
+          if(Get.currentRoute == Routes.CREW_STREAK){
+            Get.back();
+          }
         }
       },
     );

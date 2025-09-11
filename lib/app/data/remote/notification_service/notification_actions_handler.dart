@@ -236,7 +236,7 @@ class NotificationActionsHandler {
     }
 
     final Map<String, dynamic> currentArgs = <String, dynamic>{
-      'reason': 'Only you joined..',
+      'reason': isHost ? 'Only you joined..' : 'Not enough friends joined..',
       'round_id': roundId,
       'is_host': isHost,
       'sub_reason': 'Go again with your friends',

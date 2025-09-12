@@ -166,7 +166,7 @@ class CreateBetController extends GetxController {
         showNextBet();
 
         final String betsJsonStr =
-            jsonEncode(bets.map((b) => b.toJson()).toList());
+            jsonEncode(bets.map((MdBet b) => b.toJson()).toList());
 
         LocalStore.betsJson(betsJsonStr);
         LocalStore.betValidTo(bets.first.validTo?.toIso8601String() ?? '');
@@ -277,12 +277,48 @@ class CreateBetController extends GetxController {
           user: profile().user!,
           userAuthToken: userAuthToken ?? '',
         );
+
+        // await _checkForReview(_user);
       }
     } on Exception catch (e, st) {
       logE('Error getting user: $e');
       logE(st);
     }
   }
+
+  /// Check if we should show review dialog
+  // Future<void> _checkForReview(MdProfile _user) => Future<void>.delayed(
+  //     const Duration(seconds: 1),
+  //     () async {
+  //       final DateTime? installDate =
+  //           DateTime.tryParse(LocalStore.loginTime() ?? '');
+  //
+  //       if (installDate == null) {
+  //         return;
+  //       }
+  //
+  //       final RatingRepository repo = RatingRepository();
+  //       final RatingService service = RatingService();
+  //
+  //       final RatingState state = repo.load();
+  //
+  //       final bool shouldAsk = service.shouldShowRating(
+  //         installDate: installDate,
+  //         totalWins: _user.round?.winsCount ?? 0,
+  //         crewStreakDays: 0,
+  //         state: state,
+  //         now: DateTime.now(),
+  //       );
+  //
+  //       if (shouldAsk) {
+  //         unawaited(
+  //           Get.toNamed(
+  //             Routes.RATING,
+  //           ),
+  //         );
+  //       }
+  //     },
+  //   );
 
   /// Request phone hint
   Future<void> requestPhoneHint(TextEditingController controller) async {

@@ -3,6 +3,8 @@ import 'package:fvf_flutter/app/data/models/md_user.dart';
 
 /// MdProfile model (only data)
 class MdProfile {
+
+  /// Profile constructor
   MdProfile({
     this.user,
     this.round,

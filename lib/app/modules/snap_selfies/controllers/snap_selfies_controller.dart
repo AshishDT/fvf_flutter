@@ -596,15 +596,6 @@ class SnapSelfiesController extends GetxController
       return;
     }
 
-    if (toAdd.length < AppConfig.minPart) {
-      appSnackbar(
-        message:
-            'Please add at least ${AppConfig.minPart} friends to start the round.',
-        snackbarState: SnackbarState.warning,
-      );
-      return;
-    }
-
     final List<String> userIds = toAdd
         .where((MdPreviousParticipant p) => p.id != null && p.id!.isNotEmpty)
         .map((MdPreviousParticipant p) => p.id!)

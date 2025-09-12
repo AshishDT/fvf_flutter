@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
+import 'package:fvf_flutter/app/data/local/store/local_store.dart';
 import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/data/models/md_user.dart';
 import 'package:fvf_flutter/app/data/remote/notification_service/notification_service.dart';
@@ -91,6 +92,7 @@ class AgeInputController extends GetxController {
       );
 
       if (_user != null && (_user.id?.isNotEmpty ?? false)) {
+        LocalStore.loginTime(DateTime.now().toIso8601String());
         UserProvider.onLogin(
           user: _user,
           userAuthToken: _user.token ?? '',

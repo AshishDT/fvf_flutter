@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
-import 'package:fvf_flutter/app/modules/badge/widgets/lottie_then_child.dart';
 import 'package:fvf_flutter/app/ui/components/animated_list_view.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
 import 'package:fvf_flutter/app/ui/components/common_app_bar.dart';
@@ -33,7 +32,7 @@ class RatingView extends GetView<RatingController> {
             16.verticalSpace,
             AppButton(
               buttonText: 'Maybe Later',
-              onPressed: () {},
+              onPressed: controller.onMaybeLater,
               buttonColor: Colors.transparent,
               style: AppTextStyle.openRunde(
                 fontSize: 16.sp,

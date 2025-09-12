@@ -106,15 +106,14 @@ class PreviousParticipantAvatarIcon extends StatelessWidget {
           ),
           if (showName) ...<Widget>[
             6.verticalSpace,
-            if (name != null && name!.isNotEmpty)
-              Text(
-                name!,
-                style: AppTextStyle.openRunde(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
+            Text(
+              name ?? ' ',
+              style: AppTextStyle.openRunde(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
               ),
+            ),
           ],
         ],
       ),

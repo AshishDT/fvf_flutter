@@ -436,7 +436,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
 
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: items,
               );
             },

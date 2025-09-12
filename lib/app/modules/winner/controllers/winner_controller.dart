@@ -47,6 +47,10 @@ class WinnerController extends GetxController {
         _resultData.value = Get.arguments['result_data'] as MdAiResultData;
         _resultData.refresh();
 
+        isViewOnly(
+          _resultData().isViewOnly ?? false,
+        );
+
         getRoundDetails(
           _resultData().id ?? '',
         );
@@ -102,6 +106,9 @@ class WinnerController extends GetxController {
 
   /// pageController
   PageController? pageController = PageController(initialPage: 0);
+
+  /// isViewOnly
+  RxBool isViewOnly = false.obs;
 
   /// Observable result data
   final Rx<MdAiResultData> _resultData = MdAiResultData().obs;

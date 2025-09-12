@@ -18,6 +18,7 @@ class NotificationActionsHandler {
   /// Handle notification action
   static Future<void> handleRoundDetails({
     required String roundId,
+    bool isViewOnly = false,
   }) async {
     Loader.show();
     try {
@@ -31,6 +32,7 @@ class NotificationActionsHandler {
             _roundDetails.round?.status ?? RoundStatus.pending;
 
         switch (status) {
+          case RoundStatus.started:
           case RoundStatus.pending:
             final MdRound? _round = _roundDetails.round;
 
@@ -38,7 +40,10 @@ class NotificationActionsHandler {
               return;
             }
 
-            _onPendingStatus(_round);
+            _onPendingStatus(
+              round: _round,
+              isViewOnly: isViewOnly,
+            );
             break;
           case RoundStatus.processing:
             final List<MdParticipant>? participants =
@@ -56,6 +61,7 @@ class NotificationActionsHandler {
               prompt: _roundDetails.round?.prompt ?? '',
               roundId: roundId,
               isHost: isHost,
+              isViewOnly: isViewOnly,
             );
             break;
           case RoundStatus.completed:
@@ -74,6 +80,7 @@ class NotificationActionsHandler {
               roundId: roundId,
               host: _roundDetails.round?.host,
               prompt: _roundDetails.round?.prompt ?? '',
+              isViewOnly: isViewOnly,
             );
             break;
           case RoundStatus.failed:
@@ -90,6 +97,7 @@ class NotificationActionsHandler {
               isHost: isHost,
               participants: participants,
               roundId: roundId,
+              isViewOnly: isViewOnly,
             );
             break;
         }
@@ -110,6 +118,7 @@ class NotificationActionsHandler {
     required RoundStatus status,
     DateTime? revealAt,
     RoundHost? host,
+    bool? isViewOnly,
   }) {
     if (Get.currentRoute != Routes.WINNER) {
       Future<void>.delayed(
@@ -130,6 +139,7 @@ class NotificationActionsHandler {
                   results: results,
                   status: status,
                   revealAt: revealAt,
+                  isViewOnly: isViewOnly,
                 ),
               },
             );
@@ -139,7 +149,10 @@ class NotificationActionsHandler {
   }
 
   /// On pending status
-  static void _onPendingStatus(MdRound round) {
+  static void _onPendingStatus({
+    required MdRound round,
+    bool? isViewOnly,
+  }) {
     if (Get.currentRoute != Routes.SNAP_SELFIES) {
       Future<void>.delayed(
         const Duration(milliseconds: 100),
@@ -154,7 +167,7 @@ class NotificationActionsHandler {
               isCustomPrompt: round.isCustomPrompt ?? false,
               isActive: round.isActive ?? false,
               isDeleted: round.isDeleted ?? false,
-              status: round.status?.value,
+              status: round.status,
               updatedAt: round.updatedAt?.toIso8601String(),
               roundJoinedEndAt: round.roundJoinedEndAt,
               previousRounds: round.previousRounds,
@@ -171,6 +184,7 @@ class NotificationActionsHandler {
               ],
               isFromInvitation: true,
               host: round.host,
+              isViewOnly: isViewOnly,
             ),
           );
         },
@@ -184,6 +198,7 @@ class NotificationActionsHandler {
     required String prompt,
     required String roundId,
     bool isHost = false,
+    bool isViewOnly = false,
   }) {
     final List<MdParticipant> participantsWithSelfies = participants
         .where((MdParticipant participant) =>
@@ -196,12 +211,14 @@ class NotificationActionsHandler {
       _navigateToAiChoosing(
         participants: participantsWithSelfies,
         prompt: prompt,
+        isViewOnly: isViewOnly,
       );
     } else {
       _fallBackToStartAgain(
         participants: participants,
         isHost: isHost,
         roundId: roundId,
+        isViewOnly: isViewOnly,
       );
     }
   }
@@ -210,6 +227,7 @@ class NotificationActionsHandler {
   static void _navigateToAiChoosing({
     required List<MdParticipant> participants,
     required String prompt,
+    bool isViewOnly = false,
   }) {
     if (Get.currentRoute != Routes.AI_CHOOSING) {
       Future<void>.delayed(
@@ -221,6 +239,7 @@ class NotificationActionsHandler {
               'participants': participants,
               'bet': prompt,
               'from_notification': true,
+              'is_view_only': isViewOnly,
             },
           );
         },
@@ -233,6 +252,7 @@ class NotificationActionsHandler {
     required List<MdParticipant> participants,
     required String roundId,
     required bool isHost,
+    bool isViewOnly = false,
   }) {
     final MdParticipant selfParticipant = participants.firstWhere(
       (MdParticipant participant) => participant.isCurrentUser,
@@ -258,6 +278,7 @@ class NotificationActionsHandler {
       'sub_reason': 'Go again with your friends',
       'self_participant': selfParticipant,
       'participants_without_current_user': participantsWithoutCurrentUser(),
+      'is_view_only': isViewOnly,
     };
 
     if (Get.currentRoute != Routes.FAILED_ROUND) {

@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../data/remote/deep_link/deep_link_incoming_data_handler.dart';
+import '../../../data/remote/notification_service/notification_actions_handler.dart';
 import '../../../data/remote/supabse_service/supabse_service.dart';
 import '../../auth/repositories/auth_api_repo.dart';
 
@@ -65,7 +66,6 @@ class AgeInputController extends GetxController {
   Future<void> createAnonymousUser(int age) async {
     creatingUser(true);
     try {
-
       final String? _fcmToken = await NotificationService().getToken();
       logI('FCM Token: $_fcmToken');
 
@@ -100,8 +100,19 @@ class AgeInputController extends GetxController {
         );
 
         if (invitationId().isNotEmpty) {
+          if (isViewOnly()) {
+            await NotificationActionsHandler.handleRoundDetails(
+              roundId: invitationId(),
+              isViewOnly: true,
+            );
+            invitationId('');
+            isViewOnly(false);
+            return;
+          }
+
           await joinProjectInvitation(invitationId());
           invitationId('');
+          isViewOnly(false);
         }
       } else {
         appSnackbar(

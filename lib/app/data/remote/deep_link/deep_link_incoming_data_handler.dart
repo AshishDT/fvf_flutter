@@ -1,7 +1,6 @@
 import 'dart:async';
-
+import 'package:fvf_flutter/app/data/remote/notification_service/notification_actions_handler.dart';
 import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
-import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:fvf_flutter/app/utils/app_loader.dart';
 import 'package:get/get.dart';
@@ -12,6 +11,9 @@ import '../../models/md_join_invitation.dart';
 
 /// Observable to track if deep link is being handled
 RxString invitationId = ''.obs;
+
+/// Observable to track if the link is view-only
+RxBool isViewOnly = false.obs;
 
 /// Handle incoming data
 void handleDeepLinkIncomingData(Map<dynamic, dynamic> data) {
@@ -27,16 +29,29 @@ void handleDeepLinkIncomingData(Map<dynamic, dynamic> data) {
         final bool isUserLoggedIn =
             SupaBaseService.isLoggedIn && SupaBaseService.currentUser != null;
 
+        final bool isViewOnlyLink = deepLinkData.isViewOnly ?? false;
+
         if (isUserLoggedIn) {
-          if (isHost) {
+          if (isHost && !isViewOnlyLink) {
             return;
           }
-          joinProjectInvitation(
-            deepLinkData.invitationId!,
-          );
+
+          if (isViewOnlyLink) {
+            NotificationActionsHandler.handleRoundDetails(
+              roundId: deepLinkData.invitationId!,
+              isViewOnly: true,
+            );
+          } else {
+            joinProjectInvitation(
+              deepLinkData.invitationId!,
+            );
+          }
+
           invitationId('');
+          isViewOnly(false);
         } else {
           invitationId(deepLinkData.invitationId!);
+          isViewOnly(deepLinkData.isViewOnly);
           appSnackbar(
             message: 'Please log in to join the invitation.',
             snackbarState: SnackbarState.info,
@@ -81,16 +96,9 @@ Future<void> joinProjectInvitation(String invitationId) async {
     Loader.dismiss();
 
     if (_joinedData != null) {
-      _joinedData.isFromInvitation = true;
-
-      Future<void>.delayed(
-        const Duration(milliseconds: 100),
-        () {
-          Get.toNamed(
-            Routes.SNAP_SELFIES,
-            arguments: _joinedData,
-          );
-        },
+      await NotificationActionsHandler.handleRoundDetails(
+        roundId: invitationId,
+        isViewOnly: _joinedData.isViewOnly ?? false,
       );
     }
   } on Exception {

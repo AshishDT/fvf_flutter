@@ -11,6 +11,9 @@ enum RoundStatus {
 
   ///  Failed
   failed,
+
+  /// Started
+  started,
 }
 
 /// Extension for RoundStatus enum
@@ -26,6 +29,8 @@ extension RoundStatusX on RoundStatus {
         return 'COMPLETED';
       case RoundStatus.failed:
         return 'FAILED';
+      case RoundStatus.started:
+        return 'STARTED';
     }
   }
 
@@ -40,6 +45,8 @@ extension RoundStatusX on RoundStatus {
         return RoundStatus.completed;
       case 'FAILED':
         return RoundStatus.failed;
+      case 'STARTED':
+        return RoundStatus.started;
       default:
         return RoundStatus.pending;
     }

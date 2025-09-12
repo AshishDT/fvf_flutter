@@ -14,8 +14,6 @@ import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:fvf_flutter/app/utils/widget_ext.dart';
 import 'package:get/get.dart';
-import 'package:lottie/lottie.dart';
-
 import '../../../utils/dialog_helper.dart';
 import '../../snap_selfies/widgets/selfie_avatar.dart';
 import '../controllers/ai_choosing_controller.dart';
@@ -84,6 +82,12 @@ class AiChoosingView extends GetView<AiChoosingController> {
                     CommonAppBar(
                       leadingIcon: AppImages.closeIconWhite,
                       onTapOfLeading: () {
+                        if (controller.isViewOnly()) {
+                          Get.offAllNamed(
+                            Routes.CREATE_BET,
+                          );
+                          return;
+                        }
                         DialogHelper.onBackOfAiChoosing(
                           onPositiveClick: () {
                             Get.offAllNamed(
@@ -94,7 +98,9 @@ class AiChoosingView extends GetView<AiChoosingController> {
                       },
                       actions: <Widget>[
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            controller.shareViewOnlyLink();
+                          },
                           child: SvgPicture.asset(
                             AppImages.shareIcon,
                             width: 24.w,

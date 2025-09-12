@@ -17,6 +17,7 @@ class MdAiResultData {
     this.host,
     this.crew,
     this.participants,
+    this.isViewOnly,
   });
 
   /// From JSON
@@ -63,6 +64,9 @@ class MdAiResultData {
 
   /// Participants in the round
   List<MdParticipant>? participants;
+
+  /// Is view-only
+  bool? isViewOnly;
 
   /// To JSON
   Map<String, dynamic> toJson() => <String, dynamic>{

@@ -193,6 +193,12 @@ class WinnerView extends GetView<WinnerController> {
   Widget _appBar() => CommonAppBar(
         leadingIcon: AppImages.closeIconWhite,
         onTapOfLeading: () {
+          if (controller.isViewOnly()) {
+            Get.offAllNamed(
+              Routes.CREATE_BET,
+            );
+            return;
+          }
           controller.roundId().isNotEmpty
               ? Get.back(result: controller.currentUserResult)
               : DialogHelper.onBackOfWinner(

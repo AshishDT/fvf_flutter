@@ -8,19 +8,27 @@ class DeepLinkService {
   /// Branch deep link listener
   static StreamSubscription<dynamic>? branchSubscription;
 
-  /// Generate slay invite link
+  /// Generate slay invite link (normal or view-only)
   static Future<String?> generateSlayInviteLink({
     required String title,
     required String invitationId,
     required String hostId,
+    bool isViewOnly = false,
   }) async {
+    final BranchContentMetaData metaData = BranchContentMetaData()
+      ..addCustomMetadata('invitation_id', invitationId)
+      ..addCustomMetadata('host_id', hostId);
+
+    if (isViewOnly) {
+      metaData.addCustomMetadata('is_view_only', true);
+    }
+
     final BranchUniversalObject buo = BranchUniversalObject(
       canonicalIdentifier: 'slay_invite',
       title: title,
-      contentDescription: 'Slay invite deep link',
-      contentMetadata: BranchContentMetaData()
-        ..addCustomMetadata('invitation_id', invitationId)
-        ..addCustomMetadata('host_id', hostId),
+      contentDescription:
+          isViewOnly ? 'Slay view-only deep link' : 'Slay invite deep link',
+      contentMetadata: metaData,
     );
 
     final BranchLinkProperties lp = BranchLinkProperties(

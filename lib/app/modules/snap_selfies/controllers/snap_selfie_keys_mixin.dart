@@ -250,6 +250,7 @@ mixin SnapSelfieKeysMixin on GetxController {
       arguments: <String, dynamic>{
         'participants': _participants,
         'bet': joinedInvitationData().prompt ?? '',
+        'is_view_only': joinedInvitationData().isViewOnly ?? false,
       },
     );
   }

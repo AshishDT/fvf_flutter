@@ -6,7 +6,6 @@ import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/data/local/store/local_store.dart';
 import 'package:fvf_flutter/app/data/models/md_user.dart';
 import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
-import 'package:fvf_flutter/app/modules/ai_choosing/enums/round_status_enum.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_bet.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_round.dart';
 import 'package:fvf_flutter/app/modules/create_bet/repositories/create_bet_api_repo.dart';
@@ -240,7 +239,7 @@ class CreateBetController extends GetxController {
               isCustomPrompt: _round.isCustomPrompt ?? false,
               isActive: _round.isActive ?? false,
               isDeleted: _round.isDeleted ?? false,
-              status: _round.status?.value,
+              status: _round.status,
               updatedAt: _round.updatedAt?.toIso8601String(),
               roundJoinedEndAt: _round.roundJoinedEndAt,
               previousRounds: _round.previousRounds,

@@ -3,16 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/enums/round_status_enum.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:get/get.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../../data/config/env_config.dart';
+import '../../../data/remote/deep_link/deep_link_service.dart';
 import '../../../data/remote/socket_io_repo.dart';
 import '../../../routes/app_pages.dart';
+import '../../../ui/components/app_snackbar.dart';
+import '../../../utils/app_loader.dart';
 import '../../create_bet/models/md_round.dart';
 import '../../failed_round/repositories/failed_round_api_repo.dart';
 import '../models/md_ai_result.dart';
 
 /// AiChoosingController
 class AiChoosingController extends GetxController {
-
   @override
   void onInit() {
     super.onInit();
@@ -52,6 +55,9 @@ class AiChoosingController extends GetxController {
   /// Is waking up
   RxBool isWakingUp = false.obs;
 
+  /// Is view only
+  RxBool isViewOnly = false.obs;
+
   /// On init
   void _onInit() {
     if (Get.arguments != null) {
@@ -77,6 +83,11 @@ class AiChoosingController extends GetxController {
             },
           );
         }
+      }
+
+      if (Get.arguments['is_view_only'] != null) {
+        final bool _isViewOnly = Get.arguments['is_view_only'] as bool;
+        isViewOnly.value = _isViewOnly;
       }
 
       if (Get.arguments['bet'] != null) {
@@ -162,6 +173,44 @@ class AiChoosingController extends GetxController {
       }
     } finally {
       isWakingUp(false);
+    }
+  }
+
+  /// Share view-only link
+  Future<void> shareViewOnlyLink() async {
+    Loader.show();
+    try {
+      final String? _uri = await DeepLinkService.generateSlayInviteLink(
+        title: bet(),
+        invitationId: resultData().id ?? '',
+        hostId: resultData().host?.supabaseId ?? '',
+        isViewOnly: true,
+      );
+
+      if (_uri == null || _uri.isEmpty) {
+        Loader.dismiss();
+        appSnackbar(
+          message: 'Failed to generate invitation link. Please try again.',
+          snackbarState: SnackbarState.danger,
+        );
+        return;
+      }
+
+      Loader.dismiss();
+
+      final Uri uri = Uri.parse(_uri);
+
+      unawaited(
+        SharePlus.instance.share(
+          ShareParams(
+            uri: uri,
+          ),
+        ),
+      );
+    } on Exception {
+      Loader.dismiss();
+    } finally {
+      Loader.dismiss();
     }
   }
 }

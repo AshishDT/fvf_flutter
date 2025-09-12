@@ -37,320 +37,354 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
           backgroundColor: AppColors.kF5FCFF,
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerFloat,
-          floatingActionButton: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              AnimatedSize(
-                duration: const Duration(milliseconds: 300),
-                alignment: Alignment.bottomCenter,
-                curve: Curves.easeInOut,
-                child: Obx(
-                  () => Visibility(
-                    visible: controller.secondsLeft() > 0,
-                    replacement: const SizedBox(
-                      width: double.infinity,
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            SvgPicture.asset(
-                              AppImages.timerIcon,
-                              height: 24.h,
-                              width: 24.w,
-                            ),
-                            Obx(
-                              () => AnimatedDigitWidget(
-                                duration: const Duration(milliseconds: 600),
-                                separateLength: 1,
-                                loop: false,
-                                value: controller.secondsLeft(),
-                                suffix: 's',
-                                textStyle: AppTextStyle.openRunde(
-                                  fontSize: 24.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.kF6FCFE,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        16.verticalSpace
-                      ],
-                    ).paddingSymmetric(horizontal: 24),
-                  ),
-                ),
-              ),
-              AnimatedSize(
-                duration: const Duration(milliseconds: 300),
-                alignment: Alignment.bottomCenter,
-                curve: Curves.easeInOut,
-                child: Obx(
-                  () => Visibility(
-                    replacement: const SizedBox(
-                      width: double.infinity,
-                    ),
-                    visible: controller.isCurrentUserSelfieTaken() &&
-                        !controller.isTimesUp(),
-                    child: Padding(
-                      padding: REdgeInsets.only(bottom: 32),
-                      child: AnimatedTextSwitcher(
-                        currentIndex: controller.currentIndex(),
-                        texts: controller.preSelfieStrings(),
-                      ).paddingSymmetric(horizontal: 24),
-                    ),
-                  ),
-                ),
-              ),
-              AnimatedSize(
-                duration: const Duration(milliseconds: 300),
-                alignment: Alignment.bottomCenter,
-                curve: Curves.easeInOut,
-                child: Obx(
-                  () => Visibility(
-                    visible: controller.isHost() &&
-                        !controller.isInvitationSend() &&
-                        !controller.isTimesUp() &&
-                        !controller.isStartingRound(),
-                    child: AppButton(
-                      buttonText: 'Add Friends',
-                      child: controller.isAddedFromPreviousRound()
-                          ? null
-                          : Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                SvgPicture.asset(
-                                  width: 18.w,
-                                  height: 18.h,
-                                  AppImages.shareIcon,
-                                  colorFilter: const ColorFilter.mode(
-                                    AppColors.kffffff,
-                                    BlendMode.srcIn,
-                                  ),
-                                ),
-                                8.horizontalSpace,
-                                Text(
-                                  'Add Friends',
-                                  style: AppTextStyle.openRunde(
-                                    fontSize: 18.sp,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.kffffff,
-                                  ),
-                                ),
-                              ],
-                            ),
-                      onPressed: () {
-                        if (controller.isAddedFromPreviousRound()) {
-                          controller.addPreviousParticipants();
-                          return;
-                        }
-                        controller.shareUri();
-                      },
-                    ).paddingSymmetric(horizontal: 24),
-                  ),
-                ),
-              ),
-              AnimatedSize(
-                duration: const Duration(milliseconds: 300),
-                alignment: Alignment.bottomCenter,
-                curve: Curves.easeInOut,
-                child: Obx(
-                  () => Visibility(
-                    replacement: const SizedBox(
-                      width: double.infinity,
-                    ),
-                    visible: controller.isHost()
-                        ? controller.isInvitationSend() &&
-                            (!controller.isCurrentUserSelfieTaken() &&
-                                controller.secondsLeft() > 0)
-                        : (!controller.isCurrentUserSelfieTaken() &&
-                            controller.secondsLeft() > 0),
-                    child: VibrateWiggle(
-                      trigger: controller.shouldWiggleSnapPick(),
-                      wiggleDuration: 800,
-                      child: AppButton(
-                        buttonText: 'Snap Pic',
-                        isLoading: controller.submittingSelfie(),
-                        onPressed: controller.onSnapSelfie,
-                      ).paddingSymmetric(horizontal: 24),
-                    ),
-                  ),
-                ),
-              ),
-              AnimatedSize(
-                duration: const Duration(milliseconds: 300),
-                alignment: Alignment.bottomCenter,
-                curve: Curves.easeInOut,
-                child: Obx(
-                  () => Visibility(
-                    replacement: const SizedBox(
-                      width: double.infinity,
-                    ),
-                    visible:
-                        controller.isTimesUp() && controller.isProcessing() ||
-                            controller.isStartingRound(),
-                    child: AppButton(
-                      buttonText: 'Let’s Go',
-                      isLoading: controller.isProcessing() ||
-                          controller.isStartingRound(),
-                      onPressed: () {
-                        if (controller.isProcessing() ||
-                            controller.isStartingRound()) {
-                          appSnackbar(
-                            message:
-                                'Please wait, your selfies are being processed.',
-                            snackbarState: SnackbarState.warning,
-                          );
-                          return;
-                        } else {
-                          controller.onLetGo();
-                        }
-                      },
-                    ).paddingSymmetric(horizontal: 24),
-                  ),
-                ),
-              ),
-            ],
-          ),
+          floatingActionButton: _floatingActionSection(),
           body: GradientCard(
             child: Align(
               alignment: Alignment.topLeft,
               child: SafeArea(
-                child: AnimatedListView(
-                  children: <Widget>[
-                    CommonAppBar(
-                      leadingIcon: AppImages.closeIconWhite,
-                      onTapOfLeading: () {
-                        DialogHelper.onBackOfAiChoosing(
-                          onPositiveClick: () {
-                            Get.back();
-                          },
-                        );
-                      },
-                      actions: <Widget>[
+                child: _bodyContent(context),
+              ),
+            ),
+          ),
+        ),
+      );
+
+  /// Body content
+  Widget _bodyContent(BuildContext context) => AnimatedListView(
+        children: <Widget>[
+          _appBar(),
+          64.verticalSpace,
+          _promptText(),
+          48.verticalSpace,
+          _currentUserSelfie(context),
+          24.verticalSpace,
+          _emptyUsersOrParticipants(),
+          _previousRoundsOrParticipants(),
+          _otherParticipants(),
+          16.verticalSpace,
+          _resendInvites(),
+        ],
+      );
+
+  /// Floating action buttons section
+  Widget _floatingActionSection() => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          _timerWidget(),
+          _preSelfieText(),
+          _addFriendsButton(),
+          _snapPicButton(),
+          _viewOnlyWaitingText(),
+          _letsGoButton(),
+        ],
+      );
+
+  /// Timer display
+  Widget _timerWidget() => AnimatedSize(
+        duration: const Duration(milliseconds: 300),
+        alignment: Alignment.bottomCenter,
+        curve: Curves.easeInOut,
+        child: Obx(
+          () => Visibility(
+            visible: controller.secondsLeft() > 0,
+            replacement: const SizedBox(width: double.infinity),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                SvgPicture.asset(
+                  AppImages.timerIcon,
+                  height: 24.h,
+                  width: 24.w,
+                ),
+                Obx(
+                  () => AnimatedDigitWidget(
+                    duration: const Duration(milliseconds: 600),
+                    separateLength: 1,
+                    loop: false,
+                    value: controller.secondsLeft(),
+                    suffix: 's',
+                    textStyle: AppTextStyle.openRunde(
+                      fontSize: 24.sp,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.kF6FCFE,
+                    ),
+                  ),
+                ),
+              ],
+            ).paddingSymmetric(horizontal: 24).paddingOnly(bottom: 16),
+          ),
+        ),
+      );
+
+  /// Pre-selfie text
+  Widget _preSelfieText() => AnimatedSize(
+        duration: const Duration(milliseconds: 300),
+        alignment: Alignment.bottomCenter,
+        curve: Curves.easeInOut,
+        child: Obx(
+          () => Visibility(
+            visible: (controller.isCurrentUserSelfieTaken() ||
+                    (controller.joinedInvitationData().isViewOnly ?? false)) &&
+                !controller.isTimesUp() &&
+                controller.secondsLeft() > 0,
+            replacement: const SizedBox(width: double.infinity),
+            child: Padding(
+              padding: REdgeInsets.only(
+                bottom: controller.joinedInvitationData().isViewOnly ?? false
+                    ? 16
+                    : 32,
+              ),
+              child: AnimatedTextSwitcher(
+                currentIndex: controller.currentIndex(),
+                texts: controller.preSelfieStrings(),
+              ).paddingSymmetric(horizontal: 24),
+            ),
+          ),
+        ),
+      );
+
+  /// Add friends button
+  Widget _addFriendsButton() => AnimatedSize(
+        duration: const Duration(milliseconds: 300),
+        alignment: Alignment.bottomCenter,
+        curve: Curves.easeInOut,
+        child: Obx(
+          () => Visibility(
+            visible: controller.isHost() &&
+                !controller.isInvitationSend() &&
+                !controller.isTimesUp() &&
+                !controller.isStartingRound() &&
+                !(controller.joinedInvitationData().isViewOnly ?? false),
+            replacement: const SizedBox(width: double.infinity),
+            child: AppButton(
+              buttonText: 'Add Friends',
+              child: controller.isAddedFromPreviousRound()
+                  ? null
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
                         SvgPicture.asset(
-                          width: 24.w,
-                          height: 24.h,
+                          width: 18.w,
+                          height: 18.h,
                           AppImages.shareIcon,
-                        )
+                          colorFilter: const ColorFilter.mode(
+                            AppColors.kffffff,
+                            BlendMode.srcIn,
+                          ),
+                        ),
+                        8.horizontalSpace,
+                        Text(
+                          'Add Friends',
+                          style: AppTextStyle.openRunde(
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.kffffff,
+                          ),
+                        ),
                       ],
-                    ).paddingSymmetric(horizontal: 24),
-                    64.verticalSpace,
-                    ConstrainedBox(
-                      constraints: BoxConstraints(maxHeight: 120.h),
-                      child: Obx(
-                        () => CustomTypewriterText(
-                          text: controller.joinedInvitationData().prompt ?? '',
-                        ),
-                      ).paddingSymmetric(horizontal: 24),
                     ),
-                    48.verticalSpace,
-                    Obx(
-                      () => CurrentUserSelfieAvatar(
-                        showWiggle: controller.shouldWiggleAddName(),
-                        participant: controller.selfParticipant(),
-                        userName: globalUser().username,
-                        isInvitationSend: controller.isInvitationSend(),
-                      ),
-                    ),
-                    24.verticalSpace,
-                    AnimatedSize(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                      child: Obx(
-                        () => Visibility(
-                          visible: (!controller.isInvitationSend() &&
-                                  controller.previousRounds().isEmpty &&
-                                  controller
-                                      .participantsWithoutCurrentUser()
-                                      .isEmpty) ||
-                              (controller.isInvitationSend() &&
-                                  controller
-                                      .participantsWithoutCurrentUser()
-                                      .isEmpty),
-                          replacement: const SizedBox(
-                            width: double.infinity,
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              _emptyUsersPlaceholder(),
-                              24.horizontalSpace,
-                              _emptyUsersPlaceholder(),
-                              24.horizontalSpace,
-                              _emptyUsersPlaceholder(),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    AnimatedSize(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                      child: Obx(
-                        () => Visibility(
-                          visible: controller.previousRounds().isNotEmpty &&
-                              !controller.isInvitationSend(),
-                          replacement: const SizedBox(
-                            width: double.infinity,
-                          ),
-                          child: _previousParticipants(),
-                        ),
-                      ),
-                    ),
-                    Align(
-                      child: SingleChildScrollView(
-                        padding: EdgeInsets.zero,
-                        scrollDirection: Axis.horizontal,
-                        child: Obx(
-                          () => Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              ...controller
-                                  .participantsWithoutCurrentUser()
-                                  .map(
-                                    (MdParticipant participant) =>
-                                        SelfieAvatarIcon(
-                                      participant: participant,
-                                    ).paddingOnly(right: 32),
-                                  ),
-                            ],
-                          ),
-                        ),
-                      ).paddingOnly(left: 32),
-                    ),
-                    16.verticalSpace,
-                    AnimatedSize(
-                      duration: const Duration(milliseconds: 300),
-                      alignment: Alignment.bottomCenter,
-                      curve: Curves.easeInOut,
-                      child: Obx(
-                        () => Visibility(
-                          visible: controller.secondsLeft() > 0 &&
-                              controller.isHost() &&
-                              controller.isInvitationSend(),
-                          child: TextButton(
-                            onPressed: () {
-                              controller.shareUri(
-                                fromResend: true,
-                              );
-                            },
-                            child: Text(
-                              'Add Invites',
-                              style: AppTextStyle.openRunde(
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.kF1F2F2,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+              onPressed: () {
+                if (controller.isAddedFromPreviousRound()) {
+                  controller.addPreviousParticipants();
+                  return;
+                }
+                controller.shareUri();
+              },
+            ).paddingSymmetric(horizontal: 24),
+          ),
+        ),
+      );
+
+  /// Snap Pic button
+  Widget _snapPicButton() => AnimatedSize(
+        duration: const Duration(milliseconds: 300),
+        alignment: Alignment.bottomCenter,
+        curve: Curves.easeInOut,
+        child: Obx(
+          () => Visibility(
+            visible: controller.isHost()
+                ? controller.isInvitationSend() &&
+                    !controller.isCurrentUserSelfieTaken() &&
+                    controller.secondsLeft() > 0
+                : !controller.isCurrentUserSelfieTaken() &&
+                    controller.secondsLeft() > 0 &&
+                    !(controller.joinedInvitationData().isViewOnly ?? false),
+            replacement: const SizedBox(width: double.infinity),
+            child: VibrateWiggle(
+              trigger: controller.shouldWiggleSnapPick(),
+              wiggleDuration: 800,
+              child: AppButton(
+                buttonText: 'Snap Pic',
+                isLoading: controller.submittingSelfie(),
+                onPressed: controller.onSnapSelfie,
+              ).paddingSymmetric(horizontal: 24),
+            ),
+          ),
+        ),
+      );
+
+  /// Let's Go button
+  Widget _letsGoButton() => AnimatedSize(
+        duration: const Duration(milliseconds: 300),
+        alignment: Alignment.bottomCenter,
+        curve: Curves.easeInOut,
+        child: Obx(
+          () => Visibility(
+            visible: ((controller.isTimesUp() && controller.isProcessing()) ||
+                    controller.isStartingRound()) &&
+                !(controller.joinedInvitationData().isViewOnly ?? false),
+            replacement: const SizedBox(width: double.infinity),
+            child: AppButton(
+              buttonText: 'Let’s Go',
+              isLoading:
+                  controller.isProcessing() || controller.isStartingRound(),
+              onPressed: () {
+                if (controller.isProcessing() || controller.isStartingRound()) {
+                  appSnackbar(
+                    message: 'Please wait, your selfies are being processed.',
+                    snackbarState: SnackbarState.warning,
+                  );
+                  return;
+                }
+                controller.onLetGo();
+              },
+            ).paddingSymmetric(horizontal: 24),
+          ),
+        ),
+      );
+
+  /// App bar
+  Widget _appBar() => CommonAppBar(
+        leadingIcon: AppImages.closeIconWhite,
+        onTapOfLeading: () {
+          if (controller.joinedInvitationData().isViewOnly ?? false) {
+            Get.back();
+            return;
+          }
+          DialogHelper.onBackOfAiChoosing(
+            onPositiveClick: () => Get.back(),
+          );
+        },
+        actions: <Widget>[
+          GestureDetector(
+            onTap: controller.shareViewOnlyLink,
+            child: SvgPicture.asset(
+              width: 24.w,
+              height: 24.h,
+              AppImages.shareIcon,
+            ),
+          )
+        ],
+      ).paddingSymmetric(horizontal: 24);
+
+  /// Prompt text
+  Widget _promptText() => ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: 120.h),
+        child: Obx(
+          () => CustomTypewriterText(
+            text: controller.joinedInvitationData().prompt ?? '',
+          ),
+        ).paddingSymmetric(horizontal: 24),
+      );
+
+  /// Current user selfie
+  Widget _currentUserSelfie(BuildContext context) => AnimatedSize(
+        duration: const Duration(milliseconds: 300),
+        alignment: Alignment.topCenter,
+        curve: Curves.easeInOut,
+        child: Obx(
+          () => Visibility(
+            visible: !(controller.joinedInvitationData().isViewOnly ?? false),
+            replacement: SizedBox(width: context.width),
+            child: CurrentUserSelfieAvatar(
+              showWiggle: controller.shouldWiggleAddName(),
+              participant: controller.selfParticipant(),
+              userName: globalUser().username,
+              isInvitationSend: controller.isInvitationSend(),
+            ),
+          ),
+        ),
+      );
+
+  /// Empty users or participants
+  Widget _emptyUsersOrParticipants() => AnimatedSize(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        child: Obx(
+          () => Visibility(
+            visible: (!controller.isInvitationSend() &&
+                    controller.previousRounds().isEmpty &&
+                    controller.participantsWithoutCurrentUser().isEmpty) ||
+                (controller.isInvitationSend() &&
+                    controller.participantsWithoutCurrentUser().isEmpty),
+            replacement: const SizedBox(width: double.infinity),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                _emptyUsersPlaceholder(),
+                24.horizontalSpace,
+                _emptyUsersPlaceholder(),
+                24.horizontalSpace,
+                _emptyUsersPlaceholder(),
+              ],
+            ),
+          ),
+        ),
+      );
+
+  /// Previous rounds or added participants
+  Widget _previousRoundsOrParticipants() => AnimatedSize(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        child: Obx(
+          () => Visibility(
+            visible: controller.previousRounds().isNotEmpty &&
+                !controller.isInvitationSend(),
+            replacement: const SizedBox(width: double.infinity),
+            child: _previousParticipants(),
+          ),
+        ),
+      );
+
+  /// Other participants list
+  Widget _otherParticipants() => Align(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.zero,
+          scrollDirection: Axis.horizontal,
+          child: Obx(
+            () => Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: controller
+                  .participantsWithoutCurrentUser()
+                  .map(
+                    (MdParticipant participant) => SelfieAvatarIcon(
+                      participant: participant,
+                    ).paddingOnly(right: 32),
+                  )
+                  .toList(),
+            ),
+          ),
+        ).paddingOnly(left: 32),
+      );
+
+  /// Resend invites (for host)
+  Widget _resendInvites() => AnimatedSize(
+        duration: const Duration(milliseconds: 300),
+        alignment: Alignment.bottomCenter,
+        curve: Curves.easeInOut,
+        child: Obx(
+          () => Visibility(
+            visible: controller.secondsLeft() > 0 &&
+                controller.isHost() &&
+                controller.isInvitationSend(),
+            child: TextButton(
+              onPressed: () => controller.shareUri(fromResend: true),
+              child: Text(
+                'Add Invites',
+                style: AppTextStyle.openRunde(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.kF1F2F2,
                 ),
               ),
             ),
@@ -358,56 +392,53 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
         ),
       );
 
+  /// Previous participants widget
   Align _previousParticipants() => Align(
         child: SingleChildScrollView(
           padding: EdgeInsets.zero,
           scrollDirection: Axis.horizontal,
           child: Obx(
-            () => Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: controller.previousAddedParticipants().isEmpty
-                  ? List<Widget>.generate(
-                      controller.previousRounds().length,
-                      (int index) {
-                        final MdPreviousRound participant =
-                            controller.previousRounds()[index];
+            () {
+              final List<MdPreviousRound> rounds = controller.previousRounds();
+              final List<MdPreviousParticipant> added =
+                  controller.previousAddedParticipants();
 
-                        return GroupAvatarIcon(
-                          participants: participant.participants ??
-                              <MdPreviousParticipant>[],
-                          isAdded: participant.isAdded ?? false,
-                          onAddTap: () {
-                            controller.onAddPreviousRound(
-                              participant.id ?? '',
-                            );
-                          },
-                        ).paddingOnly(
-                            right: controller.previousRounds().length >= 2
-                                ? 32
-                                : 0);
-                      },
-                    )
+              final List<Widget> items = added.isEmpty
+                  ? List<Widget>.generate(rounds.length, (int index) {
+                      final MdPreviousRound participant = rounds[index];
+                      return GroupAvatarIcon(
+                        participants: participant.participants ??
+                            <MdPreviousParticipant>[],
+                        isAdded: participant.isAdded ?? false,
+                        onAddTap: () => controller.onAddPreviousRound(
+                          participant.id ?? '',
+                        ),
+                      ).paddingOnly(
+                        right: rounds.length >= 2 ? 32 : 0,
+                      );
+                    })
                   : List<Widget>.generate(
-                      controller.previousAddedParticipants().length,
+                      added.length,
                       (int index) {
-                        final MdPreviousParticipant participant =
-                            controller.previousAddedParticipants()[index];
+                        final MdPreviousParticipant participant = added[index];
                         return PreviousParticipantAvatarIcon(
                           participant: participant,
-                          onAddTap: () {
-                            controller.onAddRemovePreviousParticipant(
-                              participant.supaBaseId ?? '',
-                            );
-                          },
+                          onAddTap: () =>
+                              controller.onAddRemovePreviousParticipant(
+                                  participant.supaBaseId ?? ''),
                           isAdded: participant.isAdded ?? false,
                         ).paddingOnly(
-                            right: controller.previousAddedParticipants().length >= 2
-                                ? 32
-                                : 0);
+                          right: added.length >= 2 ? 32 : 0,
+                        );
                       },
-                    ),
-            ),
+                    );
+
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: items,
+              );
+            },
           ),
         ),
       );
@@ -428,6 +459,32 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
             colorFilter: ColorFilter.mode(
               Colors.white.withValues(alpha: 0.20),
               BlendMode.srcIn,
+            ),
+          ),
+        ),
+      );
+
+  Widget _viewOnlyWaitingText() => Obx(
+        () => Visibility(
+          visible: (controller.joinedInvitationData().isViewOnly ?? false) &&
+              controller.secondsLeft() <= 0,
+          replacement: const SizedBox(
+            width: double.infinity,
+          ),
+          child: Padding(
+            padding: REdgeInsets.only(
+              left: 24,
+              right: 24,
+              bottom: 20,
+            ),
+            child: Text(
+              'Waiting for the host to start the round...',
+              textAlign: TextAlign.center,
+              style: AppTextStyle.openRunde(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w500,
+                color: AppColors.kffffff.withValues(alpha: 0.80),
+              ),
             ),
           ),
         ),

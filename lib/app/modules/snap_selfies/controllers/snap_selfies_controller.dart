@@ -22,6 +22,7 @@ import '../../../data/models/md_join_invitation.dart';
 import '../../../data/remote/api_service/init_api_service.dart';
 import '../../../data/remote/deep_link/deep_link_service.dart';
 import '../../../ui/components/app_snackbar.dart';
+import '../../../utils/app_loader.dart';
 import '../models/md_socket_io_response.dart';
 import '../repositories/snap_selfie_api_repo.dart';
 
@@ -48,9 +49,15 @@ class SnapSelfiesController extends GetxController
 
         _initWebSocket();
 
-        startTimer(
-          endTime: endAt,
-        );
+        if (!(joinedInvitationData().isViewOnly ?? false)) {
+          startTimer(
+            endTime: endAt,
+          );
+        }
+
+        if (joinedInvitationData().isViewOnly ?? false) {
+          setUpTextTimer();
+        }
       }
 
       getShareUri();
@@ -139,13 +146,20 @@ class SnapSelfiesController extends GetxController
 
   /// Fallback to start again
   void _fallBackToStartAgain() {
+    final bool isViewOnly = joinedInvitationData().isViewOnly ?? false;
+
     final Map<String, dynamic> currentArgs = <String, dynamic>{
-      'reason': 'Only you joined..',
+      'reason': isViewOnly ? 'Round failed' : 'Only you joined..',
       'round_id': joinedInvitationData().id,
       'is_host': isHost(),
-      'sub_reason': 'Go again with your friends',
+      'sub_reason': isViewOnly
+          ? 'Not enough participants joined to start round'
+          : 'Go again with your friends',
       'self_participant': selfParticipant(),
       'participants_without_current_user': participantsWithoutCurrentUser(),
+      'host_id': joinedInvitationData().host?.supabaseId,
+      'prompt': joinedInvitationData().prompt,
+      'is_view_only': isViewOnly,
     };
 
     WidgetsBinding.instance.addPostFrameCallback(
@@ -380,6 +394,7 @@ class SnapSelfiesController extends GetxController
             prompt: joinedInvitationData().prompt,
             results: data.round?.results,
             crew: data.round?.crew,
+            isViewOnly: joinedInvitationData().isViewOnly ?? false,
           ),
         },
       );
@@ -630,5 +645,43 @@ class SnapSelfiesController extends GetxController
 
     previousAddedParticipants.refresh();
     previousRounds.refresh();
+  }
+
+  /// Get view only
+  Future<void> shareViewOnlyLink() async {
+    Loader.show();
+    try {
+      final String? _uri = await DeepLinkService.generateSlayInviteLink(
+        title: joinedInvitationData().prompt ?? '',
+        invitationId: joinedInvitationData().id ?? '',
+        hostId: joinedInvitationData().host?.supabaseId ?? '',
+        isViewOnly: true,
+      );
+
+      if (_uri == null || _uri.isEmpty) {
+        Loader.dismiss();
+        appSnackbar(
+          message: 'Failed to generate invitation link. Please try again.',
+          snackbarState: SnackbarState.danger,
+        );
+        return;
+      }
+
+      Loader.dismiss();
+
+      final Uri uri = Uri.parse(_uri);
+
+      unawaited(
+        SharePlus.instance.share(
+          ShareParams(
+            uri: uri,
+          ),
+        ),
+      );
+    } on Exception {
+      Loader.dismiss();
+    } finally {
+      Loader.dismiss();
+    }
   }
 }

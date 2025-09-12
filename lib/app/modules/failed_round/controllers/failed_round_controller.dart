@@ -3,9 +3,13 @@ import 'dart:async';
 import 'package:fvf_flutter/app/modules/ai_choosing/enums/round_status_enum.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_round.dart';
 import 'package:get/get.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../data/models/md_join_invitation.dart';
+import '../../../data/remote/deep_link/deep_link_service.dart';
 import '../../../routes/app_pages.dart';
+import '../../../ui/components/app_snackbar.dart';
+import '../../../utils/app_loader.dart';
 import '../../create_bet/models/md_participant.dart';
 import '../repositories/failed_round_api_repo.dart';
 
@@ -27,6 +31,18 @@ class FailedRoundController extends GetxController {
 
       if (Get.arguments['sub_reason'] != null) {
         subReason = Get.arguments['sub_reason'] as String;
+      }
+
+      if (Get.arguments['host_id'] != null) {
+        hostId = Get.arguments['host_id'] as String;
+      }
+
+      if (Get.arguments['prompt'] != null) {
+        prompt = Get.arguments['prompt'] as String;
+      }
+
+      if (Get.arguments['is_view_only'] != null) {
+        isViewOnly = Get.arguments['is_view_only'] as bool;
       }
 
       if (Get.arguments['round_id'] != null) {
@@ -81,8 +97,17 @@ class FailedRoundController extends GetxController {
   /// Is loading
   RxBool isLoading = false.obs;
 
+  /// Host id
+  String hostId = '';
+
+  /// Prompt
+  String prompt = '';
+
   /// Is host
   bool isHost = false;
+
+  /// Is view only
+  bool isViewOnly = false;
 
   /// On re run
   Future<void> onLetsGoAgain() async {
@@ -104,7 +129,7 @@ class FailedRoundController extends GetxController {
               isCustomPrompt: _round.isCustomPrompt ?? false,
               isActive: _round.isActive ?? false,
               isDeleted: _round.isDeleted ?? false,
-              status: _round.status?.value,
+              status: _round.status,
               updatedAt: _round.updatedAt?.toIso8601String(),
               roundJoinedEndAt: _round.roundJoinedEndAt,
               participants: <MdParticipant>[
@@ -125,6 +150,44 @@ class FailedRoundController extends GetxController {
       }
     } finally {
       isLoading(false);
+    }
+  }
+
+  /// Share view-only link
+  Future<void> shareViewOnlyLink() async {
+    Loader.show();
+    try {
+      final String? _uri = await DeepLinkService.generateSlayInviteLink(
+        title: prompt,
+        invitationId: roundId,
+        hostId: hostId,
+        isViewOnly: true,
+      );
+
+      if (_uri == null || _uri.isEmpty) {
+        Loader.dismiss();
+        appSnackbar(
+          message: 'Failed to generate invitation link. Please try again.',
+          snackbarState: SnackbarState.danger,
+        );
+        return;
+      }
+
+      Loader.dismiss();
+
+      final Uri uri = Uri.parse(_uri);
+
+      unawaited(
+        SharePlus.instance.share(
+          ShareParams(
+            uri: uri,
+          ),
+        ),
+      );
+    } on Exception {
+      Loader.dismiss();
+    } finally {
+      Loader.dismiss();
     }
   }
 }

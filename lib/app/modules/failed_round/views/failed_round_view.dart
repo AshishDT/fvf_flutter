@@ -48,10 +48,15 @@ class FailedRoundView extends GetView<FailedRoundController> {
                 children: <Widget>[
                   CommonAppBar(
                     actions: <Widget>[
-                      SvgPicture.asset(
-                        width: 24.w,
-                        height: 24.h,
-                        AppImages.shareIcon,
+                      GestureDetector(
+                        onTap: () {
+                          controller.shareViewOnlyLink();
+                        },
+                        child: SvgPicture.asset(
+                          width: 24.w,
+                          height: 24.h,
+                          AppImages.shareIcon,
+                        ),
                       )
                     ],
                   ),
@@ -78,14 +83,16 @@ class FailedRoundView extends GetView<FailedRoundController> {
                     ),
                   ),
                   44.verticalSpace,
-                  Obx(
-                    () => CurrentUserSelfieAvatar(
-                      participant: controller.selfParticipant(),
-                      userName: globalUser().username,
-                      isFromFailedView: true,
+                  if (!controller.isViewOnly) ...<Widget>[
+                    Obx(
+                      () => CurrentUserSelfieAvatar(
+                        participant: controller.selfParticipant(),
+                        userName: globalUser().username,
+                        isFromFailedView: true,
+                      ),
                     ),
-                  ),
-                  24.verticalSpace,
+                    24.verticalSpace,
+                  ],
                   Align(
                     child: SingleChildScrollView(
                       padding: EdgeInsets.zero,

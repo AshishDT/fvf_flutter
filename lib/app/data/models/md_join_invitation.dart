@@ -1,3 +1,4 @@
+import '../../modules/ai_choosing/enums/round_status_enum.dart';
 import '../../modules/create_bet/models/md_participant.dart';
 import '../../modules/create_bet/models/md_previous_round.dart';
 
@@ -22,6 +23,8 @@ class MdJoinInvitation {
     this.participants,
     this.isFromInvitation,
     this.previousRounds,
+    this.isViewOnly,
+    this.isAlreadyJoined,
   });
 
   /// From JSON
@@ -30,7 +33,9 @@ class MdJoinInvitation {
         id: json['id'] as String?,
         createdAt: json['createdAt'] as String?,
         updatedAt: json['updatedAt'] as String?,
-        status: json['status'] as String?,
+        status: json['status'] == null
+            ? null
+            : RoundStatusX.fromString(json['status'] as String),
         type: json['type'] as String?,
         prompt: json['prompt'] as String?,
         isCustomPrompt: json['is_custom_prompt'] as bool?,
@@ -50,6 +55,8 @@ class MdJoinInvitation {
             : (json['participants'] as List<dynamic>?)
                 ?.map((e) => MdParticipant.fromJson(e as Map<String, dynamic>))
                 .toList(),
+        isViewOnly: json['is_view_only'],
+        isAlreadyJoined: json['is_already_joined'],
       );
 
   /// Round Id
@@ -62,7 +69,7 @@ class MdJoinInvitation {
   final String? updatedAt;
 
   /// Status
-  final String? status;
+  RoundStatus? status;
 
   /// Type
   final String? type;
@@ -103,12 +110,18 @@ class MdJoinInvitation {
   /// Previous participants
   List<MdPreviousRound>? previousRounds;
 
+  /// Is view only
+  bool? isViewOnly;
+
+  /// Is already joined
+  bool? isAlreadyJoined;
+
   /// To JSON
   Map<String, dynamic> toJson() => <String, dynamic>{
         'id': id,
         'createdAt': createdAt,
         'updatedAt': updatedAt,
-        'status': status,
+        'status': status?.value,
         'type': type,
         'prompt': prompt,
         'is_custom_prompt': isCustomPrompt,
@@ -120,6 +133,9 @@ class MdJoinInvitation {
         'revealAt': revealAt,
         'host': host?.toJson(),
         'participants': participants?.map((e) => e.toJson()).toList(),
+        'previousRounds': previousRounds?.map((e) => e.toJson()).toList(),
+        'is_view_only': isViewOnly,
+        'is_already_joined': isAlreadyJoined,
       };
 }
 

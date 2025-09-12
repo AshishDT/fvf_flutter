@@ -347,5 +347,15 @@ class WinnerView extends GetView<WinnerController> {
     } else {
       Get.close(0);
     }
+
+    // if (type == SubscriptionPlanEnum.WEEKLY) {
+    //   await RevenueCatService.instance.purchase(
+    //     'slay_always_exposed_weekly',
+    //   );
+    // } else {
+    //   await RevenueCatService.instance.purchase(
+    //     'slay_current_round',
+    //   );
+    // }
   }
 }

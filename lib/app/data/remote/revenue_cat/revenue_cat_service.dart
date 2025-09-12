@@ -1,4 +1,5 @@
 import 'package:fvf_flutter/app/data/config/logger.dart';
+import 'package:get/get.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 /// RevenueCatService
@@ -12,12 +13,16 @@ class RevenueCatService {
   /// Getter to access instance
   static RevenueCatService get instance => _instance;
 
-  /// Product identifiers (must match App Store / Play Console)
+  /// Cached products
+  static final RxList<StoreProduct> _products = <StoreProduct>[].obs;
+
+  /// Product identifiers (must match Play Console / App Store)
   final List<String> _productIds = <String>[
-    'slay_premium:slay-app',
+    'slay_current_round',
+    'slay_always_exposed_weekly',
   ];
 
-  /// Initialize RevenueCat
+  /// Initialize RevenueCat + fetch products once
   Future<void> initRevenueCat({String? userId}) async {
     await Purchases.setLogLevel(LogLevel.debug);
 
@@ -28,45 +33,42 @@ class RevenueCatService {
     );
   }
 
-  /// Fetch offerings
-  Future<List<Package>> fetchOfferings() async {
-    try {
-      final Offerings offerings = await Purchases.getOfferings();
-      logI('AvailablePackages :::: ${offerings.current?.availablePackages}');
-      if (offerings.current != null) {
-        return offerings.current!.availablePackages;
-      }
-      return <Package>[];
-    } on Exception catch (e, st) {
-      logE('⚠️ Error fetching offerings: $e');
-      logE(st);
-      return <Package>[];
-    }
-  }
-
-  /// Fetch products directly (without offerings)
-  Future<List<StoreProduct>> fetchProducts() async {
+  /// Internal fetch products and cache
+  Future<void> _fetchProducts() async {
     try {
       final List<StoreProduct> products =
-          await Purchases.getProducts(_productIds);
-      logI('Fetched products: $products');
-      return products;
+      await Purchases.getProducts(_productIds);
+
+      _products.assignAll(products);
+      logI('Products cached: $products');
     } on Exception catch (e, st) {
-      logE('⚠️ Error fetching products: $e');
+      logE('Error fetching products: $e');
       logE(st);
-      return <StoreProduct>[];
     }
   }
 
-  /// Purchase a product by identifier
-  Future<bool> purchaseProduct(StoreProduct storeProduct) async {
+  /// Get cached products
+  List<StoreProduct> get products => _products;
+
+  /// Purchase a product by productId
+  Future<bool> purchase(String productId) async {
     try {
-      final PurchaseResult customerInfo =
-          await Purchases.purchaseStoreProduct(storeProduct);
-      return customerInfo.customerInfo.entitlements.all['premium']?.isActive ??
-          false;
+      logWTF('Attempting to purchase product: $productId');
+      final StoreProduct? product =
+      _products.firstWhereOrNull((StoreProduct p) => p.identifier == productId);
+
+      if (product == null) {
+        logE('Product $productId not found in cache. Refetching...');
+        await _fetchProducts();
+        return purchase(productId);
+      }
+
+      final PurchaseResult result =
+      await Purchases.purchaseStoreProduct(product);
+
+      return result.customerInfo.entitlements.all['premium']?.isActive ?? false;
     } on Exception catch (e, st) {
-      logE('⚠️ Purchase failed: $e');
+      logE('Purchase failed: $e');
       logE(st);
       return false;
     }
@@ -75,10 +77,10 @@ class RevenueCatService {
   /// Restore purchases
   Future<bool> restorePurchases() async {
     try {
-      final CustomerInfo customerInfo = await Purchases.restorePurchases();
-      return customerInfo.entitlements.all['premium']?.isActive ?? false;
+      final CustomerInfo info = await Purchases.restorePurchases();
+      return info.entitlements.all['premium']?.isActive ?? false;
     } on Exception catch (e, st) {
-      logE('⚠️ Restore failed: $e');
+      logE('⚠Restore failed: $e');
       logE(st);
       return false;
     }
@@ -87,10 +89,10 @@ class RevenueCatService {
   /// Check if user has premium
   Future<bool> isPremiumUser() async {
     try {
-      final CustomerInfo customerInfo = await Purchases.getCustomerInfo();
-      return customerInfo.entitlements.all['premium']?.isActive ?? false;
+      final CustomerInfo info = await Purchases.getCustomerInfo();
+      return info.entitlements.all['premium']?.isActive ?? false;
     } on Exception catch (e, st) {
-      logE('⚠️ Error checking premium: $e');
+      logE('Error checking premium: $e');
       logE(st);
       return false;
     }

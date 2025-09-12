@@ -354,6 +354,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
           child: Obx(
             () => Row(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: controller
                   .participantsWithoutCurrentUser()
                   .map(

@@ -11,6 +11,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
+import '../../../ui/components/custom_type_writer.dart';
 import '../../../utils/app_text_style.dart';
 
 /// Result Card Widget
@@ -262,8 +263,9 @@ class ResultCard extends StatelessWidget {
                   ),
                   if (isFromProfile || isExposed || rank == 1) ...<Widget>[
                     16.verticalSpace,
-                    Text(
-                      reason ?? '',
+                    CustomTypewriterText(
+                      text: reason ?? '',
+                      maxLines: 2,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.inter(
                         fontSize: 20.sp,

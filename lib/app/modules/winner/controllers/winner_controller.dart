@@ -29,6 +29,9 @@ class WinnerController extends GetxController {
   /// isWeeklySubLoading
   RxBool isWeeklySubLoading = false.obs;
 
+  /// showIntroAnimation
+  RxBool showIntroAnimation = true.obs;
+
   /// On init
   @override
   void onInit() {
@@ -290,5 +293,10 @@ class WinnerController extends GetxController {
         );
       },
     );
+  }
+
+  /// On intro animation complete
+  void onIntroAnimationComplete() {
+    showIntroAnimation(false);
   }
 }

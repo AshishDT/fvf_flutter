@@ -244,6 +244,9 @@ class AppImages {
   /// 5 Start Rating Animation
   static const String ratingStar = '$_lottiePath/5_star_review.json';
 
+  /// Reveal Star Animation
+  static const String revealStar = '$_lottiePath/reveal_star.json';
+
   /// More Vertical Icon
   static const String moreVertical = '$_svgPath/more_vertical.svg';
 }

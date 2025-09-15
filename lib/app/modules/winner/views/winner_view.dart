@@ -13,6 +13,7 @@ import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/utils/dialog_helper.dart';
 import 'package:fvf_flutter/app/utils/widget_ext.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
@@ -36,7 +37,8 @@ class WinnerView extends GetView<WinnerController> {
           bottomNavigationBar: Obx(
             () => !controller.isLoading() &&
                     !controller.isExposed() &&
-                    !controller.isFromProfile()
+                    !controller.isFromProfile() &&
+                    !controller.showIntroAnimation()
                 ? _exposeButton()
                 : const SizedBox.shrink(),
           ),
@@ -44,149 +46,176 @@ class WinnerView extends GetView<WinnerController> {
             child: Stack(
               children: <Widget>[
                 Obx(
-                  () => controller.results().isNotEmpty
-                      ? AnimatedSize(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                          child: CachedNetworkImage(
-                            imageUrl: _currentRankImageUrl(),
-                            width: 1.sw,
-                            height: 1.sh,
-                            fit: BoxFit.cover,
-                            placeholder: (_, __) => const Center(
-                                child:
-                                    CircularProgressIndicator(strokeWidth: 2)),
-                            errorWidget: (_, __, ___) => const Center(
-                              child: Icon(
-                                Icons.error,
-                                color: AppColors.kffffff,
-                              ),
-                            ),
-                          ),
-                        )
-                      : const SizedBox.shrink(),
+                  () => AnimatedOpacity(
+                    opacity: controller.showIntroAnimation() ? 0.0 : 1.0,
+                    duration: const Duration(milliseconds: 500),
+                    curve: Curves.easeInOut,
+                    child: _mainContent(),
+                  ),
                 ),
                 Obx(
-                  () {
-                    if (controller.results().isEmpty ||
-                        controller.pageController == null) {
-                      return const SizedBox.shrink();
-                    }
-                    return SizedBox(
-                      height: 1.sh,
-                      child: Stack(
-                        children: <Widget>[
-                          PageView.builder(
-                            controller: controller.pageController,
-                            itemCount: controller.results().length,
-                            onPageChanged: (int i) {
-                              controller.currentRank(i);
-                              if (!controller.isExposed()) {
-                                Future<void>.delayed(
-                                  const Duration(seconds: 1),
-                                  () {
-                                    controller.wiggleQuestionMark(true);
-                                    controller.wiggleQuestionMark.refresh();
-                                  },
-                                );
-                              }
-                            },
-                            itemBuilder: (BuildContext context, int index) {
-                              final MdResult result =
-                                  controller.results()[index];
-
-                              return Obx(
-                                () => ResultCard(
-                                  isExposed: controller.isExposed(),
-                                  triggerQuestionMark:
-                                      controller.wiggleQuestionMark(),
-                                  isFromProfile: controller.isFromProfile(),
-                                  rank: result.rank ?? 0,
-                                  reason: result.reason ?? '',
-                                  isCurrentRankIs1: controller.isExposed() ||
-                                      result.rank == 1,
-                                  ordinalSuffix:
-                                      getOrdinalSuffix(result.rank ?? 0),
-                                  selfieUrl: result.selfieUrl,
-                                  userName: result.userName,
-                                  reactions: result.reactions,
-                                  onReactionSelected: (String emoji) {
-                                    controller.addReaction(
-                                      emoji: emoji,
-                                      participantId: result.userId ?? '',
-                                    );
-                                    HapticFeedback.mediumImpact();
-                                  },
-                                ).paddingOnly(
-                                  right: 24.w,
-                                  left: 24.w,
-                                  bottom: controller.isExposed() ||
-                                          controller.isFromProfile()
-                                      ? 36.h
-                                      : 117.h,
-                                ),
+                  () => controller.showIntroAnimation()
+                      ? Center(
+                          child: Lottie.asset(
+                            AppImages.revealStar,
+                            repeat: false,
+                            onLoaded: (LottieComposition composition) {
+                              Future<void>.delayed(
+                                composition.duration,
+                                () {
+                                  controller.onIntroAnimationComplete();
+                                },
                               );
                             },
                           ),
-                          Obx(
-                            () => controller.currentRank() != 0
-                                ? _backwardButton()
-                                : const SizedBox.shrink(),
-                          ),
-                          Obx(
-                            () => controller.currentRank() <
-                                    controller.results().length - 1
-                                ? forwardButton()
-                                : const SizedBox.shrink(),
-                          ),
-                          Positioned(
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            child: Column(
-                              children: <Widget>[
-                                32.verticalSpace,
-                                _appBar(),
-                                8.verticalSpace,
-                                Center(
-                                  child: ConstrainedBox(
-                                    constraints:
-                                        BoxConstraints(maxHeight: 120.h),
-                                    child: Obx(
-                                      () => AutoSizeText(
-                                        controller.prompt(),
-                                        textAlign: TextAlign.center,
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 40,
-                                        style: AppTextStyle.openRunde(
-                                          fontSize: 32.sp,
-                                          color: AppColors.kffffff,
-                                          fontWeight: FontWeight.w700,
-                                          shadows: <Shadow>[
-                                            Shadow(
-                                              offset: const Offset(0, 1),
-                                              blurRadius: 2,
-                                              color: AppColors.k000000
-                                                  .withValues(alpha: .75),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ).paddingSymmetric(horizontal: 24.w),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+                        )
+                      : const SizedBox.shrink(),
                 ),
               ],
             ),
           ),
         ).withGPad(context, color: Colors.black),
+      );
+
+  Stack _mainContent() => Stack(
+        children: <Widget>[
+          Obx(
+            () => controller.results().isNotEmpty
+                ? AnimatedSize(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    child: CachedNetworkImage(
+                      imageUrl: _currentRankImageUrl(),
+                      width: 1.sw,
+                      height: 1.sh,
+                      fit: BoxFit.cover,
+                      placeholder: (_, __) => const Center(
+                          child: CircularProgressIndicator(strokeWidth: 2)),
+                      errorWidget: (_, __, ___) => const Center(
+                        child: Icon(
+                          Icons.error,
+                          color: AppColors.kffffff,
+                        ),
+                      ),
+                    ),
+                  )
+                : const SizedBox.shrink(),
+          ),
+          Obx(
+            () {
+              if (controller.results().isEmpty ||
+                  controller.pageController == null) {
+                return const SizedBox.shrink();
+              }
+              return SizedBox(
+                height: 1.sh,
+                child: Stack(
+                  children: <Widget>[
+                    PageView.builder(
+                      controller: controller.pageController,
+                      itemCount: controller.results().length,
+                      onPageChanged: (int i) {
+                        controller.currentRank(i);
+                        if (!controller.isExposed()) {
+                          Future<void>.delayed(
+                            const Duration(seconds: 1),
+                            () {
+                              controller.wiggleQuestionMark(true);
+                              controller.wiggleQuestionMark.refresh();
+                            },
+                          );
+                        }
+                      },
+                      itemBuilder: (BuildContext context, int index) {
+                        final MdResult result = controller.results()[index];
+
+                        return Obx(
+                          () => ResultCard(
+                            isExposed: controller.isExposed(),
+                            triggerQuestionMark:
+                                controller.wiggleQuestionMark(),
+                            isFromProfile: controller.isFromProfile(),
+                            rank: result.rank ?? 0,
+                            reason: result.reason ?? '',
+                            isCurrentRankIs1:
+                                controller.isExposed() || result.rank == 1,
+                            ordinalSuffix: getOrdinalSuffix(result.rank ?? 0),
+                            selfieUrl: result.selfieUrl,
+                            userName: result.userName,
+                            reactions: result.reactions,
+                            onReactionSelected: (String emoji) {
+                              controller.addReaction(
+                                emoji: emoji,
+                                participantId: result.userId ?? '',
+                              );
+                              HapticFeedback.mediumImpact();
+                            },
+                          ).paddingOnly(
+                            right: 24.w,
+                            left: 24.w,
+                            bottom: controller.isExposed() ||
+                                    controller.isFromProfile()
+                                ? 36.h
+                                : 117.h,
+                          ),
+                        );
+                      },
+                    ),
+                    Obx(
+                      () => controller.currentRank() != 0
+                          ? _backwardButton()
+                          : const SizedBox.shrink(),
+                    ),
+                    Obx(
+                      () => controller.currentRank() <
+                              controller.results().length - 1
+                          ? forwardButton()
+                          : const SizedBox.shrink(),
+                    ),
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      child: Column(
+                        children: <Widget>[
+                          32.verticalSpace,
+                          _appBar(),
+                          8.verticalSpace,
+                          Center(
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(maxHeight: 120.h),
+                              child: Obx(
+                                () => AutoSizeText(
+                                  controller.prompt(),
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 40,
+                                  style: AppTextStyle.openRunde(
+                                    fontSize: 32.sp,
+                                    color: AppColors.kffffff,
+                                    fontWeight: FontWeight.w700,
+                                    shadows: <Shadow>[
+                                      Shadow(
+                                        offset: const Offset(0, 1),
+                                        blurRadius: 2,
+                                        color: AppColors.k000000
+                                            .withValues(alpha: .75),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ).paddingSymmetric(horizontal: 24.w),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
       );
 
   /// App bar

@@ -26,7 +26,4 @@ class BadgeController extends GetxController {
 
   /// Badge
   MdBadge badge = MdBadge();
-
-  /// Is badge claimed
-  RxBool isBadgeClaimed = false.obs;
 }

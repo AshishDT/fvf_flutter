@@ -25,23 +25,13 @@ class BadgeView extends GetView<BadgeController> {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: Obx(
           () => AppButton(
-            buttonText: controller.isBadgeClaimed() ? 'Claimed' : 'Claim Badge',
+            buttonText: 'Claim Badge',
             onPressed: () {
-              if (controller.isBadgeClaimed()) {
-                appSnackbar(
-                  message: 'Badge already claimed',
-                  snackbarState: SnackbarState.info,
-                );
-                return;
-              }
-              if (!controller.isBadgeClaimed()) {
-                controller.isBadgeClaimed(true);
-                appSnackbar(
-                  message: 'Badge claimed successfully',
-                  snackbarState: SnackbarState.success,
-                );
-                return;
-              }
+              Get.back();
+              appSnackbar(
+                message: 'Badge claimed successfully',
+                snackbarState: SnackbarState.success,
+              );
             },
           ),
         ).paddingSymmetric(horizontal: 24.w),

@@ -78,7 +78,9 @@ class ProfileHeaderSection extends StatelessWidget {
             ],
           ),
           16.verticalSpace,
-          if (_canShowBadge) ...<Widget>[
+          if (_canShowBadge &&
+              (controller.currentBadge()?.badge?.isNotEmpty ??
+                  false)) ...<Widget>[
             Align(
               child: GestureDetector(
                 onTap: () {
@@ -92,26 +94,37 @@ class ProfileHeaderSection extends StatelessWidget {
                     clipBehavior: Clip.none,
                     alignment: Alignment.center,
                     children: <Widget>[
-                      Container(
-                        height: 22.h,
-                        padding: REdgeInsets.only(right: 8, left: 28),
-                        alignment: AlignmentDirectional.centerEnd,
-                        decoration: BoxDecoration(
-                          color: AppColors.kF1F2F2.withValues(alpha: .36),
-                          borderRadius: BorderRadius.horizontal(
-                            left: Radius.circular(12.r),
-                            right: Radius.circular(12.r),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          8.horizontalSpace,
+                          PhysicalModel(
+                            color: Colors.transparent,
+                            shadowColor: Colors.black.withValues(alpha: 0.75),
+                            elevation: 2,
+                            borderRadius: BorderRadius.circular(12.r),
+                            child: Container(
+                              height: 22.h,
+                              padding: REdgeInsets.only(right: 8, left: 20),
+                              alignment: AlignmentDirectional.centerEnd,
+                              decoration: BoxDecoration(
+                                color: AppColors.kF1F2F2.withValues(alpha: .36),
+                                borderRadius: BorderRadius.horizontal(
+                                  left: Radius.circular(12.r),
+                                  right: Radius.circular(12.r),
+                                ),
+                              ),
+                              child: Text(
+                                controller.currentBadge()?.badge ?? 'No Badge',
+                                style: GoogleFonts.fredoka(
+                                  color: AppColors.kffffff,
+                                  fontSize: 12.sp,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                        child: Text(
-                          controller.currentBadge()?.badge ?? 'No Badge',
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.fredoka(
-                            color: AppColors.kffffff,
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                        ],
                       ),
                       Align(
                         alignment: AlignmentDirectional.centerStart,

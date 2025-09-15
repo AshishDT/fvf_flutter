@@ -55,6 +55,8 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
     final String? selfieUrl = participant.selfieUrl;
     final String? profileUrl = globalUser().profileUrl;
 
+    final bool selfieUploaded = selfieUrl?.isNotEmpty ?? false;
+
     final String? imageUrl = (selfieUrl != null && selfieUrl.isNotEmpty)
         ? selfieUrl
         : (profileUrl != null && profileUrl.isNotEmpty)
@@ -113,8 +115,8 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
             ),
             if (isFromFailedView ||
                 name != null && name!.isNotEmpty ||
-                (!isInvitationSend &&
-                    (participant.isHost ?? false))) ...<Widget>[
+                (!isInvitationSend && (participant.isHost ?? false)) ||
+                !selfieUploaded) ...<Widget>[
               8.verticalSpace,
               Text(
                 name ?? 'You',

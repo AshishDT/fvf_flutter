@@ -56,12 +56,14 @@ class ExposeSheetView extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
-                '👀 Make the AI spill it all...',
-                style: AppTextStyle.openRunde(
-                  color: AppColors.kffffff,
-                  fontSize: 24.sp,
-                  fontWeight: FontWeight.w600,
+              Align(
+                child: Text(
+                  '👀 Expose it all...',
+                  style: AppTextStyle.openRunde(
+                    color: AppColors.kffffff,
+                    fontSize: 24.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
               24.verticalSpace,
@@ -110,6 +112,14 @@ class ExposeSheetView extends StatelessWidget {
         padding: REdgeInsets.symmetric(vertical: 16, horizontal: 24),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(28.r),
+          boxShadow: const <BoxShadow>[
+            BoxShadow(
+              color: Color(0x33000000),
+              offset: Offset(0, 1),
+              blurRadius: 2,
+              spreadRadius: 0,
+            ),
+          ],
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -129,7 +139,7 @@ class ExposeSheetView extends StatelessWidget {
           children: <Widget>[
             Text(
               plan == AIPlan.PLAN1
-                  ? 'Expose Everyone - \$0.99'
+                  ? 'Expose This Slay - \$0.99'
                   : 'Always Exposed - \$5.99/w',
               style: AppTextStyle.openRunde(
                 fontSize: 18.sp,
@@ -140,36 +150,27 @@ class ExposeSheetView extends StatelessWidget {
             8.verticalSpace,
             Text(
               plan == AIPlan.PLAN1
-                  ? ' •  Full ranking of everyone\n'
-                      ' •  Instant spill, one-time only\n'
-                      ' •  Another reason for them to do it now'
-                  : ' •  Every round, every reason, no limits\n'
-                      ' •  Instant spills\n'
-                      ' •  VIP badge on your profile\n'
-                      ' •  Additional modes: head-to-head, images',
+                  ? ' •  Every rank, every reason!'
+                  : ' •  Slay all day 🚀\n'
+                      ' •  Every ranking, every reason\n'
+                      ' •  Verified badge, flex unlocked\n',
               style: AppTextStyle.openRunde(
                 fontSize: 14.sp,
                 color: AppColors.kffffff,
                 fontWeight: FontWeight.w500,
+                height: 1.5,
               ),
             ),
-            plan == AIPlan.PLAN1 ? 16.verticalSpace : 11.verticalSpace,
+            plan == AIPlan.PLAN1 ? 16.verticalSpace : 1.verticalSpace,
             plan == AIPlan.PLAN1
                 ? Obx(
                     () => AppButton(
                       height: 42.h,
                       isLoading: onRoundExposeLoading?.value ?? false,
-                      buttonText: '👀 Expose This Round',
+                      buttonText: '👀 Expose Now',
                       decoration: BoxDecoration(
                         color: AppColors.kFFC300,
                         borderRadius: BorderRadius.circular(28.r),
-                        boxShadow: <BoxShadow>[
-                          BoxShadow(
-                            offset: const Offset(0, 2),
-                            blurRadius: 2,
-                            color: AppColors.k000000.withValues(alpha: 0.2),
-                          ),
-                        ],
                       ),
                       onPressed: () {
                         onRoundExpose?.call();
@@ -183,26 +184,19 @@ class ExposeSheetView extends StatelessWidget {
                   )
                 : Obx(
                     () => AppButton(
-                      buttonText: '🔥 Go Unlimited',
+                      buttonText: '🔥 Slay Without Limits',
                       isLoading: onExposedLoading?.value ?? false,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(28.r),
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
-                          stops: const [0.0, 0.0],
+                          stops: const <double>[0, 0],
                           colors: <Color>[
                             AppColors.kFFC300,
                             AppColors.kFFC300.withValues(alpha: .72),
                           ],
                         ),
-                        boxShadow: <BoxShadow>[
-                          BoxShadow(
-                            offset: const Offset(0, 2),
-                            blurRadius: 2,
-                            color: AppColors.k000000.withValues(alpha: 0.2),
-                          ),
-                        ],
                       ),
                       onPressed: () {
                         onExposed?.call();

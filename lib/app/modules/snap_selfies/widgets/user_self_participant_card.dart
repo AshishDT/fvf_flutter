@@ -57,10 +57,10 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
 
     final bool selfieUploaded = selfieUrl?.isNotEmpty ?? false;
 
-    final String? imageUrl = (selfieUrl != null && selfieUrl.isNotEmpty)
-        ? selfieUrl
-        : (profileUrl != null && profileUrl.isNotEmpty)
-            ? profileUrl
+    final String? imageUrl = (profileUrl != null && profileUrl.isNotEmpty)
+        ? profileUrl
+        : (selfieUrl != null && selfieUrl.isNotEmpty)
+            ? selfieUrl
             : null;
 
     final bool hasImage = imageUrl != null && imageUrl.isNotEmpty;

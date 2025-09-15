@@ -37,10 +37,10 @@ class SelfieAvatarIcon extends StatelessWidget {
     final String? selfieUrl = participant.selfieUrl;
     final String? profileUrl = participant.userData?.profileUrl;
 
-    final String? imageUrl = (selfieUrl != null && selfieUrl.isNotEmpty)
-        ? selfieUrl
-        : (profileUrl != null && profileUrl.isNotEmpty)
-            ? profileUrl
+    final String? imageUrl = (profileUrl != null && profileUrl.isNotEmpty)
+        ? profileUrl
+        : (selfieUrl != null && selfieUrl.isNotEmpty)
+            ? selfieUrl
             : null;
 
     final bool hasImage = imageUrl != null && imageUrl.isNotEmpty;

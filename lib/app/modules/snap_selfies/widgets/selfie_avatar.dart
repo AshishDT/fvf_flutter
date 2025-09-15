@@ -47,15 +47,23 @@ class SelfieAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool hasNetworkImage =
-        participant.selfieUrl != null && participant.selfieUrl!.isNotEmpty;
+    final String? selfieUrl = participant.selfieUrl;
+    final String? profileUrl = participant.userData?.profileUrl;
+
+    final String? imageUrl = (profileUrl != null && profileUrl.isNotEmpty)
+        ? profileUrl
+        : (selfieUrl != null && selfieUrl.isNotEmpty)
+            ? selfieUrl
+            : null;
+
+    final bool hasImage = imageUrl != null && imageUrl.isNotEmpty;
 
     Widget avatarContent;
 
-    if (hasNetworkImage) {
+    if (hasImage) {
       avatarContent = ClipOval(
         child: CachedNetworkImage(
-          imageUrl: participant.selfieUrl!,
+          imageUrl: imageUrl,
           width: size.w,
           height: size.h,
           fit: BoxFit.cover,

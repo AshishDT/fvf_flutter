@@ -87,6 +87,7 @@ class AgeInputView extends GetView<AgeInputController> {
                               controller: controller.ageInputController,
                               maxLines: 7,
                               minLines: 1,
+                              maxLength: 3,
                               autofocus: true,
                               enabled: !controller.creatingUser(),
                               readOnly: controller.creatingUser(),
@@ -111,6 +112,7 @@ class AgeInputView extends GetView<AgeInputController> {
                               decoration: InputDecoration(
                                 hintText: 'Age',
                                 hintTextDirection: TextDirection.ltr,
+                                counter: const SizedBox(),
                                 prefixIconConstraints: BoxConstraints(
                                   maxHeight: 24.h,
                                   maxWidth: 24.w,

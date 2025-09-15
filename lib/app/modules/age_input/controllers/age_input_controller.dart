@@ -149,6 +149,14 @@ class AgeInputController extends GetxController {
       return;
     }
 
+    if (ageValue > 100) {
+      appSnackbar(
+        message: 'Please enter a valid age! It should be less than 100.',
+        snackbarState: SnackbarState.info,
+      );
+      return;
+    }
+
     createAnonymousUser(ageValue);
   }
 }

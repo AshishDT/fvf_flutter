@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fvf_flutter/app/ui/components/custom_type_writer.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -31,8 +32,8 @@ class ProfileBioSection extends StatelessWidget {
           if (controller.profile().user?.bio != null &&
               (controller.profile().user?.bio?.isNotEmpty ??
                   false)) ...<Widget>[
-            Text(
-              controller.profile().user?.bio ?? '',
+            CustomTypewriterText(
+             text: controller.profile().user?.bio ?? '',
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
                 fontSize: 20.sp,

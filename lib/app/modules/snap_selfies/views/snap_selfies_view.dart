@@ -1,4 +1,5 @@
 import 'package:animated_digit/animated_digit.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -16,7 +17,6 @@ import '../../../data/config/app_images.dart';
 import '../../../ui/components/animated_list_view.dart';
 import '../../../ui/components/app_button.dart';
 import '../../../ui/components/common_app_bar.dart';
-import '../../../ui/components/custom_type_writer.dart';
 import '../../../utils/app_text_style.dart';
 import '../../../utils/dialog_helper.dart';
 import '../controllers/snap_selfies_controller.dart';
@@ -281,8 +281,23 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
   Widget _promptText() => ConstrainedBox(
         constraints: BoxConstraints(maxHeight: 120.h),
         child: Obx(
-          () => CustomTypewriterText(
-            text: controller.joinedInvitationData().prompt ?? '',
+          () => AutoSizeText(
+            controller.joinedInvitationData().prompt ?? '',
+            textAlign: TextAlign.center,
+            style: AppTextStyle.openRunde(
+              fontSize: 40.sp,
+              fontWeight: FontWeight.w700,
+              color: AppColors.kffffff,
+              shadows: <Shadow>[
+                const Shadow(
+                  offset: Offset(0, 2),
+                  blurRadius: 2,
+                  color: Color(0x55000000),
+                ),
+              ],
+            ),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 20,
           ),
         ).paddingSymmetric(horizontal: 24),
       );

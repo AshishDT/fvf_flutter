@@ -46,7 +46,7 @@ class ProfileView extends GetView<ProfileController> {
             ),
             body: GradientCard(
               child: RefreshIndicator(
-                color: AppColors.k000000,
+                color: Colors.grey[100],
                 onRefresh: () async {
                   await controller.getUser();
                   await controller.getRounds(isRefresh: true);

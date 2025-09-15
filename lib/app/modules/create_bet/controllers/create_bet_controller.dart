@@ -113,6 +113,9 @@ class CreateBetController extends GetxController {
     allowed: true,
   ).obs;
 
+  ///  Can show profile (if user has no rounds)
+  RxBool get canShowProfile => ((profile().round?.totalRound ?? 0) >= 1).obs;
+
   /// Show next bet when rolling dice
   void rollDice() {
     if (createRoundLoading()) {

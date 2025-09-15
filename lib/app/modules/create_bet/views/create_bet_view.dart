@@ -69,17 +69,25 @@ class CreateBetView extends GetView<CreateBetController> {
                             width: 24.w,
                             AppImages.notificationIcon,
                           ),
-                          10.horizontalSpace,
                           Obx(
-                            () => ProfileAvatar(
-                              profileUrl:
-                                  controller.profile().user?.profileUrl ?? '',
-                              onTap: () {
-                                Get.toNamed(
-                                  Routes.PROFILE,
-                                );
-                              },
+                            () => Visibility(
+                              visible: controller.canShowProfile(),
+                              child: 10.horizontalSpace,
                             ),
+                          ),
+                          Obx(
+                            () => !controller.canShowProfile()
+                                ? const SizedBox()
+                                : ProfileAvatar(
+                                    profileUrl:
+                                        controller.profile().user?.profileUrl ??
+                                            '',
+                                    onTap: () {
+                                      Get.toNamed(
+                                        Routes.PROFILE,
+                                      );
+                                    },
+                                  ),
                           ),
                         ],
                       ),

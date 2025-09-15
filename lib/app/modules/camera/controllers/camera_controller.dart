@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
+import 'package:fvf_flutter/app/modules/snap_selfies/controllers/snap_selfies_controller.dart';
 import 'package:get/get.dart';
 import 'package:image/image.dart' as img;
 
@@ -152,8 +153,15 @@ class PickSelfieCameraController extends GetxController {
 
   /// Called when timer finishes
   void onTimerFinished() {
+    final SnapSelfiesController snapSelfiesController =
+        Get.find<SnapSelfiesController>();
+
     Get.back(
-      result: previewFile().path.isNotEmpty ? XFile(previewFile().path) : null,
+      result: snapSelfiesController.isCurrentUserSelfieTaken()
+          ? null
+          : previewFile().path.isNotEmpty
+              ? XFile(previewFile().path)
+              : null,
     );
   }
 
@@ -186,6 +194,15 @@ class PickSelfieCameraController extends GetxController {
 
       previewFile(file);
       isCapturing(false);
+
+      Future<void>.delayed(
+        const Duration(seconds: 3),
+        () {
+          Get.find<SnapSelfiesController>().submitSelfie(
+            previewFile(),
+          );
+        },
+      );
     } on Exception catch (e) {
       logE('Capture failed: $e');
       isCapturing(false);

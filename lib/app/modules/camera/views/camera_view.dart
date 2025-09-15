@@ -33,11 +33,12 @@ class CameraView extends GetView<PickSelfieCameraController> {
               if (controller.previewFile().path.isNotEmpty) {
                 return Stack(
                   children: <Widget>[
-                    SizedBox(
-                      height: 1.sh,
-                      child: Image.file(
-                        controller.previewFile.value,
-                        fit: BoxFit.fill,
+                    SizedBox.expand(
+                      child: FittedBox(
+                        fit: BoxFit.cover,
+                        child: Image.file(
+                          controller.previewFile.value,
+                        ),
                       ),
                     ),
                     Column(
@@ -101,8 +102,24 @@ class CameraView extends GetView<PickSelfieCameraController> {
               return Stack(
                 fit: StackFit.expand,
                 children: <Widget>[
-                  CameraPreview(
-                    controller.cameraController!,
+                  SizedBox.expand(
+                    child: FittedBox(
+                      fit: BoxFit.cover,
+                      child: SizedBox(
+                        width: controller
+                            .cameraController!.value.previewSize?.height,
+                        height: controller
+                            .cameraController!.value.previewSize?.width,
+                        child: CameraPreview(
+                          controller.cameraController!,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[

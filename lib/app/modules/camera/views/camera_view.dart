@@ -67,9 +67,29 @@ class CameraView extends GetView<PickSelfieCameraController> {
                             ),
                           ),
                         ).paddingSymmetric(horizontal: 24.w),
-                        55.verticalSpace,
-                        RetakeButton(
-                          onRetake: () async => controller.onRetake(),
+                        AnimatedSize(
+                          duration: const Duration(milliseconds: 300),
+                          alignment: Alignment.bottomCenter,
+                          curve: Curves.easeInOut,
+                          child: Obx(
+                            () => Visibility(
+                              visible: controller.canShowRetake(),
+                              child: 55.verticalSpace,
+                            ),
+                          ),
+                        ),
+                        AnimatedSize(
+                          duration: const Duration(milliseconds: 300),
+                          alignment: Alignment.bottomCenter,
+                          curve: Curves.easeInOut,
+                          child: Obx(
+                            () => Visibility(
+                              visible: controller.canShowRetake(),
+                              child: RetakeButton(
+                                onRetake: () async => controller.onRetake(),
+                              ),
+                            ),
+                          ),
                         ),
                         49.verticalSpace,
                       ],

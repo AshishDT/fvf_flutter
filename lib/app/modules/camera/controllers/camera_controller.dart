@@ -40,6 +40,7 @@ class PickSelfieCameraController extends GetxController {
   void onClose() {
     cameraController?.dispose();
     stopTimer();
+    _retakeTimer?.cancel();
     super.onClose();
   }
 
@@ -61,8 +62,33 @@ class PickSelfieCameraController extends GetxController {
   /// Seconds left for the timer
   RxInt secondsLeft = 0.obs;
 
+  /// Seconds left for retake timer
+  RxInt retakeSecondsLeft = 0.obs;
+
   /// Timer for countdown
   Timer? _timer;
+
+  /// Retake timer
+  Timer? _retakeTimer;
+
+  /// Can show retake button
+  RxBool canShowRetake = false.obs;
+
+  /// Start Retake timer
+  void _startRetakeTimer() {
+    _retakeTimer?.cancel();
+    _retakeTimer = Timer.periodic(
+      const Duration(seconds: 1),
+      (Timer timer) {
+        if (retakeSecondsLeft.value > 0) {
+          retakeSecondsLeft.value--;
+        } else {
+          timer.cancel();
+          canShowRetake(true);
+        }
+      },
+    );
+  }
 
   /// Starts the timer for 5 minutes (300 seconds)
   void startTimer() {
@@ -155,6 +181,8 @@ class PickSelfieCameraController extends GetxController {
           await file.writeAsBytes(img.encodeJpg(fixedImage));
         }
       }
+
+      _startRetakeTimer();
 
       previewFile(file);
       isCapturing(false);

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -7,21 +8,55 @@ import 'package:get/get.dart';
 import 'package:zo_animated_border/zo_animated_border.dart';
 
 /// Retake Button Widget
-class RetakeButton extends StatelessWidget {
+class RetakeButton extends StatefulWidget {
   /// Constructor for RetakeButton
-  const RetakeButton({
-    super.key,
-    this.onRetake,
-  });
+  const RetakeButton({super.key, this.onRetake});
 
   /// VoidCallback onRetake
   final VoidCallback? onRetake;
 
   @override
+  State<RetakeButton> createState() => _RetakeButtonState();
+}
+
+class _RetakeButtonState extends State<RetakeButton> {
+  bool _showGlow = false;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _triggerGlow();
+
+    _timer = Timer.periodic(
+      const Duration(seconds: 3),
+      (_) => _triggerGlow(),
+    );
+  }
+
+  void _triggerGlow() {
+    setState(() => _showGlow = true);
+
+    Future<void>.delayed(
+      const Duration(milliseconds: 600),
+      () {
+        if (mounted) {
+          setState(() => _showGlow = false);
+        }
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) => GestureDetector(
-        onTap: () {
-          onRetake?.call();
-        },
+        onTap: widget.onRetake,
         child: Stack(
           children: <Widget>[
             Container(
@@ -50,21 +85,22 @@ class RetakeButton extends StatelessWidget {
                 ],
               ),
             ).paddingSymmetric(horizontal: 24.w),
-            ZoGlowingEdgeBorder(
-              animationDuration: 1200.milliseconds,
-              borderRadius: 28.r,
-              gradientColors: const <Color>[
-                AppColors.kFB46CD,
-                AppColors.k6C75FF,
-                AppColors.k0DBFFF,
-              ],
-              borderWidth: 3.w,
-              edgeLength: 500.w,
-              child: SizedBox(
-                height: 57.h,
-                width: double.infinity,
-              ),
-            ).paddingSymmetric(horizontal: 24.w),
+            if (_showGlow)
+              ZoGlowingEdgeBorder(
+                animationDuration: 600.milliseconds,
+                borderRadius: 28.r,
+                gradientColors: const <Color>[
+                  AppColors.kFB46CD,
+                  AppColors.k6C75FF,
+                  AppColors.k0DBFFF,
+                ],
+                borderWidth: 3.w,
+                edgeLength: 500.w,
+                child: SizedBox(
+                  height: 57.h,
+                  width: double.infinity,
+                ),
+              ).paddingSymmetric(horizontal: 24.w),
           ],
         ),
       );

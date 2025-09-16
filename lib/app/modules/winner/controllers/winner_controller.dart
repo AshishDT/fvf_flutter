@@ -23,12 +23,6 @@ class WinnerController extends GetxController {
   /// RxList<MdResult>
   RxList<MdResult> results = <MdResult>[].obs;
 
-  /// isRoundSubLoading
-  RxBool isRoundSubLoading = false.obs;
-
-  /// isWeeklySubLoading
-  RxBool isWeeklySubLoading = false.obs;
-
   /// showIntroAnimation
   RxBool showIntroAnimation = true.obs;
 
@@ -95,6 +89,9 @@ class WinnerController extends GetxController {
 
   /// Is data loading
   RxBool isLoading = true.obs;
+
+  /// Is purchasing
+  RxBool isPurchasing = false.obs;
 
   /// Wiggle question mark
   RxBool wiggleQuestionMark = false.obs;
@@ -199,9 +196,6 @@ class WinnerController extends GetxController {
     required SubscriptionPlanEnum type,
   }) async {
     try {
-      type == SubscriptionPlanEnum.ONE_TIME
-          ? isRoundSubLoading(true)
-          : isWeeklySubLoading(true);
       final bool _isPurchase = await ProfileApiRepo.roundSubscription(
         roundId: roundId,
         paymentId: paymentId,
@@ -214,14 +208,7 @@ class WinnerController extends GetxController {
     } on Exception catch (e, st) {
       logE('Error During Subscription: $e');
       logE(st);
-      type == SubscriptionPlanEnum.ONE_TIME
-          ? isRoundSubLoading(false)
-          : isWeeklySubLoading(false);
       return false;
-    } finally {
-      type == SubscriptionPlanEnum.ONE_TIME
-          ? isRoundSubLoading(false)
-          : isWeeklySubLoading(false);
     }
   }
 

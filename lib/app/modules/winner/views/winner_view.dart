@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fvf_flutter/app/data/enums/purchase_status.dart';
+import 'package:fvf_flutter/app/data/models/md_purchase_result.dart';
+import 'package:fvf_flutter/app/data/remote/revenue_cat/revenue_cat_service.dart';
+import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/models/md_result.dart';
 import 'package:fvf_flutter/app/modules/profile/enums/subscription_enum.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/expose_sheet.dart';
@@ -13,6 +17,7 @@ import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/utils/widget_ext.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
 import '../../../routes/app_pages.dart';
@@ -132,6 +137,8 @@ class WinnerView extends GetView<WinnerController> {
                             isExposed: controller.isExposed(),
                             triggerQuestionMark:
                                 controller.wiggleQuestionMark(),
+                            isCurrentUser:
+                                result.supabaseId == SupaBaseService.userId,
                             isFromProfile: controller.isFromProfile(),
                             rank: result.rank ?? 0,
                             reason: result.reason ?? '',
@@ -250,8 +257,10 @@ class WinnerView extends GetView<WinnerController> {
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
             onPressed: controller.nextPage,
-            icon: SvgPicture.asset(
-              AppImages.forwardArrow,
+            icon: Image.asset(
+              AppImages.nextIosIcon,
+              height: 36.h,
+              width: 36.w,
             ),
           ),
         ),
@@ -267,61 +276,86 @@ class WinnerView extends GetView<WinnerController> {
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
             onPressed: controller.prevPage,
-            icon: SvgPicture.asset(
-              AppImages.backwardArrow,
+            icon: Image.asset(
+              AppImages.backIosIcon,
+              height: 36.h,
+              width: 36.w,
             ),
           ),
         ),
       );
 
   /// Expose button
-  Widget _exposeButton() => AppButton(
-        buttonText: '',
-        height: 57.h,
-        onPressed: () {
-          ExposeSheet.openExposeSheet(
-            onExposedLoading: controller.isWeeklySubLoading,
-            onRoundExposeLoading: controller.isRoundSubLoading,
-            onExposed: () => _handleSimpleSubscription(
-              type: SubscriptionPlanEnum.WEEKLY,
-              successMessage:
-                  'You have successfully subscribed to the weekly unlimited plan!',
+  Widget _exposeButton() => Obx(
+        () => AppButton(
+          buttonText: '',
+          height: 57.h,
+          onPressed: () {
+            ExposeSheet.openExposeSheet(
+              onExposed: () => _handleSubscription(
+                type: SubscriptionPlanEnum.WEEKLY,
+                successMessage:
+                    'You have successfully subscribed to the weekly unlimited plan!',
+              ),
+              onRoundExpose: () => _handleSubscription(
+                type: SubscriptionPlanEnum.ONE_TIME,
+                successMessage: 'You have successfully exposed this round!',
+              ),
+            );
+          },
+          isLoading: controller.isPurchasing(),
+          loader: SizedBox(
+            width: 35.w,
+            height: 35.h,
+            child: SleekCircularSlider(
+              appearance: CircularSliderAppearance(
+                spinnerMode: true,
+                size: 50,
+                customColors: CustomSliderColors(
+                  dotColor: Colors.transparent,
+                  trackColor: Colors.transparent,
+                  progressBarColor: Colors.transparent,
+                  shadowColor: Colors.black38,
+                  progressBarColors: <Color>[
+                    const Color(0xFFFFDBF6),
+                    const Color(0xFFFF70DB),
+                    const Color(0xFF6C75FF),
+                    const Color(0xFF4DD0FF),
+                  ],
+                ),
+              ),
             ),
-            onRoundExpose: () => _handleSimpleSubscription(
-              type: SubscriptionPlanEnum.ONE_TIME,
-              successMessage: 'You have successfully exposed this round!',
-            ),
-          );
-        },
-        decoration: BoxDecoration(
-          image: const DecorationImage(
-            image: AssetImage(AppImages.buttonBg),
-            fit: BoxFit.cover,
           ),
-          borderRadius: BorderRadius.circular(28).r,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Expose Everyone 👀',
-              style: AppTextStyle.openRunde(
-                fontSize: 18.sp,
-                color: AppColors.kFAFBFB,
-                fontWeight: FontWeight.w700,
-                height: .8,
-              ),
+          decoration: BoxDecoration(
+            image: const DecorationImage(
+              image: AssetImage(AppImages.buttonBg),
+              fit: BoxFit.cover,
             ),
-            4.verticalSpace,
-            Text(
-              'See how everyone placed!',
-              style: AppTextStyle.openRunde(
-                fontSize: 12.sp,
-                color: AppColors.kFAFBFB,
-                fontWeight: FontWeight.w500,
+            borderRadius: BorderRadius.circular(28).r,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                'Expose Everyone 👀',
+                style: AppTextStyle.openRunde(
+                  fontSize: 18.sp,
+                  color: AppColors.kFAFBFB,
+                  fontWeight: FontWeight.w700,
+                  height: .8,
+                ),
               ),
-            ),
-          ],
+              4.verticalSpace,
+              Text(
+                'See how everyone placed!',
+                style: AppTextStyle.openRunde(
+                  fontSize: 12.sp,
+                  color: AppColors.kFAFBFB,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
         ),
       ).paddingAll(24.w);
 
@@ -347,37 +381,71 @@ class WinnerView extends GetView<WinnerController> {
   }
 
   /// _handleSimpleSubscription
-  Future<void> _handleSimpleSubscription({
+  Future<void> _handleSubscription({
     required SubscriptionPlanEnum type,
     required String successMessage,
   }) async {
+    Get.back();
+    controller.isPurchasing(true);
+
     final String roundId = controller.roundDetails().round?.id ?? '';
+    MdPurchaseResult? result;
 
-    final bool isPurchase = await controller.roundSubscription(
-      roundId: roundId,
-      paymentId: '',
-      type: type,
-    );
+    try {
+      switch (type) {
+        case SubscriptionPlanEnum.WEEKLY:
+          result = await RevenueCatService.instance.purchaseWeeklySubscription(
+            roundId: roundId,
+          );
+          break;
+        case SubscriptionPlanEnum.ONE_TIME:
+          result = await RevenueCatService.instance.purchaseCurrentRound(
+            roundId: roundId,
+          );
+          break;
+      }
 
-    if (isPurchase) {
-      controller.isExposed(true);
-      Get.close(0);
-      appSnackbar(
-        message: successMessage,
-        snackbarState: SnackbarState.success,
+      if (result.status != PurchaseStatus.success) {
+        appSnackbar(
+          message:
+              'Purchase failed or was cancelled. Status: ${result.status.name}',
+          snackbarState: SnackbarState.danger,
+        );
+        controller.isPurchasing(false);
+        return;
+      }
+
+      final bool _hasPurchased = await controller.roundSubscription(
+        roundId: roundId,
+        paymentId: '',
+        type: type,
       );
-    } else {
-      Get.close(0);
-    }
 
-    // if (type == SubscriptionPlanEnum.WEEKLY) {
-    //   await RevenueCatService.instance.purchase(
-    //     'slay_always_exposed_weekly',
-    //   );
-    // } else {
-    //   await RevenueCatService.instance.purchase(
-    //     'slay_current_round',
-    //   );
-    // }
+      if (_hasPurchased) {
+        controller
+          ..isExposed(true)
+          ..isExposed.refresh();
+
+        appSnackbar(
+          message: successMessage,
+          snackbarState: SnackbarState.success,
+        );
+        controller.isPurchasing(false);
+      } else {
+        controller.isPurchasing(false);
+        appSnackbar(
+          message: 'Something went wrong. Please try again.',
+          snackbarState: SnackbarState.danger,
+        );
+      }
+    } on Exception catch (e) {
+      controller.isPurchasing(false);
+      appSnackbar(
+        message: 'Error occurred: $e',
+        snackbarState: SnackbarState.danger,
+      );
+    } finally {
+      controller.isPurchasing(false);
+    }
   }
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/models/md_result.dart';
 import 'package:fvf_flutter/app/modules/profile/enums/subscription_enum.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/expose_sheet.dart';
@@ -73,8 +72,6 @@ class ExposeButton extends StatelessWidget {
                           }
                         })
                       : ExposeSheet.openExposeSheet(
-                          onExposedLoading: controller.isWeeklySubLoading,
-                          onRoundExposeLoading: controller.isRoundSubLoading,
                           onExposed: () => _handleSubscription(
                             type: SubscriptionPlanEnum.WEEKLY,
                             successMessage:

@@ -5,7 +5,6 @@ import 'package:fvf_flutter/app/ui/components/app_button.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:fvf_flutter/app/utils/widget_ext.dart';
-import 'package:get/get.dart';
 
 /// AIPlan enum
 enum AIPlan {
@@ -16,25 +15,17 @@ enum AIPlan {
 /// ExposeSheetView
 class ExposeSheetView extends StatelessWidget {
   /// ExposeSheetView Constructor
-  ExposeSheetView({
+  const ExposeSheetView({
     super.key,
     this.onExposed,
     this.onRoundExpose,
-    this.onExposedLoading,
-    this.onRoundExposeLoading,
   });
 
   /// On round expose callback
-  VoidCallback? onRoundExpose;
+  final VoidCallback? onRoundExpose;
 
   /// On exposed callback
-  VoidCallback? onExposed;
-
-  /// onExposedLoading
-  RxBool? onExposedLoading = false.obs;
-
-  /// onRoundExposeLoading
-  RxBool? onRoundExposeLoading = false.obs;
+  final VoidCallback? onExposed;
 
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
@@ -163,49 +154,43 @@ class ExposeSheetView extends StatelessWidget {
             ),
             plan == AIPlan.PLAN1 ? 16.verticalSpace : 1.verticalSpace,
             plan == AIPlan.PLAN1
-                ? Obx(
-                    () => AppButton(
-                      height: 42.h,
-                      isLoading: onRoundExposeLoading?.value ?? false,
-                      buttonText: '👀 Expose Now',
-                      decoration: BoxDecoration(
-                        color: AppColors.kFFC300,
-                        borderRadius: BorderRadius.circular(28.r),
-                      ),
-                      onPressed: () {
-                        onRoundExpose?.call();
-                      },
-                      style: AppTextStyle.openRunde(
-                        fontSize: 16.sp,
-                        color: AppColors.k2A2E2F,
-                        fontWeight: FontWeight.w600,
-                      ),
+                ? AppButton(
+                    height: 42.h,
+                    buttonText: '👀 Expose Now',
+                    decoration: BoxDecoration(
+                      color: AppColors.kFFC300,
+                      borderRadius: BorderRadius.circular(28.r),
+                    ),
+                    onPressed: () {
+                      onRoundExpose?.call();
+                    },
+                    style: AppTextStyle.openRunde(
+                      fontSize: 16.sp,
+                      color: AppColors.k2A2E2F,
+                      fontWeight: FontWeight.w600,
                     ),
                   )
-                : Obx(
-                    () => AppButton(
-                      buttonText: '🔥 Slay Without Limits',
-                      isLoading: onExposedLoading?.value ?? false,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(28.r),
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          stops: const <double>[0, 0],
-                          colors: <Color>[
-                            AppColors.kFFC300,
-                            AppColors.kFFC300.withValues(alpha: .72),
-                          ],
-                        ),
+                : AppButton(
+                    buttonText: '🔥 Slay Without Limits',
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(28.r),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        stops: const <double>[0, 0],
+                        colors: <Color>[
+                          AppColors.kFFC300,
+                          AppColors.kFFC300.withValues(alpha: .72),
+                        ],
                       ),
-                      onPressed: () {
-                        onExposed?.call();
-                      },
-                      style: AppTextStyle.openRunde(
-                        fontSize: 18.sp,
-                        color: AppColors.kffffff,
-                        fontWeight: FontWeight.w700,
-                      ),
+                    ),
+                    onPressed: () {
+                      onExposed?.call();
+                    },
+                    style: AppTextStyle.openRunde(
+                      fontSize: 18.sp,
+                      color: AppColors.kffffff,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
           ],

@@ -9,8 +9,6 @@ class ExposeSheet {
   static void openExposeSheet({
     VoidCallback? onRoundExpose,
     VoidCallback? onExposed,
-    RxBool? onExposedLoading,
-    RxBool? onRoundExposeLoading,
   }) {
     showModalBottomSheet(
       context: Get.context!,
@@ -26,8 +24,6 @@ class ExposeSheet {
       builder: (BuildContext context) => ExposeSheetView(
         onExposed: onExposed,
         onRoundExpose: onRoundExpose,
-        onExposedLoading: onExposedLoading,
-        onRoundExposeLoading: onRoundExposeLoading,
       ),
     );
   }

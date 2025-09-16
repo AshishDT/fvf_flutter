@@ -160,6 +160,10 @@ class PickSelfieCameraController extends GetxController {
       return;
     }
 
+    await cameraController?.dispose();
+    cameraController = null;
+    isCameraInitialized(false);
+
     Get.back(
       result: snapSelfiesController.isCurrentUserSelfieTaken() ||
               snapSelfiesController.submittingSelfie()
@@ -223,24 +227,20 @@ class PickSelfieCameraController extends GetxController {
     }
 
     try {
+      await cameraController?.dispose();
+
       final CameraLensDirection currentDirection =
           cameraController!.description.lensDirection;
 
       final List<CameraDescription> cameras = await availableCameras();
 
-      CameraDescription newCamera;
-
-      if (currentDirection == CameraLensDirection.front) {
-        newCamera = cameras.firstWhere(
-          (CameraDescription cam) =>
-              cam.lensDirection == CameraLensDirection.back,
-        );
-      } else {
-        newCamera = cameras.firstWhere(
-          (CameraDescription cam) =>
-              cam.lensDirection == CameraLensDirection.front,
-        );
-      }
+      final CameraDescription newCamera = cameras.firstWhere(
+        (CameraDescription cam) =>
+            cam.lensDirection ==
+            (currentDirection == CameraLensDirection.front
+                ? CameraLensDirection.back
+                : CameraLensDirection.front),
+      );
 
       cameraController = CameraController(
         newCamera,
@@ -249,10 +249,9 @@ class PickSelfieCameraController extends GetxController {
       );
 
       initializeControllerFuture = cameraController!.initialize();
-
       await initializeControllerFuture;
       isCameraInitialized.value = true;
-    } on Exception catch (e) {
+    } catch (e) {
       logE('Flip camera error: $e');
     }
   }

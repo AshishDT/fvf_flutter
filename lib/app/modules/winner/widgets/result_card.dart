@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/reaction_menu.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/rotate_and_wiggle.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
@@ -30,6 +29,7 @@ class ResultCard extends StatelessWidget {
     this.onReactionSelected,
     this.triggerQuestionMark = false,
     this.reactions,
+    this.isCurrentUser,
   });
 
   /// Controller
@@ -64,6 +64,9 @@ class ResultCard extends StatelessWidget {
 
   /// Reactions
   final String? reactions;
+
+  /// Is current user
+  final bool? isCurrentUser;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -124,7 +127,7 @@ class ResultCard extends StatelessWidget {
                       style: GoogleFonts.fredoka(
                         fontSize: 36.sp,
                         fontWeight: FontWeight.w500,
-                        color: AppColors.kF1F2F2,
+                        color: AppColors.kffffff,
                         shadows: <Shadow>[
                           const Shadow(
                             offset: Offset(0, 4),
@@ -154,8 +157,8 @@ class ResultCard extends StatelessWidget {
                     );
                   },
                   child: reactions == null || (reactions?.isEmpty ?? true)
-                      ? SvgPicture.asset(
-                          AppImages.smilyIcon,
+                      ? Image.asset(
+                          AppImages.smilyIconPng,
                           height: 32.w,
                           width: 32.w,
                         )
@@ -171,8 +174,8 @@ class ResultCard extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 child: GestureDetector(
                   onTap: () {},
-                  child: SvgPicture.asset(
-                    AppImages.shareIconShadow,
+                  child: Image.asset(
+                    AppImages.shareIconPng,
                     height: 32.w,
                     width: 32.w,
                   ),
@@ -185,57 +188,23 @@ class ResultCard extends StatelessWidget {
                     children: <Widget>[
                       36.horizontalSpace,
                       Expanded(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(500.r),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  boxShadow: <BoxShadow>[
-                                    BoxShadow(
-                                      offset: const Offset(0, 1),
-                                      blurRadius: 2,
-                                      color: AppColors.k000000
-                                          .withValues(alpha: .75),
-                                    ),
-                                  ],
-                                ),
-                                child: CachedNetworkImage(
-                                  imageUrl: selfieUrl ?? '',
-                                  width: 24.w,
-                                  height: 24.w,
-                                  fit: BoxFit.cover,
-                                  placeholder: (_, __) => const Center(
-                                      child: CircularProgressIndicator(
-                                          strokeWidth: 2)),
-                                  errorWidget: (_, __, ___) => Container(
-                                    height: 24.w,
-                                    width: 24.w,
-                                    color: Colors.grey.shade200,
-                                    child: const Icon(
-                                      Icons.person,
-                                      size: 16,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            if (userName != null &&
-                                (userName?.isNotEmpty ?? false)) ...<Widget>[
-                              4.horizontalSpace,
-                              Flexible(
-                                child: Text(
-                                  userName ?? '',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: AppTextStyle.openRunde(
-                                    fontSize: 24.sp,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.kffffff,
-                                    shadows: <Shadow>[
-                                      Shadow(
+                        child: GestureDetector(
+                          onTap: (){
+                            if(isCurrentUser ?? false){
+                              Get.toNamed(
+                                Routes.PROFILE,
+                              );
+                            }
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(500.r),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    boxShadow: <BoxShadow>[
+                                      BoxShadow(
                                         offset: const Offset(0, 1),
                                         blurRadius: 2,
                                         color: AppColors.k000000
@@ -243,10 +212,53 @@ class ResultCard extends StatelessWidget {
                                       ),
                                     ],
                                   ),
+                                  child: CachedNetworkImage(
+                                    imageUrl: selfieUrl ?? '',
+                                    width: 24.w,
+                                    height: 24.w,
+                                    fit: BoxFit.cover,
+                                    placeholder: (_, __) => const Center(
+                                        child: CircularProgressIndicator(
+                                            strokeWidth: 2)),
+                                    errorWidget: (_, __, ___) => Container(
+                                      height: 24.w,
+                                      width: 24.w,
+                                      color: Colors.grey.shade200,
+                                      child: const Icon(
+                                        Icons.person,
+                                        size: 16,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ]
-                          ],
+                              if (userName != null &&
+                                  (userName?.isNotEmpty ?? false)) ...<Widget>[
+                                4.horizontalSpace,
+                                Flexible(
+                                  child: Text(
+                                    userName ?? '',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: AppTextStyle.openRunde(
+                                      fontSize: 24.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.kffffff,
+                                      shadows: <Shadow>[
+                                        Shadow(
+                                          offset: const Offset(0, 1),
+                                          blurRadius: 2,
+                                          color: AppColors.k000000
+                                              .withValues(alpha: .75),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ]
+                            ],
+                          ),
                         ),
                       ),
                       GestureDetector(

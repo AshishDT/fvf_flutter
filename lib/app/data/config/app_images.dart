@@ -249,4 +249,16 @@ class AppImages {
 
   /// More Vertical Icon
   static const String moreVertical = '$_svgPath/more_vertical.svg';
+
+  /// Next Ios Icon
+  static const String nextIosIcon = '$_path/next_ios_icon.png';
+
+  /// Back Ios Icon
+  static const String backIosIcon = '$_path/back_ios_icon.png';
+
+  /// Share Icon PNG
+  static const String shareIconPng = '$_path/share_icon.png';
+
+  /// Smily Icon PNG
+  static const String smilyIconPng = '$_path/smily_icon.png';
 }

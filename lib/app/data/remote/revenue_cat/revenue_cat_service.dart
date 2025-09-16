@@ -42,7 +42,7 @@ class RevenueCatService {
   static const String _premiumEntitlement = 'premium';
 
   /// Current round entitlement key
-  static const String currentRoundEntitlement = 'current_round_access';
+  static const String _currentRoundEntitlement = 'current_round_access';
 
   /// Initialize RevenueCat
   Future<void> initRevenueCat() async {
@@ -105,7 +105,7 @@ class RevenueCatService {
   }) async =>
       _purchaseProduct(
         currentRoundProductId,
-        entitlementKey: currentRoundEntitlement,
+        entitlementKey: _currentRoundEntitlement,
         roundId: roundId,
       );
 

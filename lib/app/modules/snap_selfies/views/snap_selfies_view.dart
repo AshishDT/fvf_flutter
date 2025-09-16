@@ -11,14 +11,12 @@ import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/ui/components/vibrate_wiggle.dart';
 import 'package:get/get.dart';
-
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
 import '../../../ui/components/animated_list_view.dart';
 import '../../../ui/components/app_button.dart';
 import '../../../ui/components/common_app_bar.dart';
 import '../../../utils/app_text_style.dart';
-import '../../../utils/dialog_helper.dart';
 import '../controllers/snap_selfies_controller.dart';
 import '../widgets/grouped_avatar_icon.dart';
 import '../widgets/previous_participant_avatar.dart';
@@ -266,13 +264,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
   Widget _appBar() => CommonAppBar(
         leadingIcon: AppImages.closeIconWhite,
         onTapOfLeading: () {
-          if (controller.joinedInvitationData().isViewOnly ?? false) {
-            Get.back();
-            return;
-          }
-          DialogHelper.onBackOfAiChoosing(
-            onPositiveClick: () => Get.back(),
-          );
+          Get.back();
         },
         actions: <Widget>[
           GestureDetector(

@@ -17,6 +17,8 @@ import 'package:smart_auth/smart_auth.dart';
 import '../../../data/local/user_provider.dart';
 import '../../../data/models/md_join_invitation.dart';
 import '../../../data/remote/deep_link/deep_link_service.dart';
+import '../../../data/remote/notification_service/notification_actions.dart';
+import '../../../data/remote/notification_service/notification_service.dart';
 import '../../../routes/app_pages.dart';
 import '../../profile/models/md_profile.dart';
 import '../../profile/repositories/profile_api_repo.dart';
@@ -59,6 +61,8 @@ class CreateBetController extends GetxController {
   @override
   void onInit() {
     DeepLinkService.initBranchListener();
+
+    _initNotificationClick();
 
     getBets();
     getUser();
@@ -115,6 +119,14 @@ class CreateBetController extends GetxController {
 
   ///  Can show profile (if user has no rounds)
   RxBool get canShowProfile => ((profile().round?.totalRound ?? 0) >= 1).obs;
+
+  /// Init notification click handlers
+  Future<void> _initNotificationClick() async {
+    await NotificationService().init(
+      onPush: onPush,
+      onLocal: onLocal,
+    );
+  }
 
   /// Show next bet when rolling dice
   void rollDice() {

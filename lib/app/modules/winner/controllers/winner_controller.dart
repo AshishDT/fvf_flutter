@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/models/md_result.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
-import 'package:fvf_flutter/app/modules/profile/enums/subscription_enum.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_badge.dart';
-import 'package:fvf_flutter/app/modules/profile/repositories/profile_api_repo.dart';
 import 'package:fvf_flutter/app/modules/winner/models/md_round_details.dart';
 import 'package:fvf_flutter/app/modules/winner/repositories/winner_api_repo.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
+import 'package:no_screenshot/no_screenshot.dart';
 
 import '../../ai_choosing/models/md_ai_result.dart';
 
@@ -59,6 +57,7 @@ class WinnerController extends GetxController {
       WidgetsBinding.instance.addPostFrameCallback(
         (Duration timeStamp) {
           pageController = PageController();
+          pageController?.addListener(updateScreenshotPermission);
         },
       );
     }
@@ -75,6 +74,7 @@ class WinnerController extends GetxController {
   @override
   void onClose() {
     pageController?.dispose();
+    noScreenshot.screenshotOn();
     super.onClose();
   }
 
@@ -96,6 +96,9 @@ class WinnerController extends GetxController {
   /// Wiggle question mark
   RxBool wiggleQuestionMark = false.obs;
 
+  /// No screenshot
+  final NoScreenshot noScreenshot = NoScreenshot.instance;
+
   /// Prompt
   RxString get prompt => (roundDetails().round?.prompt ?? '').obs;
 
@@ -115,6 +118,19 @@ class WinnerController extends GetxController {
 
   /// Observable round details
   Rx<MdRoundDetails> roundDetails = MdRoundDetails().obs;
+
+  /// Update screenshot permissions
+  void updateScreenshotPermission() {
+    if (!isExposed()) {
+      noScreenshot.screenshotOn();
+    } else {
+      if (currentRank() == 0) {
+        noScreenshot.screenshotOn();
+      } else {
+        noScreenshot.screenshotOff();
+      }
+    }
+  }
 
   /// nextPage
   void nextPage() {
@@ -186,29 +202,6 @@ class WinnerController extends GetxController {
         message: 'Failed to add reaction. Please try again.',
         snackbarState: SnackbarState.danger,
       );
-    }
-  }
-
-  /// Round Subscription
-  Future<bool> roundSubscription({
-    required String roundId,
-    required String paymentId,
-    required SubscriptionPlanEnum type,
-  }) async {
-    try {
-      final bool _isPurchase = await ProfileApiRepo.roundSubscription(
-        roundId: roundId,
-        paymentId: paymentId,
-        type: type,
-      );
-      if (_isPurchase) {
-        return _isPurchase;
-      }
-      return false;
-    } on Exception catch (e, st) {
-      logE('Error During Subscription: $e');
-      logE(st);
-      return false;
     }
   }
 

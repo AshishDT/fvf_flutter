@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
-import 'package:fvf_flutter/app/modules/profile/enums/subscription_enum.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_badge.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_profile.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_user_rounds.dart';
@@ -114,46 +113,6 @@ class ProfileApiRepo {
             return null;
           },
         ),
-      );
-
-  /// Round Subscription
-  static Future<bool> roundSubscription({
-    required String roundId,
-    required String paymentId,
-    required SubscriptionPlanEnum type,
-  }) async =>
-      APIWrapper.handleApiCall<bool>(
-        APIService.post<Map<String, dynamic>>(
-          path: 'round-subscription/subscribe',
-          data: <String, dynamic>{
-            if (SubscriptionPlanEnum.WEEKLY != type) 'round_id': roundId,
-            if (paymentId.isNotEmpty) 'payment_id': paymentId,
-            'type': type.name,
-          },
-        ).then(
-          (Response<Map<String, dynamic>>? response) {
-            if (response?.isOk != true || response?.data == null) {
-              return false;
-            }
-
-            final ApiResponse<Map<String, dynamic>> data = ApiResponse.fromJson(
-              response?.data ?? <String, dynamic>{},
-            );
-
-            if (data.success == true) {
-              return true;
-            }
-
-            appSnackbar(
-              message:
-                  data.message ?? 'Something went wrong, please try again.',
-              snackbarState: SnackbarState.danger,
-            );
-            return false;
-          },
-        ),
-      ).then(
-        (bool? value) => value ?? false,
       );
 
   /// Get Badges

@@ -405,23 +405,7 @@ class WinnerView extends GetView<WinnerController> {
           break;
       }
 
-      if (result.status != PurchaseStatus.success) {
-        appSnackbar(
-          message:
-              'Purchase failed or was cancelled. Status: ${result.status.name}',
-          snackbarState: SnackbarState.danger,
-        );
-        controller.isPurchasing(false);
-        return;
-      }
-
-      final bool _hasPurchased = await controller.roundSubscription(
-        roundId: roundId,
-        paymentId: '',
-        type: type,
-      );
-
-      if (_hasPurchased) {
+      if (result.status == PurchaseStatus.success) {
         controller
           ..isExposed(true)
           ..isExposed.refresh();
@@ -431,12 +415,15 @@ class WinnerView extends GetView<WinnerController> {
           snackbarState: SnackbarState.success,
         );
         controller.isPurchasing(false);
+
+        controller.updateScreenshotPermission();
       } else {
-        controller.isPurchasing(false);
         appSnackbar(
-          message: 'Something went wrong. Please try again.',
+          message:
+              'Purchase failed or was cancelled. Status: ${result.status.name}',
           snackbarState: SnackbarState.danger,
         );
+        controller.isPurchasing(false);
       }
     } on Exception catch (e) {
       controller.isPurchasing(false);

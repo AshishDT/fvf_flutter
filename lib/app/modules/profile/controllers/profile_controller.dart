@@ -312,11 +312,9 @@ class ProfileController extends GetxController {
       type == SubscriptionPlanEnum.ONE_TIME
           ? isRoundSubLoading(true)
           : isWeeklySubLoading(true);
-      final bool _isPurchase = await ProfileApiRepo.roundSubscription(
-        roundId: roundId,
-        paymentId: paymentId,
-        type: type,
-      );
+      const bool _isPurchase = true;
+
+      // TODO - Add reveue cat service
       if (_isPurchase) {
         return _isPurchase;
       }

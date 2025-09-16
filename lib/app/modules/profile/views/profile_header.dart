@@ -99,8 +99,8 @@ class ProfileHeaderSection extends StatelessWidget {
                         children: <Widget>[
                           8.horizontalSpace,
                           PhysicalModel(
-                            color: Colors.transparent,
-                            shadowColor: Colors.black.withValues(alpha: 0.75),
+                            color: AppColors.kF1F2F2.withValues(alpha: 0.36),
+                            shadowColor: Colors.black.withValues(alpha: 0.20),
                             elevation: 2,
                             borderRadius: BorderRadius.circular(12.r),
                             child: Container(
@@ -108,7 +108,6 @@ class ProfileHeaderSection extends StatelessWidget {
                               padding: REdgeInsets.only(right: 8, left: 20),
                               alignment: AlignmentDirectional.centerEnd,
                               decoration: BoxDecoration(
-                                color: AppColors.kF1F2F2.withValues(alpha: .36),
                                 borderRadius: BorderRadius.horizontal(
                                   left: Radius.circular(12.r),
                                   right: Radius.circular(12.r),

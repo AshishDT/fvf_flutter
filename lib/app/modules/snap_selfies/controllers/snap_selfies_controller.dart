@@ -458,8 +458,8 @@ class SnapSelfiesController extends GetxController
       );
 
       if (isSuccess == true) {
-        emitDate();
         setUpTextTimer();
+        emitDate();
       }
     } finally {
       submittingSelfie(false);

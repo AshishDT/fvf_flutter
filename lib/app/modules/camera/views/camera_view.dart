@@ -24,21 +24,21 @@ class CameraView extends GetView<PickSelfieCameraController> {
         canPop: false,
         child: Scaffold(
           backgroundColor: AppColors.kF5FCFF,
-          body: Obx(
-            () {
+          body: GetX<PickSelfieCameraController>(
+            builder: (_) {
               if (!controller.isCameraInitialized()) {
                 return const Center(child: CircularProgressIndicator());
               }
 
-              if (controller.previewFile().path.isNotEmpty) {
+              final bool hasPreview = controller.previewFile().path.isNotEmpty;
+
+              if (hasPreview) {
                 return Stack(
                   children: <Widget>[
                     SizedBox.expand(
                       child: FittedBox(
                         fit: BoxFit.cover,
-                        child: Image.file(
-                          controller.previewFile.value,
-                        ),
+                        child: Image.file(controller.previewFile.value),
                       ),
                     ),
                     Column(
@@ -110,9 +110,7 @@ class CameraView extends GetView<PickSelfieCameraController> {
                             .cameraController!.value.previewSize?.height,
                         height: controller
                             .cameraController!.value.previewSize?.width,
-                        child: CameraPreview(
-                          controller.cameraController!,
-                        ),
+                        child: CameraPreview(controller.cameraController!),
                       ),
                     ),
                   ),
@@ -161,27 +159,17 @@ class CameraView extends GetView<PickSelfieCameraController> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
-                              SizedBox(
-                                height: 24.h,
-                                width: 24.w,
+                              SizedBox(height: 24.h, width: 24.w),
+                              50.horizontalSpace,
+                              GestureDetector(
+                                onTap: () => controller.takePicture(),
+                                child:
+                                    SvgPicture.asset(AppImages.clickSelfieIcon),
                               ),
                               50.horizontalSpace,
                               GestureDetector(
-                                onTap: () {
-                                  controller.takePicture();
-                                },
-                                child: SvgPicture.asset(
-                                  AppImages.clickSelfieIcon,
-                                ),
-                              ),
-                              50.horizontalSpace,
-                              GestureDetector(
-                                onTap: () {
-                                  controller.flipCamera();
-                                },
-                                child: SvgPicture.asset(
-                                  AppImages.flipCamera,
-                                ),
+                                onTap: () => controller.flipCamera(),
+                                child: SvgPicture.asset(AppImages.flipCamera),
                               ),
                             ],
                           ),
@@ -228,10 +216,9 @@ class CameraView extends GetView<PickSelfieCameraController> {
                           color: AppColors.kF6FCFE,
                           shadows: <Shadow>[
                             const Shadow(
-                              offset: Offset(0, 4),
-                              blurRadius: 4,
-                              color: Color(0x33000000),
-                            ),
+                                offset: Offset(0, 4),
+                                blurRadius: 4,
+                                color: Color(0x33000000)),
                           ],
                         ),
                       ),
@@ -240,7 +227,7 @@ class CameraView extends GetView<PickSelfieCameraController> {
                 ),
               ),
             ),
-          )
+          ),
         ],
       ).paddingSymmetric(horizontal: 24);
 }

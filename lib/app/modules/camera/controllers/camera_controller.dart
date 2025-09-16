@@ -152,12 +152,17 @@ class PickSelfieCameraController extends GetxController {
   }
 
   /// Called when timer finishes
-  void onTimerFinished() {
+  Future<void> onTimerFinished() async {
     final SnapSelfiesController snapSelfiesController =
         Get.find<SnapSelfiesController>();
 
+    if (isCapturing()) {
+      return;
+    }
+
     Get.back(
-      result: snapSelfiesController.isCurrentUserSelfieTaken()
+      result: snapSelfiesController.isCurrentUserSelfieTaken() ||
+              snapSelfiesController.submittingSelfie()
           ? null
           : previewFile().path.isNotEmpty
               ? XFile(previewFile().path)
@@ -167,44 +172,45 @@ class PickSelfieCameraController extends GetxController {
 
   /// Take picture
   Future<void> takePicture() async {
-    if (cameraController == null || !cameraController!.value.isInitialized) {
-      logE('Camera not ready');
+    final CameraController? controller = cameraController;
+    if (controller == null || !controller.value.isInitialized) {
+      return;
+    }
+    if (controller.value.isTakingPicture) {
+      return;
+    }
+
+    if (isCapturing()) {
       return;
     }
 
     try {
       isCapturing(true);
-      final XFile picture = await cameraController!.takePicture();
+      final XFile xFile = await controller.takePicture();
+      final File file = File(xFile.path);
 
-      final File file = File(picture.path);
-
-      if (cameraController!.description.lensDirection ==
-          CameraLensDirection.front) {
+      if (controller.description.lensDirection == CameraLensDirection.front) {
         final Uint8List bytes = await file.readAsBytes();
-        final img.Image? capturedImage = img.decodeImage(bytes);
-
-        if (capturedImage != null) {
-          final img.Image fixedImage = img.flipHorizontal(capturedImage);
-
-          await file.writeAsBytes(img.encodeJpg(fixedImage));
+        final img.Image? imgDecoded = img.decodeImage(bytes);
+        if (imgDecoded != null) {
+          final img.Image fixed = img.flipHorizontal(imgDecoded);
+          await file.writeAsBytes(img.encodeJpg(fixed));
         }
       }
 
-      _startRetakeTimer();
-
       previewFile(file);
-      isCapturing(false);
+      _startRetakeTimer();
 
       Future<void>.delayed(
         const Duration(seconds: 3),
         () {
-          Get.find<SnapSelfiesController>().submitSelfie(
-            previewFile(),
-          );
+          Get.find<SnapSelfiesController>().submitSelfie(previewFile());
         },
       );
-    } on Exception catch (e) {
+    } on CameraException catch (e) {
       logE('Capture failed: $e');
+      isCapturing(false);
+    } finally {
       isCapturing(false);
     }
   }

@@ -60,7 +60,7 @@ class FailedRoundView extends GetView<FailedRoundController> {
                       )
                     ],
                   ),
-                  64.verticalSpace,
+                  8.verticalSpace,
                   Text(
                     controller.reason,
                     textAlign: TextAlign.center,

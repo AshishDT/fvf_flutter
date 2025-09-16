@@ -23,17 +23,15 @@ class BadgeView extends GetView<BadgeController> {
   Widget build(BuildContext context) => Scaffold(
         backgroundColor: AppColors.kF5FCFF,
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: Obx(
-          () => AppButton(
-            buttonText: 'Claim Badge',
-            onPressed: () {
-              Get.back();
-              appSnackbar(
-                message: 'Badge claimed successfully',
-                snackbarState: SnackbarState.success,
-              );
-            },
-          ),
+        floatingActionButton: AppButton(
+          buttonText: 'Claim Badge',
+          onPressed: () {
+            Get.back();
+            appSnackbar(
+              message: 'Badge claimed successfully',
+              snackbarState: SnackbarState.success,
+            );
+          },
         ).paddingSymmetric(horizontal: 24.w),
         body: GradientCard(
           padding: REdgeInsets.symmetric(horizontal: 24),

@@ -46,8 +46,6 @@ class RevenueCatService {
 
   /// Initialize RevenueCat
   Future<void> initRevenueCat() async {
-    await Purchases.setLogLevel(LogLevel.debug);
-
     if (Platform.isAndroid) {
       await Purchases.configure(
         PurchasesConfiguration(

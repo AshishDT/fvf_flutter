@@ -2,19 +2,15 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
-import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/animated_list_view.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
-import 'package:fvf_flutter/app/ui/components/common_app_bar.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:fvf_flutter/app/utils/widget_ext.dart';
 import 'package:get/get.dart';
-import '../../../utils/dialog_helper.dart';
 import '../../snap_selfies/widgets/selfie_avatar.dart';
 import '../controllers/ai_choosing_controller.dart';
 
@@ -79,40 +75,6 @@ class AiChoosingView extends GetView<AiChoosingController> {
               SafeArea(
                 child: AnimatedListView(
                   children: <Widget>[
-                    CommonAppBar(
-                      leadingIcon: AppImages.closeIconWhite,
-                      onTapOfLeading: () {
-                        if (controller.isViewOnly()) {
-                          Get.offAllNamed(
-                            Routes.CREATE_BET,
-                          );
-                          return;
-                        }
-                        DialogHelper.onBackOfAiChoosing(
-                          onPositiveClick: () {
-                            Get.offAllNamed(
-                              Routes.CREATE_BET,
-                            );
-                          },
-                        );
-                      },
-                      actions: <Widget>[
-                        GestureDetector(
-                          onTap: () {
-                            controller.shareViewOnlyLink();
-                          },
-                          child: SvgPicture.asset(
-                            AppImages.shareIcon,
-                            width: 24.w,
-                            height: 24.h,
-                            colorFilter: const ColorFilter.mode(
-                              AppColors.kffffff,
-                              BlendMode.srcIn,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ).paddingSymmetric(horizontal: 24),
                     AnimatedSize(
                       duration: 300.milliseconds,
                       curve: Curves.easeInOut,

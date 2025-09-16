@@ -10,11 +10,9 @@ import 'package:fvf_flutter/app/modules/winner/widgets/expose_sheet.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
-import 'package:fvf_flutter/app/utils/dialog_helper.dart';
 import 'package:fvf_flutter/app/utils/widget_ext.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
 import '../../../routes/app_pages.dart';
@@ -222,21 +220,16 @@ class WinnerView extends GetView<WinnerController> {
   Widget _appBar() => CommonAppBar(
         leadingIcon: AppImages.closeIconWhite,
         onTapOfLeading: () {
-          if (controller.isViewOnly()) {
-            Get.offAllNamed(
-              Routes.CREATE_BET,
+          if (controller.roundId().isNotEmpty) {
+            Get.back(
+              result: controller.currentUserResult,
             );
-            return;
+          } else {
+            Get.until(
+              (Route<dynamic> route) =>
+                  route.settings.name == Routes.CREATE_BET,
+            );
           }
-          controller.roundId().isNotEmpty
-              ? Get.back(result: controller.currentUserResult)
-              : DialogHelper.onBackOfWinner(
-                  onPositiveClick: () {
-                    Get.offAllNamed(
-                      Routes.CREATE_BET,
-                    );
-                  },
-                );
         },
         actions: <Widget>[
           SvgPicture.asset(

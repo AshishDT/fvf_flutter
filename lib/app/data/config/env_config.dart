@@ -21,4 +21,8 @@ class EnvConfig {
 
   /// Socket URL
   static String socketUrl = const String.fromEnvironment('socket_url');
+
+  /// RevenueCat API Key
+  static String androidRevenueCatApiKey =
+      const String.fromEnvironment('android_subscription_key');
 }

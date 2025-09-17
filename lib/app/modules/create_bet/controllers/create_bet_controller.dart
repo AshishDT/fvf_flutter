@@ -22,6 +22,9 @@ import '../../../data/remote/notification_service/notification_service.dart';
 import '../../../routes/app_pages.dart';
 import '../../profile/models/md_profile.dart';
 import '../../profile/repositories/profile_api_repo.dart';
+import '../../rating/models/rating_state.dart';
+import '../../rating/repositories/rating_repository.dart';
+import '../../rating/repositories/rating_service.dart';
 import '../models/md_can_create_bet.dart';
 import '../models/md_participant.dart';
 
@@ -293,7 +296,7 @@ class CreateBetController extends GetxController {
           userAuthToken: userAuthToken ?? '',
         );
 
-        // await _checkForReview(_user);
+        await _checkForReview(_user);
       }
     } on Exception catch (e, st) {
       logE('Error getting user: $e');
@@ -302,38 +305,38 @@ class CreateBetController extends GetxController {
   }
 
   /// Check if we should show review dialog
-  // Future<void> _checkForReview(MdProfile _user) => Future<void>.delayed(
-  //     const Duration(seconds: 1),
-  //     () async {
-  //       final DateTime? installDate =
-  //           DateTime.tryParse(LocalStore.loginTime() ?? '');
-  //
-  //       if (installDate == null) {
-  //         return;
-  //       }
-  //
-  //       final RatingRepository repo = RatingRepository();
-  //       final RatingService service = RatingService();
-  //
-  //       final RatingState state = repo.load();
-  //
-  //       final bool shouldAsk = service.shouldShowRating(
-  //         installDate: installDate,
-  //         totalWins: _user.round?.winsCount ?? 0,
-  //         crewStreakDays: 0,
-  //         state: state,
-  //         now: DateTime.now(),
-  //       );
-  //
-  //       if (shouldAsk) {
-  //         unawaited(
-  //           Get.toNamed(
-  //             Routes.RATING,
-  //           ),
-  //         );
-  //       }
-  //     },
-  //   );
+  Future<void> _checkForReview(MdProfile _user) => Future<void>.delayed(
+        const Duration(seconds: 1),
+        () async {
+          final DateTime? installDate =
+              DateTime.tryParse(LocalStore.loginTime() ?? '');
+
+          if (installDate == null) {
+            return;
+          }
+
+          final RatingRepository repo = RatingRepository();
+          final RatingService service = RatingService();
+
+          final RatingState state = repo.load();
+
+          final bool shouldAsk = service.shouldShowRating(
+            installDate: installDate,
+            totalWins: _user.round?.winsCount ?? 0,
+            crewStreakDays: 0,
+            state: state,
+            now: DateTime.now(),
+          );
+
+          if (shouldAsk) {
+            unawaited(
+              Get.toNamed(
+                Routes.RATING,
+              ),
+            );
+          }
+        },
+      );
 
   /// Request phone hint
   Future<void> requestPhoneHint(TextEditingController controller) async {

@@ -25,7 +25,6 @@ class ResultCard extends StatelessWidget {
     this.userName,
     this.reason,
     this.isExposed = false,
-    this.isFromProfile = false,
     this.onReactionSelected,
     this.triggerQuestionMark = false,
     this.reactions,
@@ -53,9 +52,6 @@ class ResultCard extends StatelessWidget {
   /// Is exposed
   final bool isExposed;
 
-  /// Is from profile
-  final bool isFromProfile;
-
   /// On reaction selected
   final void Function(String)? onReactionSelected;
 
@@ -74,7 +70,7 @@ class ResultCard extends StatelessWidget {
         children: <Widget>[
           Column(
             children: <Widget>[
-              if (isFromProfile || isExposed || rank == 1)
+              if (isExposed || rank == 1)
                 Align(
                   alignment: Alignment.centerRight,
                   child: Row(
@@ -273,7 +269,7 @@ class ResultCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  if (isFromProfile || isExposed || rank == 1) ...<Widget>[
+                  if (isExposed || rank == 1) ...<Widget>[
                     16.verticalSpace,
                     CustomTypewriterText(
                       text: reason ?? '',

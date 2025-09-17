@@ -6,22 +6,19 @@ import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/data/remote/api_service/init_api_service.dart';
 import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
-import 'package:fvf_flutter/app/modules/profile/enums/subscription_enum.dart';
+import 'package:fvf_flutter/app/modules/profile/controllers/timelines_mixin.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_badge.dart';
-import 'package:fvf_flutter/app/modules/profile/models/md_highlight.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_profile.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_user_rounds.dart';
 import 'package:fvf_flutter/app/modules/profile/repositories/profile_api_repo.dart';
-import 'package:fvf_flutter/app/modules/winner/repositories/winner_api_repo.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
-
 import '../../../utils/app_loader.dart';
 
 /// Profile Controller
-class ProfileController extends GetxController {
+class ProfileController extends GetxController with TimeLineMixin {
   /// image
   Rx<File> image = File('').obs;
 
@@ -34,7 +31,8 @@ class ProfileController extends GetxController {
   /// isRoundsLoading
   RxBool isRoundsLoading = false.obs;
 
-  /// participants list
+  /// Rounds list
+  @override
   RxList<MdRound> rounds = <MdRound>[].obs;
 
   /// Skip
@@ -53,6 +51,7 @@ class ProfileController extends GetxController {
   late PageController roundPageController;
 
   /// Current round
+  @override
   RxInt currentRound = 0.obs;
 
   /// currentIndex
@@ -96,6 +95,10 @@ class ProfileController extends GetxController {
   @override
   void onClose() {
     nameInputFocusNode.dispose();
+    for (final PageController pc in roundInnerPageController.values) {
+      pc.dispose();
+    }
+    roundInnerPageController.clear();
     super.onClose();
   }
 
@@ -113,13 +116,10 @@ class ProfileController extends GetxController {
   RxList<MdBadge> badges = <MdBadge>[].obs;
 
   /// Current badge
-  Rx<MdBadge?> get currentBadge {
-    final MdBadge? _badge = badges.firstWhereOrNull(
-      (MdBadge element) => element.current == true && element.earned == true,
-    );
+  Rx<MdBadge> currentBadge = MdBadge().obs;
 
-    return _badge.obs;
-  }
+  /// isBadgesLoading
+  RxBool isBadgesLoading = true.obs;
 
   /// Pick Image Method
   Future<File?> pickImage({required ImageSource source}) async {
@@ -137,26 +137,6 @@ class ProfileController extends GetxController {
       return null;
     }
   }
-
-  /// highlightCards
-  final List<MdHighlight> highlightCards = <MdHighlight>[
-    MdHighlight.random(
-      title: 'Most likely to start an OF?',
-      subtitle: 'That no-nonsense stare made it obvious',
-    ),
-    MdHighlight.random(
-      title: 'Will become president?',
-      subtitle: 'All of the indications of a girl that knows how to lie',
-    ),
-    MdHighlight.random(
-      title: 'Most serious?',
-      subtitle: 'She’s never heard of smiling',
-    ),
-    MdHighlight.random(
-      title: 'Is the best at XYZ?',
-      subtitle: 'The reason why she won goes here!',
-    ),
-  ];
 
   /// Get User
   Future<void> getUser() async {
@@ -259,6 +239,12 @@ class ProfileController extends GetxController {
       } else {
         hasMore(false);
       }
+
+      for (int i = 0; i < rounds.length; i++) {
+        ensureRoundControllers(i, rounds[i].results?.length ?? 0);
+      }
+
+      syncRoundExposureFromAccess();
     } on Exception catch (e, st) {
       isRoundsLoading(false);
       logE('Error getting participants: $e');
@@ -268,107 +254,31 @@ class ProfileController extends GetxController {
     }
   }
 
-  /// Next page navigation
-  void nextPage() {
-    if (roundPageController.hasClients) {
-      final int nextIndex = currentRound() + 1;
-
-      if (nextIndex < rounds.length) {
-        roundPageController.animateToPage(
-          nextIndex,
-          duration: 300.milliseconds,
-          curve: Curves.easeInOut,
-        );
-        currentRound(nextIndex);
-        if (nextIndex >= rounds.length - 2 && hasMore()) {
-          getRounds();
-        }
-      }
-    }
-  }
-
-  /// Previous page navigation
-  void prevPage() {
-    if (roundPageController.hasClients) {
-      final int prevIndex = currentRound() - 1;
-      if (prevIndex >= 0) {
-        roundPageController.animateToPage(
-          prevIndex,
-          duration: 300.milliseconds,
-          curve: Curves.easeInOut,
-        );
-        currentRound(prevIndex);
-      }
-    }
-  }
-
-  /// Round Subscription
-  Future<bool> roundSubscription({
-    required String roundId,
-    required String paymentId,
-    required SubscriptionPlanEnum type,
-  }) async {
-    try {
-      type == SubscriptionPlanEnum.ONE_TIME
-          ? isRoundSubLoading(true)
-          : isWeeklySubLoading(true);
-      const bool _isPurchase = true;
-
-      // TODO - Add reveue cat service
-      if (_isPurchase) {
-        return _isPurchase;
-      }
-      return false;
-    } on Exception catch (e, st) {
-      type == SubscriptionPlanEnum.ONE_TIME
-          ? isRoundSubLoading(false)
-          : isWeeklySubLoading(false);
-      logE('Error getting purchase: $e');
-      logE(st);
-      return false;
-    } finally {
-      type == SubscriptionPlanEnum.ONE_TIME
-          ? isRoundSubLoading(false)
-          : isWeeklySubLoading(false);
-    }
-  }
-
-  /// Add reaction
-  Future<void> addReaction({
-    required String roundId,
-    required String emoji,
-    required String participantId,
-  }) async {
-    final bool? _isAdded = await WinnerApiRepo.addReaction(
-      roundId: roundId,
-      emoji: emoji,
-      participantId: participantId,
-    );
-
-    if (_isAdded == true && rounds().isNotEmpty) {
-      rounds()[currentRound()].reactions = emoji;
-      rounds.refresh();
-    } else {
-      appSnackbar(
-        message: 'Failed to add reaction. Please try again.',
-        snackbarState: SnackbarState.danger,
-      );
-    }
-  }
-
   /// Get Badges
   Future<void> getBadges() async {
+    isBadgesLoading(true);
     try {
       final List<MdBadge>? _badges = await ProfileApiRepo.getBadges();
 
       if (_badges != null && _badges.isNotEmpty) {
         badges(_badges);
         badges.refresh();
+
+        for (MdBadge _b in _badges) {
+          if ((_b.earned ?? true) && (_b.current ?? false)) {
+            currentBadge(_b);
+            currentBadge.refresh();
+            break;
+          }
+        }
       }
     } on Exception catch (e) {
       logE(
         'Error getting badges: $e',
       );
+      isBadgesLoading(false);
+    } finally {
+      isBadgesLoading(false);
     }
   }
 }

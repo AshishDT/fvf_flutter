@@ -28,9 +28,6 @@ class WinnerController extends GetxController {
   @override
   void onInit() {
     if (Get.arguments != null) {
-      if (Get.arguments['isFromProfile'] != null) {
-        isFromProfile(true);
-      }
       if (Get.arguments['roundId'] != null) {
         roundId(Get.arguments['roundId']);
         getRoundDetails(
@@ -80,9 +77,6 @@ class WinnerController extends GetxController {
 
   /// isExposed
   RxBool isExposed = false.obs;
-
-  /// isFromProfile
-  RxBool isFromProfile = false.obs;
 
   /// Current rank
   RxInt currentRank = 0.obs;

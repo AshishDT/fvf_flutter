@@ -83,10 +83,13 @@ class ProfileApiRepo {
   static Future<List<MdRound>?> getRounds({
     required int skip,
     required int limit,
+    String? userId,
   }) async =>
       APIWrapper.handleApiCall<List<MdRound>>(
         APIService.get<Map<String, dynamic>>(
-          path: 'round/user-rounds/$skip/$limit',
+          path: userId != null && userId!.isNotEmpty
+              ? 'round/user-rounds/$userId/$skip/$limit'
+              : 'round/user-rounds/$skip/$limit',
         ).then(
           (Response<Map<String, dynamic>>? response) {
             if (response?.isOk != true || response?.data == null) {

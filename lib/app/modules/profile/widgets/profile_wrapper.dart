@@ -28,7 +28,7 @@ class ProfileWrapper extends StatelessWidget {
         placeHolder: Align(
           child: Column(
             children: <Widget>[
-              16.verticalSpace,
+              75.verticalSpace,
               PlaceholderCard(
                 height: 36.h,
                 width: 230.w,
@@ -99,7 +99,7 @@ class ProfileWrapper extends StatelessWidget {
                 radius: 500.r,
                 bgColor: AppColors.kffffff.withValues(alpha: .36),
               ),
-              24.verticalSpace,
+              45.verticalSpace,
             ],
           ),
         ),

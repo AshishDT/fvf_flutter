@@ -40,7 +40,6 @@ class WinnerView extends GetView<WinnerController> {
           bottomNavigationBar: Obx(
             () => !controller.isLoading() &&
                     !controller.isExposed() &&
-                    !controller.isFromProfile() &&
                     !controller.showIntroAnimation()
                 ? _exposeButton()
                 : const SizedBox.shrink(),
@@ -139,7 +138,6 @@ class WinnerView extends GetView<WinnerController> {
                                 controller.wiggleQuestionMark(),
                             isCurrentUser:
                                 result.supabaseId == SupaBaseService.userId,
-                            isFromProfile: controller.isFromProfile(),
                             rank: result.rank ?? 0,
                             reason: result.reason ?? '',
                             isCurrentRankIs1:
@@ -158,10 +156,7 @@ class WinnerView extends GetView<WinnerController> {
                           ).paddingOnly(
                             right: 24.w,
                             left: 24.w,
-                            bottom: controller.isExposed() ||
-                                    controller.isFromProfile()
-                                ? 36.h
-                                : 117.h,
+                            bottom: controller.isExposed() ? 36.h : 117.h,
                           ),
                         );
                       },

@@ -22,29 +22,37 @@ class RatingController extends GetxController {
     super.onInit();
   }
 
+  /// Is reviewing
+  RxBool isReviewing = false.obs;
+
   /// Request review
   Future<void> requestReview() async {
+    isReviewing(true);
+
     final InAppReview inAppReview = InAppReview.instance;
 
     try {
       if (await inAppReview.isAvailable()) {
         await inAppReview.requestReview();
       } else {
-        await inAppReview.openStoreListing(
-          appStoreId: '',
-          microsoftStoreId: '',
-        );
+        await inAppReview.openStoreListing();
       }
 
       state = service.markRated(state, DateTime.now());
       _repo.save(state);
     } on Exception catch (e) {
       logE('Error showing review dialog: $e');
+      isReviewing(false);
+    } finally {
+      isReviewing(false);
     }
   }
 
   /// On rate now
   void onMaybeLater() {
+    if (isReviewing()) {
+      return;
+    }
     state = service.snooze(state, DateTime.now());
     _repo.save(state);
     Get.back();

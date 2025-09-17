@@ -25,9 +25,12 @@ class RatingView extends GetView<RatingController> {
         floatingActionButton: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            AppButton(
-              buttonText: 'Rate Slay',
-              onPressed: controller.requestReview,
+            Obx(
+              () => AppButton(
+                buttonText: 'Rate Slay',
+                onPressed: controller.requestReview,
+                isLoading: controller.isReviewing(),
+              ),
             ),
             16.verticalSpace,
             AppButton(

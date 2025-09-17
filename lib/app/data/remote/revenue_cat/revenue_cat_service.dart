@@ -30,6 +30,7 @@ class RevenueCatService {
   final List<String> _productIds = <String>[
     'slay_always_exposed_weekly',
     'slay.current_round',
+    'one_more_slay',
   ];
 
   /// Weekly product ID
@@ -38,11 +39,17 @@ class RevenueCatService {
   /// Current round product ID
   String get currentRoundProductId => _productIds[1];
 
+  /// One more slay product ID
+  String get oneMoreSlayProductId => _productIds[2];
+
   /// Entitlement key
   static const String _premiumEntitlement = 'premium';
 
   /// Current round entitlement key
   static const String _currentRoundEntitlement = 'current_round_access';
+
+  /// One more slay entitlement key
+  static const String _oneMoreSlayEntitlement = 'one_more_slay';
 
   /// Initialize RevenueCat
   Future<void> initRevenueCat() async {
@@ -96,6 +103,16 @@ class RevenueCatService {
       _purchaseProduct(
         weeklyProductId,
         entitlementKey: _premiumEntitlement,
+        roundId: roundId,
+      );
+
+  /// Purchase one more slay (one-time)
+  Future<MdPurchaseResult> purchaseOneMoreSlay({
+    required String roundId,
+  }) async =>
+      _purchaseProduct(
+        oneMoreSlayProductId,
+        entitlementKey: _oneMoreSlayEntitlement,
         roundId: roundId,
       );
 

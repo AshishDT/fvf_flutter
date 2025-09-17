@@ -287,12 +287,12 @@ class WinnerView extends GetView<WinnerController> {
           onPressed: () {
             ExposeSheet.openExposeSheet(
               onExposed: () => _handleSubscription(
-                type: SubscriptionPlanEnum.WEEKLY,
+                type: SubscriptionPlanEnum.weekly,
                 successMessage:
                     'You have successfully subscribed to the weekly unlimited plan!',
               ),
               onRoundExpose: () => _handleSubscription(
-                type: SubscriptionPlanEnum.ONE_TIME,
+                type: SubscriptionPlanEnum.oneTime,
                 successMessage: 'You have successfully exposed this round!',
               ),
             );
@@ -387,12 +387,12 @@ class WinnerView extends GetView<WinnerController> {
 
     try {
       switch (type) {
-        case SubscriptionPlanEnum.WEEKLY:
+        case SubscriptionPlanEnum.weekly:
           result = await RevenueCatService.instance.purchaseWeeklySubscription(
             roundId: roundId,
           );
           break;
-        case SubscriptionPlanEnum.ONE_TIME:
+        case SubscriptionPlanEnum.oneTime:
           result = await RevenueCatService.instance.purchaseCurrentRound(
             roundId: roundId,
           );

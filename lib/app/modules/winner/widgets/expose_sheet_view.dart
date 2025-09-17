@@ -6,11 +6,7 @@ import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:fvf_flutter/app/utils/widget_ext.dart';
 
-/// AIPlan enum
-enum AIPlan {
-  PLAN1,
-  PLAN2,
-}
+import '../../../data/enums/purchase_plans.dart';
 
 /// ExposeSheetView
 class ExposeSheetView extends StatelessWidget {
@@ -58,7 +54,7 @@ class ExposeSheetView extends StatelessWidget {
                 ),
               ),
               24.verticalSpace,
-              _planInfoCard(AIPlan.PLAN1),
+              _planInfoCard(PurchasePlan.plan1),
               24.verticalSpace,
               Row(
                 children: <Widget>[
@@ -77,7 +73,7 @@ class ExposeSheetView extends StatelessWidget {
                 ],
               ),
               20.verticalSpace,
-              _planInfoCard(AIPlan.PLAN2),
+              _planInfoCard(PurchasePlan.plan2),
             ],
           ),
         ).withGPad(context,
@@ -99,7 +95,7 @@ class ExposeSheetView extends StatelessWidget {
       );
 
   /// _planInfoCard
-  Container _planInfoCard(AIPlan plan) => Container(
+  Container _planInfoCard(PurchasePlan plan) => Container(
         padding: REdgeInsets.symmetric(vertical: 16, horizontal: 24),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(28.r),
@@ -108,13 +104,12 @@ class ExposeSheetView extends StatelessWidget {
               color: Color(0x33000000),
               offset: Offset(0, 1),
               blurRadius: 2,
-              spreadRadius: 0,
             ),
           ],
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: plan == AIPlan.PLAN1
+            colors: plan == PurchasePlan.plan1
                 ? <Color>[
                     AppColors.k13C4E5,
                     AppColors.k13C4E5.withValues(alpha: .36),
@@ -129,7 +124,7 @@ class ExposeSheetView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              plan == AIPlan.PLAN1
+              plan == PurchasePlan.plan1
                   ? 'Expose This Slay - \$0.99'
                   : 'Always Exposed - \$5.99/w',
               style: AppTextStyle.openRunde(
@@ -140,7 +135,7 @@ class ExposeSheetView extends StatelessWidget {
             ),
             8.verticalSpace,
             Text(
-              plan == AIPlan.PLAN1
+              plan == PurchasePlan.plan1
                   ? ' •  Every rank, every reason!'
                   : ' •  Slay all day 🚀\n'
                       ' •  Every ranking, every reason\n'
@@ -152,8 +147,8 @@ class ExposeSheetView extends StatelessWidget {
                 height: 1.5,
               ),
             ),
-            plan == AIPlan.PLAN1 ? 16.verticalSpace : 1.verticalSpace,
-            plan == AIPlan.PLAN1
+            plan == PurchasePlan.plan1 ? 16.verticalSpace : 1.verticalSpace,
+            plan == PurchasePlan.plan1
                 ? AppButton(
                     height: 42.h,
                     buttonText: '👀 Expose Now',

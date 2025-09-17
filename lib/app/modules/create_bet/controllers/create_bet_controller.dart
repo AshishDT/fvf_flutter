@@ -14,12 +14,16 @@ import 'package:get/get.dart';
 import 'package:gotrue/src/types/auth_response.dart';
 import 'package:smart_auth/smart_auth.dart';
 
+import '../../../data/enums/purchase_status.dart';
 import '../../../data/local/user_provider.dart';
 import '../../../data/models/md_join_invitation.dart';
+import '../../../data/models/md_purchase_result.dart';
 import '../../../data/remote/deep_link/deep_link_service.dart';
 import '../../../data/remote/notification_service/notification_actions.dart';
 import '../../../data/remote/notification_service/notification_service.dart';
+import '../../../data/remote/revenue_cat/revenue_cat_service.dart';
 import '../../../routes/app_pages.dart';
+import '../../profile/enums/subscription_enum.dart';
 import '../../profile/models/md_profile.dart';
 import '../../profile/repositories/profile_api_repo.dart';
 import '../../rating/models/rating_state.dart';
@@ -27,6 +31,7 @@ import '../../rating/repositories/rating_repository.dart';
 import '../../rating/repositories/rating_service.dart';
 import '../models/md_can_create_bet.dart';
 import '../models/md_participant.dart';
+import '../widgets/slaying_sheet.dart';
 
 /// Create Bet Controller
 class CreateBetController extends GetxController {
@@ -114,6 +119,9 @@ class CreateBetController extends GetxController {
 
   /// Question for the bet (currently shown)
   RxString bet = ''.obs;
+
+  /// Round details
+  RxBool isPurchasing = false.obs;
 
   /// Can create bet
   Rx<MdCanCreateBet> canCreateBetData = MdCanCreateBet(
@@ -225,11 +233,7 @@ class CreateBetController extends GetxController {
       if (_canCreate != null) {
         if (!(_canCreate.allowed ?? false)) {
           createRoundLoading(false);
-          appSnackbar(
-            message:
-                '${_canCreate.reason ?? 'You are not allowed to create a round at this time.'}',
-            snackbarState: SnackbarState.danger,
-          );
+          openPurchaseSheet();
           return;
         }
       }
@@ -480,5 +484,76 @@ class CreateBetController extends GetxController {
     } on Exception {
       return null;
     }
+  }
+
+  /// Handle subscription purchase
+  Future<void> handleSubscription({
+    required SubscriptionPlanEnum type,
+    required String successMessage,
+  }) async {
+    Get.back();
+    isPurchasing(true);
+
+    MdPurchaseResult? result;
+
+    try {
+      switch (type) {
+        case SubscriptionPlanEnum.weekly:
+          result = await RevenueCatService.instance.purchaseWeeklySubscription(
+            roundId: '',
+          );
+          break;
+        case SubscriptionPlanEnum.oneTime:
+          result = await RevenueCatService.instance.purchaseOneMoreSlay(
+            roundId: '',
+          );
+          break;
+      }
+
+      if (result.status == PurchaseStatus.success) {
+        await checkCanCreateRound();
+
+        appSnackbar(
+          message: successMessage,
+          snackbarState: SnackbarState.success,
+        );
+        isPurchasing(false);
+      } else {
+        appSnackbar(
+          message:
+              'Purchase failed or was cancelled. Status: ${result.status.name}',
+          snackbarState: SnackbarState.danger,
+        );
+        isPurchasing(false);
+      }
+    } on Exception catch (e) {
+      isPurchasing(false);
+      appSnackbar(
+        message: 'Error occurred: $e',
+        snackbarState: SnackbarState.danger,
+      );
+    } finally {
+      isPurchasing(false);
+    }
+  }
+
+  /// Open purchase sheet
+  void openPurchaseSheet() {
+    SlayingSheet.openSlayingSheet(
+      onSlayed: () {
+        handleSubscription(
+          type: SubscriptionPlanEnum.oneTime,
+          successMessage: 'You have successfully purchased one more slay!'
+              '',
+        );
+      },
+      onUnlimitedSlayed: () {
+        handleSubscription(
+          type: SubscriptionPlanEnum.weekly,
+          successMessage:
+              'You have successfully subscribed to the weekly unlimited plan!',
+        );
+      },
+    );
   }
 }

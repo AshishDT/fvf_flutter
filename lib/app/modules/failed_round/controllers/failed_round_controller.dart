@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:fvf_flutter/app/modules/ai_choosing/enums/round_status_enum.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_round.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';

@@ -336,14 +336,14 @@ class RoundsTimeLinesView extends StatelessWidget {
           ExposeSheet.openExposeSheet(
             onExposed: () => controller.handleRoundSubscription(
               index: index,
-              type: SubscriptionPlanEnum.WEEKLY,
+              type: SubscriptionPlanEnum.weekly,
               roundId: round.roundId ?? '',
               successMessage:
                   'You have successfully subscribed to the weekly unlimited plan!',
             ),
             onRoundExpose: () => controller.handleRoundSubscription(
               index: index,
-              type: SubscriptionPlanEnum.ONE_TIME,
+              type: SubscriptionPlanEnum.oneTime,
               roundId: round.roundId ?? '',
               successMessage: 'You have successfully exposed this round!',
             ),

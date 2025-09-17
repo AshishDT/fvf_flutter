@@ -32,6 +32,8 @@ class SnapSelfiesController extends GetxController
   /// On init
   @override
   void onInit() {
+    resetFields();
+
     if (Get.arguments != null) {
       joinedInvitationData.value = Get.arguments as MdJoinInvitation;
       joinedInvitationData.refresh();

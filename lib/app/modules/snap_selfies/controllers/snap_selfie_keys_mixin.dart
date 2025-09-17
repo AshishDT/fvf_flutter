@@ -258,4 +258,28 @@ mixin SnapSelfieKeysMixin on GetxController {
       },
     );
   }
+
+  /// Reset fields
+  void resetFields(){
+    isKeyboardVisible(false);
+    enteredName('');
+    prevBottomInset(0);
+    nameInputController.clear();
+    shouldWiggleAddName(false);
+    shouldWiggleSnapPick(false);
+    profile(MdProfile());
+    deepLinkUri('');
+    joinedInvitationData(MdJoinInvitation());
+    previousRounds.clear();
+    previousAddedParticipants.clear();
+    secondsLeft(0);
+    currentIndex(0);
+    isTimesUp(false);
+    isProcessing(false);
+    isStartingRound(false);
+    submittingSelfie(false);
+    isInvitationSend(false);
+    timer = null;
+    textsTimer = null;
+  }
 }

@@ -7,36 +7,22 @@ import 'package:fvf_flutter/app/ui/components/app_button.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:fvf_flutter/app/utils/widget_ext.dart';
-import 'package:get/get.dart';
-
-/// Slaying Plan enum
-enum SlayingPlan {
-  PLAN1,
-  PLAN2,
-}
+import '../../../data/enums/purchase_plans.dart';
 
 /// SlayingSheetView
 class SlayingSheetView extends StatelessWidget {
   /// SlayingSheetView Constructor
-  SlayingSheetView({
+  const SlayingSheetView({
     super.key,
     this.onUnlimitedSlayed,
     this.onSlayed,
-    this.onUnlimitedSlayedLoading,
-    this.onSlayedLoading,
   });
 
   /// On Slayed callback
-  VoidCallback? onSlayed;
+  final VoidCallback? onSlayed;
 
   /// On Unlimited Slayed callback
-  VoidCallback? onUnlimitedSlayed;
-
-  /// onUnlimitedSlayedLoading
-  RxBool? onUnlimitedSlayedLoading = false.obs;
-
-  /// onSlayedLoading
-  RxBool? onSlayedLoading = false.obs;
+  final VoidCallback? onUnlimitedSlayed;
 
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
@@ -70,7 +56,7 @@ class SlayingSheetView extends StatelessWidget {
                 ),
               ),
               24.verticalSpace,
-              _planInfoCard(SlayingPlan.PLAN1),
+              _planInfoCard(PurchasePlan.plan1),
               24.verticalSpace,
               Row(
                 children: <Widget>[
@@ -89,7 +75,7 @@ class SlayingSheetView extends StatelessWidget {
                 ],
               ),
               20.verticalSpace,
-              _planInfoCard(SlayingPlan.PLAN2),
+              _planInfoCard(PurchasePlan.plan2),
             ],
           ),
         ).withGPad(context,
@@ -111,14 +97,14 @@ class SlayingSheetView extends StatelessWidget {
       );
 
   /// _planInfoCard
-  Container _planInfoCard(SlayingPlan plan) => Container(
+  Container _planInfoCard(PurchasePlan plan) => Container(
         padding: REdgeInsets.symmetric(vertical: 16, horizontal: 24),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(28.r),
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: plan == SlayingPlan.PLAN1
+            colors: plan == PurchasePlan.plan1
                 ? <Color>[
                     AppColors.k13C4E5,
                     AppColors.k13C4E5.withValues(alpha: .36),
@@ -140,7 +126,7 @@ class SlayingSheetView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              plan == SlayingPlan.PLAN1
+              plan == PurchasePlan.plan1
                   ? 'One More Slay - \$0.99'
                   : 'Unlimited Slays - \$5.99/w',
               style: AppTextStyle.openRunde(
@@ -151,7 +137,7 @@ class SlayingSheetView extends StatelessWidget {
             ),
             8.verticalSpace,
             Text(
-              plan == SlayingPlan.PLAN1
+              plan == PurchasePlan.plan1
                   ? 'Jump back in instantly'
                   : ' •  Slay all day 🚀\n'
                       ' •  Every ranking, every reason\n'
@@ -160,71 +146,70 @@ class SlayingSheetView extends StatelessWidget {
                 fontSize: 14.sp,
                 color: AppColors.kffffff,
                 fontWeight: FontWeight.w500,
+                height: 1.5,
               ),
             ),
-            16.verticalSpace,
-            plan == SlayingPlan.PLAN1
+            plan == PurchasePlan.plan1 ? 16.verticalSpace : 1.verticalSpace,
+            plan == PurchasePlan.plan1
                 ? AppButton(
-              height: 42.h,
-              isLoading: onSlayedLoading?.value ?? false,
-              buttonText: '',
-              decoration: BoxDecoration(
-                color: AppColors.kFFC300,
-                borderRadius: BorderRadius.circular(28.r),
-              ),
-              onPressed: () {
-                onSlayed?.call();
-              },
-              style: AppTextStyle.openRunde(
-                fontSize: 16.sp,
-                color: AppColors.k2A2E2F,
-                fontWeight: FontWeight.w600,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  SvgPicture.asset(
-                    AppImages.shineIcon,
-                    height: 18.w,
-                    width: 18.w,
-                  ),
-                  Text(
-                    'Jump Back In',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    height: 42.h,
+                    buttonText: '',
+                    decoration: BoxDecoration(
+                      color: AppColors.kFFC300,
+                      borderRadius: BorderRadius.circular(28.r),
+                    ),
+                    onPressed: () {
+                      onSlayed?.call();
+                    },
                     style: AppTextStyle.openRunde(
                       fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
                       color: AppColors.k2A2E2F,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        SvgPicture.asset(
+                          AppImages.shineIcon,
+                          height: 18.w,
+                          width: 18.w,
+                        ),
+                        Text(
+                          'Jump Back In',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTextStyle.openRunde(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.k2A2E2F,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : AppButton(
+                    buttonText: '🔥 Go Without Limits',
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(28.r),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        stops: const <double>[0, 0.0],
+                        colors: <Color>[
+                          AppColors.kFFC300,
+                          AppColors.kFFC300.withValues(alpha: .72),
+                        ],
+                      ),
+                    ),
+                    onPressed: () {
+                      onUnlimitedSlayed?.call();
+                    },
+                    style: AppTextStyle.openRunde(
+                      fontSize: 18.sp,
+                      color: AppColors.kffffff,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                ],
-              ),
-            )
-                : AppButton(
-              buttonText: '🔥 Go Without Limits',
-              isLoading: onUnlimitedSlayedLoading?.value ?? false,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(28.r),
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  stops: const <double>[0.0, 0.0],
-                  colors: <Color>[
-                    AppColors.kFFC300,
-                    AppColors.kFFC300.withValues(alpha: .72),
-                  ],
-                ),
-              ),
-              onPressed: () {
-                onUnlimitedSlayed?.call();
-              },
-              style: AppTextStyle.openRunde(
-                fontSize: 18.sp,
-                color: AppColors.kffffff,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
           ],
         ),
       );

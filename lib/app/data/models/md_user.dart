@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:fvf_flutter/app/modules/profile/models/md_badge.dart';
+
 /// User model
 class MdUser {
   /// Constructor
@@ -68,7 +70,11 @@ class MdUser {
         isDeleted: json['is_deleted'],
         token: json['token'],
         bio: json['bio'],
-        badge: json['badge'],
+        badge: json['badge'] == null
+            ? null
+            : MdBadge.fromJson(
+                json['badge'],
+              ),
         emojiCount: json['emoji_count'],
       );
 
@@ -145,7 +151,7 @@ class MdUser {
   String? bio;
 
   /// Badge
-  String? badge;
+  MdBadge? badge;
 
   /// Emoji count
   int? emojiCount;
@@ -176,7 +182,7 @@ class MdUser {
         'is_deleted': isDeleted,
         'token': token,
         'bio': bio,
-        'badge': badge,
+        'badge': badge?.toJson(),
         'emoji_count': emojiCount,
       };
 

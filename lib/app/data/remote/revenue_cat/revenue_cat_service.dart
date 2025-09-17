@@ -104,6 +104,7 @@ class RevenueCatService {
         weeklyProductId,
         entitlementKey: _premiumEntitlement,
         roundId: roundId,
+        isWeekly: true,
       );
 
   /// Purchase one more slay (one-time)
@@ -131,12 +132,13 @@ class RevenueCatService {
     String productId, {
     required String entitlementKey,
     required String roundId,
+    bool isWeekly = false,
   }) async {
     final String? userId = UserProvider.currentUser?.id;
 
     await Purchases.setAttributes(
       <String, String>{
-        'round_id': roundId,
+        if (!isWeekly) 'round_id': roundId,
         'product_context': entitlementKey,
         'user_id': userId ?? '',
       },

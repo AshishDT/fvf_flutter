@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/reaction_menu.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/rotate_and_wiggle.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
@@ -12,11 +13,14 @@ import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
 import '../../../ui/components/custom_type_writer.dart';
 import '../../../utils/app_text_style.dart';
+import '../../profile/models/md_profile_args.dart';
 
 /// Result Card Widget
 class ResultCard extends StatelessWidget {
   /// Constructor for ResultCard
   const ResultCard({
+    required this.userId,
+    required this.supabaseId,
     super.key,
     this.ordinalSuffix,
     this.rank,
@@ -28,7 +32,6 @@ class ResultCard extends StatelessWidget {
     this.onReactionSelected,
     this.triggerQuestionMark = false,
     this.reactions,
-    this.isCurrentUser,
   });
 
   /// Controller
@@ -61,8 +64,11 @@ class ResultCard extends StatelessWidget {
   /// Reactions
   final String? reactions;
 
-  /// Is current user
-  final bool? isCurrentUser;
+  /// User id
+  final String userId;
+
+  /// Supabase id
+  final String supabaseId;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -185,12 +191,8 @@ class ResultCard extends StatelessWidget {
                       36.horizontalSpace,
                       Expanded(
                         child: GestureDetector(
-                          onTap: (){
-                            if(isCurrentUser ?? false){
-                              Get.toNamed(
-                                Routes.PROFILE,
-                              );
-                            }
+                          onTap: () {
+                            _navigateToProfile();
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -296,4 +298,17 @@ class ResultCard extends StatelessWidget {
           ),
         ],
       );
+
+  /// Navigate to profile
+  void _navigateToProfile() {
+    Get.toNamed(
+      Routes.PROFILE,
+      preventDuplicates: false,
+      arguments: MdProfileArgs(
+        tag: '${userId}_${DateTime.now().millisecondsSinceEpoch}',
+        userId: userId,
+        supabaseId: supabaseId,
+      ),
+    );
+  }
 }

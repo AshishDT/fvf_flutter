@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +15,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import '../../../utils/app_loader.dart';
+import '../models/md_profile_args.dart';
 
 /// Profile Controller
 class ProfileController extends GetxController with TimeLineMixin {
@@ -72,23 +72,47 @@ class ProfileController extends GetxController with TimeLineMixin {
   /// Entered name
   RxString enteredName = ''.obs;
 
+  /// MdProfileArgs
+  MdProfileArgs args = MdProfileArgs(
+    tag: '',
+    userId: '',
+    supabaseId: '',
+  );
+
   /// On init
   @override
   void onInit() {
     super.onInit();
-    getUser();
-    getRounds(isRefresh: true);
-    getBadges();
 
-    debounce(
-      enteredName,
-      (_) {
-        if (enteredName.isNotEmpty) {
-          updateUser(username: enteredName.value);
-        }
-      },
-      time: 400.milliseconds,
-    );
+    if (Get.arguments is MdProfileArgs) {
+      final MdProfileArgs _args = Get.arguments as MdProfileArgs;
+
+      args = _args;
+
+      final bool isCurrentUser = _args.supabaseId == SupaBaseService.userId;
+
+      getUser(
+        args: _args,
+      );
+
+      getRounds(
+        args: _args,
+        isRefresh: true,
+      );
+
+      if (isCurrentUser) {
+        getBadges();
+        debounce(
+          enteredName,
+          (_) {
+            if (enteredName.isNotEmpty) {
+              updateUser(username: enteredName.value);
+            }
+          },
+          time: 400.milliseconds,
+        );
+      }
+    }
   }
 
   /// On close
@@ -118,9 +142,6 @@ class ProfileController extends GetxController with TimeLineMixin {
   /// Current badge
   Rx<MdBadge> currentBadge = MdBadge().obs;
 
-  /// isBadgesLoading
-  RxBool isBadgesLoading = true.obs;
-
   /// Pick Image Method
   Future<File?> pickImage({required ImageSource source}) async {
     try {
@@ -139,14 +160,25 @@ class ProfileController extends GetxController with TimeLineMixin {
   }
 
   /// Get User
-  Future<void> getUser() async {
+  Future<void> getUser({
+    MdProfileArgs? args,
+  }) async {
     try {
+      final bool isCurrentUser = args?.supabaseId == SupaBaseService.userId;
+
       isLoading(true);
-      final MdProfile? _user = await ProfileApiRepo.getUser();
+
+      final MdProfile? _user = await ProfileApiRepo.getUser(
+        userId: isCurrentUser ? null : args?.userId,
+      );
       if (_user != null) {
-        log('User fetched: ${_user.toJson()}');
         profile(_user);
         final String? userAuthToken = UserProvider.authToken;
+
+        currentBadge(
+          _user.user?.badge,
+        );
+        currentBadge.refresh();
 
         UserProvider.onLogin(
           user: profile().user!,
@@ -218,7 +250,10 @@ class ProfileController extends GetxController with TimeLineMixin {
   }
 
   /// Get Rounds
-  Future<void> getRounds({bool isRefresh = false}) async {
+  Future<void> getRounds({
+    bool isRefresh = false,
+    MdProfileArgs? args,
+  }) async {
     if (isRoundsLoading()) {
       return;
     }
@@ -230,8 +265,14 @@ class ProfileController extends GetxController with TimeLineMixin {
         rounds.clear();
         roundPageController = PageController();
       }
-      final List<MdRound>? _rounds =
-          await ProfileApiRepo.getRounds(skip: skip, limit: limit);
+
+      final bool isCurrentUser = args?.supabaseId == SupaBaseService.userId;
+
+      final List<MdRound>? _rounds = await ProfileApiRepo.getRounds(
+        skip: skip,
+        limit: limit,
+        userId: isCurrentUser ? null : args?.userId,
+      );
       if (_rounds != null && _rounds.isNotEmpty) {
         rounds.addAll(_rounds);
         skip += _rounds.length;
@@ -256,29 +297,17 @@ class ProfileController extends GetxController with TimeLineMixin {
 
   /// Get Badges
   Future<void> getBadges() async {
-    isBadgesLoading(true);
     try {
       final List<MdBadge>? _badges = await ProfileApiRepo.getBadges();
 
       if (_badges != null && _badges.isNotEmpty) {
         badges(_badges);
         badges.refresh();
-
-        for (MdBadge _b in _badges) {
-          if ((_b.earned ?? true) && (_b.current ?? false)) {
-            currentBadge(_b);
-            currentBadge.refresh();
-            break;
-          }
-        }
       }
     } on Exception catch (e) {
       logE(
         'Error getting badges: $e',
       );
-      isBadgesLoading(false);
-    } finally {
-      isBadgesLoading(false);
     }
   }
 }

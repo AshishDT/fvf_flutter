@@ -28,6 +28,7 @@ import '../modules/splash/bindings/splash_binding.dart';
 import '../modules/splash/views/splash_view.dart';
 import '../modules/winner/bindings/winner_binding.dart';
 import '../modules/winner/views/winner_view.dart';
+import '../modules/profile/models/md_profile_args.dart';
 
 part 'app_routes.dart';
 
@@ -54,7 +55,9 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.PROFILE,
-      page: () => const ProfileView(),
+      page: () =>  ProfileView(
+        navigatorTag: (Get.arguments as MdProfileArgs).tag,
+      ),
       binding: ProfileBinding(),
     ),
     GetPage(

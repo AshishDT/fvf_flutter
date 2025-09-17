@@ -8,6 +8,7 @@ import 'package:fvf_flutter/app/modules/create_bet/widgets/bets_wrapper.dart';
 import 'package:fvf_flutter/app/modules/create_bet/widgets/drawer.dart';
 import 'package:fvf_flutter/app/modules/create_bet/widgets/keyboard_aware_sheet.dart';
 import 'package:fvf_flutter/app/modules/create_bet/widgets/slaying_sheet.dart';
+import 'package:fvf_flutter/app/modules/profile/models/md_profile_args.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/animated_list_view.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
@@ -83,9 +84,7 @@ class CreateBetView extends GetView<CreateBetController> {
                                         controller.profile().user?.profileUrl ??
                                             '',
                                     onTap: () {
-                                      Get.toNamed(
-                                        Routes.PROFILE,
-                                      );
+                                      _navigateToProfile();
                                     },
                                   ),
                           ),
@@ -170,6 +169,20 @@ class CreateBetView extends GetView<CreateBetController> {
           ),
         ),
       );
+
+  /// Navigate to profile
+  void _navigateToProfile() {
+    Get.toNamed(
+      Routes.PROFILE,
+      preventDuplicates: false,
+      arguments: MdProfileArgs(
+        tag:
+            '${controller.profile().user?.id}_${DateTime.now().millisecondsSinceEpoch}',
+        userId: controller.profile().user?.id ?? '',
+        supabaseId: controller.profile().user?.supabaseId ?? '',
+      ),
+    );
+  }
 
   /// Question widget that displays the current question
   Obx _question() => Obx(

@@ -14,6 +14,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../routes/app_pages.dart';
+import '../../profile/models/md_profile_args.dart';
 
 /// Selfie Avatar widget
 class CurrentUserSelfieAvatar extends StatelessWidget {
@@ -91,7 +92,9 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             GestureDetector(
-              onTap: () => Get.toNamed(Routes.PROFILE),
+              onTap: () {
+                _navigateToProfile();
+              },
               child: hasImage
                   ? AnimatedContainer(
                       duration: 300.milliseconds,
@@ -174,6 +177,20 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
             ],
           ],
         ),
+      ),
+    );
+  }
+
+  /// Navigate to profile
+  void _navigateToProfile() {
+    Get.toNamed(
+      Routes.PROFILE,
+      preventDuplicates: false,
+      arguments: MdProfileArgs(
+        tag:
+            '${participant.userData?.id}_${DateTime.now().millisecondsSinceEpoch}',
+        userId: participant.userData?.id ?? '',
+        supabaseId: participant.userData?.supabaseId ?? '',
       ),
     );
   }

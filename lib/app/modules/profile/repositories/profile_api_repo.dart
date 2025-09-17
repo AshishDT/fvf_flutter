@@ -12,13 +12,18 @@ import '../../../ui/components/app_snackbar.dart';
 /// Profile API Repository
 class ProfileApiRepo {
   /// Get user
-  static Future<MdProfile?> getUser() async =>
+  static Future<MdProfile?> getUser({
+    String? userId,
+  }) async =>
       APIWrapper.handleApiCall<MdProfile>(
         APIService.get<Map<String, dynamic>>(
           path: 'user/profile',
+          params: userId != null && userId.isNotEmpty
+              ? <String, dynamic>{'user_id': userId}
+              : null,
         ).then(
           (Response<Map<String, dynamic>>? response) {
-            logI('Get User Response: ${response}');
+            logI('Get User Response: $response');
             if (response?.isOk != true || response?.data == null) {
               return null;
             }
@@ -87,7 +92,7 @@ class ProfileApiRepo {
   }) async =>
       APIWrapper.handleApiCall<List<MdRound>>(
         APIService.get<Map<String, dynamic>>(
-          path: userId != null && userId!.isNotEmpty
+          path: userId != null && userId.isNotEmpty
               ? 'round/user-rounds/$userId/$skip/$limit'
               : 'round/user-rounds/$skip/$limit',
         ).then(
@@ -104,7 +109,7 @@ class ProfileApiRepo {
             );
 
             if (data.success == true && data.data != null) {
-              final List<MdRound> rounds = data.data!.rounds ?? [];
+              final List<MdRound> rounds = data.data!.rounds ?? <MdRound>[];
               return rounds;
             }
 
@@ -129,7 +134,8 @@ class ProfileApiRepo {
               return null;
             }
 
-            final ApiResponse<List<MdBadge>> data = ApiResponse<List<MdBadge>>.fromJson(
+            final ApiResponse<List<MdBadge>> data =
+                ApiResponse<List<MdBadge>>.fromJson(
               response!.data!,
               fromJsonT: (dynamic json) => List<MdBadge>.from(
                 (json as List<dynamic>).map<MdBadge>(

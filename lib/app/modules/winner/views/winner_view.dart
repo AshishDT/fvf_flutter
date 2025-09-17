@@ -7,7 +7,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fvf_flutter/app/data/enums/purchase_status.dart';
 import 'package:fvf_flutter/app/data/models/md_purchase_result.dart';
 import 'package:fvf_flutter/app/data/remote/revenue_cat/revenue_cat_service.dart';
-import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/models/md_result.dart';
 import 'package:fvf_flutter/app/modules/profile/enums/subscription_enum.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/expose_sheet.dart';
@@ -136,8 +135,8 @@ class WinnerView extends GetView<WinnerController> {
                             isExposed: controller.isExposed(),
                             triggerQuestionMark:
                                 controller.wiggleQuestionMark(),
-                            isCurrentUser:
-                                result.supabaseId == SupaBaseService.userId,
+                            supabaseId: result.supabaseId ?? '',
+                            userId: result.userId ?? '',
                             rank: result.rank ?? 0,
                             reason: result.reason ?? '',
                             isCurrentRankIs1:

@@ -11,10 +11,20 @@ import '../../../utils/app_text_style.dart';
 /// EditDataSheet widget that adapts to keyboard visibility
 class EditDataSheet extends GetView<ProfileController> {
   /// Constructor for EditDataSheet
-  const EditDataSheet({super.key});
+  const EditDataSheet({
+    super.key,
+    required this.navigatorTag,
+  });
+
+  /// Navigator tag
+  final String navigatorTag;
+
+  @override
+  String? get tag => navigatorTag;
 
   @override
   Widget build(BuildContext context) {
+    Get.lazyPut(() => ProfileController(), tag: navigatorTag);
     controller.nameInputController.text =
         controller.profile().user?.username ?? '';
     return GradientCard(

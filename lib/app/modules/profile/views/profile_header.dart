@@ -31,9 +31,15 @@ class ProfileHeaderSection extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               GestureDetector(
-                onTap: () => EditProfileSheetRepo.openEditProfile(
-                  const EditDataSheet(),
-                ),
+                onTap: () {
+                  if (controller.isCurrentUser) {
+                    EditProfileSheetRepo.openEditProfile(
+                      EditDataSheet(
+                        navigatorTag: controller.args.tag,
+                      ),
+                    );
+                  }
+                },
                 child: Text(
                   controller.profile().user?.username ?? 'Add Name',
                   style: AppTextStyle.openRunde(
@@ -53,9 +59,15 @@ class ProfileHeaderSection extends StatelessWidget {
               if (controller.isCurrentUser) ...<Widget>[
                 4.horizontalSpace,
                 GestureDetector(
-                  onTap: () => EditProfileSheetRepo.openEditProfile(
-                    const EditDataSheet(),
-                  ),
+                  onTap: () {
+                    if (controller.isCurrentUser) {
+                      EditProfileSheetRepo.openEditProfile(
+                        EditDataSheet(
+                          navigatorTag: controller.args.tag,
+                        ),
+                      );
+                    }
+                  },
                   child: Obx(
                     () => controller.isLoading()
                         ? Padding(
@@ -84,15 +96,17 @@ class ProfileHeaderSection extends StatelessWidget {
             curve: Curves.easeInOut,
             child: Obx(
               () => Visibility(
-                visible: !controller.isBadgesLoading() &&
+                visible: !controller.isLoading() &&
                     (controller.currentBadge().badge?.isNotEmpty ?? false),
                 child: Align(
                   child: GestureDetector(
                     onTap: () {
-                      Get.toNamed(
-                        Routes.HALL_OF_FAME,
-                        arguments: controller.badges,
-                      );
+                      if (controller.isCurrentUser) {
+                        Get.toNamed(
+                          Routes.HALL_OF_FAME,
+                          arguments: controller.badges,
+                        );
+                      }
                     },
                     child: IntrinsicWidth(
                       child: Stack(
@@ -165,7 +179,7 @@ class ProfileHeaderSection extends StatelessWidget {
           ),
           Obx(
             () => Visibility(
-              visible: !controller.isBadgesLoading() &&
+              visible: !controller.isLoading() &&
                   (controller.currentBadge().badge?.isNotEmpty ?? false),
               child: 24.verticalSpace,
             ),

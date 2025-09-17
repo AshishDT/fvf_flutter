@@ -23,12 +23,14 @@ class ProfileBioSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
         children: <Widget>[
-          Image.asset(
-            AppImages.addPersonIcon,
-            height: 40.h,
-            color: AppColors.kF1F2F2,
-          ),
-          16.verticalSpace,
+          if(controller.isCurrentUser)...<Widget>[
+            Image.asset(
+              AppImages.addPersonIcon,
+              height: 40.h,
+              color: AppColors.kF1F2F2,
+            ),
+            16.verticalSpace,
+          ],
           if (controller.profile().user?.bio != null &&
               (controller.profile().user?.bio?.isNotEmpty ??
                   false)) ...<Widget>[

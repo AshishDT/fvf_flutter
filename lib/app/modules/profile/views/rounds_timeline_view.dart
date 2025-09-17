@@ -11,7 +11,6 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/models/md_result.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/expose_sheet.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
@@ -106,8 +105,8 @@ class RoundsTimeLinesView extends StatelessWidget {
                                         () => ResultCard(
                                           isExposed: isExposedRx(),
                                           triggerQuestionMark: trigger(),
-                                          isCurrentUser: result.supabaseId ==
-                                              SupaBaseService.userId,
+                                          userId: result.userId ?? '',
+                                          supabaseId: result.supabaseId ?? '',
                                           rank: result.rank ?? 0,
                                           reason: result.reason ?? '',
                                           isCurrentRankIs1:

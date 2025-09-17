@@ -8,6 +8,7 @@ import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
 
 import '../../../routes/app_pages.dart';
+import '../../profile/models/md_profile_args.dart';
 
 /// Selfie Avatar widget
 class SelfieAvatar extends StatelessWidget {
@@ -111,9 +112,7 @@ class SelfieAvatar extends StatelessWidget {
       child: GestureDetector(
         onTap: () {
           if (participant.isCurrentUser) {
-            Get.toNamed(
-              Routes.PROFILE,
-            );
+            _navigateToProfile();
           }
         },
         child: Column(
@@ -151,6 +150,20 @@ class SelfieAvatar extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  /// Navigate to profile
+  void _navigateToProfile() {
+    Get.toNamed(
+      Routes.PROFILE,
+      preventDuplicates: false,
+      arguments: MdProfileArgs(
+        tag:
+            '${participant.userData?.id}_${DateTime.now().millisecondsSinceEpoch}',
+        userId: participant.userData?.id ?? '',
+        supabaseId: participant.userData?.supabaseId ?? '',
       ),
     );
   }

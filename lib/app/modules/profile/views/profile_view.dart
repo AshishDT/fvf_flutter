@@ -17,10 +17,21 @@ import '../widgets/empty_profile_placeholder.dart';
 /// ProfileView
 class ProfileView extends GetView<ProfileController> {
   /// Profile view constructor
-  const ProfileView({super.key});
+  const ProfileView({
+    required this.navigatorTag,
+    super.key,
+  });
+
+  /// Navigator tag
+  final String navigatorTag;
 
   @override
-  Widget build(BuildContext context) => Obx(
+  String? get tag => navigatorTag;
+
+  @override
+  Widget build(BuildContext context) {
+    Get.lazyPut(() => ProfileController(), tag: navigatorTag);
+    return Obx(
         () => PopScope(
           canPop: controller.currentIndex() == 0,
           onPopInvokedWithResult: (bool didPop, Object? value) {
@@ -59,8 +70,7 @@ class ProfileView extends GetView<ProfileController> {
                             Obx(
                               () => CachedNetworkImage(
                                 imageUrl:
-                                    controller.profile().user?.profileUrl ??
-                                        '',
+                                    controller.profile().user?.profileUrl ?? '',
                                 width: 1.sw,
                                 height: 1.sh,
                                 fit: BoxFit.cover,
@@ -93,8 +103,7 @@ class ProfileView extends GetView<ProfileController> {
                                     Obx(
                                       () => Visibility(
                                         visible: _canShowEmptyProfile(),
-                                        child:
-                                            const EmptyProfilePlaceholder(),
+                                        child: const EmptyProfilePlaceholder(),
                                       ),
                                     ),
                                     const Spacer(),
@@ -154,6 +163,7 @@ class ProfileView extends GetView<ProfileController> {
           ),
         ),
       );
+  }
 
   /// Can show empty profile
   bool _canShowEmptyProfile() =>

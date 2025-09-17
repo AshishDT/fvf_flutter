@@ -47,6 +47,8 @@ class SnapSelfiesController extends GetxController
           endAt = endAt.subtract(const Duration(seconds: 1));
         }
 
+        isInvitationSend(true);
+
         _initWebSocket();
 
         if (!(joinedInvitationData().isViewOnly ?? false)) {

@@ -47,10 +47,36 @@ mixin TimeLineMixin on GetxController {
     for (int i = 0; i < roundsList.length; i++) {
       final MdRound r = roundsList[i];
       final bool hasAccess = r.hasAccessed == true;
+
       roundExposed.putIfAbsent(i, () => false.obs);
       roundExposed[i]!(hasAccess);
       roundExposed[i]!.refresh();
+
+      final List<MdResult> allResults = (r.results ?? <MdResult>[]).toList();
+      if (allResults.isEmpty) {
+        continue;
+      }
+
+      final MdResult? firstRank =
+          allResults.firstWhereOrNull((MdResult res) => res.rank == 1);
+
+      final List<MdResult> others =
+          allResults.where((MdResult res) => res.rank != 1).toList();
+
+      if (!hasAccess) {
+        others.shuffle();
+      }
+
+      final List<MdResult> finalList = <MdResult>[
+        if (firstRank != null) firstRank,
+        ...others,
+      ];
+
+      roundsList[i] = r.copyWith(result: finalList);
     }
+
+    rounds(roundsList);
+    rounds.refresh();
   }
 
   /// Update round screenshot permission

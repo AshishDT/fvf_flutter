@@ -155,8 +155,11 @@ class WinnerController extends GetxController {
 
       roundDetails(_roundDetails);
       roundDetails.refresh();
-      isExposed(_roundDetails?.hasAccess ?? false);
+
+      final bool exposed = _roundDetails?.hasAccess ?? false;
+      isExposed(exposed);
       isExposed.refresh();
+
       final List<MdResult> allResults =
           (roundDetails().round?.results ?? <MdResult>[]).toList();
 
@@ -164,12 +167,17 @@ class WinnerController extends GetxController {
           allResults.firstWhereOrNull((MdResult r) => r.rank == 1);
 
       final List<MdResult> others =
-          allResults.where((MdResult r) => r.rank != 1).toList()..shuffle();
+          allResults.where((MdResult r) => r.rank != 1).toList();
+
+      if (!exposed) {
+        others.shuffle();
+      }
 
       final List<MdResult> finalList = <MdResult>[
         if (firstRank != null) firstRank,
         ...others,
       ];
+
       results(finalList);
       results.refresh();
     } finally {

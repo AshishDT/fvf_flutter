@@ -221,38 +221,54 @@ class PickSelfieCameraController extends GetxController {
 
   /// Flip camera
   Future<void> flipCamera() async {
-    if (cameraController == null || !cameraController!.value.isInitialized) {
+    final CameraController? old = cameraController;
+    if (old == null || !old.value.isInitialized) {
       logE('Camera not ready');
       return;
     }
 
+    isCameraInitialized(false);
+
     try {
-      await cameraController?.dispose();
-
-      final CameraLensDirection currentDirection =
-          cameraController!.description.lensDirection;
-
-      final List<CameraDescription> cameras = await availableCameras();
-
-      final CameraDescription newCamera = cameras.firstWhere(
-        (CameraDescription cam) =>
-            cam.lensDirection ==
-            (currentDirection == CameraLensDirection.front
+      final CameraLensDirection current = old.description.lensDirection;
+      final List<CameraDescription> cams = await availableCameras();
+      final CameraDescription target = cams.firstWhere(
+        (c) =>
+            c.lensDirection ==
+            (current == CameraLensDirection.front
                 ? CameraLensDirection.back
                 : CameraLensDirection.front),
       );
 
-      cameraController = CameraController(
-        newCamera,
-        ResolutionPreset.high,
+      await old.dispose();
+
+      final CameraController next = CameraController(
+        target,
+        ResolutionPreset.medium,
         enableAudio: false,
+        imageFormatGroup: ImageFormatGroup.jpeg,
       );
 
-      initializeControllerFuture = cameraController!.initialize();
+      cameraController = next;
+
+      next.addListener(
+        () {
+          if (next.value.hasError) {
+            logE('Camera error: ${next.value.errorDescription}');
+          }
+        },
+      );
+
+      initializeControllerFuture = next.initialize();
       await initializeControllerFuture;
-      isCameraInitialized.value = true;
-    } catch (e) {
+
+      isCameraInitialized(true);
+    } on CameraException catch (e) {
       logE('Flip camera error: $e');
+      isCameraInitialized(false);
+    } on Exception catch (e) {
+      logE('Flip camera error: $e');
+      isCameraInitialized(false);
     }
   }
 }

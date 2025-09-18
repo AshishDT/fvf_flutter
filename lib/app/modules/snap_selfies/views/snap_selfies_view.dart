@@ -361,20 +361,26 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
           padding: EdgeInsets.zero,
           scrollDirection: Axis.horizontal,
           child: Obx(
-            () => Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: controller
-                  .participantsWithoutCurrentUser()
-                  .map(
-                    (MdParticipant participant) => SelfieAvatarIcon(
-                      participant: participant,
-                    ).paddingOnly(right: 32),
-                  )
-                  .toList(),
-            ),
+            () {
+              final List<MdParticipant> participants =
+                  controller.participantsWithoutCurrentUser();
+
+              return Row(
+                spacing: 32,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: List<Widget>.generate(
+                  participants.length,
+                  (int index) {
+                    final MdParticipant participant = participants[index];
+
+                    return SelfieAvatarIcon(participant: participant);
+                  },
+                ),
+              );
+            },
           ),
-        ).paddingOnly(left: 32),
+        ),
       );
 
   /// Resend invites (for host)
@@ -414,36 +420,38 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                   controller.previousAddedParticipants();
 
               final List<Widget> items = added.isEmpty
-                  ? List<Widget>.generate(rounds.length, (int index) {
-                      final MdPreviousRound participant = rounds[index];
-                      return GroupAvatarIcon(
-                        participants: participant.participants ??
-                            <MdPreviousParticipant>[],
-                        isAdded: participant.isAdded ?? false,
-                        onAddTap: () => controller.onAddPreviousRound(
-                          participant.id ?? '',
-                        ),
-                      ).paddingOnly(
-                        right: rounds.length >= 2 ? 32 : 0,
-                      );
-                    })
+                  ? List<Widget>.generate(
+                      rounds.length,
+                      (int index) {
+                        final MdPreviousRound participant = rounds[index];
+
+                        return GroupAvatarIcon(
+                          participants: participant.participants ??
+                              <MdPreviousParticipant>[],
+                          isAdded: participant.isAdded ?? false,
+                          onAddTap: () => controller.onAddPreviousRound(
+                            participant.id ?? '',
+                          ),
+                        );
+                      },
+                    )
                   : List<Widget>.generate(
                       added.length,
                       (int index) {
                         final MdPreviousParticipant participant = added[index];
+
                         return PreviousParticipantAvatarIcon(
                           participant: participant,
                           onAddTap: () =>
                               controller.onAddRemovePreviousParticipant(
                                   participant.supaBaseId ?? ''),
                           isAdded: participant.isAdded ?? false,
-                        ).paddingOnly(
-                          right: added.length >= 2 ? 32 : 0,
                         );
                       },
                     );
 
               return Row(
+                spacing: 32,
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: items,

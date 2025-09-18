@@ -98,19 +98,28 @@ class FailedRoundView extends GetView<FailedRoundController> {
                       padding: EdgeInsets.zero,
                       scrollDirection: Axis.horizontal,
                       child: Obx(
-                        () => Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            ...controller.participantsWithoutCurrentUser().map(
-                                  (MdParticipant participant) =>
-                                      SelfieAvatarIcon(
-                                    participant: participant,
-                                  ).paddingOnly(right: 32),
-                                ),
-                          ],
-                        ),
+                        () {
+                          final List<MdParticipant> participants =
+                              controller.participantsWithoutCurrentUser();
+
+                          return Row(
+                            spacing: 32,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List<Widget>.generate(
+                              participants.length,
+                              (int index) {
+                                final MdParticipant participant =
+                                    participants[index];
+
+                                return SelfieAvatarIcon(
+                                  participant: participant,
+                                );
+                              },
+                            ),
+                          );
+                        },
                       ),
-                    ).paddingOnly(left: 32),
+                    ),
                   ),
                 ],
               ),

@@ -78,8 +78,8 @@ class SelfieAvatarIcon extends StatelessWidget {
             if (hasImage)
               AnimatedContainer(
                 duration: 300.milliseconds,
-                width: size.w + 4.w,
-                height: size.h + 4.w,
+                width: size.w,
+                height: size.h,
                 padding: showStreakEmoji ? null : REdgeInsets.all(2),
                 decoration: showStreakEmoji
                     ? null

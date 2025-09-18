@@ -511,12 +511,12 @@ class CreateBetController extends GetxController {
       }
 
       if (result.status == PurchaseStatus.success) {
-        await checkCanCreateRound();
-
         appSnackbar(
           message: successMessage,
           snackbarState: SnackbarState.success,
         );
+
+        await onBetPressed();
         isPurchasing(false);
       } else {
         appSnackbar(

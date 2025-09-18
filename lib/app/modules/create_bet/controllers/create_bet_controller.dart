@@ -1,19 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/data/local/store/local_store.dart';
-import 'package:fvf_flutter/app/data/models/md_user.dart';
-import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_bet.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_round.dart';
 import 'package:fvf_flutter/app/modules/create_bet/repositories/create_bet_api_repo.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
-import 'package:gotrue/src/types/auth_response.dart';
-import 'package:smart_auth/smart_auth.dart';
-
 import '../../../data/enums/purchase_status.dart';
 import '../../../data/local/user_provider.dart';
 import '../../../data/models/md_join_invitation.dart';
@@ -23,6 +17,7 @@ import '../../../data/remote/notification_service/notification_actions.dart';
 import '../../../data/remote/notification_service/notification_service.dart';
 import '../../../data/remote/revenue_cat/revenue_cat_service.dart';
 import '../../../routes/app_pages.dart';
+import '../../../utils/global_keys.dart';
 import '../../profile/enums/subscription_enum.dart';
 import '../../profile/models/md_profile.dart';
 import '../../profile/repositories/profile_api_repo.dart';
@@ -37,33 +32,6 @@ import '../widgets/slaying_sheet.dart';
 class CreateBetController extends GetxController {
   /// Scaffold key
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-
-  /// Form Key
-  final GlobalKey<FormState> phoneFormKey = GlobalKey<FormState>();
-
-  /// OTP Form Key
-  final GlobalKey<FormState> otpFormKey = GlobalKey<FormState>();
-
-  /// Phone controller
-  final TextEditingController phoneController = TextEditingController();
-
-  /// OTP controller
-  final TextEditingController otpController = TextEditingController();
-
-  /// isSendingOtp
-  final RxBool isSendingOtp = false.obs;
-
-  /// isVerifyingOtp
-  final RxBool isVerifyingOtp = false.obs;
-
-  /// Smart auth instance
-  final SmartAuth smartAuth = SmartAuth.instance;
-
-  /// isSmartAuthShowed
-  RxBool isSmartAuthShowed = false.obs;
-
-  /// Is User Claim Loading
-  RxBool isUserClaimLoading = true.obs;
 
   /// On init
   @override
@@ -88,8 +56,6 @@ class CreateBetController extends GetxController {
   /// On close
   @override
   void onClose() {
-    phoneController.dispose();
-    otpController.dispose();
     super.onClose();
   }
 
@@ -293,6 +259,9 @@ class CreateBetController extends GetxController {
       if (_user != null) {
         profile(_user);
 
+        roundData(_user.round);
+        roundData.refresh();
+
         final String? userAuthToken = UserProvider.authToken;
 
         UserProvider.onLogin(
@@ -341,135 +310,6 @@ class CreateBetController extends GetxController {
           }
         },
       );
-
-  /// Request phone hint
-  Future<void> requestPhoneHint(TextEditingController controller) async {
-    try {
-      if (isSmartAuthShowed()) {
-        return;
-      }
-      final SmartAuthResult<String> result =
-          await smartAuth.requestPhoneNumberHint();
-      isSmartAuthShowed(true);
-      if (result.hasData) {
-        controller.text = result.data ?? '';
-      }
-    } catch (e) {
-      logE('SmartAuth error: $e');
-    }
-  }
-
-  /// Remove US/India country code from phone number
-  String removeUSIndiaCountryCode(String input) =>
-      input.replaceFirst(RegExp(r'^\+?(1|91)\s?'), '').trim();
-
-  /// Send OTP
-  Future<bool> sendOtp() async {
-    String phone = phoneController.text.trim();
-    if (phone.isEmpty) {
-      return false;
-    }
-
-    phone = phone.replaceFirst(RegExp(r'^\+*'), '');
-    try {
-      isSendingOtp(true);
-      await SupaBaseService.sendOtp('+$phone');
-      return true;
-    } on Exception catch (e) {
-      logE('Error sending OTP: $e');
-      appSnackbar(
-        message: 'Failed to send OTP. Please try again.',
-        snackbarState: SnackbarState.danger,
-      );
-      return false;
-    } finally {
-      isSendingOtp(false);
-    }
-  }
-
-  /// Verify OTP
-  Future<bool> verifyOtp() async {
-    final String phone = phoneController.text.trim();
-    final String otp = otpController.text.trim();
-
-    if (otp.isEmpty) {
-      return false;
-    }
-
-    try {
-      isVerifyingOtp(true);
-      final AuthResponse res = await SupaBaseService.verifyOtp(
-        phoneNumber: phone,
-        token: otp,
-      );
-      if (res.session != null) {
-        return true;
-      } else {
-        appSnackbar(
-          message: 'Invalid OTP. Please try again.',
-          snackbarState: SnackbarState.danger,
-        );
-        return false;
-      }
-    } on Exception catch (e) {
-      logE('Error verifying OTP: $e');
-      appSnackbar(
-        message: 'Failed to verify OTP. Please try again.',
-        snackbarState: SnackbarState.danger,
-      );
-      return false;
-    } finally {
-      isVerifyingOtp(false);
-    }
-  }
-
-  /// Claim user
-  Future<void> claimUser({
-    required String phone,
-    required String countryCode,
-  }) async {
-    try {
-      isUserClaimLoading(true);
-      final String? supabaseId = globalUser().supabaseId;
-
-      if (supabaseId == null && (supabaseId?.isEmpty ?? true)) {
-        isUserClaimLoading(false);
-        return;
-      }
-
-      countryCode = countryCode.replaceFirst(RegExp(r'^\+*'), '');
-      final MdUser? _user = await CreateBetApiRepo.userClaim(
-        phone: phone,
-        countryCode: '+$countryCode',
-        supabaseId: supabaseId ?? '',
-      );
-
-      if (_user != null && (_user.id?.isNotEmpty ?? false)) {
-        Get.close(1);
-      }
-    } on Exception catch (e, st) {
-      logE('Error getting user: $e');
-      logE(st);
-    } finally {
-      isUserClaimLoading(false);
-    }
-  }
-
-  /// Extract Country Code (everything before last 10 digits)
-  String extractCountryCode(String phoneNumber) {
-    if (phoneNumber.startsWith('+') || phoneNumber.length > 10) {
-      return phoneNumber.substring(0, phoneNumber.length - 10);
-    }
-    return '';
-  }
-
-  /// Extracts the local 10-digit number (last 10 digits)
-  String extractLocalNumber(String phoneNumber) {
-    if (phoneNumber.length >= 10) {
-      return phoneNumber.substring(phoneNumber.length - 10);
-    }
-    return phoneNumber;
-  }
 
   /// Check if user can create round
   Future<MdCanCreateBet?> checkCanCreateRound() async {

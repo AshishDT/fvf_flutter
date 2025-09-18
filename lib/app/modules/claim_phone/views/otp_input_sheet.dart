@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
-import 'package:fvf_flutter/app/data/local/user_provider.dart';
-import 'package:fvf_flutter/app/modules/create_bet/controllers/create_bet_controller.dart';
+import 'package:fvf_flutter/app/modules/claim_phone/controllers/claim_phone_controller.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:get/get.dart';
@@ -10,9 +9,9 @@ import 'package:get/get.dart';
 import '../../../data/config/app_colors.dart';
 import '../../../utils/app_text_style.dart';
 
-/// OtpSheet widget
-class OtpSheet extends GetView<CreateBetController> {
-  /// Constructor for OtpSheet
+/// OtpSheet widget (non-draggable, keyboard-aware)
+class OtpSheet extends GetView<ClaimPhoneController> {
+  /// Otp sheet
   const OtpSheet({super.key});
 
   @override
@@ -20,21 +19,17 @@ class OtpSheet extends GetView<CreateBetController> {
         () => PopScope(
           canPop: !controller.isVerifyingOtp(),
           child: Padding(
-            padding: REdgeInsets.only(
+            padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom),
-            child: DraggableScrollableSheet(
-              initialChildSize: 0.4,
-              minChildSize: 0.3,
-              maxChildSize: 0.65,
-              builder: (_, ScrollController scrollController) => GradientCard(
-                padding: REdgeInsets.symmetric(horizontal: 24),
+            child: SingleChildScrollView(
+              child: GradientCard(
+                padding: REdgeInsets.symmetric(horizontal: 24, vertical: 24),
                 borderRadius: BorderRadius.vertical(
                   top: Radius.circular(24.r),
                 ),
-                child: ListView(
-                  controller: scrollController,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
-                    12.verticalSpace,
                     Center(
                       child: Container(
                         height: 4.h,
@@ -60,7 +55,7 @@ class OtpSheet extends GetView<CreateBetController> {
                     16.verticalSpace,
                     Center(
                       child: Text(
-                        'Secure your profile and verify with OTP',
+                        'Verify Otp',
                         style: AppTextStyle.openRunde(
                           fontSize: 16.sp,
                           color: AppColors.kFAFBFB,
@@ -72,18 +67,18 @@ class OtpSheet extends GetView<CreateBetController> {
                     24.verticalSpace,
                     Form(
                       key: controller.otpFormKey,
-                      child: FormField(
+                      child: FormField<String>(
                         validator: (Object? value) {
-                          final String phone =
+                          final String otp =
                               controller.otpController.text.trim();
-                          if (phone.isEmpty) {
+                          if (otp.isEmpty) {
                             return 'OTP is required';
                           }
                           final RegExp regex = RegExp(r'^\+?[0-9]+$');
-                          if (!regex.hasMatch(phone)) {
+                          if (!regex.hasMatch(otp)) {
                             return 'OTP must contain digits only';
                           }
-                          if (phone.length != 6) {
+                          if (otp.length != 6) {
                             return 'OTP must be 6 digits';
                           }
                           return null;
@@ -129,9 +124,9 @@ class OtpSheet extends GetView<CreateBetController> {
                                     size: 24.sp,
                                   ),
                                   border: InputBorder.none,
-                                  focusedBorder: InputBorder.none,
                                   disabledBorder: InputBorder.none,
                                   enabledBorder: InputBorder.none,
+                                  focusedBorder: InputBorder.none,
                                   errorBorder: InputBorder.none,
                                   focusedErrorBorder: InputBorder.none,
                                 ),
@@ -153,22 +148,15 @@ class OtpSheet extends GetView<CreateBetController> {
                     ),
                     24.verticalSpace,
                     AppButton(
-                      buttonText: 'Save',
+                      buttonText: 'Varify & Claim',
                       isLoading: controller.isVerifyingOtp(),
                       onPressed: () async {
                         if (controller.otpFormKey.currentState?.validate() ??
                             false) {
-                          final bool isOptVerified =
+                          final bool isOtpVerified =
                               await controller.verifyOtp();
-                          if (isOptVerified) {
-                            await controller.claimUser(
-                              phone: controller.extractLocalNumber(
-                                controller.phoneController.text.trim(),
-                              ),
-                              countryCode: controller.extractCountryCode(
-                                controller.phoneController.text.trim(),
-                              ),
-                            );
+                          if (isOtpVerified) {
+                            await controller.claimUser();
                           }
                         }
                       },

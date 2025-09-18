@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/models/md_result.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
@@ -11,6 +10,7 @@ import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
 import 'package:no_screenshot/no_screenshot.dart';
 
+import '../../../utils/global_keys.dart';
 import '../../ai_choosing/models/md_ai_result.dart';
 
 /// Winner Controller

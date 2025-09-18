@@ -1,11 +1,8 @@
 import 'dart:convert';
 import 'package:fvf_flutter/app/data/local/store/local_store.dart';
-import 'package:get/get.dart';
+import '../../utils/global_keys.dart';
 import '../config/encryption.dart';
 import '../models/md_user.dart';
-
-/// Current user observable
-Rx<MdUser> globalUser = Rx<MdUser>(MdUser());
 
 /// Helper class for local stored User
 class UserProvider {

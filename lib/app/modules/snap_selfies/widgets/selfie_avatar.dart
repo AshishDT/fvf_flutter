@@ -118,27 +118,36 @@ class SelfieAvatar extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            if (showBorder)
-              AnimatedContainer(
-                duration: 300.milliseconds,
-                width: size.w + 4.w,
-                height: size.h + 4.w,
-                padding: REdgeInsets.all(2),
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                    image: AssetImage(AppImages.gradientCardBg),
-                    fit: BoxFit.cover,
+            AnimatedContainer(
+              duration: 300.milliseconds,
+              curve: Curves.easeInOut,
+              width: size.w + (showBorder ? 7 : 0),
+              height: size.h + (showBorder ? 7 : 0),
+              child: Stack(
+                alignment: Alignment.center,
+                children: <Widget>[
+                  if (showBorder)
+                    Image.asset(
+                      AppImages.aiChoosingAvatarBg,
+                      width: size.w + 7,
+                      height: size.h + 7,
+                      fit: BoxFit.cover,
+                    ),
+
+                  ClipOval(
+                    child: SizedBox(
+                      width: size.w,
+                      height: size.h,
+                      child: Padding(
+                        padding: REdgeInsets.only(bottom: 2),
+                        child: avatarContent,
+                      ),
+                    ),
                   ),
-                ),
-                child: avatarContent,
-              )
-            else
-              SizedBox(
-                width: size.w,
-                height: size.h,
-                child: avatarContent,
+                ],
               ),
+            )
+,
             4.verticalSpace,
             Text(
               participant.isCurrentUser ? 'You' : _userName(),

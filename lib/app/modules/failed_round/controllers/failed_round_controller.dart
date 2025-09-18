@@ -9,7 +9,7 @@ import '../../../routes/app_pages.dart';
 import '../../../ui/components/app_snackbar.dart';
 import '../../../utils/app_loader.dart';
 import '../../create_bet/models/md_participant.dart';
-import '../repositories/failed_round_api_repo.dart';
+import '../../create_bet/repositories/create_bet_api_repo.dart';
 
 /// Failed round controller
 class FailedRoundController extends GetxController {
@@ -111,8 +111,8 @@ class FailedRoundController extends GetxController {
   Future<void> onLetsGoAgain() async {
     isLoading(true);
     try {
-      final MdRound? _round = await FailedRoundApiRepo.reRun(
-        roundId: roundId,
+      final MdRound? _round = await CreateBetApiRepo.createRound(
+        prompt: prompt,
       );
 
       if (_round != null) {
@@ -130,6 +130,7 @@ class FailedRoundController extends GetxController {
               status: _round.status,
               updatedAt: _round.updatedAt?.toIso8601String(),
               roundJoinedEndAt: _round.roundJoinedEndAt,
+              previousRounds: _round.previousRounds,
               participants: <MdParticipant>[
                 MdParticipant(
                   createdAt: DateTime.now().toIso8601String(),

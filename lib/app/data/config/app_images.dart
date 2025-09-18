@@ -261,4 +261,7 @@ class AppImages {
 
   /// Smily Icon PNG
   static const String smilyIconPng = '$_path/smily_icon.png';
+
+  /// Ai Choosing Avatar Background
+  static const String aiChoosingAvatarBg = '$_path/ai_choss_avatar_bg.png';
 }

@@ -55,112 +55,122 @@ class CreateBetView extends GetView<CreateBetController> {
               child: Align(
                 alignment: Alignment.topLeft,
                 child: SafeArea(
-                  child: AnimatedListView(
-                    padding: REdgeInsets.symmetric(horizontal: 24),
-                    children: <Widget>[
-                      CommonAppBar(
-                        leadingIcon: AppImages.menuIcon,
-                        onTapOfLeading: () {
-                          controller.scaffoldKey.currentState?.openDrawer();
-                        },
-                        actions: <Widget>[
-                          SvgPicture.asset(
-                            height: 24.h,
-                            width: 24.w,
-                            AppImages.notificationIcon,
-                          ),
-                          Obx(
-                            () => Visibility(
-                              visible: controller.canShowProfile(),
-                              child: 10.horizontalSpace,
-                            ),
-                          ),
-                          Obx(
-                            () => !controller.canShowProfile()
-                                ? const SizedBox()
-                                : ProfileAvatar(
-                                    profileUrl:
-                                        controller.profile().user?.profileUrl ??
-                                            '',
-                                    onTap: () {
-                                      _navigateToProfile();
-                                    },
-                                  ),
-                          ),
-                        ],
-                      ),
-                      64.verticalSpace,
-                      QuestionCard(
-                        child: Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: Obx(
-                                () => BetsWrapper(
-                                  isLoading: controller.isLoading(),
-                                  child: _question(),
-                                ),
-                              ),
-                            ),
-                            16.horizontalSpace,
-                            AnimatedSize(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                              child: Obx(
-                                () => Visibility(
-                                  visible: !controller.isLoading(),
-                                  child: QuestionRoller(
-                                    rollTrigger: controller.rollCounter(),
-                                    onTap: controller.rollDice,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      24.verticalSpace,
-                      AppButton(
-                        buttonText: '',
-                        buttonColor: AppColors.kF1F2F2.withValues(alpha: 0.36),
-                        onPressed: () {
-                          if (controller.createRoundLoading()) {
-                            appSnackbar(
-                              message: 'Please wait, creating round...',
-                              snackbarState: SnackbarState.warning,
-                            );
-                            return;
-                          }
-                          ChatFieldSheetRepo.openChatField(
-                            const KeyboardAwareSheet(),
-                          );
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text(
-                              'Or write your own',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: AppTextStyle.openRunde(
-                                fontSize: 18.sp,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.kffffff,
-                              ),
-                            ),
-                            4.horizontalSpace,
+                  child: RefreshIndicator(
+                    onRefresh: () async {
+                      await controller.getUser();
+                      await controller.getBets();
+                      await controller.checkCanCreateRound();
+                    },
+                    color: AppColors.k787C82,
+                    backgroundColor: AppColors.kF5FCFF,
+                    child: AnimatedListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: REdgeInsets.symmetric(horizontal: 24),
+                      children: <Widget>[
+                        CommonAppBar(
+                          leadingIcon: AppImages.menuIcon,
+                          onTapOfLeading: () {
+                            controller.scaffoldKey.currentState?.openDrawer();
+                          },
+                          actions: <Widget>[
                             SvgPicture.asset(
-                              height: 20.h,
-                              width: 20.w,
-                              AppImages.penIcon,
-                              colorFilter: const ColorFilter.mode(
-                                AppColors.kffffff,
-                                BlendMode.srcIn,
+                              height: 24.h,
+                              width: 24.w,
+                              AppImages.notificationIcon,
+                            ),
+                            Obx(
+                              () => Visibility(
+                                visible: controller.canShowProfile(),
+                                child: 10.horizontalSpace,
                               ),
+                            ),
+                            Obx(
+                              () => !controller.canShowProfile()
+                                  ? const SizedBox()
+                                  : ProfileAvatar(
+                                      profileUrl:
+                                          controller.profile().user?.profileUrl ??
+                                              '',
+                                      onTap: () {
+                                        _navigateToProfile();
+                                      },
+                                    ),
                             ),
                           ],
                         ),
-                      ),
-                    ],
+                        64.verticalSpace,
+                        QuestionCard(
+                          child: Row(
+                            children: <Widget>[
+                              Expanded(
+                                child: Obx(
+                                  () => BetsWrapper(
+                                    isLoading: controller.isLoading(),
+                                    child: _question(),
+                                  ),
+                                ),
+                              ),
+                              16.horizontalSpace,
+                              AnimatedSize(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                                child: Obx(
+                                  () => Visibility(
+                                    visible: !controller.isLoading(),
+                                    child: QuestionRoller(
+                                      rollTrigger: controller.rollCounter(),
+                                      onTap: controller.rollDice,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        24.verticalSpace,
+                        AppButton(
+                          buttonText: '',
+                          buttonColor: AppColors.kF1F2F2.withValues(alpha: 0.36),
+                          onPressed: () {
+                            if (controller.createRoundLoading()) {
+                              appSnackbar(
+                                message: 'Please wait, creating round...',
+                                snackbarState: SnackbarState.warning,
+                              );
+                              return;
+                            }
+                            ChatFieldSheetRepo.openChatField(
+                              const KeyboardAwareSheet(),
+                            );
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text(
+                                'Or write your own',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppTextStyle.openRunde(
+                                  fontSize: 18.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.kffffff,
+                                ),
+                              ),
+                              4.horizontalSpace,
+                              SvgPicture.asset(
+                                height: 20.h,
+                                width: 20.w,
+                                AppImages.penIcon,
+                                colorFilter: const ColorFilter.mode(
+                                  AppColors.kffffff,
+                                  BlendMode.srcIn,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

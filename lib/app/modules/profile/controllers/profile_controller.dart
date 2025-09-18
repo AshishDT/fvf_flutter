@@ -15,6 +15,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import '../../../utils/app_loader.dart';
+import '../../../utils/global_keys.dart';
 import '../models/md_profile_args.dart';
 
 /// Profile Controller
@@ -179,6 +180,9 @@ class ProfileController extends GetxController with TimeLineMixin {
           _user.user?.badge,
         );
         currentBadge.refresh();
+
+        roundData(_user.round);
+        roundData.refresh();
 
         UserProvider.onLogin(
           user: profile().user!,

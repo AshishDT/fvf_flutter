@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/modules/snap_selfies/widgets/selfie_avatar_icon.dart';
 import 'package:fvf_flutter/app/modules/snap_selfies/widgets/user_self_participant_card.dart';
@@ -14,6 +13,7 @@ import '../../../ui/components/app_button.dart';
 import '../../../ui/components/common_app_bar.dart';
 import '../../../ui/components/gradient_card.dart';
 import '../../../utils/app_text_style.dart';
+import '../../../utils/global_keys.dart';
 import '../controllers/failed_round_controller.dart';
 
 /// Failed round view

@@ -51,4 +51,16 @@ class LocalStore {
   /// Rating has user already rated
   static final _StoreObject<bool> ratingHasRated =
       _StoreObject<bool>(key: 'rating_has_rated');
+
+  /// Phone claim attempt count
+  static final _StoreObject<int> phoneClaimAttempt =
+  _StoreObject<int>(key: 'phone_claim_attempt');
+
+  /// Phone claim last round attempted
+  static final _StoreObject<int> phoneClaimLastRound =
+  _StoreObject<int>(key: 'phone_claim_last_round');
+
+  /// Phone claim last time attempted (ISO string)
+  static final _StoreObject<String> phoneClaimLastTime =
+  _StoreObject<String>(key: 'phone_claim_last_time');
 }

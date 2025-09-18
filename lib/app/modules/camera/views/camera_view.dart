@@ -75,7 +75,7 @@ class CameraView extends GetView<PickSelfieCameraController> {
                           child: Obx(
                             () => Visibility(
                               visible: controller.canShowRetake(),
-                              child: 55.verticalSpace,
+                              child: 35.verticalSpace,
                             ),
                           ),
                         ),
@@ -92,7 +92,7 @@ class CameraView extends GetView<PickSelfieCameraController> {
                             ),
                           ),
                         ),
-                        49.verticalSpace,
+                        40.verticalSpace,
                       ],
                     ),
                   ],

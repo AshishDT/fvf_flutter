@@ -32,137 +32,137 @@ class ProfileView extends GetView<ProfileController> {
   Widget build(BuildContext context) {
     Get.lazyPut(() => ProfileController(), tag: navigatorTag);
     return Obx(
-        () => PopScope(
-          canPop: controller.currentIndex() == 0,
-          onPopInvokedWithResult: (bool didPop, Object? value) {
-            if (controller.currentIndex() == 1) {
-              controller.pageController.animateToPage(
-                0,
-                duration: 500.milliseconds,
-                curve: Curves.easeInOut,
-              );
-            }
-          },
-          child: Scaffold(
-            backgroundColor: AppColors.kF5FCFF,
-            resizeToAvoidBottomInset: false,
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerFloat,
-            body: GradientCard(
-              child: Column(
-                children: <Widget>[
-                  Expanded(
-                    child: PageView(
-                      controller: controller.pageController,
-                      physics: const ClampingScrollPhysics(),
-                      scrollDirection: Axis.vertical,
-                      onPageChanged: (int value) {
-                        controller.currentIndex(value);
-                        if (controller.rounds().isNotEmpty) {
-                          controller.roundPageController.jumpToPage(
-                            controller.currentRound(),
-                          );
-                        }
-                      },
-                      children: <Widget>[
-                        Stack(
-                          children: <Widget>[
-                            Obx(
-                              () => CachedNetworkImage(
-                                imageUrl:
-                                    controller.profile().user?.profileUrl ?? '',
-                                width: 1.sw,
-                                height: 1.sh,
-                                fit: BoxFit.cover,
-                                placeholder: (_, __) => Obx(
-                                  () => Visibility(
-                                    visible: !controller.isLoading(),
-                                    child:
-                                        const GradientCard(child: SizedBox()),
-                                  ),
+      () => PopScope(
+        canPop: controller.currentIndex() == 0,
+        onPopInvokedWithResult: (bool didPop, Object? value) {
+          if (controller.currentIndex() == 1) {
+            controller.pageController.animateToPage(
+              0,
+              duration: 500.milliseconds,
+              curve: Curves.easeInOut,
+            );
+          }
+        },
+        child: Scaffold(
+          backgroundColor: AppColors.kF5FCFF,
+          resizeToAvoidBottomInset: false,
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerFloat,
+          body: GradientCard(
+            child: Column(
+              children: <Widget>[
+                Expanded(
+                  child: PageView(
+                    controller: controller.pageController,
+                    physics: const ClampingScrollPhysics(),
+                    scrollDirection: Axis.vertical,
+                    onPageChanged: (int value) {
+                      controller.currentIndex(value);
+                      if (controller.rounds().isNotEmpty) {
+                        controller.roundPageController.jumpToPage(
+                          controller.currentRound(),
+                        );
+                      }
+                    },
+                    children: <Widget>[
+                      Stack(
+                        children: <Widget>[
+                          Obx(
+                            () => CachedNetworkImage(
+                              imageUrl:
+                                  controller.profile().user?.profileUrl ?? '',
+                              width: 1.sw,
+                              height: 1.sh,
+                              fit: BoxFit.cover,
+                              placeholder: (_, __) => Obx(
+                                () => Visibility(
+                                  visible: !controller.isLoading(),
+                                  child: const GradientCard(child: SizedBox()),
                                 ),
-                                errorWidget: (_, __, ___) => Obx(
-                                  () => Visibility(
-                                    visible: !controller.isLoading(),
-                                    child:
-                                        const GradientCard(child: SizedBox()),
-                                  ),
+                              ),
+                              errorWidget: (_, __, ___) => Obx(
+                                () => Visibility(
+                                  visible: !controller.isLoading(),
+                                  child: const GradientCard(child: SizedBox()),
                                 ),
                               ),
                             ),
-                            Obx(
-                              () => ProfileWrapper(
-                                isLoading: controller.isLoading(),
-                                child: Column(
-                                  children: <Widget>[
-                                    75.verticalSpace,
-                                    ProfileHeaderSection(
-                                      controller: controller,
-                                    ),
-                                    24.verticalSpace,
-                                    Obx(
-                                      () => Visibility(
-                                        visible: _canShowEmptyProfile(),
-                                        child: const EmptyProfilePlaceholder(),
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    ProfileBioSection(
-                                      controller: controller,
-                                    ),
-                                    20.verticalSpace,
-                                  ],
-                                ).paddingSymmetric(horizontal: 24.w),
-                              ),
-                            ),
-                            Positioned(
-                              top: 30,
-                              left: 24,
-                              right: 24,
-                              child: CommonAppBar(
-                                leadingIconColor: AppColors.kFAFBFB,
-                                onTapOfLeading: () {
-                                  if (controller.currentIndex() == 1) {
-                                    controller.pageController.animateToPage(
-                                      0,
-                                      duration: 500.milliseconds,
-                                      curve: Curves.easeInOut,
-                                    );
-                                  } else {
-                                    Get.back();
-                                  }
-                                },
-                                actions: <Widget>[
-                                  GestureDetector(
-                                    onTap: () {},
-                                    child: SvgPicture.asset(
-                                      AppImages.moreVertical,
-                                      width: 24.w,
-                                      height: 24.h,
-                                      colorFilter: const ColorFilter.mode(
-                                        AppColors.kFAFBFB,
-                                        BlendMode.srcIn,
+                          ),
+                          Obx(
+                            () => ProfileWrapper(
+                              isLoading: controller.isLoading(),
+                              child: Column(
+                                children: <Widget>[
+                                  75.verticalSpace,
+                                  ProfileHeaderSection(
+                                    controller: controller,
+                                  ),
+                                  24.verticalSpace,
+                                  Obx(
+                                    () => Visibility(
+                                      visible: _canShowEmptyProfile(),
+                                      child: EmptyProfilePlaceholder(
+                                        navigatorTag: navigatorTag,
                                       ),
                                     ),
                                   ),
+                                  const Spacer(),
+                                  ProfileBioSection(
+                                    controller: controller,
+                                  ),
+                                  20.verticalSpace,
                                 ],
-                              ),
+                              ).paddingSymmetric(horizontal: 24.w),
                             ),
-                          ],
-                        ),
+                          ),
+                          Positioned(
+                            top: 30,
+                            left: 24,
+                            right: 24,
+                            child: CommonAppBar(
+                              leadingIconColor: AppColors.kFAFBFB,
+                              onTapOfLeading: () {
+                                if (controller.currentIndex() == 1) {
+                                  controller.pageController.animateToPage(
+                                    0,
+                                    duration: 500.milliseconds,
+                                    curve: Curves.easeInOut,
+                                  );
+                                } else {
+                                  Get.back();
+                                }
+                              },
+                              actions: <Widget>[
+                                GestureDetector(
+                                  onTap: () {},
+                                  child: SvgPicture.asset(
+                                    AppImages.moreVertical,
+                                    width: 24.w,
+                                    height: 24.h,
+                                    colorFilter: const ColorFilter.mode(
+                                      AppColors.kFAFBFB,
+                                      BlendMode.srcIn,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
 
-                        /// Participants Page
-                        if (controller.rounds().isNotEmpty)
-                          RoundsTimeLinesView(controller: controller),
-                      ],
-                    ),
+                      /// Participants Page
+                      if (controller.rounds().isNotEmpty)
+                        RoundsTimeLinesView(controller: controller),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
-      );
+      ),
+    );
   }
 
   /// Can show empty profile

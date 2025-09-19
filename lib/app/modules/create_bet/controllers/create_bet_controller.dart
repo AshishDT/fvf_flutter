@@ -95,7 +95,17 @@ class CreateBetController extends GetxController {
   ).obs;
 
   ///  Can show profile (if user has no rounds)
-  RxBool get canShowProfile => ((profile().round?.totalRound ?? 0) >= 1).obs;
+  RxBool get canShowProfile {
+    final bool hasPlayedRound = (profile().round?.totalRound ?? 0) >= 1;
+
+    final bool hasUserName = profile().user?.username != null &&
+        (profile().user?.username?.isNotEmpty ?? false);
+
+    final bool hasProfile = profile().user?.profileUrl != null &&
+        (profile().user?.profileUrl?.isNotEmpty ?? false);
+
+    return (hasPlayedRound || hasUserName || hasProfile).obs;
+  }
 
   /// Init notification click handlers
   Future<void> _initNotificationClick() async {

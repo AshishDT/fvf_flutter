@@ -130,8 +130,7 @@ class SnapSelfiesController extends GetxController
   void onClose() {
     stopTimer();
     textsTimer?.cancel();
-    socketIoRepo.dispose();
-    stopTimer();
+    socketIoRepo.disconnect();
     WidgetsBinding.instance.removeObserver(this);
     nameInputFocusNode.dispose();
     super.onClose();

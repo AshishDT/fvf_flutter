@@ -358,9 +358,16 @@ class WinnerView extends GetView<WinnerController> {
 
   /// getOrdinalSuffix
   String getOrdinalSuffix(int number) {
-    if (number >= 11 && number <= 13) {
-      return '${number}th';
+    if (number <= 0) {
+      return '';
     }
+
+    final int mod100 = number % 100;
+
+    if (mod100 >= 11 && mod100 <= 13) {
+      return 'th';
+    }
+
     switch (number % 10) {
       case 1:
         return 'st';

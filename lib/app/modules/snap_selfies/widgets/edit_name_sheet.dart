@@ -50,10 +50,14 @@ class EditNameSheet extends GetView<SnapSelfiesController> {
                 controller: controller.nameInputController,
                 maxLines: 7,
                 minLines: 1,
-                maxLength: 80,
+                maxLength: 24,
                 autofocus: true,
                 cursorColor: AppColors.kF1F2F2,
                 onFieldSubmitted: (String value) {
+                  final String trimmed = value.trim();
+                  if (trimmed.length < 3 || trimmed.length > 24) {
+                    return;
+                  }
                   Navigator.maybePop(context);
                   controller.nameInputFocusNode.unfocus();
                   controller.enteredName(value.trim());

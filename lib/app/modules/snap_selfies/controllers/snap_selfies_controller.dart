@@ -82,6 +82,10 @@ class SnapSelfiesController extends GetxController
       enteredName,
       (_) {
         if (enteredName.isNotEmpty) {
+          final String trimmed = enteredName.trim();
+          if (trimmed.length < 3 || trimmed.length > 24) {
+            return;
+          }
           updateUser(username: enteredName.value);
         }
       },

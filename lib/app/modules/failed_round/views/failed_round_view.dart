@@ -114,7 +114,7 @@ class FailedRoundView extends GetView<FailedRoundController> {
                                 controller.participantsWithoutCurrentUser();
 
                             return Row(
-                              spacing: 32,
+                              spacing: 24.w,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: List<Widget>.generate(
                                 participants.length,

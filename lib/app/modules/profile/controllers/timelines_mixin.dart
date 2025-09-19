@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:get/get.dart';
 import 'package:no_screenshot/no_screenshot.dart';
 
@@ -57,18 +58,32 @@ mixin TimeLineMixin on GetxController {
         continue;
       }
 
+      //  Get current user result
+      final MdResult? currentUser = allResults.firstWhereOrNull(
+        (MdResult res) => res.userId == UserProvider.currentUser?.id,
+      );
+
+      //  Get first place result
       final MdResult? firstRank =
           allResults.firstWhereOrNull((MdResult res) => res.rank == 1);
 
-      final List<MdResult> others =
-          allResults.where((MdResult res) => res.rank != 1).toList();
+      //  Collect the others (exclude current user + firstRank)
+      final List<MdResult> others = allResults.where((MdResult res) {
+        final bool isCurrent = res.userId == UserProvider.currentUser?.id;
+        final bool isFirst = res.rank == 1;
+        return !isCurrent && !isFirst;
+      }).toList();
 
       if (!hasAccess) {
         others.shuffle();
       }
 
+      // Final ordering: [current user, first place, others...]
       final List<MdResult> finalList = <MdResult>[
-        if (firstRank != null) firstRank,
+        if (currentUser != null) currentUser,
+        if (firstRank != null &&
+            firstRank.userId != UserProvider.currentUser?.id)
+          firstRank,
         ...others,
       ];
 
@@ -84,6 +99,20 @@ mixin TimeLineMixin on GetxController {
     final bool exposed = roundExposed[roundIdx]?.call() ?? false;
     final int currInner = roundCurrentResultIndex[roundIdx]?.call() ?? 0;
 
+    if (rounds.length <= roundIdx) {
+      noScreenshot.screenshotOn();
+      roundSecure[roundIdx]?.call(false);
+      roundSecure[roundIdx]?.refresh();
+      return;
+    }
+
+    MdResult? currentResult;
+    final List<MdResult>? results = rounds[roundIdx].results;
+
+    if (results != null && currInner >= 0 && currInner < results.length) {
+      currentResult = results[currInner];
+    }
+
     if (!exposed) {
       noScreenshot.screenshotOn();
       roundSecure[roundIdx]?.call(false);
@@ -91,7 +120,7 @@ mixin TimeLineMixin on GetxController {
       return;
     }
 
-    if (currInner == 0) {
+    if (currentResult?.rank == 1) {
       noScreenshot.screenshotOn();
       roundSecure[roundIdx]?.call(false);
       roundSecure[roundIdx]?.refresh();

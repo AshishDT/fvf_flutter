@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:camera/camera.dart';
+import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:get/get.dart';
 import 'package:image/image.dart' as img;
 import '../../../data/config/logger.dart';
@@ -159,9 +160,12 @@ class PickSelfieCameraController extends GetxController {
     cameraController = null;
     isCameraInitialized(false);
 
-    Get.back(
-      result: previewFile().path.isNotEmpty ? XFile(previewFile().path) : null,
-    );
+    if (Get.currentRoute == Routes.CAMERA) {
+      Get.back(
+        result:
+            previewFile().path.isNotEmpty ? XFile(previewFile().path) : null,
+      );
+    }
   }
 
   /// Take picture

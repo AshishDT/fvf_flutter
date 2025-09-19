@@ -366,7 +366,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                   controller.participantsWithoutCurrentUser();
 
               return Row(
-                spacing: 32,
+                spacing: 24.w,
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: List<Widget>.generate(
@@ -451,7 +451,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                     );
 
               return Row(
-                spacing: 32,
+                spacing: 24.w,
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: items,

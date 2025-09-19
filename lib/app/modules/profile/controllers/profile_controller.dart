@@ -100,9 +100,11 @@ class ProfileController extends GetxController with TimeLineMixin {
         args: _args,
         isRefresh: true,
       );
+      getBadges(
+        args: _args,
+      );
 
       if (isCurrentUser) {
-        getBadges();
         debounce(
           enteredName,
           (_) {
@@ -304,9 +306,15 @@ class ProfileController extends GetxController with TimeLineMixin {
   }
 
   /// Get Badges
-  Future<void> getBadges() async {
+  Future<void> getBadges({
+    MdProfileArgs? args,
+  }) async {
     try {
-      final List<MdBadge>? _badges = await ProfileApiRepo.getBadges();
+      final bool isCurrentUser = args?.supabaseId == SupaBaseService.userId;
+
+      final List<MdBadge>? _badges = await ProfileApiRepo.getBadges(
+        userId: isCurrentUser ? null : args?.userId,
+      );
 
       if (_badges != null && _badges.isNotEmpty) {
         badges(_badges);

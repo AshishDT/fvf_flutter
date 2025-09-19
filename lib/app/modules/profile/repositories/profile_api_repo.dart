@@ -124,10 +124,15 @@ class ProfileApiRepo {
       );
 
   /// Get Badges
-  static Future<List<MdBadge>?> getBadges() async =>
+  static Future<List<MdBadge>?> getBadges({
+    String? userId,
+  }) async =>
       APIWrapper.handleApiCall<List<MdBadge>>(
         APIService.get<Map<String, dynamic>>(
           path: 'user-badge/badges',
+          params: userId != null && userId.isNotEmpty
+              ? <String, dynamic>{'user_id': userId}
+              : null,
         ).then(
           (Response<Map<String, dynamic>>? response) {
             if (response?.isOk != true || response?.data == null) {

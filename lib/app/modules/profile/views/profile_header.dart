@@ -108,12 +108,10 @@ class ProfileHeaderSection extends StatelessWidget {
                 child: Align(
                   child: GestureDetector(
                     onTap: () {
-                      if (controller.isCurrentUser) {
-                        Get.toNamed(
-                          Routes.HALL_OF_FAME,
-                          arguments: controller.badges,
-                        );
-                      }
+                      Get.toNamed(
+                        Routes.HALL_OF_FAME,
+                        arguments: controller.badges,
+                      );
                     },
                     child: IntrinsicWidth(
                       child: Stack(

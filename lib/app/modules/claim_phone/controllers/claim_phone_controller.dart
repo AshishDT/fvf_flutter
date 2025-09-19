@@ -2,33 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:smart_auth/smart_auth.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import '../../../data/config/logger.dart';
-import '../../../data/models/md_user.dart';
 import '../../../data/remote/supabse_service/supabse_service.dart';
 import '../../../ui/components/app_snackbar.dart';
-import '../../../utils/global_keys.dart';
 import '../../create_bet/repositories/create_bet_api_repo.dart';
 
 /// Claim Phone Controller
 class ClaimPhoneController extends GetxController {
-  /// Form Keys
-  final GlobalKey<FormState> phoneFormKey = GlobalKey<FormState>();
-
-  /// OTP Form Key
-  final GlobalKey<FormState> otpFormKey = GlobalKey<FormState>();
-
   /// Text Controllers
   final TextEditingController phoneController = TextEditingController();
 
   /// OTP Controller
   final TextEditingController otpController = TextEditingController();
-
-  /// Sending OTP
-  RxBool isSendingOtp = false.obs;
-
-  /// Verifying OTP
-  RxBool isVerifyingOtp = false.obs;
 
   /// Is Smart Auth Showed
   RxBool isSmartAuthShowed = false.obs;
@@ -97,7 +82,6 @@ class ClaimPhoneController extends GetxController {
     logWTF('Processed Phone Number: $phone');
 
     try {
-      isSendingOtp(true);
       await SupaBaseService.sendOtp('+1$phone');
       return true;
     } on Exception catch (e) {
@@ -107,8 +91,6 @@ class ClaimPhoneController extends GetxController {
         snackbarState: SnackbarState.danger,
       );
       return false;
-    } finally {
-      isSendingOtp(false);
     }
   }
 
@@ -121,7 +103,6 @@ class ClaimPhoneController extends GetxController {
     }
 
     try {
-      isVerifyingOtp(true);
       final AuthResponse res = await SupaBaseService.verifyOtp(
         phoneNumber: '+1$phone',
         token: otp,
@@ -143,8 +124,6 @@ class ClaimPhoneController extends GetxController {
         snackbarState: SnackbarState.danger,
       );
       return false;
-    } finally {
-      isVerifyingOtp(false);
     }
   }
 
@@ -153,19 +132,14 @@ class ClaimPhoneController extends GetxController {
     try {
       isUserClaimLoading(true);
 
-      final String? supabaseId = globalUser().supabaseId;
-      if (supabaseId == null || supabaseId.isEmpty) {
-        isUserClaimLoading(false);
-        return;
-      }
-
-      final MdUser? _user = await CreateBetApiRepo.userClaim(
+      final bool? _isClaimed = await CreateBetApiRepo.userClaim(
         phone: phoneController.text.trim(),
         countryCode: '+1',
-        supabaseId: supabaseId,
       );
 
-      if (_user != null && (_user.id?.isNotEmpty ?? false)) {
+      if (_isClaimed ?? false) {
+        phoneController.clear();
+        otpController.clear();
         Get.close(1);
         appSnackbar(
           message: 'Phone number claimed successfully!',

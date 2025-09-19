@@ -267,4 +267,7 @@ class AppImages {
 
   /// Pen Icon
   static const String shadowPen = '$_path/shadow_pen.png';
+
+  /// Otp one two three
+  static const String otp123 = '$_svgPath/otp_123.svg';
 }

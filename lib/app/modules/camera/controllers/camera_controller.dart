@@ -2,12 +2,11 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:camera/camera.dart';
-import 'package:fvf_flutter/app/data/config/logger.dart';
-import 'package:fvf_flutter/app/modules/snap_selfies/controllers/snap_selfies_controller.dart';
 import 'package:get/get.dart';
 import 'package:image/image.dart' as img;
+import '../../../data/config/logger.dart';
 
-/// Controller for the Camera module.
+/// Controller for handling selfie camera actions
 class PickSelfieCameraController extends GetxController {
   /// File for preview
   Rx<File> previewFile = File('').obs;
@@ -41,7 +40,6 @@ class PickSelfieCameraController extends GetxController {
   void onClose() {
     cameraController?.dispose();
     stopTimer();
-    _retakeTimer?.cancel();
     super.onClose();
   }
 
@@ -69,29 +67,16 @@ class PickSelfieCameraController extends GetxController {
   /// Timer for countdown
   Timer? _timer;
 
-  /// Retake timer
-  Timer? _retakeTimer;
-
   /// Can show retake button
   RxBool canShowRetake = false.obs;
 
-  /// Start Retake timer
-  void _startRetakeTimer() {
-    _retakeTimer?.cancel();
-    _retakeTimer = Timer.periodic(
-      const Duration(seconds: 1),
-      (Timer timer) {
-        if (retakeSecondsLeft.value > 0) {
-          retakeSecondsLeft.value--;
-        } else {
-          timer.cancel();
-          canShowRetake(true);
-        }
-      },
-    );
-  }
+  /// Is retake loading
+  RxBool isRetakeLoading = false.obs;
 
-  /// Starts the timer for 5 minutes (300 seconds)
+  /// Flag to handle pending takePicture delayed callback
+  final RxBool _isTakePicturePending = false.obs;
+
+  /// Starts the timer for countdown
   void startTimer() {
     _timer?.cancel();
     _timer = Timer.periodic(
@@ -141,21 +126,31 @@ class PickSelfieCameraController extends GetxController {
 
   /// On Retake
   Future<void> onRetake() async {
-    previewFile(File(''));
-    isCameraInitialized(false);
-    isCapturing(false);
-    if (cameraController != null) {
-      await cameraController!.dispose();
-      cameraController = null;
+    if (isRetakeLoading()) {
+      return;
     }
-    await _setupCamera();
+
+    isRetakeLoading(true);
+
+    _isTakePicturePending(false);
+
+    try {
+      previewFile(File(''));
+      isCameraInitialized(false);
+      isCapturing(false);
+      canShowRetake(false);
+      if (cameraController != null) {
+        await cameraController!.dispose();
+        cameraController = null;
+      }
+      await _setupCamera();
+    } finally {
+      isRetakeLoading(false);
+    }
   }
 
   /// Called when timer finishes
   Future<void> onTimerFinished() async {
-    final SnapSelfiesController snapSelfiesController =
-        Get.find<SnapSelfiesController>();
-
     if (isCapturing()) {
       return;
     }
@@ -165,12 +160,7 @@ class PickSelfieCameraController extends GetxController {
     isCameraInitialized(false);
 
     Get.back(
-      result: snapSelfiesController.isCurrentUserSelfieTaken() ||
-              snapSelfiesController.submittingSelfie()
-          ? null
-          : previewFile().path.isNotEmpty
-              ? XFile(previewFile().path)
-              : null,
+      result: previewFile().path.isNotEmpty ? XFile(previewFile().path) : null,
     );
   }
 
@@ -180,16 +170,14 @@ class PickSelfieCameraController extends GetxController {
     if (controller == null || !controller.value.isInitialized) {
       return;
     }
-    if (controller.value.isTakingPicture) {
-      return;
-    }
-
-    if (isCapturing()) {
+    if (controller.value.isTakingPicture || isCapturing()) {
       return;
     }
 
     try {
       isCapturing(true);
+      canShowRetake(true);
+
       final XFile xFile = await controller.takePicture();
       final File file = File(xFile.path);
 
@@ -203,17 +191,23 @@ class PickSelfieCameraController extends GetxController {
       }
 
       previewFile(file);
-      _startRetakeTimer();
 
+      _isTakePicturePending(true);
       Future<void>.delayed(
-        const Duration(seconds: 3),
+        const Duration(milliseconds: 3600),
         () {
-          Get.find<SnapSelfiesController>().submitSelfie(previewFile());
+          if (_isTakePicturePending() &&
+              !isRetakeLoading() &&
+              previewFile().path.isNotEmpty) {
+            canShowRetake(false);
+            onTimerFinished();
+          }
+          _isTakePicturePending(false);
         },
       );
     } on CameraException catch (e) {
       logE('Capture failed: $e');
-      isCapturing(false);
+      canShowRetake(false);
     } finally {
       isCapturing(false);
     }
@@ -244,9 +238,8 @@ class PickSelfieCameraController extends GetxController {
 
       final CameraController next = CameraController(
         target,
-        ResolutionPreset.medium,
+        ResolutionPreset.high,
         enableAudio: false,
-        imageFormatGroup: ImageFormatGroup.jpeg,
       );
 
       cameraController = next;

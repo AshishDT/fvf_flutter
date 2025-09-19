@@ -22,6 +22,7 @@ import '../../../data/config/app_images.dart';
 import '../../../routes/app_pages.dart';
 import '../../../ui/components/common_app_bar.dart';
 import '../../../utils/app_text_style.dart';
+import '../../create_bet/controllers/create_bet_controller.dart';
 import '../controllers/winner_controller.dart';
 import '../widgets/result_card.dart';
 
@@ -221,16 +222,14 @@ class WinnerView extends GetView<WinnerController> {
   Widget _appBar() => CommonAppBar(
         leadingIcon: AppImages.closeIconWhite,
         onTapOfLeading: () {
-          if (controller.roundId().isNotEmpty) {
-            Get.back(
-              result: controller.currentUserResult,
-            );
-          } else {
-            Get.until(
-              (Route<dynamic> route) =>
-                  route.settings.name == Routes.CREATE_BET,
-            );
-          }
+          Get.until(
+            (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
+          );
+
+          Get.find<CreateBetController>()
+            ..getBets()
+            ..getUser()
+            ..checkCanCreateRound();
         },
         actions: <Widget>[
           SvgPicture.asset(

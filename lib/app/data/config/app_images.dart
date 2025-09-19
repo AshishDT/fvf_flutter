@@ -264,4 +264,7 @@ class AppImages {
 
   /// Ai Choosing Avatar Background
   static const String aiChoosingAvatarBg = '$_path/ai_choss_avatar_bg.png';
+
+  /// Pen Icon
+  static const String shadowPen = '$_path/shadow_pen.png';
 }

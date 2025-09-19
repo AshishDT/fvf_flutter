@@ -133,7 +133,6 @@ class SelfieAvatar extends StatelessWidget {
                       height: size.h + 7,
                       fit: BoxFit.cover,
                     ),
-
                   ClipOval(
                     child: SizedBox(
                       width: size.w,
@@ -146,15 +145,22 @@ class SelfieAvatar extends StatelessWidget {
                   ),
                 ],
               ),
-            )
-,
+            ),
             4.verticalSpace,
-            Text(
-              participant.isCurrentUser ? 'You' : _userName(),
-              style: AppTextStyle.openRunde(
-                fontSize: 18.sp,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                minWidth: 70.w,
+                maxWidth: 70.w,
+              ),
+              child: Text(
+                participant.isCurrentUser ? 'You' : _userName(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyle.openRunde(
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
               ),
             ),
           ],

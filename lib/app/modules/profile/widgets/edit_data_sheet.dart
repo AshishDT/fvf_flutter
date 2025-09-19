@@ -12,8 +12,8 @@ import '../../../utils/app_text_style.dart';
 class EditDataSheet extends GetView<ProfileController> {
   /// Constructor for EditDataSheet
   const EditDataSheet({
-    super.key,
     required this.navigatorTag,
+    super.key,
   });
 
   /// Navigator tag
@@ -58,6 +58,7 @@ class EditDataSheet extends GetView<ProfileController> {
               controller: controller.nameInputController,
               maxLines: 7,
               minLines: 1,
+              maxLength: 24,
               autofocus: true,
               cursorColor: AppColors.kffffff,
               style: AppTextStyle.openRunde(
@@ -66,6 +67,10 @@ class EditDataSheet extends GetView<ProfileController> {
                 fontSize: 16.sp,
               ),
               onFieldSubmitted: (String value) {
+                final String trimmed = value.trim();
+                if (trimmed.length < 3 || trimmed.length > 24) {
+                  return;
+                }
                 Navigator.maybePop(context);
                 controller.enteredName(value.trim());
                 controller.updateUser(
@@ -82,6 +87,8 @@ class EditDataSheet extends GetView<ProfileController> {
                   maxHeight: 24.h,
                   maxWidth: 24.w,
                 ),
+                counterText: '',
+                counter: const SizedBox(),
                 prefixIcon: SvgPicture.asset(
                   AppImages.penIcon,
                   height: 24.h,

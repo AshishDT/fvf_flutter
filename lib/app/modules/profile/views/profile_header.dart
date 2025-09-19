@@ -29,30 +29,35 @@ class ProfileHeaderSection extends StatelessWidget {
           /// Username + Edit
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              GestureDetector(
-                onTap: () {
-                  if (controller.isCurrentUser) {
-                    EditProfileSheetRepo.openEditProfile(
-                      EditDataSheet(
-                        navigatorTag: controller.args.tag,
-                      ),
-                    );
-                  }
-                },
-                child: Text(
-                  controller.profile().user?.username ?? 'Add Name',
-                  style: AppTextStyle.openRunde(
-                    color: AppColors.kffffff,
-                    fontSize: 32.sp,
-                    fontWeight: FontWeight.w600,
-                    shadows: <Shadow>[
-                      BoxShadow(
-                        offset: const Offset(0, 1),
-                        blurRadius: 2,
-                        color: AppColors.k000000.withValues(alpha: .75),
-                      ),
-                    ],
+              Flexible(
+                child: GestureDetector(
+                  onTap: () {
+                    if (controller.isCurrentUser) {
+                      EditProfileSheetRepo.openEditProfile(
+                        EditDataSheet(
+                          navigatorTag: controller.args.tag,
+                        ),
+                      );
+                    }
+                  },
+                  child: Text(
+                    controller.profile().user?.username ?? 'Add Name',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyle.openRunde(
+                      color: AppColors.kffffff,
+                      fontSize: 32.sp,
+                      fontWeight: FontWeight.w600,
+                      shadows: <Shadow>[
+                        BoxShadow(
+                          offset: const Offset(0, 1),
+                          blurRadius: 2,
+                          color: AppColors.k000000.withValues(alpha: .75),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -81,9 +86,11 @@ class ProfileHeaderSection extends StatelessWidget {
                               ),
                             ),
                           )
-                        : SvgPicture.asset(
-                            AppImages.penShadowIcon,
-                          ).paddingOnly(top: 20.h),
+                        : Image.asset(
+                            AppImages.shadowPen,
+                            height: 18.h,
+                            width: 18.w,
+                          ),
                   ),
                 ),
               ],

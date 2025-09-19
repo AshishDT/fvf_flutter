@@ -75,6 +75,7 @@ class EditNameSheet extends GetView<SnapSelfiesController> {
                 decoration: InputDecoration(
                   hintText: '',
                   counterText: '',
+                  counter: const SizedBox(),
                   prefixIconConstraints: BoxConstraints(
                     maxHeight: 24.h,
                     maxWidth: 24.w,

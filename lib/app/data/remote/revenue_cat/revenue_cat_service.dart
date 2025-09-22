@@ -138,7 +138,7 @@ class RevenueCatService {
 
     await Purchases.setAttributes(
       <String, String>{
-        if (isCurrentRound) 'round_id': roundId,
+        if (isCurrentRound && roundId.isNotEmpty) 'round_id': roundId,
         'product_context': entitlementKey,
         'user_id': userId ?? '',
       },

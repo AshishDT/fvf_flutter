@@ -130,9 +130,9 @@ class PhoneNumberSheet extends GetView<ClaimPhoneController> {
   }
 
   OutlineInputBorder _outlineBorder() => OutlineInputBorder(
-      borderRadius: BorderRadius.circular(28).r,
-      borderSide: BorderSide.none,
-    );
+        borderRadius: BorderRadius.circular(28).r,
+        borderSide: BorderSide.none,
+      );
 
   Future<void> _onFieldSubmitted(BuildContext context, String value) async {
     final String _trimmedValue = value.trim();
@@ -148,11 +148,16 @@ class PhoneNumberSheet extends GetView<ClaimPhoneController> {
     final bool isOtpSend = await controller.sendOtp();
     if (isOtpSend) {
       Get.close(1);
+      controller.isSheetOpen(true);
       await showModalBottomSheet(
         context: context,
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
         builder: (_) => const OtpSheet(),
+      ).whenComplete(
+        () {
+          controller.isSheetOpen(false);
+        },
       );
     }
   }

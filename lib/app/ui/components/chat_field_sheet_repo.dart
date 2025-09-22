@@ -4,8 +4,12 @@ import 'package:get/get.dart';
 
 /// Repository for handling chat related bottom sheets
 class ChatFieldSheetRepo {
+  /// Is sheet open
+  static RxBool isSheetOpen = false.obs;
+
   /// Opens the chat input bottom sheet and dismisses it when keyboard closes
   static void openChatField(Widget child) {
+    isSheetOpen(true);
     showModalBottomSheet(
       context: Get.context!,
       useSafeArea: true,
@@ -21,6 +25,10 @@ class ChatFieldSheetRepo {
         ),
         child: child,
       ),
+    ).whenComplete(
+      () {
+        isSheetOpen(false);
+      },
     );
   }
 }

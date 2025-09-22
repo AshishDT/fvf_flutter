@@ -17,9 +17,11 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import '../../../utils/app_loader.dart';
 import '../../../utils/global_keys.dart';
 import '../models/md_profile_args.dart';
+import '../repositories/edit_profile_sheet_repo.dart';
 
 /// Profile Controller
-class ProfileController extends GetxController with TimeLineMixin {
+class ProfileController extends GetxController
+    with TimeLineMixin, WidgetsBindingObserver {
   /// image
   Rx<File> image = File('').obs;
 
@@ -85,6 +87,13 @@ class ProfileController extends GetxController with TimeLineMixin {
   void onInit() {
     super.onInit();
 
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        _prevBottomInset.value = View.of(Get.context!).viewInsets.bottom;
+      },
+    );
+
     if (Get.arguments is MdProfileArgs) {
       final MdProfileArgs _args = Get.arguments as MdProfileArgs;
 
@@ -121,6 +130,22 @@ class ProfileController extends GetxController with TimeLineMixin {
       }
     }
   }
+
+  @override
+  void didChangeMetrics() {
+    final double currentViewInsets = View.of(Get.context!).viewInsets.bottom;
+
+    if (_prevBottomInset() > 0 && currentViewInsets == 0) {
+      if(EditProfileSheetRepo.isSheetOpen()){
+        Get.close(0);
+      }
+    }
+
+    _prevBottomInset.value = currentViewInsets;
+  }
+
+  /// Previous bottom inset for keyboard
+  final RxDouble _prevBottomInset = 0.0.obs;
 
   /// On close
   @override

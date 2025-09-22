@@ -17,6 +17,7 @@ import '../../../data/remote/notification_service/notification_actions.dart';
 import '../../../data/remote/notification_service/notification_service.dart';
 import '../../../data/remote/revenue_cat/revenue_cat_service.dart';
 import '../../../routes/app_pages.dart';
+import '../../../ui/components/chat_field_sheet_repo.dart';
 import '../../../utils/global_keys.dart';
 import '../../profile/enums/subscription_enum.dart';
 import '../../profile/models/md_profile.dart';
@@ -29,7 +30,7 @@ import '../models/md_participant.dart';
 import '../widgets/slaying_sheet.dart';
 
 /// Create Bet Controller
-class CreateBetController extends GetxController {
+class CreateBetController extends GetxController with WidgetsBindingObserver {
   /// Scaffold key
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -37,6 +38,13 @@ class CreateBetController extends GetxController {
   @override
   void onInit() {
     DeepLinkService.initBranchListener();
+
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        _prevBottomInset.value = View.of(Get.context!).viewInsets.bottom;
+      },
+    );
 
     _initNotificationClick();
 
@@ -58,6 +66,22 @@ class CreateBetController extends GetxController {
   void onClose() {
     super.onClose();
   }
+
+  @override
+  void didChangeMetrics() {
+    final double currentViewInsets = View.of(Get.context!).viewInsets.bottom;
+
+    if (_prevBottomInset() > 0 && currentViewInsets == 0) {
+      if (ChatFieldSheetRepo.isSheetOpen()) {
+        Get.close(0);
+      }
+    }
+
+    _prevBottomInset.value = currentViewInsets;
+  }
+
+  /// Previous bottom inset for keyboard
+  final RxDouble _prevBottomInset = 0.0.obs;
 
   /// Entered bet
   RxString enteredBet = ''.obs;

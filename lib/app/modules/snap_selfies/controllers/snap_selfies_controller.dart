@@ -22,6 +22,7 @@ import '../../../data/models/md_join_invitation.dart';
 import '../../../data/remote/api_service/init_api_service.dart';
 import '../../../data/remote/deep_link/deep_link_service.dart';
 import '../../../ui/components/app_snackbar.dart';
+import '../../../ui/components/chat_field_sheet_repo.dart';
 import '../../../utils/app_loader.dart';
 import '../../../utils/global_keys.dart';
 import '../../claim_phone/controllers/phone_claim_service.dart';
@@ -145,8 +146,8 @@ class SnapSelfiesController extends GetxController
     final double currentViewInsets = View.of(Get.context!).viewInsets.bottom;
 
     if (prevBottomInset() > 0 && currentViewInsets == 0) {
-      if (Get.isOverlaysOpen) {
-        Get.back();
+      if (ChatFieldSheetRepo.isSheetOpen()) {
+        Get.close(0);
       }
     }
 

@@ -4,8 +4,12 @@ import 'package:get/get.dart';
 
 /// Repository for handling edit profile related bottom sheet
 class EditProfileSheetRepo {
+  /// Is sheet open
+  static RxBool isSheetOpen = false.obs;
+
   /// Opens the edit profile input bottom sheet and dismisses it when keyboard closes
   static void openEditProfile(Widget child) {
+    isSheetOpen(true);
     showModalBottomSheet(
       context: Get.context!,
       useSafeArea: true,
@@ -21,6 +25,10 @@ class EditProfileSheetRepo {
         ),
         child: child,
       ),
+    ).whenComplete(
+      () {
+        isSheetOpen(false);
+      },
     );
   }
 }

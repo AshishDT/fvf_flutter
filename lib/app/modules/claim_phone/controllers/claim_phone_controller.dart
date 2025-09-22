@@ -8,7 +8,7 @@ import '../../../ui/components/app_snackbar.dart';
 import '../../create_bet/repositories/create_bet_api_repo.dart';
 
 /// Claim Phone Controller
-class ClaimPhoneController extends GetxController {
+class ClaimPhoneController extends GetxController with WidgetsBindingObserver {
   /// Text Controllers
   final TextEditingController phoneController = TextEditingController();
 
@@ -25,11 +25,42 @@ class ClaimPhoneController extends GetxController {
   final SmartAuth smartAuth = SmartAuth.instance;
 
   @override
+  void onInit() {
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback(
+          (_) {
+        _prevBottomInset.value = View.of(Get.context!).viewInsets.bottom;
+      },
+    );
+    super.onInit();
+  }
+
+  @override
   void onClose() {
     phoneController.dispose();
     otpController.dispose();
     super.onClose();
   }
+
+  @override
+  void didChangeMetrics() {
+    final double currentViewInsets = View.of(Get.context!).viewInsets.bottom;
+
+    if (_prevBottomInset() > 0 && currentViewInsets == 0) {
+      if(isSheetOpen()){
+        Get.close(0);
+      }
+    }
+
+    _prevBottomInset.value = currentViewInsets;
+  }
+
+  /// Previous bottom inset for keyboard
+  final RxDouble _prevBottomInset = 0.0.obs;
+
+  /// Is sheet open
+  final RxBool isSheetOpen = false.obs;
+
 
   /// Request phone hint
   Future<void> requestPhoneHint() async {

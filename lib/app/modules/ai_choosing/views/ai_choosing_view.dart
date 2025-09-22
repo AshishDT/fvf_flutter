@@ -167,6 +167,7 @@ class AiChoosingView extends GetView<AiChoosingController> {
                         scrollDirection: Axis.horizontal,
                         child: Obx(
                           () => Row(
+                            spacing: 32,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               ...controller.participants().asMap().entries.map(
@@ -181,13 +182,13 @@ class AiChoosingView extends GetView<AiChoosingController> {
                                                     .participants()
                                                     .length ==
                                             index,
-                                  ).paddingOnly(right: 32);
+                                  );
                                 },
                               ),
                             ],
                           ),
                         ),
-                      ).paddingOnly(left: 32),
+                      ),
                       AnimatedSize(
                         duration: 300.milliseconds,
                         alignment: Alignment.topCenter,

@@ -147,16 +147,14 @@ class SelfieAvatar extends StatelessWidget {
               ),
             ),
             4.verticalSpace,
-            Align(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minWidth: 70.w,
-                  maxWidth: 70.w,
-                ),
+            Center(
+              child: SizedBox(
+                width: 70.w,
                 child: Text(
                   participant.isCurrentUser ? 'You' : _userName(),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
                   style: AppTextStyle.openRunde(
                     fontSize: 18.sp,
                     fontWeight: FontWeight.w600,

@@ -109,16 +109,14 @@ class SelfieAvatarIcon extends StatelessWidget {
         ),
         6.verticalSpace,
         if (name != null && name!.isNotEmpty)
-          Align(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minWidth: 70.w,
-                maxWidth: 70.w,
-              ),
+          Center(
+            child: SizedBox(
+              width: 70.w,
               child: Text(
                 name!,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
                 style: AppTextStyle.openRunde(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w600,

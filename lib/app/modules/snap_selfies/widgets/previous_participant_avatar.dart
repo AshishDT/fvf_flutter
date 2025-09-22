@@ -106,15 +106,13 @@ class PreviousParticipantAvatarIcon extends StatelessWidget {
           ),
           if (showName) ...<Widget>[
             6.verticalSpace,
-            Align(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minWidth: 70.w,
-                  maxWidth: 70.w,
-                ),
+            Center(
+              child: SizedBox(
+                width: 70.w,
                 child: Text(
                   name ?? '',
                   maxLines: 1,
+                  textAlign: TextAlign.center,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyle.openRunde(
                     fontSize: 16.sp,

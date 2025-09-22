@@ -121,19 +121,17 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
                 (!isInvitationSend && (participant.isHost ?? false)) ||
                 !selfieUploaded) ...<Widget>[
               8.verticalSpace,
-              Align(
-                child: Flexible(
-                  child: Text(
-                    name ?? 'You',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTextStyle.openRunde(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ).paddingSymmetric(horizontal: 20),
-                ),
+              Flexible(
+                child: Text(
+                  name ?? 'You',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyle.openRunde(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ).paddingSymmetric(horizontal: 20),
               ),
             ] else if (!isFromFailedView) ...<Widget>[
               12.verticalSpace,

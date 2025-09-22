@@ -57,15 +57,7 @@ class RevenueCatService {
       await Purchases.configure(
         PurchasesConfiguration(
           EnvConfig.androidRevenueCatApiKey,
-        )..appUserID = UserProvider.currentUser?.id,
-      );
-
-      final String? _fcmToken = await NotificationService().getToken();
-
-      await Purchases.setAttributes(
-        <String, String>{
-          'fcm_token': _fcmToken ?? '',
-        },
+        ),
       );
     }
 
@@ -136,11 +128,14 @@ class RevenueCatService {
   }) async {
     final String? userId = UserProvider.currentUser?.id;
 
+    final String? _fcmToken = await NotificationService().getToken();
+
     await Purchases.setAttributes(
       <String, String>{
         if (isCurrentRound && roundId.isNotEmpty) 'round_id': roundId,
         'product_context': entitlementKey,
         'user_id': userId ?? '',
+        'fcm_token': _fcmToken ?? '',
       },
     );
 

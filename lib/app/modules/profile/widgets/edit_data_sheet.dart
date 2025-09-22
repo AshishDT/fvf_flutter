@@ -32,7 +32,12 @@ class EditDataSheet extends GetView<ProfileController> {
       borderRadius: BorderRadius.vertical(
         top: Radius.circular(24.r),
       ),
-      padding: REdgeInsets.all(24),
+      padding: REdgeInsets.only(
+        left: 24,
+        right: 24,
+        top: 24,
+        bottom: MediaQuery.of(context).systemGestureInsets.bottom + 5,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,7 +117,6 @@ class EditDataSheet extends GetView<ProfileController> {
               ),
             ),
           ),
-          30.verticalSpace,
         ],
       ),
     );

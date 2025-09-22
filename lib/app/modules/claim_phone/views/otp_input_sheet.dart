@@ -25,91 +25,95 @@ class OtpSheet extends GetView<ClaimPhoneController> {
             borderRadius: BorderRadius.vertical(
               top: Radius.circular(24.r),
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Center(
-                  child: Container(
-                    height: 4.h,
-                    width: 48.w,
-                    decoration: BoxDecoration(
-                      color: AppColors.kF1F2F2.withValues(alpha: .42),
-                      borderRadius: BorderRadius.circular(2.r),
-                    ),
-                  ),
-                ),
-                16.verticalSpace,
-                Center(
-                  child: Text(
-                    'We sent you a code 🚀',
-                    style: AppTextStyle.openRunde(
-                      fontSize: 24.sp,
-                      color: AppColors.kffffff,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                16.verticalSpace,
-                Center(
-                  child: Text(
-                    'Please enter the code we sent',
-                    style: AppTextStyle.openRunde(
-                      fontSize: 16.sp,
-                      color: AppColors.kFAFBFB,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                24.verticalSpace,
-                TextFormField(
-                  controller: controller.otpController,
-                  cursorColor: AppColors.kF1F2F2,
-                  keyboardType: TextInputType.number,
-                  maxLength: 6,
-                  style: TextStyle(
-                    color: AppColors.kffffff,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16.sp,
-                  ),
-                  textInputAction: TextInputAction.go,
-                  onFieldSubmitted: (String value) {
-                    _onFieldSubmitted(context, value);
-                  },
-                  decoration: InputDecoration(
-                    hintText: '',
-                    prefixIconConstraints: BoxConstraints(
-                      maxHeight: 24.h,
-                      maxWidth: 40.w,
-                    ),
-                    prefixIcon: Padding(
-                      padding: REdgeInsets.only(left: 12),
-                      child: SvgPicture.asset(
-                        AppImages.otp123,
-                        height: 24.h,
-                        width: 24.w,
+            child: Padding(
+              padding: REdgeInsets.only(
+                bottom: MediaQuery.of(context).systemGestureInsets.bottom + 5,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Center(
+                    child: Container(
+                      height: 4.h,
+                      width: 48.w,
+                      decoration: BoxDecoration(
+                        color: AppColors.kF1F2F2.withValues(alpha: .42),
+                        borderRadius: BorderRadius.circular(2.r),
                       ),
                     ),
-                    contentPadding: REdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 15,
-                    ),
-                    fillColor: AppColors.kF1F2F2.withValues(alpha: 0.36),
-                    hoverColor: AppColors.kF1F2F2.withValues(alpha: 0.36),
-                    focusColor: AppColors.kF1F2F2.withValues(alpha: 0.36),
-                    filled: true,
-                    counterText: '',
-                    border: _outlineBorder(),
-                    disabledBorder: _outlineBorder(),
-                    enabledBorder: _outlineBorder(),
-                    focusedBorder: _outlineBorder(),
-                    errorBorder: _outlineBorder(),
-                    focusedErrorBorder: _outlineBorder(),
                   ),
-                ),
-                24.verticalSpace,
-              ],
+                  16.verticalSpace,
+                  Center(
+                    child: Text(
+                      'We sent you a code 🚀',
+                      style: AppTextStyle.openRunde(
+                        fontSize: 24.sp,
+                        color: AppColors.kffffff,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  16.verticalSpace,
+                  Center(
+                    child: Text(
+                      'Please enter the code we sent',
+                      style: AppTextStyle.openRunde(
+                        fontSize: 16.sp,
+                        color: AppColors.kFAFBFB,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  24.verticalSpace,
+                  TextFormField(
+                    controller: controller.otpController,
+                    cursorColor: AppColors.kF1F2F2,
+                    keyboardType: TextInputType.number,
+                    maxLength: 6,
+                    style: TextStyle(
+                      color: AppColors.kffffff,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16.sp,
+                    ),
+                    textInputAction: TextInputAction.go,
+                    onFieldSubmitted: (String value) {
+                      _onFieldSubmitted(context, value);
+                    },
+                    decoration: InputDecoration(
+                      hintText: '',
+                      prefixIconConstraints: BoxConstraints(
+                        maxHeight: 24.h,
+                        maxWidth: 40.w,
+                      ),
+                      prefixIcon: Padding(
+                        padding: REdgeInsets.only(left: 12),
+                        child: SvgPicture.asset(
+                          AppImages.otp123,
+                          height: 24.h,
+                          width: 24.w,
+                        ),
+                      ),
+                      contentPadding: REdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 15,
+                      ),
+                      fillColor: AppColors.kF1F2F2.withValues(alpha: 0.36),
+                      hoverColor: AppColors.kF1F2F2.withValues(alpha: 0.36),
+                      focusColor: AppColors.kF1F2F2.withValues(alpha: 0.36),
+                      filled: true,
+                      counterText: '',
+                      border: _outlineBorder(),
+                      disabledBorder: _outlineBorder(),
+                      enabledBorder: _outlineBorder(),
+                      focusedBorder: _outlineBorder(),
+                      errorBorder: _outlineBorder(),
+                      focusedErrorBorder: _outlineBorder(),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

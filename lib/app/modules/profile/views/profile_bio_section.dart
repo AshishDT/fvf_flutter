@@ -24,10 +24,20 @@ class ProfileBioSection extends StatelessWidget {
   Widget build(BuildContext context) => Column(
         children: <Widget>[
           if(controller.isCurrentUser)...<Widget>[
-            Image.asset(
-              AppImages.addPersonIcon,
-              height: 40.h,
-              color: AppColors.kF1F2F2,
+            GestureDetector(
+              onTap: (){
+                controller.pageController.animateToPage(
+                  1,
+                  duration: 500.milliseconds,
+                  curve: Curves.easeInOut,
+                );
+                controller.currentIndex(1);
+              },
+              child: Image.asset(
+                AppImages.addPersonIcon,
+                height: 40.h,
+                color: AppColors.kF1F2F2,
+              ),
             ),
             16.verticalSpace,
           ],

@@ -84,8 +84,11 @@ class RoundsTimeLinesView extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            SizedBox(
+                            Container(
                               height: 1.sh,
+                              padding: REdgeInsets.only(
+                                bottom: MediaQuery.of(context).systemGestureInsets.bottom,
+                              ),
                               child: Stack(
                                 children: <Widget>[
                                   PageView.builder(
@@ -141,7 +144,7 @@ class RoundsTimeLinesView extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            _exposeButton(index, round),
+                            _exposeButton(index, round, context),
                           ],
                         ),
                       );
@@ -153,10 +156,10 @@ class RoundsTimeLinesView extends StatelessWidget {
       );
 
   /// Expose button at the bottom
-  Positioned _exposeButton(int index, MdRound round) => Positioned(
+  Positioned _exposeButton(int index, MdRound round, BuildContext context) => Positioned(
         right: 0,
         left: 0,
-        bottom: 0,
+        bottom: MediaQuery.of(context).systemGestureInsets.bottom,
         child: Obx(
           () {
             final RxBool exposed = controller.roundExposed[index] ?? false.obs;

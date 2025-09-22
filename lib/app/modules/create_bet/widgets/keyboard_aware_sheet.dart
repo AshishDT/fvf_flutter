@@ -26,6 +26,7 @@ class KeyboardAwareSheet extends GetView<CreateBetController> {
           top: 24,
           left: 24,
           right: 24,
+          bottom: MediaQuery.of(context).systemGestureInsets.bottom,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -114,7 +115,6 @@ class KeyboardAwareSheet extends GetView<CreateBetController> {
                 ),
               ),
             ),
-            30.verticalSpace,
           ],
         ),
       );

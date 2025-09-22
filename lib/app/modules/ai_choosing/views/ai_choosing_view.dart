@@ -244,42 +244,4 @@ class AiChoosingView extends GetView<AiChoosingController> {
           ),
         ).withGPad(context, color: Colors.black),
       );
-
-  /// Person Card
-  Column personCard({required String name}) => Column(
-        children: <Widget>[
-          Container(
-            height: 56.w,
-            width: 56.w,
-            padding: REdgeInsets.all(2),
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                begin: AlignmentDirectional.topStart,
-                end: Alignment.bottomRight,
-                colors: <Color>[
-                  AppColors.kFB46CD,
-                  AppColors.k6C75FF,
-                  AppColors.k0DBFFF,
-                ],
-              ),
-            ),
-            child: Container(
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.kFAFBFB,
-              ),
-            ),
-          ),
-          4.verticalSpace,
-          Text(
-            name,
-            style: AppTextStyle.openRunde(
-              fontSize: 16.sp,
-              color: AppColors.kffffff,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      );
 }

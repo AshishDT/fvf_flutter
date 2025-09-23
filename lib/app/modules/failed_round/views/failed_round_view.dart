@@ -34,14 +34,14 @@ class FailedRoundView extends GetView<FailedRoundController> {
               isLoading: controller.isLoading(),
               buttonText: controller.isHost ? 'Let’s Go Again' : 'Close',
               onPressed: () {
+                Get.find<CreateBetController>().refreshProfile();
+
                 if (controller.isHost) {
                   controller.onLetsGoAgain();
                   return;
                 }
 
                 Get.back();
-
-                Get.find<CreateBetController>().refreshProfile();
               },
             ),
           ).paddingSymmetric(horizontal: 24),

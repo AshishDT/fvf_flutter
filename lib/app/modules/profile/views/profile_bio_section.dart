@@ -1,10 +1,10 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fvf_flutter/app/ui/components/custom_type_writer.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
 import '../controllers/profile_controller.dart';
@@ -26,14 +26,7 @@ class ProfileBioSection extends StatelessWidget {
           if (controller.isCurrentUser) ...<Widget>[
             GestureDetector(
               onTap: () {
-                if (controller.rounds().isNotEmpty) {
-                  controller.pageController.animateToPage(
-                    1,
-                    duration: 500.milliseconds,
-                    curve: Curves.easeInOut,
-                  );
-                  controller.currentIndex(1);
-                }
+                controller.changeProfile();
               },
               child: Image.asset(
                 AppImages.addPersonIcon,

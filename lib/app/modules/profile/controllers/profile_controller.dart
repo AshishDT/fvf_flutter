@@ -136,7 +136,7 @@ class ProfileController extends GetxController
     final double currentViewInsets = View.of(Get.context!).viewInsets.bottom;
 
     if (_prevBottomInset() > 0 && currentViewInsets == 0) {
-      if(EditProfileSheetRepo.isSheetOpen()){
+      if (EditProfileSheetRepo.isSheetOpen()) {
         Get.close(0);
       }
     }
@@ -348,6 +348,18 @@ class ProfileController extends GetxController
     } on Exception catch (e) {
       logE(
         'Error getting badges: $e',
+      );
+    }
+  }
+
+  /// Change Profile Picture
+  Future<void> changeProfile() async {
+    final File? pickedImage = await pickImage(source: ImageSource.camera);
+    if (pickedImage != null) {
+      image(pickedImage);
+      await uploadFile(
+        pickedImage: pickedImage,
+        folder: 'profile',
       );
     }
   }

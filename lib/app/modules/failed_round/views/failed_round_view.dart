@@ -40,6 +40,8 @@ class FailedRoundView extends GetView<FailedRoundController> {
                 }
 
                 Get.back();
+
+                Get.find<CreateBetController>().refreshProfile();
               },
             ),
           ).paddingSymmetric(horizontal: 24),
@@ -52,11 +54,8 @@ class FailedRoundView extends GetView<FailedRoundController> {
                   children: <Widget>[
                     CommonAppBar(
                       onTapOfLeading: () {
+                        Get.find<CreateBetController>().refreshProfile();
                         Get.back();
-                        Get.find<CreateBetController>()
-                          ..getBets()
-                          ..getUser()
-                          ..checkCanCreateRound();
                       },
                       actions: <Widget>[
                         GestureDetector(

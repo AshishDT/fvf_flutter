@@ -8,6 +8,7 @@ import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/enums/round_status_enum.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/models/md_ai_result.dart';
+import 'package:fvf_flutter/app/modules/create_bet/controllers/create_bet_controller.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_previous_round.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_profile.dart';
@@ -174,29 +175,33 @@ class SnapSelfiesController extends GetxController
 
     WidgetsBinding.instance.addPostFrameCallback(
       (_) {
-        Get.offNamed(
-          Routes.FAILED_ROUND,
-          arguments: currentArgs,
-        );
+        if (Get.currentRoute != Routes.FAILED_ROUND) {
+          Get.offNamed(
+            Routes.FAILED_ROUND,
+            arguments: currentArgs,
+          );
+        }
       },
     );
   }
 
   /// Handles the action when the user snaps a selfie
   Future<void> onSnapSelfie() async {
-    await Get.toNamed(
-      Routes.CAMERA,
-      arguments: <String, dynamic>{
-        'seconds_left': secondsLeft(),
-        'prompt': joinedInvitationData().prompt,
-      },
-    )?.then(
-      (dynamic result) {
-        if (result != null && result is XFile) {
-          submitSelfie(File(result.path));
-        }
-      },
-    );
+    if (Get.currentRoute != Routes.CAMERA) {
+      await Get.toNamed(
+        Routes.CAMERA,
+        arguments: <String, dynamic>{
+          'seconds_left': secondsLeft(),
+          'prompt': joinedInvitationData().prompt,
+        },
+      )?.then(
+        (dynamic result) {
+          if (result != null && result is XFile) {
+            submitSelfie(File(result.path));
+          }
+        },
+      );
+    }
   }
 
   /// Get share uri
@@ -303,6 +308,8 @@ class SnapSelfiesController extends GetxController
       Get.until(
         (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
       );
+
+      Get.find<CreateBetController>().refreshProfile();
 
       appSnackbar(
         message: data.error!,
@@ -479,6 +486,8 @@ class SnapSelfiesController extends GetxController
       if (isSuccess == true) {
         setUpTextTimer();
         emitDate();
+
+        Get.find<CreateBetController>().refreshProfile();
       }
     } finally {
       submittingSelfie(false);
@@ -536,6 +545,8 @@ class SnapSelfiesController extends GetxController
       );
       if (_isUpdated != null) {
         await getUser();
+
+        Get.find<CreateBetController>().refreshProfile();
       }
     } on Exception catch (e, st) {
       logE('Error getting update name: $e');

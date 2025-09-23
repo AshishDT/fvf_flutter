@@ -14,6 +14,7 @@ import 'package:fvf_flutter/app/ui/components/app_button.dart';
 import 'package:fvf_flutter/app/ui/components/chat_field_sheet_repo.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
+import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import '../../../ui/components/app_snackbar.dart';
 import '../../../ui/components/common_app_bar.dart';
 import '../../../ui/components/gradient_card.dart';
@@ -82,24 +83,12 @@ class CreateBetView extends GetView<CreateBetController> {
                               ),
                               Obx(
                                 () => Visibility(
-                                  visible: controller.canShowProfile(),
+                                  visible: controller.canShowProfile() ||
+                                      controller.isUserLoading(),
                                   child: 10.horizontalSpace,
                                 ),
                               ),
-                              Obx(
-                                () => !controller.canShowProfile()
-                                    ? const SizedBox()
-                                    : ProfileAvatar(
-                                        profileUrl: controller
-                                                .profile()
-                                                .user
-                                                ?.profileUrl ??
-                                            '',
-                                        onTap: () {
-                                          _navigateToProfile();
-                                        },
-                                      ),
-                              ),
+                              _profileIcon(),
                             ],
                           ),
                           64.verticalSpace,
@@ -183,6 +172,43 @@ class CreateBetView extends GetView<CreateBetController> {
             ),
           ),
         ),
+      );
+
+  /// Profile icon widget
+  Obx _profileIcon() => Obx(
+        () => controller.isUserLoading()
+            ? Center(
+                child: SizedBox(
+                  height: 24.h,
+                  width: 24.w,
+                  child: SleekCircularSlider(
+                    appearance: CircularSliderAppearance(
+                      spinnerMode: true,
+                      size: 30,
+                      customColors: CustomSliderColors(
+                        dotColor: Colors.transparent,
+                        trackColor: Colors.transparent,
+                        progressBarColor: Colors.transparent,
+                        shadowColor: Colors.black38,
+                        progressBarColors: <Color>[
+                          const Color(0xFFFFDBF6),
+                          const Color(0xFFFF70DB),
+                          const Color(0xFF6C75FF),
+                          const Color(0xFF4DD0FF),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : !controller.canShowProfile()
+                ? const SizedBox()
+                : ProfileAvatar(
+                    profileUrl: controller.profile().user?.profileUrl ?? '',
+                    onTap: () {
+                      _navigateToProfile();
+                    },
+                  ),
       );
 
   /// Navigate to profile

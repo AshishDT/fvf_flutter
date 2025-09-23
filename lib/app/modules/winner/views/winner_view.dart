@@ -222,14 +222,10 @@ class WinnerView extends GetView<WinnerController> {
   Widget _appBar() => CommonAppBar(
         leadingIcon: AppImages.closeIconWhite,
         onTapOfLeading: () {
+          Get.find<CreateBetController>().refreshProfile();
           Get.until(
             (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
           );
-
-          Get.find<CreateBetController>()
-            ..getBets()
-            ..getUser()
-            ..checkCanCreateRound();
         },
         actions: <Widget>[
           SvgPicture.asset(

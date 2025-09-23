@@ -28,6 +28,7 @@ class UserProvider {
     _userEntity = user;
     _authToken = userAuthToken;
     globalUser(user);
+    globalUser.refresh();
     LocalStore.user(AppEncryption.encrypt(plainText: user.asString()));
     LocalStore.authToken(userAuthToken);
   }

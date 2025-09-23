@@ -17,6 +17,7 @@ import '../../../ui/components/app_button.dart';
 import '../../../ui/components/common_app_bar.dart';
 import '../../../utils/app_text_style.dart';
 import '../../../utils/global_keys.dart';
+import '../../create_bet/controllers/create_bet_controller.dart';
 import '../controllers/snap_selfies_controller.dart';
 import '../widgets/grouped_avatar_icon.dart';
 import '../widgets/previous_participant_avatar.dart';
@@ -265,6 +266,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
         leadingIcon: AppImages.closeIconWhite,
         onTapOfLeading: () {
           Get.back();
+          Get.find<CreateBetController>().refreshProfile();
         },
         actions: <Widget>[
           GestureDetector(

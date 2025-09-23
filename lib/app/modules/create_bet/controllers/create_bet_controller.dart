@@ -113,6 +113,9 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
   /// Round details
   RxBool isPurchasing = false.obs;
 
+  /// Is user loading
+  RxBool isUserLoading = false.obs;
+
   /// Can create bet
   Rx<MdCanCreateBet> canCreateBetData = MdCanCreateBet(
     allowed: true,
@@ -286,8 +289,15 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
     }
   }
 
+  /// Refresh user profile
+  void refreshProfile() {
+    getUser();
+    canShowProfile.refresh();
+  }
+
   /// User profile
   Future<void> getUser() async {
+    isUserLoading(true);
     try {
       final MdProfile? _user = await ProfileApiRepo.getUser();
       if (_user != null) {
@@ -305,9 +315,13 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
 
         await _checkForReview(_user);
       }
+      isUserLoading(false);
     } on Exception catch (e, st) {
       logE('Error getting user: $e');
       logE(st);
+      isUserLoading(false);
+    } finally {
+      isUserLoading(false);
     }
   }
 

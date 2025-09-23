@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
@@ -81,6 +82,9 @@ class OtpSheet extends GetView<ClaimPhoneController> {
                     onFieldSubmitted: (String value) {
                       _onFieldSubmitted(context, value);
                     },
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly,
+                    ],
                     decoration: InputDecoration(
                       hintText: '',
                       prefixIconConstraints: BoxConstraints(

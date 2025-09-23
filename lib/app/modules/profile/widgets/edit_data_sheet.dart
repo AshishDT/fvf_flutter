@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/src/services/text_formatter.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fvf_flutter/app/modules/profile/controllers/profile_controller.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
+import 'package:fvf_flutter/app/utils/app_text_formatter.dart';
 import 'package:get/get.dart';
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
@@ -71,6 +73,9 @@ class EditDataSheet extends GetView<ProfileController> {
                 fontWeight: FontWeight.w600,
                 fontSize: 16.sp,
               ),
+              inputFormatters: <TextInputFormatter>[
+                AppTextFormatter(),
+              ],
               onFieldSubmitted: (String value) {
                 final String trimmed = value.trim();
                 if (trimmed.length < 3 || trimmed.length > 24) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fvf_flutter/app/modules/snap_selfies/controllers/snap_selfies_controller.dart';
@@ -7,6 +8,7 @@ import 'package:get/get.dart';
 
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
+import '../../../utils/app_text_formatter.dart';
 import '../../../utils/app_text_style.dart';
 
 /// EditNameSheet widget that adapts to keyboard visibility
@@ -53,6 +55,9 @@ class EditNameSheet extends GetView<SnapSelfiesController> {
                 minLines: 1,
                 maxLength: 24,
                 autofocus: true,
+                inputFormatters: <TextInputFormatter>[
+                  AppTextFormatter(),
+                ],
                 cursorColor: AppColors.kF1F2F2,
                 onFieldSubmitted: (String value) {
                   final String trimmed = value.trim();

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fvf_flutter/app/modules/claim_phone/controllers/claim_phone_controller.dart';
@@ -88,6 +89,9 @@ class PhoneNumberSheet extends GetView<ClaimPhoneController> {
                     fontWeight: FontWeight.w600,
                     fontSize: 16.sp,
                   ),
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly,
+                  ],
                   textInputAction: TextInputAction.go,
                   decoration: InputDecoration(
                     hintText: '',

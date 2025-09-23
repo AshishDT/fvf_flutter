@@ -9,7 +9,7 @@ import 'package:get/get.dart';
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
 import '../../../utils/app_text_style.dart';
-import '../../../utils/emoji_limiter.dart';
+import '../../../utils/app_text_formatter.dart';
 
 /// KeyboardAwareSheet widget that adapts to keyboard visibility
 class KeyboardAwareSheet extends GetView<CreateBetController> {
@@ -56,7 +56,7 @@ class KeyboardAwareSheet extends GetView<CreateBetController> {
                 autofocus: true,
                 cursorColor: AppColors.kffffff,
                 inputFormatters: <TextInputFormatter>[
-                  EmojiLimiterFormatter(),
+                  AppTextFormatter(),
                 ],
                 onFieldSubmitted: (String value) {
                   Navigator.maybePop(context);

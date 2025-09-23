@@ -66,17 +66,7 @@ class ProfileView extends GetView<ProfileController> {
                       controller: controller.pageController,
                       physics: const AlwaysScrollableScrollPhysics(),
                       scrollDirection: Axis.vertical,
-                      onPageChanged: (int value) {
-                        if (controller.isLoading()) {
-                          return;
-                        }
-                        controller.currentIndex(value);
-                        if (controller.rounds().isNotEmpty) {
-                          controller.roundPageController.jumpToPage(
-                            controller.currentRound(),
-                          );
-                        }
-                      },
+                      onPageChanged: _onPageChange,
                       children: <Widget>[
                         Stack(
                           children: <Widget>[
@@ -194,6 +184,45 @@ class ProfileView extends GetView<ProfileController> {
           ),
         ).withGPad(context),
       ),
+    );
+  }
+
+  /// On page change
+  void _onPageChange(int value) {
+    if (controller.isLoading()) {
+      return;
+    }
+
+    controller.currentIndex(value);
+
+    Future<void>.delayed(
+      const Duration(milliseconds: 600),
+      () {
+        if (value == 1 && controller.rounds().isNotEmpty) {
+          final int roundIndex = controller.currentRound();
+
+          final RxInt? rxIndex = controller.roundCurrentResultIndex[roundIndex];
+          final PageController? innerPC =
+              controller.roundInnerPageController[roundIndex];
+
+          if (rxIndex != null && innerPC != null) {
+            rxIndex(0);
+            rxIndex.refresh();
+            if (innerPC.hasClients) {
+              innerPC.jumpToPage(0);
+            }
+
+            controller.roundWiggleMark[roundIndex]?.call(false);
+            controller.roundWiggleMark[roundIndex]?.refresh();
+            controller.roundExposed[roundIndex]?.call(false);
+            controller.roundExposed[roundIndex]?.refresh();
+
+            controller.updateRoundScreenshotPermission(roundIndex);
+          }
+
+          controller.roundPageController.jumpToPage(roundIndex);
+        }
+      },
     );
   }
 

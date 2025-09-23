@@ -37,27 +37,7 @@ class RoundsTimeLinesView extends StatelessWidget {
           isLoading: controller.isRoundsLoading(),
           child: controller.rounds().isNotEmpty
               ? NotificationListener<ScrollNotification>(
-                  onNotification: (ScrollNotification notification) {
-                    if (notification is OverscrollNotification) {
-                      final ScrollMetrics metrics = notification.metrics;
-
-                      if (metrics.pixels <= metrics.minScrollExtent &&
-                          notification.overscroll < 0) {
-                        controller.pageController.animateToPage(
-                          0,
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.ease,
-                        );
-                        return true;
-                      }
-
-                      if (metrics.pixels >= metrics.maxScrollExtent &&
-                          notification.overscroll > 0) {
-                        return true;
-                      }
-                    }
-                    return false;
-                  },
+                  onNotification: _onNotificationListener,
                   child: PageView.builder(
                     controller: controller.roundPageController,
                     itemCount: controller.rounds().length,
@@ -176,6 +156,57 @@ class RoundsTimeLinesView extends StatelessWidget {
               : const SizedBox.shrink(),
         ),
       );
+
+  bool _onNotificationListener(ScrollNotification notification) {
+    if (notification is OverscrollNotification) {
+      final ScrollMetrics metrics = notification.metrics;
+
+      if (metrics.pixels <= metrics.minScrollExtent &&
+          notification.overscroll < 0) {
+        controller.pageController.animateToPage(
+          0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.ease,
+        );
+
+        Future<void>.delayed(
+          const Duration(milliseconds: 600),
+          () {
+            _resetInnerPages();
+          },
+        );
+
+        return true;
+      }
+
+      if (metrics.pixels >= metrics.maxScrollExtent &&
+          notification.overscroll > 0) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  void _resetInnerPages() {
+    final RxInt? rxIndex = controller.roundCurrentResultIndex[0];
+    final PageController? innerPC = controller.roundInnerPageController[0];
+
+    if (rxIndex != null && innerPC != null) {
+      rxIndex(0);
+      rxIndex.refresh();
+
+      if (innerPC.hasClients) {
+        innerPC.jumpToPage(0);
+      }
+
+      controller.roundWiggleMark[0]?.call(false);
+      controller.roundWiggleMark[0]?.refresh();
+      controller.roundExposed[0]?.call(false);
+      controller.roundExposed[0]?.refresh();
+
+      controller.updateRoundScreenshotPermission(0);
+    }
+  }
 
   /// Expose button at the bottom
   Positioned _exposeButton(int index, MdRound round, BuildContext context) =>
@@ -322,14 +353,21 @@ class RoundsTimeLinesView extends StatelessWidget {
   /// On change of top page view
   void _onChangeTopPageView(int i) {
     controller.currentRound(i);
+
     if (controller.rounds[i].rank == null) {
       controller.animatedIndex(i);
     }
 
     final RxInt? rx = controller.roundCurrentResultIndex[i];
+    final PageController? innerPC = controller.roundInnerPageController[i];
+
     if (rx != null) {
       rx(0);
       rx.refresh();
+    }
+
+    if (innerPC != null && innerPC.hasClients) {
+      innerPC.jumpToPage(0);
     }
 
     controller.updateRoundScreenshotPermission(i);

@@ -56,8 +56,9 @@ class ProfileApiRepo {
         APIService.put<Map<String, dynamic>>(
           path: 'user/update',
           data: <String, dynamic>{
-            if (profilePic != null) 'profile_pic': profilePic,
-            if (username != null) 'username': username,
+            if (profilePic != null && profilePic.isNotEmpty)
+              'profile_pic': profilePic,
+            if (username != null && username.isNotEmpty) 'username': username,
           },
         ).then(
           (Response<Map<String, dynamic>>? response) {

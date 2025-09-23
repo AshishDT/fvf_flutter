@@ -108,11 +108,6 @@ class RoundsTimeLinesView extends StatelessWidget {
                               ),
                               Container(
                                 height: 1.sh,
-                                padding: REdgeInsets.only(
-                                  bottom: MediaQuery.of(context)
-                                      .systemGestureInsets
-                                      .bottom,
-                                ),
                                 child: Stack(
                                   children: <Widget>[
                                     PageView.builder(
@@ -187,7 +182,7 @@ class RoundsTimeLinesView extends StatelessWidget {
       Positioned(
         right: 0,
         left: 0,
-        bottom: MediaQuery.of(context).systemGestureInsets.bottom,
+        bottom: 0,
         child: Obx(
           () {
             final RxBool exposed = controller.roundExposed[index] ?? false.obs;

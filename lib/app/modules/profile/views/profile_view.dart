@@ -10,6 +10,7 @@ import 'package:fvf_flutter/app/modules/profile/views/profile_header.dart';
 import 'package:fvf_flutter/app/modules/profile/widgets/profile_wrapper.dart';
 import 'package:fvf_flutter/app/ui/components/common_app_bar.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
+import 'package:fvf_flutter/app/utils/widget_ext.dart';
 import 'package:get/get.dart';
 import '../controllers/profile_controller.dart';
 import '../widgets/empty_profile_placeholder.dart';
@@ -191,7 +192,7 @@ class ProfileView extends GetView<ProfileController> {
               ],
             ),
           ),
-        ),
+        ).withGPad(context),
       ),
     );
   }

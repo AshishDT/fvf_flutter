@@ -75,7 +75,6 @@ class ProfileBioSection extends StatelessWidget {
                 width: 42.w,
               ),
             ),
-          24.verticalSpace,
         ],
       );
 }

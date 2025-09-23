@@ -116,7 +116,7 @@ extension WidgetExt on Widget {
   /// Wraps the widget with padding to avoid system gesture insets
   Widget withGPad(
     BuildContext context, {
-    Color color = AppColors.kF5FCFF,
+    Color color = AppColors.k000000,
     BoxDecoration? decoration,
   }) {
     final double bottom = MediaQuery.of(context).systemGestureInsets.bottom;

@@ -36,7 +36,7 @@ class EditDataSheet extends GetView<ProfileController> {
         left: 24,
         right: 24,
         top: 24,
-        bottom: MediaQuery.of(context).systemGestureInsets.bottom + 5,
+        bottom: _bottom(context),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -121,4 +121,10 @@ class EditDataSheet extends GetView<ProfileController> {
       ),
     );
   }
+
+  /// Bottom
+  double _bottom(BuildContext context) =>
+      MediaQuery.of(context).systemGestureInsets.bottom > 12
+          ? MediaQuery.of(context).systemGestureInsets.bottom - 12
+          : MediaQuery.of(context).systemGestureInsets.bottom;
 }

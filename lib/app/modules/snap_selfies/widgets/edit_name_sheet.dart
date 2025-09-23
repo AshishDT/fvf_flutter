@@ -24,7 +24,7 @@ class EditNameSheet extends GetView<SnapSelfiesController> {
           top: 24,
           left: 24,
           right: 24,
-          bottom: MediaQuery.of(context).systemGestureInsets.bottom + 5,
+          bottom: _bottom(context),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -107,4 +107,10 @@ class EditNameSheet extends GetView<SnapSelfiesController> {
           ],
         ),
       );
+
+  /// Bottom
+  double _bottom(BuildContext context) =>
+      MediaQuery.of(context).systemGestureInsets.bottom > 12
+          ? MediaQuery.of(context).systemGestureInsets.bottom - 12
+          : MediaQuery.of(context).systemGestureInsets.bottom;
 }

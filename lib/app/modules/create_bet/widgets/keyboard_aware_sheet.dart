@@ -26,7 +26,7 @@ class KeyboardAwareSheet extends GetView<CreateBetController> {
           top: 24,
           left: 24,
           right: 24,
-          bottom: MediaQuery.of(context).systemGestureInsets.bottom + 5,
+          bottom: _bottom(context),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -118,4 +118,10 @@ class KeyboardAwareSheet extends GetView<CreateBetController> {
           ],
         ),
       );
+
+  /// Bottom padding calculation based on system gesture insets
+  double _bottom(BuildContext context) =>
+      MediaQuery.of(context).systemGestureInsets.bottom > 12
+          ? MediaQuery.of(context).systemGestureInsets.bottom - 12
+          : MediaQuery.of(context).systemGestureInsets.bottom;
 }

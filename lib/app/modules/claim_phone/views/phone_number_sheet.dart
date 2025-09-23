@@ -32,7 +32,7 @@ class PhoneNumberSheet extends GetView<ClaimPhoneController> {
           ),
           child: Padding(
             padding: REdgeInsets.only(
-              bottom: MediaQuery.of(context).systemGestureInsets.bottom + 5,
+              bottom: _bottom(context),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -128,6 +128,12 @@ class PhoneNumberSheet extends GetView<ClaimPhoneController> {
       ),
     );
   }
+
+  /// Bottom
+  double _bottom(BuildContext context) =>
+      MediaQuery.of(context).systemGestureInsets.bottom > 12
+          ? MediaQuery.of(context).systemGestureInsets.bottom - 12
+          : MediaQuery.of(context).systemGestureInsets.bottom;
 
   OutlineInputBorder _outlineBorder() => OutlineInputBorder(
         borderRadius: BorderRadius.circular(28).r,

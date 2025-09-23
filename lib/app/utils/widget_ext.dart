@@ -122,7 +122,7 @@ extension WidgetExt on Widget {
     final double bottom = MediaQuery.of(context).systemGestureInsets.bottom;
 
     return Container(
-      padding: EdgeInsets.only(bottom: bottom + 5),
+      padding: EdgeInsets.only(bottom: bottom),
       color: decoration != null ? null : color,
       child: this,
       decoration: decoration,

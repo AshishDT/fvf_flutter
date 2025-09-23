@@ -23,15 +23,17 @@ class ProfileBioSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
         children: <Widget>[
-          if(controller.isCurrentUser)...<Widget>[
+          if (controller.isCurrentUser) ...<Widget>[
             GestureDetector(
-              onTap: (){
-                controller.pageController.animateToPage(
-                  1,
-                  duration: 500.milliseconds,
-                  curve: Curves.easeInOut,
-                );
-                controller.currentIndex(1);
+              onTap: () {
+                if (controller.rounds().isNotEmpty) {
+                  controller.pageController.animateToPage(
+                    1,
+                    duration: 500.milliseconds,
+                    curve: Curves.easeInOut,
+                  );
+                  controller.currentIndex(1);
+                }
               },
               child: Image.asset(
                 AppImages.addPersonIcon,
@@ -45,7 +47,7 @@ class ProfileBioSection extends StatelessWidget {
               (controller.profile().user?.bio?.isNotEmpty ??
                   false)) ...<Widget>[
             CustomTypewriterText(
-             text: controller.profile().user?.bio ?? '',
+              text: controller.profile().user?.bio ?? '',
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
                 fontSize: 20.sp,

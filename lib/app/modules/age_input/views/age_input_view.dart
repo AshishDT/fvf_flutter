@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/src/services/text_formatter.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
@@ -102,6 +103,9 @@ class AgeInputView extends GetView<AgeInputController> {
                                   },
                                 );
                               },
+                              inputFormatters: <TextInputFormatter>[
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
                               style: AppTextStyle.openRunde(
                                 color: AppColors.kffffff,
                                 fontWeight: FontWeight.w600,

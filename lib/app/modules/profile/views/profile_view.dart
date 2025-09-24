@@ -195,35 +195,28 @@ class ProfileView extends GetView<ProfileController> {
 
     controller.currentIndex(value);
 
-    Future<void>.delayed(
-      const Duration(milliseconds: 600),
-      () {
-        if (value == 1 && controller.rounds().isNotEmpty) {
-          final int roundIndex = controller.currentRound();
+    if (value == 1 && controller.rounds().isNotEmpty) {
+      final int roundIndex = controller.currentRound();
 
-          final RxInt? rxIndex = controller.roundCurrentResultIndex[roundIndex];
-          final PageController? innerPC =
-              controller.roundInnerPageController[roundIndex];
+      final RxInt? rxIndex = controller.roundCurrentResultIndex[roundIndex];
+      final PageController? innerPC =
+          controller.roundInnerPageController[roundIndex];
 
-          if (rxIndex != null && innerPC != null) {
-            rxIndex(0);
-            rxIndex.refresh();
-            if (innerPC.hasClients) {
-              innerPC.jumpToPage(0);
-            }
-
-            controller.roundWiggleMark[roundIndex]?.call(false);
-            controller.roundWiggleMark[roundIndex]?.refresh();
-            controller.roundExposed[roundIndex]?.call(false);
-            controller.roundExposed[roundIndex]?.refresh();
-
-            controller.updateRoundScreenshotPermission(roundIndex);
-          }
-
-          controller.roundPageController.jumpToPage(roundIndex);
+      if (rxIndex != null && innerPC != null) {
+        rxIndex(0);
+        rxIndex.refresh();
+        if (innerPC.hasClients) {
+          innerPC.jumpToPage(0);
         }
-      },
-    );
+
+        controller.roundWiggleMark[roundIndex]?.call(false);
+        controller.roundWiggleMark[roundIndex]?.refresh();
+
+        controller.updateRoundScreenshotPermission(roundIndex);
+      }
+
+      controller.roundPageController.jumpToPage(roundIndex);
+    }
   }
 
   /// Can show empty profile

@@ -201,8 +201,6 @@ class RoundsTimeLinesView extends StatelessWidget {
 
       controller.roundWiggleMark[0]?.call(false);
       controller.roundWiggleMark[0]?.refresh();
-      controller.roundExposed[0]?.call(false);
-      controller.roundExposed[0]?.refresh();
 
       controller.updateRoundScreenshotPermission(0);
     }

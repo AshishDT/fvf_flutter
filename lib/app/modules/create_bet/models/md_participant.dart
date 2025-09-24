@@ -1,5 +1,5 @@
+import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/data/models/md_join_invitation.dart';
-import '../../../data/remote/supabse_service/supabse_service.dart';
 import '../../profile/models/md_badge.dart';
 
 /// Participant Model
@@ -83,7 +83,7 @@ class MdParticipant {
   final MdBadge? badge;
 
   /// Check if the participant is the current user
-  bool get isCurrentUser => userData?.supabaseId == SupaBaseService.userId;
+  bool get isCurrentUser => userData?.id == UserProvider.userId;
 
   /// To JSON
   Map<String, dynamic> toJson() => <String, dynamic>{

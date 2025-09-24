@@ -41,7 +41,7 @@ class SelfieAvatar extends StatelessWidget {
       const Color(0xFF7C70F9),
     ];
 
-    final int hash = participant.userData?.supabaseId?.hashCode ?? 0;
+    final int hash = participant.userData?.id?.hashCode ?? 0;
     final int index = hash % _avatarColors.length;
     return _avatarColors[index];
   }
@@ -178,7 +178,6 @@ class SelfieAvatar extends StatelessWidget {
         tag:
             '${participant.userData?.id}_${DateTime.now().millisecondsSinceEpoch}',
         userId: participant.userData?.id ?? '',
-        supabaseId: participant.userData?.supabaseId ?? '',
       ),
     );
   }

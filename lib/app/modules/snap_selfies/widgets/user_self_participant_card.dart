@@ -194,7 +194,6 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
         tag:
             '${participant.userData?.id}_${DateTime.now().millisecondsSinceEpoch}',
         userId: participant.userData?.id ?? '',
-        supabaseId: participant.userData?.supabaseId ?? '',
       ),
     );
   }

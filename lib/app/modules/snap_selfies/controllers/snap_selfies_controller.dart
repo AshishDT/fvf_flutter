@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/data/config/env_config.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/data/local/user_provider.dart';
-import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/enums/round_status_enum.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/models/md_ai_result.dart';
 import 'package:fvf_flutter/app/modules/create_bet/controllers/create_bet_controller.dart';
@@ -102,7 +101,7 @@ class SnapSelfiesController extends GetxController
       ..listenForDateEvent(
         (dynamic data) {
           log('🎯 Controller got update: $data');
-          log('Current user Id : ${SupaBaseService.userId}');
+          log('Current user Id : ${UserProvider.userId}');
           final MdSocketData updatedData = MdSocketData.fromJson(data);
 
           socketIoDataParser(updatedData);
@@ -110,7 +109,7 @@ class SnapSelfiesController extends GetxController
       )
       ..startAutoEmit(
         <String, dynamic>{
-          'user_id': SupaBaseService.userId,
+          'user_id': UserProvider.userId,
           'round_id': joinedInvitationData().id,
         },
       );
@@ -119,7 +118,7 @@ class SnapSelfiesController extends GetxController
   /// Call emit with custom payload
   void emitDate() {
     final Map<String, dynamic> payload = <String, dynamic>{
-      'user_id': SupaBaseService.userId,
+      'user_id': UserProvider.userId,
       'round_id': joinedInvitationData().id,
     };
     socketIoRepo.emitGetDate(payload);
@@ -168,7 +167,7 @@ class SnapSelfiesController extends GetxController
           : 'Go again with your friends',
       'self_participant': selfParticipant(),
       'participants_without_current_user': participantsWithoutCurrentUser(),
-      'host_id': joinedInvitationData().host?.supabaseId,
+      'host_id': joinedInvitationData().host?.id,
       'prompt': joinedInvitationData().prompt,
       'is_view_only': isViewOnly,
     };
@@ -209,7 +208,7 @@ class SnapSelfiesController extends GetxController
     final String? _uri = await DeepLinkService.generateSlayInviteLink(
       title: joinedInvitationData().prompt ?? '',
       invitationId: joinedInvitationData().id ?? '',
-      hostId: joinedInvitationData().host?.supabaseId ?? '',
+      hostId: joinedInvitationData().host?.id ?? '',
     );
 
     if (_uri != null && _uri.isNotEmpty) {
@@ -229,7 +228,7 @@ class SnapSelfiesController extends GetxController
         _invitationLink = await DeepLinkService.generateSlayInviteLink(
           title: joinedInvitationData().prompt ?? '',
           invitationId: joinedInvitationData().id ?? '',
-          hostId: joinedInvitationData().host?.supabaseId ?? '',
+          hostId: joinedInvitationData().host?.id ?? '',
         );
       }
 
@@ -328,20 +327,20 @@ class SnapSelfiesController extends GetxController
           <String, MdParticipant>{};
 
       for (final MdParticipant participant in data.round!.participants!) {
-        final String? supabaseId = participant.userData?.supabaseId;
-        if (supabaseId == null) {
+        final String? userId = participant.userData?.id;
+        if (userId == null) {
           continue;
         }
 
-        if (!uniqueParticipants.containsKey(supabaseId)) {
-          uniqueParticipants[supabaseId] = participant;
+        if (!uniqueParticipants.containsKey(userId)) {
+          uniqueParticipants[userId] = participant;
         } else {
-          final MdParticipant existing = uniqueParticipants[supabaseId]!;
+          final MdParticipant existing = uniqueParticipants[userId]!;
 
           if ((existing.selfieUrl == null || existing.selfieUrl!.isEmpty) &&
               (participant.selfieUrl != null &&
                   participant.selfieUrl!.isNotEmpty)) {
-            uniqueParticipants[supabaseId] = participant;
+            uniqueParticipants[userId] = participant;
           }
         }
       }
@@ -609,8 +608,8 @@ class SnapSelfiesController extends GetxController
       if (_r.participants != null) {
         for (final MdPreviousParticipant _p in _r.participants!) {
           if (!previousAddedParticipants.any((MdPreviousParticipant existing) =>
-                  existing.supaBaseId == _p.supaBaseId) &&
-              _p.supaBaseId != SupaBaseService.userId) {
+                  existing.id == _p.id) &&
+              _p.id != UserProvider.userId) {
             _p.isAdded = true;
             previousAddedParticipants.add(_p);
           }
@@ -649,7 +648,7 @@ class SnapSelfiesController extends GetxController
   /// On add/remove previous participant
   void onAddRemovePreviousParticipant(String s) {
     for (final MdPreviousParticipant pp in previousAddedParticipants) {
-      if (pp.supaBaseId == s) {
+      if (pp.id == s) {
         pp.isAdded = !(pp.isAdded ?? false);
       }
     }
@@ -678,7 +677,7 @@ class SnapSelfiesController extends GetxController
       final String? _uri = await DeepLinkService.generateSlayInviteLink(
         title: joinedInvitationData().prompt ?? '',
         invitationId: joinedInvitationData().id ?? '',
-        hostId: joinedInvitationData().host?.supabaseId ?? '',
+        hostId: joinedInvitationData().host?.id ?? '',
         isViewOnly: true,
       );
 

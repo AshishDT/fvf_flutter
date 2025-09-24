@@ -53,8 +53,8 @@ class NotificationActionsHandler {
               return;
             }
 
-            final bool isHost = _roundDetails.round?.host?.supabaseId ==
-                UserProvider.currentUser?.supabaseId;
+            final bool isHost =
+                _roundDetails.round?.host?.id == UserProvider.userId;
 
             _handleProcessingRound(
               participants: participants,
@@ -91,8 +91,8 @@ class NotificationActionsHandler {
               return;
             }
 
-            final bool isHost = _roundDetails.round?.host?.supabaseId ==
-                UserProvider.currentUser?.supabaseId;
+            final bool isHost =
+                _roundDetails.round?.host?.id == UserProvider.userId;
             _fallBackToStartAgain(
               isHost: isHost,
               participants: participants,
@@ -120,29 +120,29 @@ class NotificationActionsHandler {
     RoundHost? host,
     bool? isViewOnly,
   }) {
+    if (Get.currentRoute != Routes.CREATE_BET) {
+      Get.until(
+        (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
+      );
+    }
+
     if (Get.currentRoute != Routes.WINNER) {
-      Future<void>.delayed(
-        const Duration(milliseconds: 100),
+      Future<void>.microtask(
         () {
-          Get
-            ..until(
-              (Route<dynamic> route) =>
-                  route.settings.name == Routes.CREATE_BET,
-            )
-            ..toNamed(
-              Routes.WINNER,
-              arguments: <String, dynamic>{
-                'result_data': MdAiResultData(
-                  prompt: prompt,
-                  host: host,
-                  id: roundId,
-                  results: results,
-                  status: status,
-                  revealAt: revealAt,
-                  isViewOnly: isViewOnly,
-                ),
-              },
-            );
+          Get.toNamed(
+            Routes.WINNER,
+            arguments: <String, dynamic>{
+              'result_data': MdAiResultData(
+                prompt: prompt,
+                host: host,
+                id: roundId,
+                results: results,
+                status: status,
+                revealAt: revealAt,
+                isViewOnly: isViewOnly,
+              ),
+            },
+          );
         },
       );
     }
@@ -153,9 +153,14 @@ class NotificationActionsHandler {
     required MdRound round,
     bool? isViewOnly,
   }) {
+    if (Get.currentRoute != Routes.CREATE_BET) {
+      Get.until(
+        (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
+      );
+    }
+
     if (Get.currentRoute != Routes.SNAP_SELFIES) {
-      Future<void>.delayed(
-        const Duration(milliseconds: 100),
+      Future<void>.microtask(
         () {
           Get.toNamed(
             Routes.SNAP_SELFIES,
@@ -229,9 +234,14 @@ class NotificationActionsHandler {
     required String prompt,
     bool isViewOnly = false,
   }) {
+    if (Get.currentRoute != Routes.CREATE_BET) {
+      Get.until(
+        (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
+      );
+    }
+
     if (Get.currentRoute != Routes.AI_CHOOSING) {
-      Future<void>.delayed(
-        const Duration(milliseconds: 100),
+      Future<void>.microtask(
         () {
           Get.toNamed(
             Routes.AI_CHOOSING,
@@ -265,7 +275,7 @@ class NotificationActionsHandler {
           .toList();
 
       final Map<String?, MdParticipant> uniqueMap = <String?, MdParticipant>{
-        for (final MdParticipant p in list) p.userData?.supabaseId: p
+        for (final MdParticipant p in list) p.userData?.id: p
       };
 
       return uniqueMap.values.toList();
@@ -281,9 +291,14 @@ class NotificationActionsHandler {
       'is_view_only': isViewOnly,
     };
 
+    if (Get.currentRoute != Routes.CREATE_BET) {
+      Get.until(
+        (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
+      );
+    }
+
     if (Get.currentRoute != Routes.FAILED_ROUND) {
-      Future<void>.delayed(
-        const Duration(milliseconds: 100),
+      Future<void>.microtask(
         () {
           Get.toNamed(
             Routes.FAILED_ROUND,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
+import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/models/md_result.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_badge.dart';
@@ -217,7 +217,7 @@ class WinnerController extends GetxController {
     }
 
     final List<String> _participantIds = result.participants
-            ?.map((MdParticipant e) => e.userData?.supabaseId ?? '')
+            ?.map((MdParticipant e) => e.userData?.id ?? '')
             .toList() ??
         <String>[];
 
@@ -226,7 +226,7 @@ class WinnerController extends GetxController {
     }
 
     final bool isCurrentUserInStreak =
-        _participantIds.contains(SupaBaseService.userId);
+        _participantIds.contains(UserProvider.userId);
 
     if (!isCurrentUserInStreak) {
       return;

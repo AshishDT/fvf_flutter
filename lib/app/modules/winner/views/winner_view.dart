@@ -76,7 +76,7 @@ class WinnerView extends GetView<WinnerController> {
               ],
             ),
           ),
-        ).withGPad(context, color: Colors.black),
+        ).withGPad(context),
       );
 
   Stack _mainContent() => Stack(
@@ -136,7 +136,6 @@ class WinnerView extends GetView<WinnerController> {
                             isExposed: controller.isExposed(),
                             triggerQuestionMark:
                                 controller.wiggleQuestionMark(),
-                            supabaseId: result.supabaseId ?? '',
                             userId: result.userId ?? '',
                             rank: result.rank ?? 0,
                             reason: result.reason ?? '',

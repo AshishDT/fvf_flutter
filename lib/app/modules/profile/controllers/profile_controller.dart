@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/data/remote/api_service/init_api_service.dart';
-import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
 import 'package:fvf_flutter/app/modules/profile/controllers/timelines_mixin.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_badge.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_profile.dart';
@@ -79,7 +78,6 @@ class ProfileController extends GetxController
   MdProfileArgs args = MdProfileArgs(
     tag: '',
     userId: '',
-    supabaseId: '',
   );
 
   /// On init
@@ -99,7 +97,7 @@ class ProfileController extends GetxController
 
       args = _args;
 
-      final bool isCurrentUser = _args.supabaseId == SupaBaseService.userId;
+      final bool isCurrentUser = _args.userId == UserProvider.userId;
 
       getUser(
         args: _args,
@@ -159,8 +157,7 @@ class ProfileController extends GetxController
   }
 
   /// isCurrentUser
-  bool get isCurrentUser =>
-      profile.value.user?.supabaseId == SupaBaseService.userId;
+  bool get isCurrentUser => profile.value.user?.id == UserProvider.userId;
 
   /// Focus node for chat input field
   final FocusNode nameInputFocusNode = FocusNode();
@@ -196,7 +193,7 @@ class ProfileController extends GetxController
     MdProfileArgs? args,
   }) async {
     try {
-      final bool isCurrentUser = args?.supabaseId == SupaBaseService.userId;
+      final bool isCurrentUser = args?.userId == UserProvider.userId;
 
       isLoading(true);
 
@@ -215,10 +212,12 @@ class ProfileController extends GetxController
         roundData(_user.round);
         roundData.refresh();
 
-        UserProvider.onLogin(
-          user: profile().user!,
-          userAuthToken: userAuthToken ?? '',
-        );
+        if (isCurrentUser) {
+          UserProvider.onLogin(
+            user: profile().user!,
+            userAuthToken: userAuthToken ?? '',
+          );
+        }
       }
     } on Exception catch (e, st) {
       isLoading(false);
@@ -301,7 +300,11 @@ class ProfileController extends GetxController
         roundPageController = PageController();
       }
 
-      final bool isCurrentUser = args?.supabaseId == SupaBaseService.userId;
+      final bool isCurrentUser = args?.userId == UserProvider.userId;
+
+      logWTF(
+        'Fetching rounds for userId: ${isCurrentUser ? "current user" : args?.userId} with skip: $skip and limit: $limit',
+      );
 
       final List<MdRound>? _rounds = await ProfileApiRepo.getRounds(
         skip: skip,
@@ -320,7 +323,9 @@ class ProfileController extends GetxController
         ensureRoundControllers(i, rounds[i].results?.length ?? 0);
       }
 
-      syncRoundExposureFromAccess();
+      syncRoundExposureFromAccess(
+        userId: isCurrentUser ? null : args?.userId,
+      );
     } on Exception catch (e, st) {
       isRoundsLoading(false);
       logE('Error getting participants: $e');
@@ -335,7 +340,7 @@ class ProfileController extends GetxController
     MdProfileArgs? args,
   }) async {
     try {
-      final bool isCurrentUser = args?.supabaseId == SupaBaseService.userId;
+      final bool isCurrentUser = args?.userId == UserProvider.userId;
 
       final List<MdBadge>? _badges = await ProfileApiRepo.getBadges(
         userId: isCurrentUser ? null : args?.userId,

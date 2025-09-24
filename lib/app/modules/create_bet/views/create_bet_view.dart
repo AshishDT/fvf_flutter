@@ -220,7 +220,6 @@ class CreateBetView extends GetView<CreateBetController> {
         tag:
             '${controller.profile().user?.id}_${DateTime.now().millisecondsSinceEpoch}',
         userId: controller.profile().user?.id ?? '',
-        supabaseId: controller.profile().user?.supabaseId ?? '',
       ),
     );
   }

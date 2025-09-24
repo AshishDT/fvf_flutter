@@ -446,7 +446,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
                           participant: participant,
                           onAddTap: () =>
                               controller.onAddRemovePreviousParticipant(
-                                  participant.supaBaseId ?? ''),
+                                  participant.id ?? ''),
                           isAdded: participant.isAdded ?? false,
                         );
                       },

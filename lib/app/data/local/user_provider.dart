@@ -19,6 +19,9 @@ class UserProvider {
   /// If the user is logged in or not
   static bool get isLoggedIn => _isLoggedIn;
 
+  /// Get user id of the logged in user
+  static String? get userId => _userEntity?.id;
+
   ///Set [currentUser] and [authToken]
   static void onLogin({
     required MdUser user,

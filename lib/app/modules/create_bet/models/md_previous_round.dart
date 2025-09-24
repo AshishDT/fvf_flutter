@@ -53,7 +53,6 @@ class MdPreviousParticipant {
   MdPreviousParticipant({
     this.id,
     this.username,
-    this.supaBaseId,
     this.profileUrl,
     this.isAdded,
   });
@@ -63,7 +62,6 @@ class MdPreviousParticipant {
       MdPreviousParticipant(
         id: json['id'],
         username: json['username'],
-        supaBaseId: json['supabase_id'],
         profileUrl: json['profile_url'],
       );
 
@@ -72,9 +70,6 @@ class MdPreviousParticipant {
 
   /// Username
   String? username;
-
-  /// Supa base ID
-  String? supaBaseId;
 
   /// User profile URL
   String? profileUrl;
@@ -86,7 +81,6 @@ class MdPreviousParticipant {
   Map<String, dynamic> toJson() => <String, dynamic>{
         'id': id,
         'username': username,
-        'supabase_id': supaBaseId,
         'profile_url': profileUrl,
       };
 }

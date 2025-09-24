@@ -153,7 +153,6 @@ class RoundHost {
     this.profileUrl,
     this.isClaim,
     this.age,
-    this.linkSupabaseId,
     this.fcmToken,
     this.winnerStreakCount,
     this.totalWins,
@@ -164,7 +163,6 @@ class RoundHost {
     this.isNotified,
     this.isActive,
     this.isDeleted,
-    this.supabaseId,
   });
 
   /// From JSON
@@ -179,7 +177,6 @@ class RoundHost {
         profileUrl: json['profile_url'] as String?,
         isClaim: json['is_claim'] as bool?,
         age: json['age'] as int?,
-        linkSupabaseId: json['link_supabase_id'] as String?,
         fcmToken: json['fcm_token'] as String?,
         winnerStreakCount: json['winner_streak_count'] as int?,
         totalWins: json['total_wins'] as int?,
@@ -190,7 +187,6 @@ class RoundHost {
         isNotified: json['is_notified'] as bool?,
         isActive: json['is_active'] as bool?,
         isDeleted: json['is_deleted'] as bool?,
-        supabaseId: json['supabase_id'] as String?,
       );
 
   /// Host Id
@@ -223,9 +219,6 @@ class RoundHost {
   /// Age
   final int? age;
 
-  /// Link Supabase ID
-  final String? linkSupabaseId;
-
   /// FCM token
   final String? fcmToken;
 
@@ -256,9 +249,6 @@ class RoundHost {
   /// Is deleted
   final bool? isDeleted;
 
-  /// Supabase ID
-  final String? supabaseId;
-
   /// To JSON
   Map<String, dynamic> toJson() => <String, dynamic>{
         'id': id,
@@ -271,7 +261,6 @@ class RoundHost {
         'profile_url': profileUrl,
         'is_claim': isClaim,
         'age': age,
-        'link_supabase_id': linkSupabaseId,
         'fcm_token': fcmToken,
         'winner_streak_count': winnerStreakCount,
         'total_wins': totalWins,
@@ -282,6 +271,5 @@ class RoundHost {
         'is_notified': isNotified,
         'is_active': isActive,
         'is_deleted': isDeleted,
-        'supabase_id': supabaseId,
       };
 }

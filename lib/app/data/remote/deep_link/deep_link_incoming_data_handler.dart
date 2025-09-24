@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/data/remote/notification_service/notification_actions_handler.dart';
 import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
@@ -24,10 +25,10 @@ void handleDeepLinkIncomingData(Map<dynamic, dynamic> data) {
         deepLinkData.canonicalIdentifier == 'slay_invite') {
       if (deepLinkData.invitationId?.isNotEmpty ?? false) {
         final bool isHost =
-            deepLinkData.hostId == SupaBaseService.currentUser?.id;
+            deepLinkData.hostId == UserProvider.userId;
 
         final bool isUserLoggedIn =
-            SupaBaseService.isLoggedIn && SupaBaseService.currentUser != null;
+            SupaBaseService.isLoggedIn && UserProvider.currentUser != null;
 
         final bool isViewOnlyLink = deepLinkData.isViewOnly ?? false;
 

@@ -6,7 +6,6 @@ class MdResult {
     this.reason,
     this.userId,
     this.selfieUrl,
-    this.supabaseId,
     this.score,
     this.status,
     this.userName,
@@ -19,7 +18,6 @@ class MdResult {
         reason: json['reason'],
         userId: json['userId'],
         selfieUrl: json['selfieUrl'],
-        supabaseId: json['supabase_id'],
         score: json['score'],
         status: json['status'],
         userName: json['username'],
@@ -37,9 +35,6 @@ class MdResult {
 
   /// User ID
   String? userId;
-
-  /// Supabase ID
-  String? supabaseId;
 
   /// Selfie URL
   String? selfieUrl;
@@ -59,7 +54,6 @@ class MdResult {
         'reason': reason,
         'userId': userId,
         'selfieUrl': selfieUrl,
-        'supabase_id': supabaseId,
         'score': score,
         'status': status,
         'username': userName,

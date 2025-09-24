@@ -19,7 +19,6 @@ class ResultCard extends StatelessWidget {
   /// Constructor for ResultCard
   const ResultCard({
     required this.userId,
-    required this.supabaseId,
     super.key,
     this.ordinalSuffix,
     this.rank,
@@ -65,9 +64,6 @@ class ResultCard extends StatelessWidget {
 
   /// User id
   final String userId;
-
-  /// Supabase id
-  final String supabaseId;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -306,7 +302,6 @@ class ResultCard extends StatelessWidget {
       arguments: MdProfileArgs(
         tag: '${userId}_${DateTime.now().millisecondsSinceEpoch}',
         userId: userId,
-        supabaseId: supabaseId,
       ),
     );
   }

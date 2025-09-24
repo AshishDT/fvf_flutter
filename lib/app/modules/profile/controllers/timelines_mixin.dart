@@ -43,7 +43,11 @@ mixin TimeLineMixin on GetxController {
   RxInt get currentRound;
 
   /// Call this after rounds list is loaded or updated.
-  void syncRoundExposureFromAccess() {
+  void syncRoundExposureFromAccess({String? userId}) {
+    final String? effectiveUserId = (userId != null && userId.isNotEmpty)
+        ? userId
+        : UserProvider.currentUser?.id;
+
     final List<MdRound> roundsList = rounds();
     for (int i = 0; i < roundsList.length; i++) {
       final MdRound r = roundsList[i];
@@ -58,18 +62,14 @@ mixin TimeLineMixin on GetxController {
         continue;
       }
 
-      //  Get current user result
-      final MdResult? currentUser = allResults.firstWhereOrNull(
-        (MdResult res) => res.userId == UserProvider.currentUser?.id,
-      );
+      final MdResult? currentUser = allResults
+          .firstWhereOrNull((MdResult res) => res.userId == effectiveUserId);
 
-      //  Get first place result
       final MdResult? firstRank =
           allResults.firstWhereOrNull((MdResult res) => res.rank == 1);
 
-      //  Collect the others (exclude current user + firstRank)
-      final List<MdResult> others = allResults.where((MdResult res) {
-        final bool isCurrent = res.userId == UserProvider.currentUser?.id;
+      final List<MdResult> others = allResults.where((res) {
+        final bool isCurrent = res.userId == effectiveUserId;
         final bool isFirst = res.rank == 1;
         return !isCurrent && !isFirst;
       }).toList();
@@ -78,12 +78,9 @@ mixin TimeLineMixin on GetxController {
         others.shuffle();
       }
 
-      // Final ordering: [current user, first place, others...]
       final List<MdResult> finalList = <MdResult>[
         if (currentUser != null) currentUser,
-        if (firstRank != null &&
-            firstRank.userId != UserProvider.currentUser?.id)
-          firstRank,
+        if (firstRank != null && firstRank.userId != effectiveUserId) firstRank,
         ...others,
       ];
 

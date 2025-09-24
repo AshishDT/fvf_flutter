@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_previous_round.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_profile.dart';
 import 'package:get/get.dart';
+import '../../../data/local/user_provider.dart';
 import '../../../data/models/md_join_invitation.dart';
 import '../../../data/remote/socket_io_repo.dart';
 import '../../../routes/app_pages.dart';
@@ -43,7 +43,7 @@ mixin SnapSelfieKeysMixin on GetxController {
 
   /// Check if current user is host
   RxBool get isHost =>
-      (joinedInvitationData().host?.supabaseId == SupaBaseService.userId).obs;
+      (joinedInvitationData().host?.id == UserProvider.userId).obs;
 
   /// Self participant
   Rx<MdParticipant> get selfParticipant => participants()
@@ -59,7 +59,7 @@ mixin SnapSelfieKeysMixin on GetxController {
         joinedInvitationData().participants ?? <MdParticipant>[];
 
     final Map<String?, MdParticipant> uniqueMap = <String?, MdParticipant>{
-      for (final MdParticipant p in list) p.userData?.supabaseId: p
+      for (final MdParticipant p in list) p.userData?.id: p
     };
 
     final List<MdParticipant> uniqueList = uniqueMap.values.toList()
@@ -87,8 +87,7 @@ mixin SnapSelfieKeysMixin on GetxController {
     final List<MdPreviousRound> list = (joinedInvitationData().previousRounds ??
         <MdPreviousRound>[])
       ..removeWhere((p) =>
-          p.participants?.any((u) => u.supaBaseId == SupaBaseService.userId) ??
-          false)
+          p.participants?.any((u) => u.id == UserProvider.userId) ?? false)
       ..removeWhere((p) => p.participants == null || p.participants!.isEmpty);
 
     previousRounds.assignAll(list);
@@ -110,7 +109,7 @@ mixin SnapSelfieKeysMixin on GetxController {
             .toList();
 
     final Map<String?, MdParticipant> uniqueMap = <String?, MdParticipant>{
-      for (final MdParticipant p in list) p.userData?.supabaseId: p
+      for (final MdParticipant p in list) p.userData?.id: p
     };
 
     return uniqueMap.values.toList().obs;
@@ -156,8 +155,7 @@ mixin SnapSelfieKeysMixin on GetxController {
     for (final MdPreviousRound pr in _r) {
       if (pr.participants != null) {
         for (final MdPreviousParticipant p in pr.participants!) {
-          if (!_ap
-              .any((MdPreviousParticipant e) => e.supaBaseId == p.supaBaseId)) {
+          if (!_ap.any((MdPreviousParticipant e) => e.id == p.id)) {
             _ap.add(p);
           }
         }
@@ -257,10 +255,11 @@ mixin SnapSelfieKeysMixin on GetxController {
         'is_view_only': joinedInvitationData().isViewOnly ?? false,
       },
     );
+    isProcessing(false);
   }
 
   /// Reset fields
-  void resetFields(){
+  void resetFields() {
     isKeyboardVisible(false);
     enteredName('');
     prevBottomInset(0);

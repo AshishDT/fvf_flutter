@@ -110,7 +110,6 @@ class RoundsTimeLinesView extends StatelessWidget {
                                             isExposed: isExposedRx(),
                                             triggerQuestionMark: trigger(),
                                             userId: result.userId ?? '',
-                                            supabaseId: result.supabaseId ?? '',
                                             rank: result.rank ?? 0,
                                             reason: result.reason ?? '',
                                             isCurrentRankIs1: isExposedRx() ||

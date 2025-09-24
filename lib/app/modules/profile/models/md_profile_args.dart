@@ -4,7 +4,6 @@ class MdProfileArgs {
   MdProfileArgs({
     required this.tag,
     required this.userId,
-    required this.supabaseId,
   });
 
   /// Tag name
@@ -12,7 +11,4 @@ class MdProfileArgs {
 
   /// Tag value
   final String userId;
-
-  /// Supabase ID
-  final String supabaseId;
 }

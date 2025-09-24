@@ -44,17 +44,11 @@ class PhoneClaimService {
   static Future<bool> _showPhoneSheet() async {
     final ClaimPhoneController controller = Get.put(ClaimPhoneController());
 
-    controller.isSheetOpen(true);
-
     await showModalBottomSheet(
       context: Get.context!,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => const PhoneNumberSheet(),
-    ).whenComplete(
-      () {
-        controller.isSheetOpen(false);
-      },
     );
 
     return controller.isUserClaimLoading.isFalse;

@@ -73,7 +73,7 @@ class OtpSheet extends GetView<ClaimPhoneController> {
                     cursorColor: AppColors.kF1F2F2,
                     keyboardType: TextInputType.number,
                     maxLength: 6,
-                    style: TextStyle(
+                    style: AppTextStyle.openRunde(
                       color: AppColors.kffffff,
                       fontWeight: FontWeight.w600,
                       fontSize: 16.sp,
@@ -92,7 +92,7 @@ class OtpSheet extends GetView<ClaimPhoneController> {
                         maxWidth: 40.w,
                       ),
                       prefixIcon: Padding(
-                        padding: REdgeInsets.only(left: 12),
+                        padding: REdgeInsets.only(left: 12, top: 3),
                         child: SvgPicture.asset(
                           AppImages.otp123,
                           height: 24.h,

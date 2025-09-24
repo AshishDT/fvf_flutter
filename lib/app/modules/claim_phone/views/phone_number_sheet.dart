@@ -158,16 +158,11 @@ class PhoneNumberSheet extends GetView<ClaimPhoneController> {
     final bool isOtpSend = await controller.sendOtp();
     if (isOtpSend) {
       Get.close(1);
-      controller.isSheetOpen(true);
       await showModalBottomSheet(
         context: context,
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
         builder: (_) => const OtpSheet(),
-      ).whenComplete(
-        () {
-          controller.isSheetOpen(false);
-        },
       );
     }
   }

@@ -15,6 +15,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../routes/app_pages.dart';
 import '../../../utils/global_keys.dart';
 import '../../profile/models/md_profile_args.dart';
+import 'circular_gradient_painter.dart';
 
 /// Selfie Avatar widget
 class CurrentUserSelfieAvatar extends StatelessWidget {
@@ -71,7 +72,7 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
       avatarContent = ClipOval(
         child: CachedNetworkImage(
           imageUrl: imageUrl,
-          width: size.w,
+          width: size.h,
           height: size.h,
           fit: BoxFit.cover,
           placeholder: (_, __) => Center(
@@ -95,26 +96,19 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
               onTap: () {
                 _navigateToProfile();
               },
-              child: hasImage
-                  ? AnimatedContainer(
-                      duration: 300.milliseconds,
-                      width: size.w,
-                      height: size.h,
-                      padding: REdgeInsets.all(3),
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          image: AssetImage(AppImages.gradientCardBg),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      child: avatarContent,
-                    )
-                  : SizedBox(
-                      width: size.w,
-                      height: size.h,
-                      child: avatarContent,
-                    ),
+              child: CustomPaint(
+                painter: hasImage ? CircularGradientBorderPainterBlur() : null,
+                child: AnimatedContainer(
+                  duration: 300.milliseconds,
+                  width: size.h,
+                  height: size.h,
+                  padding: hasImage ? REdgeInsets.all(3) : EdgeInsets.zero,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                  ),
+                  child: avatarContent,
+                ),
+              ),
             ),
             if (isFromFailedView ||
                 name != null && name!.isNotEmpty ||
@@ -146,7 +140,7 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
                   child: VibrateWiggle(
                     trigger: showWiggle,
                     child: Container(
-                      height: 32.h,
+                      height: 32,
                       padding: REdgeInsets.symmetric(horizontal: 8),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(16.r),
@@ -156,8 +150,8 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           SvgPicture.asset(
-                            height: 20.h,
-                            width: 20.w,
+                            height: 20,
+                            width: 20,
                             AppImages.penIcon,
                             colorFilter: const ColorFilter.mode(
                               AppColors.kffffff,
@@ -201,7 +195,7 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
 
   /// Fallback placeholder
   Widget _buildPlaceholder() => Container(
-        width: size.w,
+        width: size.h,
         height: size.h,
         decoration: BoxDecoration(
           shape: BoxShape.circle,

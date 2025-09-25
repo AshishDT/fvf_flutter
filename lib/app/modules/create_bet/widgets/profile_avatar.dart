@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 /// Profile Avatar Widget
 class ProfileAvatar extends StatelessWidget {
@@ -24,28 +25,29 @@ class ProfileAvatar extends StatelessWidget {
       onTap: onTap,
       child: ClipOval(
         child: Container(
-          height: 24,
-          width: 24,
+          height: 24.h,
+          width: 24.w,
           color: Colors.grey.shade200,
           child: hasImage
               ? CachedNetworkImage(
                   imageUrl: profileUrl!,
                   fit: BoxFit.cover,
-                  placeholder: (BuildContext context, String url) =>
-                      const Center(
+                  placeholder: (BuildContext context, String url) => Center(
                     child: SizedBox(
-                      height: 12,
-                      width: 12,
-                      child: CircularProgressIndicator(strokeWidth: 2),
+                      height: 12.h,
+                      width: 12.w,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.w,
+                      ),
                     ),
                   ),
-                  errorWidget: (BuildContext context, String url,
-                          Object error) =>
-                      const Icon(Icons.person, size: 16, color: Colors.grey),
+                  errorWidget:
+                      (BuildContext context, String url, Object error) =>
+                          Icon(Icons.person, size: 16.sp, color: Colors.grey),
                 )
-              : const Icon(
+              : Icon(
                   Icons.person,
-                  size: 16,
+                  size: 16.sp,
                   color: Colors.grey,
                 ),
         ),

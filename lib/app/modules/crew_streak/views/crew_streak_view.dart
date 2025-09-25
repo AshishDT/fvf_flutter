@@ -39,7 +39,7 @@ class CrewStreakView extends GetView<CrewStreakController> {
                 ).paddingSymmetric(horizontal: 24),
                 24.verticalSpace,
                 Text(
-                  '${30.streakInfo}',
+                  '${controller.crew.streakCount?.streakInfo}',
                   textAlign: TextAlign.center,
                   style: AppTextStyle.openRunde(
                     fontSize: 24.sp,
@@ -61,7 +61,7 @@ class CrewStreakView extends GetView<CrewStreakController> {
                     borderRadius: BorderRadius.circular(12.r),
                   ),
                   child: Text(
-                    '30 Days',
+                    '${controller.crew.streakCount} Days',
                     style: GoogleFonts.fredoka(
                       color: AppColors.kffffff,
                       fontSize: 14.sp,

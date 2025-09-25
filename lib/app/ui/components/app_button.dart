@@ -21,6 +21,7 @@ class AppButton extends StatelessWidget {
     this.width,
     this.decoration,
     this.child,
+    this.loader,
     Key? key,
   }) : super(key: key);
 
@@ -53,6 +54,9 @@ class AppButton extends StatelessWidget {
 
   /// Child
   final Widget? child;
+
+  /// Loader
+  final Widget? loader;
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +107,7 @@ class AppButton extends StatelessWidget {
               ],
               if (isLoading) ...<Widget>[
                 15.horizontalSpace,
-                Transform.scale(
+                loader ?? Transform.scale(
                   scale: 1.7,
                   child: Lottie.asset(
                     fit: BoxFit.fitWidth,

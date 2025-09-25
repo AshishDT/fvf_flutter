@@ -1,8 +1,8 @@
 /// Round Status Enum
 enum SubscriptionPlanEnum {
   /// ONE_TIME
-  ONE_TIME,
+  oneTime,
 
   /// WEEKLY
-  WEEKLY,
+  weekly,
 }

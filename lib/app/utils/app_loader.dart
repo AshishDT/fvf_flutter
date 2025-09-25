@@ -63,7 +63,7 @@ class Loader {
                         trackColor: Colors.transparent,
                         progressBarColor: Colors.transparent,
                         shadowColor: Colors.black38,
-                        progressBarColors: [
+                        progressBarColors: <Color>[
                           const Color(0xFFFFDBF6),
                           const Color(0xFFFF70DB),
                           const Color(0xFF6C75FF),

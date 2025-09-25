@@ -1,6 +1,8 @@
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 
 import '../../ai_choosing/enums/round_status_enum.dart';
+import '../../ai_choosing/models/md_crew.dart';
+import '../../ai_choosing/models/md_result.dart';
 
 /// Socket data model
 class MdSocketData {
@@ -51,6 +53,8 @@ class Round {
     this.roundJoinedEndAt,
     this.revealAt,
     this.participants,
+    this.results,
+    this.crew,
   });
 
   /// From JSON
@@ -73,6 +77,11 @@ class Round {
         participants: (json['participants'] as List<dynamic>?)
             ?.map((e) => MdParticipant.fromJson(e as Map<String, dynamic>))
             .toList(),
+        results: json['results'] == null
+            ? <MdResult>[]
+            : List<MdResult>.from(
+                json['results'].map((x) => MdResult.fromJson(x))),
+        crew: json['crew'] == null ? null : MdCrew.fromJson(json['crew']),
       );
 
   /// Properties
@@ -111,6 +120,12 @@ class Round {
   /// List of participants
   final List<MdParticipant>? participants;
 
+  /// Results
+  final List<MdResult>? results;
+
+  /// Crew
+  final MdCrew? crew;
+
   /// Convert object to JSON
   Map<String, dynamic> toJson() => <String, dynamic>{
         'id': id,
@@ -124,6 +139,11 @@ class Round {
         'is_deleted': isDeleted,
         'round_joined_end_at': roundJoinedEndAt?.toIso8601String(),
         'revealAt': revealAt,
-        'participants': participants?.map((MdParticipant e) => e.toJson()).toList(),
+        'participants':
+            participants?.map((MdParticipant e) => e.toJson()).toList(),
+        'results': results == null
+            ? <dynamic>[]
+            : List<dynamic>.from(results!.map((MdResult x) => x.toJson())),
+        'crew': crew?.toJson(),
       };
 }

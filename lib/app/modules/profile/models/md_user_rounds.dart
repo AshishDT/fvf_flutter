@@ -4,15 +4,17 @@ import 'package:fvf_flutter/app/modules/ai_choosing/models/md_result.dart';
 
 /// User Rounds Response Model
 class MdUserRounds {
+  /// Constructor
   MdUserRounds({
     this.rounds,
     this.count,
     this.total,
   });
 
+  /// From JSON
   factory MdUserRounds.fromJson(Map<String, dynamic> json) => MdUserRounds(
         rounds: json['rounds'] == null
-            ? []
+            ? <MdRound>[]
             : List<MdRound>.from(
                 json['rounds'].map((x) => MdRound.fromJson(x)),
               ),
@@ -20,33 +22,42 @@ class MdUserRounds {
         total: json['total'],
       );
 
+  /// Rounds
   List<MdRound>? rounds;
+
+  /// Count
   int? count;
+
+  /// Total
   int? total;
 
-  Map<String, dynamic> toJson() => {
-        'rounds': rounds?.map((x) => x.toJson()).toList(),
+  /// To JSON
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'rounds': rounds?.map((MdRound x) => x.toJson()).toList(),
         'count': count,
         'total': total,
       };
 
+  /// To String
   String asString() => json.encode(toJson());
 }
 
 /// Round model
 class MdRound {
+  /// Constructor
   MdRound({
     this.roundId,
     this.prompt,
     this.reason,
     this.createdAt,
     this.hasAccessed,
-    this.result,
+    this.results,
     this.rank,
     this.selfieUrl,
     this.reactions,
   });
 
+  /// From JSON
   factory MdRound.fromJson(Map<String, dynamic> json) => MdRound(
         roundId: json['roundId'],
         prompt: json['prompt'],
@@ -55,8 +66,8 @@ class MdRound {
             ? null
             : DateTime.parse(json['createdAt']),
         hasAccessed: json['hasAccessed'],
-        result: json['result'] == null
-            ? []
+        results: json['result'] == null
+            ? <MdResult>[]
             : List<MdResult>.from(
                 json['result'].map((x) => MdResult.fromJson(x)),
               ),
@@ -65,23 +76,41 @@ class MdRound {
         reactions: json['reactions'],
       );
 
+  /// roundId
   String? roundId;
+
+  /// Prompt
   String? prompt;
+
+  /// Reason
   String? reason;
+
+  /// Created at
   DateTime? createdAt;
+
+  /// Has accessed
   bool? hasAccessed;
-  List<MdResult>? result;
+
+  /// Result
+  List<MdResult>? results;
+
+  /// Rank
   int? rank;
+
+  /// Selfie URL
   String? selfieUrl;
+
+  /// Reactions
   String? reactions;
 
-  Map<String, dynamic> toJson() => {
+  /// To JSON
+  Map<String, dynamic> toJson() => <String, dynamic>{
         'roundId': roundId,
         'prompt': prompt,
         'reason': reason,
         'createdAt': createdAt?.toIso8601String(),
         'hasAccessed': hasAccessed,
-        'result': result?.map((x) => x.toJson()).toList(),
+        'result': results?.map((MdResult x) => x.toJson()).toList(),
         'rank': rank,
         'selfie_url': selfieUrl,
         'reactions': reactions,
@@ -105,7 +134,7 @@ class MdRound {
         reason: reason ?? this.reason,
         createdAt: createdAt ?? this.createdAt,
         hasAccessed: hasAccessed ?? this.hasAccessed,
-        result: result ?? this.result,
+        results: result ?? this.results,
         rank: rank ?? this.rank,
         selfieUrl: selfieUrl ?? this.selfieUrl,
         reactions: reactions ?? this.reactions,

@@ -12,7 +12,6 @@ import '../models/md_ai_result.dart';
 
 /// AiChoosingController
 class AiChoosingController extends GetxController {
-
   @override
   void onInit() {
     super.onInit();
@@ -52,6 +51,9 @@ class AiChoosingController extends GetxController {
   /// Is waking up
   RxBool isWakingUp = false.obs;
 
+  /// Is view only
+  RxBool isViewOnly = false.obs;
+
   /// On init
   void _onInit() {
     if (Get.arguments != null) {
@@ -77,6 +79,11 @@ class AiChoosingController extends GetxController {
             },
           );
         }
+      }
+
+      if (Get.arguments['is_view_only'] != null) {
+        final bool _isViewOnly = Get.arguments['is_view_only'] as bool;
+        isViewOnly.value = _isViewOnly;
       }
 
       if (Get.arguments['bet'] != null) {
@@ -122,16 +129,13 @@ class AiChoosingController extends GetxController {
     final bool isFailed = resultData.status == RoundStatus.failed;
 
     if (isComplete) {
-      Get
-        ..until(
-          (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
-        )
-        ..toNamed(
-          Routes.WINNER,
-          arguments: <String, dynamic>{
-            'result_data': resultData,
-          },
-        );
+      Get.offNamedUntil(
+        Routes.WINNER,
+        (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
+        arguments: <String, dynamic>{
+          'result_data': resultData,
+        },
+      );
       return;
     }
 

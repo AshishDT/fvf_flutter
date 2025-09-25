@@ -3,13 +3,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
-import 'package:fvf_flutter/app/modules/create_bet/controllers/create_bet_controller.dart';
-import 'package:fvf_flutter/app/modules/create_bet/widgets/phone_number_sheet.dart';
 import 'package:fvf_flutter/app/ui/components/animated_column.dart';
 import 'package:fvf_flutter/app/ui/components/common_app_bar.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 /// Menu Drawer
@@ -42,21 +39,6 @@ class MenuDrawer extends StatelessWidget {
                 ),
                 22.verticalSpace,
                 _drawerTile(
-                  icon: AppImages.phoneIcon,
-                  title: 'Verify phone number',
-                  onTap: () {
-                    final CreateBetController controller =
-                    Get.find<CreateBetController>();
-                    controller.isSmartAuthShowed(false);
-                    controller.phoneController.clear();
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (BuildContext context) => const PhoneNumberSheet(),
-                    );
-                  },
-                ),_drawerTile(
                   icon: AppImages.billingIcon,
                   title: 'Billing',
                   onTap: () {},

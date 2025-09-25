@@ -1,11 +1,8 @@
 import 'dart:convert';
 import 'package:fvf_flutter/app/data/local/store/local_store.dart';
-import 'package:get/get.dart';
+import '../../utils/global_keys.dart';
 import '../config/encryption.dart';
 import '../models/md_user.dart';
-
-/// Current user observable
-Rx<MdUser> globalUser = Rx<MdUser>(MdUser());
 
 /// Helper class for local stored User
 class UserProvider {
@@ -22,6 +19,9 @@ class UserProvider {
   /// If the user is logged in or not
   static bool get isLoggedIn => _isLoggedIn;
 
+  /// Get user id of the logged in user
+  static String? get userId => _userEntity?.id;
+
   ///Set [currentUser] and [authToken]
   static void onLogin({
     required MdUser user,
@@ -31,6 +31,7 @@ class UserProvider {
     _userEntity = user;
     _authToken = userAuthToken;
     globalUser(user);
+    globalUser.refresh();
     LocalStore.user(AppEncryption.encrypt(plainText: user.asString()));
     LocalStore.authToken(userAuthToken);
   }

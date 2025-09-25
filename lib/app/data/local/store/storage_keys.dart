@@ -32,4 +32,35 @@ class LocalStore {
   /// All bets (as JSON string)
   static final _StoreObject<String> betsJson =
       _StoreObject<String>(key: 'bets_json');
+
+  static final _StoreObject<String> loginTime =
+      _StoreObject<String>(key: 'login_time');
+
+  /// Rating last ask date (ISO string)
+  static final _StoreObject<String> ratingLastAsk =
+      _StoreObject<String>(key: 'rating_last_ask');
+
+  /// Rating total asks this year
+  static final _StoreObject<int> ratingTotalAsks =
+      _StoreObject<int>(key: 'rating_total_asks');
+
+  /// Rating snoozes this year
+  static final _StoreObject<int> ratingSnoozes =
+      _StoreObject<int>(key: 'rating_snoozes');
+
+  /// Rating has user already rated
+  static final _StoreObject<bool> ratingHasRated =
+      _StoreObject<bool>(key: 'rating_has_rated');
+
+  /// Phone claim attempt count
+  static final _StoreObject<int> phoneClaimAttempt =
+  _StoreObject<int>(key: 'phone_claim_attempt');
+
+  /// Phone claim last round attempted
+  static final _StoreObject<int> phoneClaimLastRound =
+  _StoreObject<int>(key: 'phone_claim_last_round');
+
+  /// Phone claim last time attempted (ISO string)
+  static final _StoreObject<String> phoneClaimLastTime =
+  _StoreObject<String>(key: 'phone_claim_last_time');
 }

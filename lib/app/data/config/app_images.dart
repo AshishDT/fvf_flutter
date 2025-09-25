@@ -44,9 +44,6 @@ class AppImages {
   /// Friend profile placeholder image
   static const String friendProfile = '$_path/friend_profile.png';
 
-  /// Dice image
-  static const String dice = '$_path/dice.png';
-
   /// Pencil icon
   static const String pencilIcon = '$_path/pencil_icon.png';
 
@@ -243,4 +240,34 @@ class AppImages {
 
   /// User First Join Animation
   static const String userFirstJoin = '$_lottiePath/user_first_join.json';
+
+  /// 5 Start Rating Animation
+  static const String ratingStar = '$_lottiePath/5_star_review.json';
+
+  /// Reveal Star Animation
+  static const String revealStar = '$_lottiePath/reveal_star.json';
+
+  /// More Vertical Icon
+  static const String moreVertical = '$_svgPath/more_vertical.svg';
+
+  /// Next Ios Icon
+  static const String nextIosIcon = '$_path/next_ios_icon.png';
+
+  /// Back Ios Icon
+  static const String backIosIcon = '$_path/back_ios_icon.png';
+
+  /// Share Icon PNG
+  static const String shareIconPng = '$_path/share_icon.png';
+
+  /// Smily Icon PNG
+  static const String smilyIconPng = '$_path/smily_icon.png';
+
+  /// Ai Choosing Avatar Background
+  static const String aiChoosingAvatarBg = '$_path/ai_choss_avatar_bg.png';
+
+  /// Pen Icon
+  static const String shadowPen = '$_path/shadow_pen.png';
+
+  /// Otp one two three
+  static const String otp123 = '$_svgPath/otp_123.svg';
 }

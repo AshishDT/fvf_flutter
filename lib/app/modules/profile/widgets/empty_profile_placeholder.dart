@@ -9,7 +9,13 @@ import '../../../utils/app_text_style.dart';
 /// EMPTY PROFILE PLACEHOLDER
 class EmptyProfilePlaceholder extends StatelessWidget {
   /// Empty profile placeholder constructor
-  const EmptyProfilePlaceholder({super.key});
+  const EmptyProfilePlaceholder({
+    required this.navigatorTag,
+    super.key,
+  });
+
+  /// Navigator tag
+  final String navigatorTag;
 
   @override
   Widget build(BuildContext context) => Center(
@@ -23,8 +29,9 @@ class EmptyProfilePlaceholder extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: AppColors.kF1F2F2,
               ),
-              child: const ProfileImageCard(
+              child: ProfileImageCard(
                 placeholderAsset: AppImages.profilePlaceholder,
+                navigatorTag: navigatorTag,
               ),
             ),
             16.verticalSpace,

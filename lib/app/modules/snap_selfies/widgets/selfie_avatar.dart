@@ -8,6 +8,7 @@ import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
 
 import '../../../routes/app_pages.dart';
+import '../../profile/models/md_profile_args.dart';
 
 /// Selfie Avatar widget
 class SelfieAvatar extends StatelessWidget {
@@ -40,22 +41,30 @@ class SelfieAvatar extends StatelessWidget {
       const Color(0xFF7C70F9),
     ];
 
-    final int hash = participant.userData?.supabaseId?.hashCode ?? 0;
+    final int hash = participant.userData?.id?.hashCode ?? 0;
     final int index = hash % _avatarColors.length;
     return _avatarColors[index];
   }
 
   @override
   Widget build(BuildContext context) {
-    final bool hasNetworkImage =
-        participant.selfieUrl != null && participant.selfieUrl!.isNotEmpty;
+    final String? selfieUrl = participant.selfieUrl;
+    final String? profileUrl = participant.userData?.profileUrl;
+
+    final String? imageUrl = (profileUrl != null && profileUrl.isNotEmpty)
+        ? profileUrl
+        : (selfieUrl != null && selfieUrl.isNotEmpty)
+            ? selfieUrl
+            : null;
+
+    final bool hasImage = imageUrl != null && imageUrl.isNotEmpty;
 
     Widget avatarContent;
 
-    if (hasNetworkImage) {
+    if (hasImage) {
       avatarContent = ClipOval(
         child: CachedNetworkImage(
-          imageUrl: participant.selfieUrl!,
+          imageUrl: imageUrl,
           width: size.w,
           height: size.h,
           fit: BoxFit.cover,
@@ -103,46 +112,72 @@ class SelfieAvatar extends StatelessWidget {
       child: GestureDetector(
         onTap: () {
           if (participant.isCurrentUser) {
-            Get.toNamed(
-              Routes.PROFILE,
-            );
+            _navigateToProfile();
           }
         },
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            if (showBorder)
-              AnimatedContainer(
-                duration: 300.milliseconds,
-                width: size.w + 4.w,
-                height: size.h + 4.w,
-                padding: REdgeInsets.all(2),
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                    image: AssetImage(AppImages.gradientCardBg),
-                    fit: BoxFit.cover,
+            AnimatedContainer(
+              duration: 300.milliseconds,
+              curve: Curves.easeInOut,
+              width: size.w + (showBorder ? 7 : 0),
+              height: size.h + (showBorder ? 7 : 0),
+              child: Stack(
+                alignment: Alignment.center,
+                children: <Widget>[
+                  if (showBorder)
+                    Image.asset(
+                      AppImages.aiChoosingAvatarBg,
+                      width: size.w + 7,
+                      height: size.h + 7,
+                      fit: BoxFit.cover,
+                    ),
+                  ClipOval(
+                    child: SizedBox(
+                      width: size.w,
+                      height: size.h,
+                      child: Padding(
+                        padding: REdgeInsets.only(bottom: 2),
+                        child: avatarContent,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            4.verticalSpace,
+            Center(
+              child: SizedBox(
+                width: 70.w,
+                child: Text(
+                  participant.isCurrentUser ? 'You' : _userName(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: AppTextStyle.openRunde(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
                   ),
                 ),
-                child: avatarContent,
-              )
-            else
-              SizedBox(
-                width: size.w,
-                height: size.h,
-                child: avatarContent,
-              ),
-            4.verticalSpace,
-            Text(
-              participant.isCurrentUser ? 'You' : _userName(),
-              style: AppTextStyle.openRunde(
-                fontSize: 18.sp,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  /// Navigate to profile
+  void _navigateToProfile() {
+    Get.toNamed(
+      Routes.PROFILE,
+      preventDuplicates: false,
+      arguments: MdProfileArgs(
+        tag:
+            '${participant.userData?.id}_${DateTime.now().millisecondsSinceEpoch}',
+        userId: participant.userData?.id ?? '',
       ),
     );
   }

@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/data/config/env_config.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/data/local/user_provider.dart';
-import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/enums/round_status_enum.dart';
+import 'package:fvf_flutter/app/modules/ai_choosing/models/md_ai_result.dart';
+import 'package:fvf_flutter/app/modules/create_bet/controllers/create_bet_controller.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_previous_round.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_profile.dart';
@@ -14,12 +15,17 @@ import 'package:fvf_flutter/app/modules/profile/repositories/profile_api_repo.da
 import 'package:fvf_flutter/app/modules/create_bet/models/md_round.dart';
 import 'package:fvf_flutter/app/modules/snap_selfies/controllers/snap_selfie_keys_mixin.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
+import 'package:fvf_flutter/app/utils/app_config.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../data/models/md_join_invitation.dart';
 import '../../../data/remote/api_service/init_api_service.dart';
 import '../../../data/remote/deep_link/deep_link_service.dart';
 import '../../../ui/components/app_snackbar.dart';
+import '../../../ui/components/chat_field_sheet_repo.dart';
+import '../../../utils/app_loader.dart';
+import '../../../utils/global_keys.dart';
+import '../../claim_phone/controllers/phone_claim_service.dart';
 import '../models/md_socket_io_response.dart';
 import '../repositories/snap_selfie_api_repo.dart';
 
@@ -29,11 +35,15 @@ class SnapSelfiesController extends GetxController
   /// On init
   @override
   void onInit() {
+    resetFields();
+
     if (Get.arguments != null) {
       joinedInvitationData.value = Get.arguments as MdJoinInvitation;
       joinedInvitationData.refresh();
       participants.refresh();
       getPreSelfieStrings();
+
+      loadPreviousRounds();
 
       if (joinedInvitationData().isFromInvitation ?? false) {
         DateTime? endAt = joinedInvitationData().roundJoinedEndAt;
@@ -42,11 +52,19 @@ class SnapSelfiesController extends GetxController
           endAt = endAt.subtract(const Duration(seconds: 1));
         }
 
+        isInvitationSend(true);
+
         _initWebSocket();
 
-        startTimer(
-          endTime: endAt,
-        );
+        if (!(joinedInvitationData().isViewOnly ?? false)) {
+          startTimer(
+            endTime: endAt,
+          );
+        }
+
+        if (joinedInvitationData().isViewOnly ?? false) {
+          setUpTextTimer();
+        }
       }
 
       getShareUri();
@@ -59,17 +77,6 @@ class SnapSelfiesController extends GetxController
       },
     );
     super.onInit();
-
-    // Debounce enteredName updates
-    debounce(
-      enteredName,
-      (_) {
-        if (enteredName.isNotEmpty) {
-          updateUser(username: enteredName.value);
-        }
-      },
-      time: 400.milliseconds,
-    );
   }
 
   /// Initialize WebSocket connection and listeners
@@ -79,7 +86,7 @@ class SnapSelfiesController extends GetxController
       ..listenForDateEvent(
         (dynamic data) {
           log('🎯 Controller got update: $data');
-          log('Current user Id : ${SupaBaseService.userId}');
+          log('Current user Id : ${UserProvider.userId}');
           final MdSocketData updatedData = MdSocketData.fromJson(data);
 
           socketIoDataParser(updatedData);
@@ -87,7 +94,7 @@ class SnapSelfiesController extends GetxController
       )
       ..startAutoEmit(
         <String, dynamic>{
-          'user_id': SupaBaseService.userId,
+          'user_id': UserProvider.userId,
           'round_id': joinedInvitationData().id,
         },
       );
@@ -96,7 +103,7 @@ class SnapSelfiesController extends GetxController
   /// Call emit with custom payload
   void emitDate() {
     final Map<String, dynamic> payload = <String, dynamic>{
-      'user_id': SupaBaseService.userId,
+      'user_id': UserProvider.userId,
       'round_id': joinedInvitationData().id,
     };
     socketIoRepo.emitGetDate(payload);
@@ -113,8 +120,7 @@ class SnapSelfiesController extends GetxController
   void onClose() {
     stopTimer();
     textsTimer?.cancel();
-    socketIoRepo.dispose();
-    stopTimer();
+    socketIoRepo.disconnect();
     WidgetsBinding.instance.removeObserver(this);
     nameInputFocusNode.dispose();
     super.onClose();
@@ -125,8 +131,8 @@ class SnapSelfiesController extends GetxController
     final double currentViewInsets = View.of(Get.context!).viewInsets.bottom;
 
     if (prevBottomInset() > 0 && currentViewInsets == 0) {
-      if (Get.isOverlaysOpen) {
-        Get.back();
+      if (ChatFieldSheetRepo.isSheetOpen()) {
+        Get.close(0);
       }
     }
 
@@ -135,37 +141,51 @@ class SnapSelfiesController extends GetxController
 
   /// Fallback to start again
   void _fallBackToStartAgain() {
+    final bool isViewOnly = joinedInvitationData().isViewOnly ?? false;
+
     final Map<String, dynamic> currentArgs = <String, dynamic>{
-      'reason': 'Only you joined..',
+      'reason': isViewOnly ? 'Round failed' : 'Only you joined..',
       'round_id': joinedInvitationData().id,
       'is_host': isHost(),
-      'sub_reason': 'Go again with your friends',
+      'sub_reason': isViewOnly
+          ? 'Not enough participants joined to start round'
+          : 'Go again with your friends',
       'self_participant': selfParticipant(),
       'participants_without_current_user': participantsWithoutCurrentUser(),
+      'host_id': joinedInvitationData().host?.id,
+      'prompt': joinedInvitationData().prompt,
+      'is_view_only': isViewOnly,
     };
 
     WidgetsBinding.instance.addPostFrameCallback(
       (_) {
-        Get.offNamed(
-          Routes.FAILED_ROUND,
-          arguments: currentArgs,
-        );
+        if (Get.currentRoute != Routes.FAILED_ROUND) {
+          Get.offNamed(
+            Routes.FAILED_ROUND,
+            arguments: currentArgs,
+          );
+        }
       },
     );
   }
 
   /// Handles the action when the user snaps a selfie
   Future<void> onSnapSelfie() async {
-    await Get.toNamed(
-      Routes.CAMERA,
-      arguments: secondsLeft(),
-    )?.then(
-      (dynamic result) {
-        if (result != null && result is XFile) {
-          submitSelfie(File(result.path));
-        }
-      },
-    );
+    if (Get.currentRoute != Routes.CAMERA) {
+      await Get.toNamed(
+        Routes.CAMERA,
+        arguments: <String, dynamic>{
+          'seconds_left': secondsLeft(),
+          'prompt': joinedInvitationData().prompt,
+        },
+      )?.then(
+        (dynamic result) {
+          if (result != null && result is XFile) {
+            submitSelfie(File(result.path));
+          }
+        },
+      );
+    }
   }
 
   /// Get share uri
@@ -173,7 +193,7 @@ class SnapSelfiesController extends GetxController
     final String? _uri = await DeepLinkService.generateSlayInviteLink(
       title: joinedInvitationData().prompt ?? '',
       invitationId: joinedInvitationData().id ?? '',
-      hostId: joinedInvitationData().host?.supabaseId ?? '',
+      hostId: joinedInvitationData().host?.id ?? '',
     );
 
     if (_uri != null && _uri.isNotEmpty) {
@@ -193,7 +213,7 @@ class SnapSelfiesController extends GetxController
         _invitationLink = await DeepLinkService.generateSlayInviteLink(
           title: joinedInvitationData().prompt ?? '',
           invitationId: joinedInvitationData().id ?? '',
-          hostId: joinedInvitationData().host?.supabaseId ?? '',
+          hostId: joinedInvitationData().host?.id ?? '',
         );
       }
 
@@ -273,6 +293,8 @@ class SnapSelfiesController extends GetxController
         (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
       );
 
+      Get.find<CreateBetController>().refreshProfile();
+
       appSnackbar(
         message: data.error!,
         snackbarState: SnackbarState.danger,
@@ -290,20 +312,20 @@ class SnapSelfiesController extends GetxController
           <String, MdParticipant>{};
 
       for (final MdParticipant participant in data.round!.participants!) {
-        final String? supabaseId = participant.userData?.supabaseId;
-        if (supabaseId == null) {
+        final String? userId = participant.userData?.id;
+        if (userId == null) {
           continue;
         }
 
-        if (!uniqueParticipants.containsKey(supabaseId)) {
-          uniqueParticipants[supabaseId] = participant;
+        if (!uniqueParticipants.containsKey(userId)) {
+          uniqueParticipants[userId] = participant;
         } else {
-          final MdParticipant existing = uniqueParticipants[supabaseId]!;
+          final MdParticipant existing = uniqueParticipants[userId]!;
 
           if ((existing.selfieUrl == null || existing.selfieUrl!.isEmpty) &&
               (participant.selfieUrl != null &&
                   participant.selfieUrl!.isNotEmpty)) {
-            uniqueParticipants[supabaseId] = participant;
+            uniqueParticipants[userId] = participant;
           }
         }
       }
@@ -322,6 +344,15 @@ class SnapSelfiesController extends GetxController
 
       _checkAddNameWiggle();
       _checkSnapPickWiggle();
+
+      unawaited(
+        PhoneClaimService.open(
+          currentRound: roundData().totalRound ?? 0,
+          hasSubmittedFirstRoundPhoto: selfParticipant().selfieUrl != null &&
+              (selfParticipant().selfieUrl?.isNotEmpty ?? false),
+          userName: selfParticipant().userData?.username,
+        ),
+      );
     }
   }
 
@@ -336,12 +367,44 @@ class SnapSelfiesController extends GetxController
         break;
 
       case RoundStatus.failed:
+        submittingSelfie(false);
         _fallBackToStartAgain();
+        break;
+
+      case RoundStatus.completed:
+        _onRoundCompleted(data);
         break;
 
       default:
         break;
     }
+  }
+
+  /// On round completed
+  void _onRoundCompleted(MdSocketData data) {
+    isProcessing(false);
+    submittingSelfie(false);
+    socketIoRepo.disposeRoundUpdate();
+
+    final DateTime? revealedAt = DateTime.tryParse(data.round?.revealAt ?? '');
+
+    Get.offNamedUntil(
+      Routes.WINNER,
+      (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
+      arguments: <String, dynamic>{
+        'result_data': MdAiResultData(
+          revealAt: revealedAt,
+          status: RoundStatus.completed,
+          id: data.round?.id,
+          host: joinedInvitationData().host,
+          participants: data.round?.participants,
+          prompt: joinedInvitationData().prompt,
+          results: data.round?.results,
+          crew: data.round?.crew,
+          isViewOnly: joinedInvitationData().isViewOnly ?? false,
+        ),
+      },
+    );
   }
 
   /// Handle processing round
@@ -351,7 +414,8 @@ class SnapSelfiesController extends GetxController
             participant.selfieUrl != null && participant.selfieUrl!.isNotEmpty)
         .toList();
 
-    final bool canStartRound = participantsWithSelfies.length >= 2;
+    final bool canStartRound =
+        participantsWithSelfies.length >= AppConfig.minSubmissions;
 
     if (canStartRound) {
       socketIoRepo.disposeRoundUpdate();
@@ -401,12 +465,10 @@ class SnapSelfiesController extends GetxController
       );
 
       if (isSuccess == true) {
-        emitDate();
         setUpTextTimer();
-        appSnackbar(
-          message: 'Snap submitted successfully!',
-          snackbarState: SnackbarState.success,
-        );
+        emitDate();
+
+        Get.find<CreateBetController>().refreshProfile();
       }
     } finally {
       submittingSelfie(false);
@@ -464,6 +526,8 @@ class SnapSelfiesController extends GetxController
       );
       if (_isUpdated != null) {
         await getUser();
+
+        Get.find<CreateBetController>().refreshProfile();
       }
     } on Exception catch (e, st) {
       logE('Error getting update name: $e');
@@ -480,6 +544,9 @@ class SnapSelfiesController extends GetxController
 
         final String? userAuthToken = UserProvider.authToken;
 
+        roundData(_user.round);
+        roundData.refresh();
+
         UserProvider.onLogin(
           user: profile().user!,
           userAuthToken: userAuthToken ?? '',
@@ -493,9 +560,10 @@ class SnapSelfiesController extends GetxController
 
   /// On add previous participant
   void onAddPreviousRound(String roundId) {
-    if (quickAddsCount() > 8) {
+    if (quickAddsCount() > AppConfig.maxPart) {
       appSnackbar(
-        message: 'You can only add up to 8 friends at a time.',
+        message:
+            'You can only add up to ${AppConfig.maxPart} friends at a time.',
         snackbarState: SnackbarState.info,
       );
       return;
@@ -521,9 +589,9 @@ class SnapSelfiesController extends GetxController
     for (final MdPreviousRound _r in _rounds) {
       if (_r.participants != null) {
         for (final MdPreviousParticipant _p in _r.participants!) {
-          if (!previousAddedParticipants.any((MdPreviousParticipant existing) =>
-                  existing.supbaseId == _p.supbaseId) &&
-              _p.supbaseId != SupaBaseService.userId) {
+          if (!previousAddedParticipants.any(
+                  (MdPreviousParticipant existing) => existing.id == _p.id) &&
+              _p.id != UserProvider.userId) {
             _p.isAdded = true;
             previousAddedParticipants.add(_p);
           }
@@ -539,14 +607,6 @@ class SnapSelfiesController extends GetxController
         .toList();
     if (toAdd.isEmpty) {
       await shareUri();
-      return;
-    }
-
-    if (toAdd.length < 2) {
-      appSnackbar(
-        message: 'Please add at least 2 friends to start the round.',
-        snackbarState: SnackbarState.warning,
-      );
       return;
     }
 
@@ -569,29 +629,78 @@ class SnapSelfiesController extends GetxController
 
   /// On add/remove previous participant
   void onAddRemovePreviousParticipant(String s) {
-    for (final MdPreviousParticipant _pp in previousAddedParticipants()) {
-      if (_pp.supbaseId == s) {
-        if (_pp.isAdded == true) {
-          _pp.isAdded = false;
-        } else {
-          _pp.isAdded = true;
-        }
+    for (final MdPreviousParticipant pp in previousAddedParticipants) {
+      if (pp.id == s) {
+        pp.isAdded = !(pp.isAdded ?? false);
       }
     }
 
-    final List<MdPreviousParticipant> _pParticipants = previousAddedParticipants
-        .where((MdPreviousParticipant p) => p.isAdded == true)
+    final List<MdPreviousParticipant> selected = previousAddedParticipants
+        .where((MdPreviousParticipant p) => p.isAdded ?? false)
         .toList();
 
-    if (_pParticipants.isEmpty) {
+    if (selected.isEmpty) {
       previousAddedParticipants.clear();
 
-      for (final MdPreviousRound p in previousRounds()) {
-        p.isAdded = false;
+      for (final MdPreviousRound round in previousRounds) {
+        round.isAdded = false;
       }
+      previousRounds.refresh();
     }
 
     previousAddedParticipants.refresh();
     previousRounds.refresh();
+  }
+
+  /// Get view only
+  Future<void> shareViewOnlyLink() async {
+    Loader.show();
+    try {
+      final String? _uri = await DeepLinkService.generateSlayInviteLink(
+        title: joinedInvitationData().prompt ?? '',
+        invitationId: joinedInvitationData().id ?? '',
+        hostId: joinedInvitationData().host?.id ?? '',
+        isViewOnly: true,
+      );
+
+      if (_uri == null || _uri.isEmpty) {
+        Loader.dismiss();
+        appSnackbar(
+          message: 'Failed to generate invitation link. Please try again.',
+          snackbarState: SnackbarState.danger,
+        );
+        return;
+      }
+
+      Loader.dismiss();
+
+      final Uri uri = Uri.parse(_uri);
+
+      unawaited(
+        SharePlus.instance.share(
+          ShareParams(
+            uri: uri,
+          ),
+        ),
+      );
+    } on Exception {
+      Loader.dismiss();
+    } finally {
+      Loader.dismiss();
+    }
+  }
+
+  /// On add name
+  void onAddName() {
+    final String trimmed = nameInputController.text.trim();
+    if (trimmed.length < 3 || trimmed.length > 24) {
+      appSnackbar(
+        message: 'Name must be between 3 and 24 characters.',
+        snackbarState: SnackbarState.danger,
+      );
+      return;
+    }
+    nameInputFocusNode.unfocus();
+    updateUser(username: trimmed);
   }
 }

@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
-import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/modules/snap_selfies/widgets/edit_name_sheet.dart';
 import 'package:fvf_flutter/app/ui/components/chat_field_sheet_repo.dart';
@@ -14,6 +13,8 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../routes/app_pages.dart';
+import '../../../utils/global_keys.dart';
+import '../../profile/models/md_profile_args.dart';
 
 /// Selfie Avatar widget
 class CurrentUserSelfieAvatar extends StatelessWidget {
@@ -55,10 +56,12 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
     final String? selfieUrl = participant.selfieUrl;
     final String? profileUrl = globalUser().profileUrl;
 
-    final String? imageUrl = (selfieUrl != null && selfieUrl.isNotEmpty)
-        ? selfieUrl
-        : (profileUrl != null && profileUrl.isNotEmpty)
-            ? profileUrl
+    final bool selfieUploaded = selfieUrl?.isNotEmpty ?? false;
+
+    final String? imageUrl = (profileUrl != null && profileUrl.isNotEmpty)
+        ? profileUrl
+        : (selfieUrl != null && selfieUrl.isNotEmpty)
+            ? selfieUrl
             : null;
 
     final bool hasImage = imageUrl != null && imageUrl.isNotEmpty;
@@ -89,13 +92,15 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             GestureDetector(
-              onTap: () => Get.toNamed(Routes.PROFILE),
+              onTap: () {
+                _navigateToProfile();
+              },
               child: hasImage
                   ? AnimatedContainer(
                       duration: 300.milliseconds,
-                      width: size.w + 4.w,
-                      height: size.h + 4.w,
-                      padding: REdgeInsets.all(2),
+                      width: size.w,
+                      height: size.h,
+                      padding: REdgeInsets.all(3),
                       decoration: const BoxDecoration(
                         shape: BoxShape.circle,
                         image: DecorationImage(
@@ -113,16 +118,20 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
             ),
             if (isFromFailedView ||
                 name != null && name!.isNotEmpty ||
-                (!isInvitationSend &&
-                    (participant.isHost ?? false))) ...<Widget>[
+                (!isInvitationSend && (participant.isHost ?? false)) ||
+                !selfieUploaded) ...<Widget>[
               8.verticalSpace,
-              Text(
-                name ?? 'You',
-                style: AppTextStyle.openRunde(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
+              Flexible(
+                child: Text(
+                  name ?? 'You',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyle.openRunde(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ).paddingSymmetric(horizontal: 20),
               ),
             ] else if (!isFromFailedView) ...<Widget>[
               12.verticalSpace,
@@ -131,6 +140,7 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
                   onTap: () {
                     ChatFieldSheetRepo.openChatField(
                       const EditNameSheet(),
+                      onComplete: onAddName,
                     );
                   },
                   child: VibrateWiggle(
@@ -172,6 +182,19 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
             ],
           ],
         ),
+      ),
+    );
+  }
+
+  /// Navigate to profile
+  void _navigateToProfile() {
+    Get.toNamed(
+      Routes.PROFILE,
+      preventDuplicates: false,
+      arguments: MdProfileArgs(
+        tag:
+            '${participant.userData?.id}_${DateTime.now().millisecondsSinceEpoch}',
+        userId: participant.userData?.id ?? '',
       ),
     );
   }

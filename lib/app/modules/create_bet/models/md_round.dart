@@ -50,14 +50,16 @@ class MdRound {
                 .map((dynamic e) => MdParticipant.fromJson(e))
                 .toList(),
         results: json['results'] == null
-            ? []
+            ? <MdResult>[]
             : List<MdResult>.from(
                 json['results']!.map((x) => MdResult.fromJson(x))),
         revealAt:
             json['revealAt'] == null ? null : DateTime.parse(json['revealAt']),
-        previousRounds: json['pervios_participants'] == null
+        previousRounds: json['previous_participants'] == null &&
+                json['pervious_participants'] == null
             ? <MdPreviousRound>[]
-            : (json['pervios_participants'] as List<dynamic>)
+            : ((json['previous_participants'] ?? json['pervious_participants'])
+                    as List<dynamic>)
                 .map((dynamic e) => MdPreviousRound.fromJson(e))
                 .toList(),
       );
@@ -116,12 +118,13 @@ class MdRound {
         'updatedAt': updatedAt?.toIso8601String(),
         'is_active': isActive,
         'is_deleted': isDeleted,
-        'participants': participants?.map((e) => e.toJson()).toList(),
+        'participants':
+            participants?.map((MdParticipant e) => e.toJson()).toList(),
         'results': results == null
             ? <dynamic>[]
             : List<dynamic>.from(results!.map((MdResult x) => x.toJson())),
         'revealAt': revealAt?.toIso8601String(),
-        'pervios_participants':
-            previousRounds?.map((e) => e.toJson()).toList(),
+        'previous_participants':
+            previousRounds?.map((MdPreviousRound e) => e.toJson()).toList(),
       };
 }

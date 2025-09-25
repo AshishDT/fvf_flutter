@@ -1,5 +1,7 @@
 import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
+import 'package:fvf_flutter/app/modules/splash/splash_api_repo.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
+import 'package:fvf_flutter/app/utils/app_config.dart';
 import 'package:get/get.dart';
 
 /// Splash Controller
@@ -7,6 +9,7 @@ class SplashController extends GetxController {
   /// On init
   @override
   void onInit() {
+    setAppConfig();
     Future<void>.delayed(
       const Duration(seconds: 1),
       () {
@@ -30,5 +33,37 @@ class SplashController extends GetxController {
   @override
   void onClose() {
     super.onClose();
+  }
+
+  /// Set app config
+  Future<void> setAppConfig() async {
+    final Map<String, dynamic>? _config =
+        await SplashScreenApiRepo.getAppConfig();
+
+    if (_config != null) {
+      final int? maxParticipants = _config['max_part'];
+
+      final int? minParticipants = _config['min_part'];
+
+      final int? minSubmission = _config['min_sub'];
+
+      final num? roundDuration = _config['round_duration'];
+
+      if (maxParticipants != null) {
+        AppConfig.maxPart = maxParticipants;
+      }
+
+      if (minParticipants != null) {
+        AppConfig.minPart = minParticipants;
+      }
+
+      if (minSubmission != null) {
+        AppConfig.minSubmissions = minSubmission;
+      }
+
+      if (roundDuration != null) {
+        AppConfig.roundDurationInMinutes = roundDuration;
+      }
+    }
   }
 }

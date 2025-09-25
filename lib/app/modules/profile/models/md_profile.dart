@@ -3,6 +3,7 @@ import 'package:fvf_flutter/app/data/models/md_user.dart';
 
 /// MdProfile model (only data)
 class MdProfile {
+  /// Profile constructor
   MdProfile({
     this.user,
     this.round,
@@ -10,9 +11,9 @@ class MdProfile {
 
   /// From JSON
   factory MdProfile.fromJson(Map<String, dynamic> json) => MdProfile(
-    user: json['user'] == null ? null : MdUser.fromJson(json['user']),
-    round: json['round'] == null ? null : Round.fromJson(json['round']),
-  );
+        user: json['user'] == null ? null : MdUser.fromJson(json['user']),
+        round: json['round'] == null ? null : Round.fromJson(json['round']),
+      );
 
   /// User object
   MdUser? user;
@@ -22,9 +23,9 @@ class MdProfile {
 
   /// To JSON
   Map<String, dynamic> toJson() => {
-    'user': user?.toJson(),
-    'round': round?.toJson(),
-  };
+        'user': user?.toJson(),
+        'round': round?.toJson(),
+      };
 
   /// As string
   String asString() => json.encode(toJson());
@@ -43,14 +44,14 @@ class Round {
 
   /// From JSON
   factory Round.fromJson(Map<String, dynamic> json) => Round(
-    userId: json['userId'],
-    totalRound: json['total_round'],
-    winsCount: json['wins_count'],
-    emojiCount: json['emoji_count'],
-    wins: json['wins'] == null
-        ? <dynamic>[]
-        : List<dynamic>.from(json['wins'].map((x) => x)),
-  );
+        userId: json['userId'],
+        totalRound: json['total_round'],
+        winsCount: json['wins_count'],
+        emojiCount: json['emoji_count'],
+        wins: json['wins'] == null
+            ? <dynamic>[]
+            : List<dynamic>.from(json['wins'].map((x) => x)),
+      );
 
   /// User ID
   String? userId;
@@ -69,10 +70,12 @@ class Round {
 
   /// To JSON
   Map<String, dynamic> toJson() => {
-    'userId': userId,
-    'total_round': totalRound,
-    'wins_count': winsCount,
-    'emoji_count': emojiCount,
-    'wins': wins == null ? <dynamic>[] : List<dynamic>.from(wins!.map((x) => x)),
-  };
+        'userId': userId,
+        'total_round': totalRound,
+        'wins_count': winsCount,
+        'emoji_count': emojiCount,
+        'wins': wins == null
+            ? <dynamic>[]
+            : List<dynamic>.from(wins!.map((x) => x)),
+      };
 }

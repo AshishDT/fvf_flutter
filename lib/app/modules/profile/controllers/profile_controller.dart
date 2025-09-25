@@ -1,29 +1,26 @@
-import 'dart:developer';
 import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/data/remote/api_service/init_api_service.dart';
-import 'package:fvf_flutter/app/data/remote/revenue_cat/revenue_cat_service.dart';
-import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
-import 'package:fvf_flutter/app/modules/profile/enums/subscription_enum.dart';
+import 'package:fvf_flutter/app/modules/profile/controllers/timelines_mixin.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_badge.dart';
-import 'package:fvf_flutter/app/modules/profile/models/md_highlight.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_profile.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_user_rounds.dart';
 import 'package:fvf_flutter/app/modules/profile/repositories/profile_api_repo.dart';
-import 'package:fvf_flutter/app/modules/winner/repositories/winner_api_repo.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
-
 import '../../../utils/app_loader.dart';
+import '../../../utils/global_keys.dart';
+import '../models/md_profile_args.dart';
+import '../repositories/edit_profile_sheet_repo.dart';
 
 /// Profile Controller
-class ProfileController extends GetxController with WidgetsBindingObserver {
+class ProfileController extends GetxController
+    with TimeLineMixin, WidgetsBindingObserver {
   /// image
   Rx<File> image = File('').obs;
 
@@ -36,7 +33,8 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
   /// isRoundsLoading
   RxBool isRoundsLoading = false.obs;
 
-  /// participants list
+  /// Rounds list
+  @override
   RxList<MdRound> rounds = <MdRound>[].obs;
 
   /// Skip
@@ -55,6 +53,7 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
   late PageController roundPageController;
 
   /// Current round
+  @override
   RxInt currentRound = 0.obs;
 
   /// currentIndex
@@ -72,28 +71,43 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
   /// animatedIndex
   RxInt animatedIndex = 0.obs;
 
+  /// MdProfileArgs
+  MdProfileArgs args = MdProfileArgs(
+    tag: '',
+    userId: '',
+  );
+
   /// On init
   @override
   void onInit() {
+    super.onInit();
+
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback(
       (_) {
         _prevBottomInset.value = View.of(Get.context!).viewInsets.bottom;
       },
     );
-    super.onInit();
-    getUser();
-    getRounds(isRefresh: true);
-    getBadges();
-    // _loadProducts();
-  }
 
-  /// On close
-  @override
-  void onClose() {
-    WidgetsBinding.instance.removeObserver(this);
-    nameInputFocusNode.dispose();
-    super.onClose();
+    setupPageController();
+
+    if (Get.arguments is MdProfileArgs) {
+      final MdProfileArgs _args = Get.arguments as MdProfileArgs;
+
+      args = _args;
+
+      getUser(
+        args: _args,
+      );
+
+      getRounds(
+        args: _args,
+        isRefresh: true,
+      );
+      getBadges(
+        args: _args,
+      );
+    }
   }
 
   @override
@@ -101,28 +115,45 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
     final double currentViewInsets = View.of(Get.context!).viewInsets.bottom;
 
     if (_prevBottomInset() > 0 && currentViewInsets == 0) {
-      Future<void>.delayed(
-        const Duration(seconds: 1),
-        () {
-          if (Get.isBottomSheetOpen ?? false) {
-            Get.back();
-          }
-        },
-      );
+      if (EditProfileSheetRepo.isSheetOpen()) {
+        Get.close(0);
+      }
     }
 
     _prevBottomInset.value = currentViewInsets;
   }
 
-  /// isCurrentUser
-  bool get isCurrentUser =>
-      profile.value.user?.supabaseId == SupaBaseService.userId;
-
-  /// Observable to track keyboard visibility
-  RxBool isKeyboardVisible = false.obs;
-
   /// Previous bottom inset for keyboard
   final RxDouble _prevBottomInset = 0.0.obs;
+
+  /// Setup page controller
+  void setupPageController() {
+    roundPageController = PageController();
+
+    roundPageController.addListener(
+      () {
+        final double currentPage = roundPageController.page ?? 0;
+
+        if (currentPage >= rounds.length - 2 && hasMore()) {
+          getRounds();
+        }
+      },
+    );
+  }
+
+  /// On close
+  @override
+  void onClose() {
+    nameInputFocusNode.dispose();
+    for (final PageController pc in roundInnerPageController.values) {
+      pc.dispose();
+    }
+    roundInnerPageController.clear();
+    super.onClose();
+  }
+
+  /// isCurrentUser
+  bool get isCurrentUser => profile.value.user?.id == UserProvider.userId;
 
   /// Focus node for chat input field
   final FocusNode nameInputFocusNode = FocusNode();
@@ -134,13 +165,7 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
   RxList<MdBadge> badges = <MdBadge>[].obs;
 
   /// Current badge
-  Rx<MdBadge?> get currentBadge {
-    final MdBadge? _badge = badges.firstWhereOrNull(
-      (MdBadge element) => element.current == true && element.earned == true,
-    );
-
-    return _badge.obs;
-  }
+  Rx<MdBadge> currentBadge = MdBadge().obs;
 
   /// Pick Image Method
   Future<File?> pickImage({required ImageSource source}) async {
@@ -159,40 +184,36 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  /// highlightCards
-  final List<MdHighlight> highlightCards = <MdHighlight>[
-    MdHighlight.random(
-      title: 'Most likely to start an OF?',
-      subtitle: 'That no-nonsense stare made it obvious',
-    ),
-    MdHighlight.random(
-      title: 'Will become president?',
-      subtitle: 'All of the indications of a girl that knows how to lie',
-    ),
-    MdHighlight.random(
-      title: 'Most serious?',
-      subtitle: 'She’s never heard of smiling',
-    ),
-    MdHighlight.random(
-      title: 'Is the best at XYZ?',
-      subtitle: 'The reason why she won goes here!',
-    ),
-  ];
-
   /// Get User
-  Future<void> getUser() async {
+  Future<void> getUser({
+    MdProfileArgs? args,
+  }) async {
     try {
+      final bool isCurrentUser = args?.userId == UserProvider.userId;
+
       isLoading(true);
-      final MdProfile? _user = await ProfileApiRepo.getUser();
+
+      final MdProfile? _user = await ProfileApiRepo.getUser(
+        userId: isCurrentUser ? null : args?.userId,
+      );
       if (_user != null) {
-        log('User fetched: ${_user.toJson()}');
         profile(_user);
         final String? userAuthToken = UserProvider.authToken;
 
-        UserProvider.onLogin(
-          user: profile().user!,
-          userAuthToken: userAuthToken ?? '',
+        currentBadge(
+          _user.user?.badge,
         );
+        currentBadge.refresh();
+
+        roundData(_user.round);
+        roundData.refresh();
+
+        if (isCurrentUser) {
+          UserProvider.onLogin(
+            user: profile().user!,
+            userAuthToken: userAuthToken ?? '',
+          );
+        }
       }
     } on Exception catch (e, st) {
       isLoading(false);
@@ -208,22 +229,33 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
     String? profilePic,
     String? username,
   }) async {
+    if ((username?.trim().isEmpty ?? true) && (profilePic?.isEmpty ?? true)) {
+      return;
+    }
+
+    final String normalizedCurrent =
+        profile().user?.username?.trim().toLowerCase() ?? '';
+    final String normalizedNew = username?.trim().toLowerCase() ?? '';
+
+    if (normalizedCurrent == normalizedNew && (profilePic?.isEmpty ?? true)) {
+      return;
+    }
+
     try {
       isLoading(true);
-      final bool _isUpdated = await ProfileApiRepo.updateUser(
+      final bool updated = await ProfileApiRepo.updateUser(
         profilePic: profilePic,
         username: username,
       );
-      if (_isUpdated) {
-        await getUser();
-        appSnackbar(
-          message: 'Profile updated successfully',
-          snackbarState: SnackbarState.success,
-        );
+
+      if (updated) {
+        await getUser(args: args);
+        await getRounds(args: args, isRefresh: true);
       }
     } on Exception catch (e, st) {
-      logE('Error getting user: $e');
+      logE('Error updating user: $e');
       logE(st);
+      isLoading(false);
     } finally {
       isLoading(false);
     }
@@ -258,27 +290,44 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
   }
 
   /// Get Rounds
-  Future<void> getRounds({bool isRefresh = false}) async {
+  Future<void> getRounds({
+    bool isRefresh = false,
+    MdProfileArgs? args,
+  }) async {
     if (isRoundsLoading()) {
       return;
     }
+
     try {
       if (isRefresh) {
         isRoundsLoading(true);
         skip = 0;
         hasMore(true);
         rounds.clear();
-        roundPageController = PageController();
       }
-      final List<MdRound>? _rounds =
-          await ProfileApiRepo.getRounds(skip: skip, limit: limit);
+
+      final bool isCurrentUser = args?.userId == UserProvider.userId;
+
+      final List<MdRound>? _rounds = await ProfileApiRepo.getRounds(
+        skip: skip,
+        limit: limit,
+        userId: isCurrentUser ? null : args?.userId,
+      );
+
       if (_rounds != null && _rounds.isNotEmpty) {
         rounds.addAll(_rounds);
         skip += _rounds.length;
-        logI('Round fetched: ${rounds.length}');
       } else {
         hasMore(false);
       }
+
+      for (int i = 0; i < rounds.length; i++) {
+        ensureRoundControllers(i, rounds[i].results?.length ?? 0);
+      }
+
+      syncRoundExposureFromAccess(
+        userId: isCurrentUser ? null : args?.userId,
+      );
     } on Exception catch (e, st) {
       isRoundsLoading(false);
       logE('Error getting participants: $e');
@@ -288,116 +337,16 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  /// Next page navigation
-  void nextPage() {
-    if (roundPageController.hasClients) {
-      final int nextIndex = currentRound() + 1;
-
-      if (nextIndex < rounds.length) {
-        roundPageController.animateToPage(
-          nextIndex,
-          duration: 300.milliseconds,
-          curve: Curves.easeInOut,
-        );
-        currentRound(nextIndex);
-        if (nextIndex >= rounds.length - 2 && hasMore()) {
-          getRounds();
-        }
-      }
-    }
-  }
-
-  /// Previous page navigation
-  void prevPage() {
-    if (roundPageController.hasClients) {
-      final int prevIndex = currentRound() - 1;
-      if (prevIndex >= 0) {
-        roundPageController.animateToPage(
-          prevIndex,
-          duration: 300.milliseconds,
-          curve: Curves.easeInOut,
-        );
-        currentRound(prevIndex);
-      }
-    }
-  }
-
-  /// Round Subscription
-  Future<bool> roundSubscription({
-    required String roundId,
-    required String paymentId,
-    required SubscriptionPlanEnum type,
-  }) async {
-    try {
-      type == SubscriptionPlanEnum.ONE_TIME
-          ? isRoundSubLoading(true)
-          : isWeeklySubLoading(true);
-      final bool _isPurchase = await ProfileApiRepo.roundSubscription(
-        roundId: roundId,
-        paymentId: paymentId,
-        type: type,
-      );
-      if (_isPurchase) {
-        return _isPurchase;
-      }
-      return false;
-    } on Exception catch (e, st) {
-      type == SubscriptionPlanEnum.ONE_TIME
-          ? isRoundSubLoading(false)
-          : isWeeklySubLoading(false);
-      logE('Error getting purchase: $e');
-      logE(st);
-      return false;
-    } finally {
-      type == SubscriptionPlanEnum.ONE_TIME
-          ? isRoundSubLoading(false)
-          : isWeeklySubLoading(false);
-    }
-  }
-
-  Future<void> _loadProducts() async {
-    final List<Package> products =
-        await RevenueCatService.instance.fetchOfferings();
-    // final List<StoreProduct> products =
-    //     await RevenueCatService.instance.fetchProducts();
-    // packages(products);
-  }
-
-  /// Add reaction
-  Future<void> addReaction({
-    required String roundId,
-    required String emoji,
-    required String participantId,
-  }) async {
-    final bool? _isAdded = await WinnerApiRepo.addReaction(
-      roundId: roundId,
-      emoji: emoji,
-      participantId: participantId,
-    );
-
-    if (_isAdded == true && rounds().isNotEmpty) {
-      rounds()[currentRound()].reactions = emoji;
-      rounds.refresh();
-      /*for (final MdRound item in rounds()) {
-        logI('Round ID: ${item.roundId}, Target Round ID: $roundId');
-        if (item.roundId == roundId) {
-          item.reactions = emoji;
-          rounds.refresh();
-        }
-        break;
-      }*/
-    } else {
-      appSnackbar(
-        message: 'Failed to add reaction. Please try again.',
-        snackbarState: SnackbarState.danger,
-      );
-    }
-  }
-
   /// Get Badges
-  Future<void> getBadges() async {
+  Future<void> getBadges({
+    MdProfileArgs? args,
+  }) async {
     try {
-      final List<MdBadge>? _badges = await ProfileApiRepo.getBadges();
+      final bool isCurrentUser = args?.userId == UserProvider.userId;
+
+      final List<MdBadge>? _badges = await ProfileApiRepo.getBadges(
+        userId: isCurrentUser ? null : args?.userId,
+      );
 
       if (_badges != null && _badges.isNotEmpty) {
         badges(_badges);
@@ -408,5 +357,32 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
         'Error getting badges: $e',
       );
     }
+  }
+
+  /// Change Profile Picture
+  Future<void> changeProfile() async {
+    final File? pickedImage = await pickImage(source: ImageSource.camera);
+    if (pickedImage != null) {
+      image(pickedImage);
+      await uploadFile(
+        pickedImage: pickedImage,
+        folder: 'profile',
+      );
+    }
+  }
+
+  /// On add name
+  void onAddName() {
+    final String trimmed = nameInputController.text.trim();
+    if (trimmed.length < 3 || trimmed.length > 24) {
+      appSnackbar(
+        message: 'Name must be between 3 and 24 characters.',
+        snackbarState: SnackbarState.danger,
+      );
+      return;
+    }
+    updateUser(
+      username: trimmed,
+    );
   }
 }

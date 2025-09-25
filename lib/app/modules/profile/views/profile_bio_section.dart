@@ -1,9 +1,10 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fvf_flutter/app/ui/components/custom_type_writer.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
 import '../controllers/profile_controller.dart';
@@ -22,17 +23,24 @@ class ProfileBioSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
         children: <Widget>[
-          Image.asset(
-            AppImages.addPersonIcon,
-            height: 40.h,
-            color: AppColors.kF1F2F2,
-          ),
-          16.verticalSpace,
+          if (controller.isCurrentUser) ...<Widget>[
+            GestureDetector(
+              onTap: () {
+                controller.changeProfile();
+              },
+              child: Image.asset(
+                AppImages.addPersonIcon,
+                height: 40.h,
+                color: AppColors.kF1F2F2,
+              ),
+            ),
+            16.verticalSpace,
+          ],
           if (controller.profile().user?.bio != null &&
               (controller.profile().user?.bio?.isNotEmpty ??
                   false)) ...<Widget>[
-            Text(
-              controller.profile().user?.bio ?? '',
+            CustomTypewriterText(
+              text: controller.profile().user?.bio ?? '',
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
                 fontSize: 20.sp,
@@ -67,7 +75,6 @@ class ProfileBioSection extends StatelessWidget {
                 width: 42.w,
               ),
             ),
-          24.verticalSpace,
         ],
       );
 }

@@ -345,6 +345,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  emoji_regex:
+    dependency: "direct main"
+    description:
+      name: emoji_regex
+      sha256: "3a25dd4d16f98b6f76dc37cc9ae49b8511891ac4b87beac9443a1e9f4634b6c7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.5"
   encrypt:
     dependency: "direct main"
     description:
@@ -720,6 +728,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.2"
+  image:
+    dependency: "direct main"
+    description:
+      name: image
+      sha256: "4e973fcf4caae1a4be2fa0a13157aa38a8f9cb049db6529aa00b4d71abc4d928"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.5.4"
   image_picker:
     dependency: "direct main"
     description:
@@ -784,6 +800,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.2"
+  in_app_review:
+    dependency: "direct main"
+    description:
+      name: in_app_review
+      sha256: ab26ac54dbd802896af78c670b265eaeab7ecddd6af4d0751e9604b60574817f
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.11"
+  in_app_review_platform_interface:
+    dependency: transitive
+    description:
+      name: in_app_review_platform_interface
+      sha256: fed2c755f2125caa9ae10495a3c163aa7fab5af3585a9c62ef4a6920c5b45f10
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.5"
   io:
     dependency: transitive
     description:
@@ -904,6 +936,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
+  no_screenshot:
+    dependency: "direct main"
+    description:
+      name: no_screenshot
+      sha256: ec3d86d7ee89a09c3a3939c1003012536ba4b3fcb4f8cbd23d87ada595c99258
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.1"
   octo_image:
     dependency: transitive
     description:

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
+import 'package:fvf_flutter/app/data/local/store/local_store.dart';
 import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/data/models/md_user.dart';
 import 'package:fvf_flutter/app/data/remote/notification_service/notification_service.dart';
@@ -9,6 +10,7 @@ import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../data/remote/deep_link/deep_link_incoming_data_handler.dart';
+import '../../../data/remote/notification_service/notification_actions_handler.dart';
 import '../../../data/remote/supabse_service/supabse_service.dart';
 import '../../auth/repositories/auth_api_repo.dart';
 
@@ -65,7 +67,6 @@ class AgeInputController extends GetxController {
   Future<void> createAnonymousUser(int age) async {
     creatingUser(true);
     try {
-
       final String? _fcmToken = await NotificationService().getToken();
       logI('FCM Token: $_fcmToken');
 
@@ -91,6 +92,7 @@ class AgeInputController extends GetxController {
       );
 
       if (_user != null && (_user.id?.isNotEmpty ?? false)) {
+        LocalStore.loginTime(DateTime.now().toIso8601String());
         UserProvider.onLogin(
           user: _user,
           userAuthToken: _user.token ?? '',
@@ -100,8 +102,19 @@ class AgeInputController extends GetxController {
         );
 
         if (invitationId().isNotEmpty) {
+          if (isViewOnly()) {
+            await NotificationActionsHandler.handleRoundDetails(
+              roundId: invitationId(),
+              isViewOnly: true,
+            );
+            invitationId('');
+            isViewOnly(false);
+            return;
+          }
+
           await joinProjectInvitation(invitationId());
           invitationId('');
+          isViewOnly(false);
         }
       } else {
         appSnackbar(
@@ -132,6 +145,14 @@ class AgeInputController extends GetxController {
       appSnackbar(
         message: 'You must be at least 18 years old to join.',
         snackbarState: SnackbarState.danger,
+      );
+      return;
+    }
+
+    if (ageValue > 100) {
+      appSnackbar(
+        message: 'Please enter a valid age! It should be less than 100.',
+        snackbarState: SnackbarState.info,
       );
       return;
     }

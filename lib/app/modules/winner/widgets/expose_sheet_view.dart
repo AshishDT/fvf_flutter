@@ -5,36 +5,23 @@ import 'package:fvf_flutter/app/ui/components/app_button.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:fvf_flutter/app/utils/widget_ext.dart';
-import 'package:get/get.dart';
 
-/// AIPlan enum
-enum AIPlan {
-  PLAN1,
-  PLAN2,
-}
+import '../../../data/enums/purchase_plans.dart';
 
 /// ExposeSheetView
 class ExposeSheetView extends StatelessWidget {
   /// ExposeSheetView Constructor
-  ExposeSheetView({
+  const ExposeSheetView({
     super.key,
     this.onExposed,
     this.onRoundExpose,
-    this.onExposedLoading,
-    this.onRoundExposeLoading,
   });
 
   /// On round expose callback
-  VoidCallback? onRoundExpose;
+  final VoidCallback? onRoundExpose;
 
   /// On exposed callback
-  VoidCallback? onExposed;
-
-  /// onExposedLoading
-  RxBool? onExposedLoading = false.obs;
-
-  /// onRoundExposeLoading
-  RxBool? onRoundExposeLoading = false.obs;
+  final VoidCallback? onExposed;
 
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
@@ -56,16 +43,18 @@ class ExposeSheetView extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
-                '👀 Make the AI spill it all...',
-                style: AppTextStyle.openRunde(
-                  color: AppColors.kffffff,
-                  fontSize: 24.sp,
-                  fontWeight: FontWeight.w600,
+              Align(
+                child: Text(
+                  '👀 Expose it all...',
+                  style: AppTextStyle.openRunde(
+                    color: AppColors.kffffff,
+                    fontSize: 24.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
               24.verticalSpace,
-              _planInfoCard(AIPlan.PLAN1),
+              _planInfoCard(PurchasePlan.plan1),
               24.verticalSpace,
               Row(
                 children: <Widget>[
@@ -84,7 +73,7 @@ class ExposeSheetView extends StatelessWidget {
                 ],
               ),
               20.verticalSpace,
-              _planInfoCard(AIPlan.PLAN2),
+              _planInfoCard(PurchasePlan.plan2),
             ],
           ),
         ).withGPad(context,
@@ -106,14 +95,21 @@ class ExposeSheetView extends StatelessWidget {
       );
 
   /// _planInfoCard
-  Container _planInfoCard(AIPlan plan) => Container(
+  Container _planInfoCard(PurchasePlan plan) => Container(
         padding: REdgeInsets.symmetric(vertical: 16, horizontal: 24),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(28.r),
+          boxShadow: const <BoxShadow>[
+            BoxShadow(
+              color: Color(0x33000000),
+              offset: Offset(0, 1),
+              blurRadius: 2,
+            ),
+          ],
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: plan == AIPlan.PLAN1
+            colors: plan == PurchasePlan.plan1
                 ? <Color>[
                     AppColors.k13C4E5,
                     AppColors.k13C4E5.withValues(alpha: .36),
@@ -128,8 +124,8 @@ class ExposeSheetView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              plan == AIPlan.PLAN1
-                  ? 'Expose Everyone - \$0.99'
+              plan == PurchasePlan.plan1
+                  ? 'Expose This Slay - \$0.99'
                   : 'Always Exposed - \$5.99/w',
               style: AppTextStyle.openRunde(
                 fontSize: 18.sp,
@@ -139,79 +135,57 @@ class ExposeSheetView extends StatelessWidget {
             ),
             8.verticalSpace,
             Text(
-              plan == AIPlan.PLAN1
-                  ? ' •  Full ranking of everyone\n'
-                      ' •  Instant spill, one-time only\n'
-                      ' •  Another reason for them to do it now'
-                  : ' •  Every round, every reason, no limits\n'
-                      ' •  Instant spills\n'
-                      ' •  VIP badge on your profile\n'
-                      ' •  Additional modes: head-to-head, images',
+              plan == PurchasePlan.plan1
+                  ? ' •  Every rank, every reason!'
+                  : ' •  Slay all day 🚀\n'
+                      ' •  Every ranking, every reason\n'
+                      ' •  Verified badge, flex unlocked\n',
               style: AppTextStyle.openRunde(
                 fontSize: 14.sp,
                 color: AppColors.kffffff,
                 fontWeight: FontWeight.w500,
+                height: 1.5,
               ),
             ),
-            plan == AIPlan.PLAN1 ? 16.verticalSpace : 11.verticalSpace,
-            plan == AIPlan.PLAN1
-                ? Obx(
-                    () => AppButton(
-                      height: 42.h,
-                      isLoading: onRoundExposeLoading?.value ?? false,
-                      buttonText: '👀 Expose This Round',
-                      decoration: BoxDecoration(
-                        color: AppColors.kFFC300,
-                        borderRadius: BorderRadius.circular(28.r),
-                        boxShadow: <BoxShadow>[
-                          BoxShadow(
-                            offset: const Offset(0, 2),
-                            blurRadius: 2,
-                            color: AppColors.k000000.withValues(alpha: 0.2),
-                          ),
-                        ],
-                      ),
-                      onPressed: () {
-                        onRoundExpose?.call();
-                      },
-                      style: AppTextStyle.openRunde(
-                        fontSize: 16.sp,
-                        color: AppColors.k2A2E2F,
-                        fontWeight: FontWeight.w600,
-                      ),
+            plan == PurchasePlan.plan1 ? 16.verticalSpace : 1.verticalSpace,
+            plan == PurchasePlan.plan1
+                ? AppButton(
+                    height: 42.h,
+                    buttonText: '👀 Expose Now',
+                    decoration: BoxDecoration(
+                      color: AppColors.kFFC300,
+                      borderRadius: BorderRadius.circular(28.r),
+                    ),
+                    onPressed: () {
+                      onRoundExpose?.call();
+                    },
+                    style: AppTextStyle.openRunde(
+                      fontSize: 16.sp,
+                      color: AppColors.k2A2E2F,
+                      fontWeight: FontWeight.w600,
                     ),
                   )
-                : Obx(
-                    () => AppButton(
-                      buttonText: '🔥 Go Unlimited',
-                      isLoading: onExposedLoading?.value ?? false,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(28.r),
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          stops: const [0.0, 0.0],
-                          colors: <Color>[
-                            AppColors.kFFC300,
-                            AppColors.kFFC300.withValues(alpha: .72),
-                          ],
-                        ),
-                        boxShadow: <BoxShadow>[
-                          BoxShadow(
-                            offset: const Offset(0, 2),
-                            blurRadius: 2,
-                            color: AppColors.k000000.withValues(alpha: 0.2),
-                          ),
+                : AppButton(
+                    buttonText: '🔥 Slay Without Limits',
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(28.r),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        stops: const <double>[0, 0],
+                        colors: <Color>[
+                          AppColors.kFFC300,
+                          AppColors.kFFC300.withValues(alpha: .72),
                         ],
                       ),
-                      onPressed: () {
-                        onExposed?.call();
-                      },
-                      style: AppTextStyle.openRunde(
-                        fontSize: 18.sp,
-                        color: AppColors.kffffff,
-                        fontWeight: FontWeight.w700,
-                      ),
+                    ),
+                    onPressed: () {
+                      onExposed?.call();
+                    },
+                    style: AppTextStyle.openRunde(
+                      fontSize: 18.sp,
+                      color: AppColors.kffffff,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
           ],

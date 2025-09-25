@@ -23,11 +23,11 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
-def keystoreProperties = new Properties()
-def keystorePropertiesFile = rootProject.file('key.properties')
-if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-}
+//def keystoreProperties = new Properties()
+//def keystorePropertiesFile = rootProject.file('key.properties')
+//if (keystorePropertiesFile.exists()) {
+//    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+//}
 
 
 android {
@@ -57,22 +57,23 @@ android {
         versionName flutterVersionName
     }
 
-    signingConfigs {
-        release {
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
-            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
-            storePassword keystoreProperties['storePassword']
-        }
-    }
+//    signingConfigs {
+//        release {
+//            keyAlias keystoreProperties['keyAlias']
+//            keyPassword keystoreProperties['keyPassword']
+//            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+//            storePassword keystoreProperties['storePassword']
+//        }
+//    }
 
     buildTypes {
         release {
-            signingConfig signingConfigs.release
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
-                    'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+//            signingConfig signingConfigs.release
+//            minifyEnabled true
+//            shrinkResources true
+//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
+//                    'proguard-rules.pro'
         }
     }
 }

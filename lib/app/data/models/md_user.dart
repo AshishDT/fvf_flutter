@@ -1,10 +1,11 @@
 import 'dart:convert';
 
+import 'package:fvf_flutter/app/modules/profile/models/md_badge.dart';
+
 /// User model
 class MdUser {
   /// Constructor
   MdUser({
-    this.supabaseId,
     this.fcmToken,
     this.age,
     this.username,
@@ -12,7 +13,6 @@ class MdUser {
     this.countryCode,
     this.profilePic,
     this.profileUrl,
-    this.linkSupabaseId,
     this.lastTeamFvfRoundAt,
     this.winnerStreakUpdatedAt,
     this.lastActiveAt,
@@ -30,11 +30,12 @@ class MdUser {
     this.bio,
     this.badge,
     this.emojiCount,
+    this.isAnyHost,
+    this.lastPlayedFriendCount,
   });
 
   /// From JSON
   factory MdUser.fromJson(Map<String, dynamic> json) => MdUser(
-        supabaseId: json['supabase_id'],
         fcmToken: json['fcm_token'],
         age: json['age'],
         username: json['username'],
@@ -42,7 +43,6 @@ class MdUser {
         countryCode: json['country_code'],
         profilePic: json['profile_pic'],
         profileUrl: json['profile_url'],
-        linkSupabaseId: json['link_supabase_id'],
         lastTeamFvfRoundAt: json['last_team_fvf_round_at'] == null
             ? null
             : DateTime.parse(json['last_team_fvf_round_at']),
@@ -68,12 +68,15 @@ class MdUser {
         isDeleted: json['is_deleted'],
         token: json['token'],
         bio: json['bio'],
-        badge: json['badge'],
+        badge: json['badge'] == null
+            ? null
+            : MdBadge.fromJson(
+                json['badge'],
+              ),
         emojiCount: json['emoji_count'],
+        isAnyHost: json['is_any_host'],
+        lastPlayedFriendCount: json['last_played_friend_count'],
       );
-
-  /// Su
-  String? supabaseId;
 
   /// FCM token
   String? fcmToken;
@@ -95,9 +98,6 @@ class MdUser {
 
   /// Profile URL
   String? profileUrl;
-
-  /// Link Supabase ID
-  String? linkSupabaseId;
 
   /// Last team FVF round at
   DateTime? lastTeamFvfRoundAt;
@@ -145,14 +145,19 @@ class MdUser {
   String? bio;
 
   /// Badge
-  String? badge;
+  MdBadge? badge;
 
   /// Emoji count
   int? emojiCount;
 
+  /// Is any host
+  bool? isAnyHost;
+
+  /// Last played friend count
+  int? lastPlayedFriendCount;
+
   /// To JSON
   Map<String, dynamic> toJson() => <String, dynamic>{
-        'supabase_id': supabaseId,
         'fcm_token': fcmToken,
         'age': age,
         'username': username,
@@ -160,7 +165,6 @@ class MdUser {
         'country_code': countryCode,
         'profile_pic': profilePic,
         'profile_url': profileUrl,
-        'link_supabase_id': linkSupabaseId,
         'last_team_fvf_round_at': lastTeamFvfRoundAt?.toIso8601String(),
         'winner_streak_updated_at': winnerStreakUpdatedAt?.toIso8601String(),
         'last_active_at': lastActiveAt?.toIso8601String(),
@@ -176,10 +180,24 @@ class MdUser {
         'is_deleted': isDeleted,
         'token': token,
         'bio': bio,
-        'badge': badge,
+        'badge': badge?.toJson(),
         'emoji_count': emojiCount,
+        'is_any_host': isAnyHost,
+        'last_played_friend_count': lastPlayedFriendCount,
       };
 
   /// To json
   String asString() => json.encode(toJson());
+
+  /// Suggest creating a Bet
+  bool get suggestCreateBet {
+    final bool hasPlayed =
+        lastPlayedFriendCount != null && lastPlayedFriendCount! > 0;
+
+    if (hasPlayed && !(isAnyHost ?? false)) {
+      return true;
+    }
+
+    return false;
+  }
 }

@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_previous_round.dart';
 import 'package:fvf_flutter/app/modules/profile/models/md_profile.dart';
 import 'package:get/get.dart';
+import '../../../data/local/user_provider.dart';
 import '../../../data/models/md_join_invitation.dart';
 import '../../../data/remote/socket_io_repo.dart';
 import '../../../routes/app_pages.dart';
@@ -13,9 +13,6 @@ import '../../../routes/app_pages.dart';
 mixin SnapSelfieKeysMixin on GetxController {
   /// Observable to track keyboard visibility
   RxBool isKeyboardVisible = false.obs;
-
-  /// Entered name
-  RxString enteredName = ''.obs;
 
   /// Previous bottom inset for keyboard
   final RxDouble prevBottomInset = 0.0.obs;
@@ -43,7 +40,7 @@ mixin SnapSelfieKeysMixin on GetxController {
 
   /// Check if current user is host
   RxBool get isHost =>
-      (joinedInvitationData().host?.supabaseId == SupaBaseService.userId).obs;
+      (joinedInvitationData().host?.id == UserProvider.userId).obs;
 
   /// Self participant
   Rx<MdParticipant> get selfParticipant => participants()
@@ -59,7 +56,7 @@ mixin SnapSelfieKeysMixin on GetxController {
         joinedInvitationData().participants ?? <MdParticipant>[];
 
     final Map<String?, MdParticipant> uniqueMap = <String?, MdParticipant>{
-      for (final MdParticipant p in list) p.userData?.supabaseId: p
+      for (final MdParticipant p in list) p.userData?.id: p
     };
 
     final List<MdParticipant> uniqueList = uniqueMap.values.toList()
@@ -78,18 +75,19 @@ mixin SnapSelfieKeysMixin on GetxController {
     return uniqueList.obs;
   }
 
-  /// Previous participants
-  RxList<MdPreviousRound> get previousRounds {
+  /// Previous rounds
+  final RxList<MdPreviousRound> previousRounds = <MdPreviousRound>[].obs;
+
+  /// Load previous rounds
+  void loadPreviousRounds() {
+    previousRounds.clear();
     final List<MdPreviousRound> list = (joinedInvitationData().previousRounds ??
         <MdPreviousRound>[])
-      ..removeWhere((MdPreviousRound p) =>
-          p.participants?.any((MdPreviousParticipant u) =>
-              u.supbaseId == SupaBaseService.userId) ??
-          false)
-      ..removeWhere((MdPreviousRound p) =>
-          p.participants == null || p.participants!.isEmpty);
+      ..removeWhere((p) =>
+          p.participants?.any((u) => u.id == UserProvider.userId) ?? false)
+      ..removeWhere((p) => p.participants == null || p.participants!.isEmpty);
 
-    return list.obs;
+    previousRounds.assignAll(list);
   }
 
   /// Previous rounds added participants
@@ -108,7 +106,7 @@ mixin SnapSelfieKeysMixin on GetxController {
             .toList();
 
     final Map<String?, MdParticipant> uniqueMap = <String?, MdParticipant>{
-      for (final MdParticipant p in list) p.userData?.supabaseId: p
+      for (final MdParticipant p in list) p.userData?.id: p
     };
 
     return uniqueMap.values.toList().obs;
@@ -154,8 +152,7 @@ mixin SnapSelfieKeysMixin on GetxController {
     for (final MdPreviousRound pr in _r) {
       if (pr.participants != null) {
         for (final MdPreviousParticipant p in pr.participants!) {
-          if (!_ap
-              .any((MdPreviousParticipant e) => e.supbaseId == p.supbaseId)) {
+          if (!_ap.any((MdPreviousParticipant e) => e.id == p.id)) {
             _ap.add(p);
           }
         }
@@ -205,7 +202,7 @@ mixin SnapSelfieKeysMixin on GetxController {
         const Duration(seconds: 1),
         (Timer timer) {
           final int diffInSeconds =
-              localEndTime.difference(DateTime.now()).inSeconds;
+              localEndTime.difference(DateTime.now().toLocal()).inSeconds;
 
           if (diffInSeconds <= 0) {
             secondsLeft.value = 0;
@@ -227,7 +224,11 @@ mixin SnapSelfieKeysMixin on GetxController {
 
   ///  Sets up the timer for changing texts
   void setUpTextTimer() {
-    timer = Timer.periodic(
+    textsTimer?.cancel();
+    currentIndex.value = 0;
+    currentIndex.refresh();
+
+    textsTimer = Timer.periodic(
       const Duration(seconds: 2),
       (Timer timer) {
         currentIndex.value = (currentIndex() + 1) % preSelfieStrings.length;
@@ -248,7 +249,32 @@ mixin SnapSelfieKeysMixin on GetxController {
       arguments: <String, dynamic>{
         'participants': _participants,
         'bet': joinedInvitationData().prompt ?? '',
+        'is_view_only': joinedInvitationData().isViewOnly ?? false,
       },
     );
+    isProcessing(false);
+  }
+
+  /// Reset fields
+  void resetFields() {
+    isKeyboardVisible(false);
+    prevBottomInset(0);
+    nameInputController.clear();
+    shouldWiggleAddName(false);
+    shouldWiggleSnapPick(false);
+    profile(MdProfile());
+    deepLinkUri('');
+    joinedInvitationData(MdJoinInvitation());
+    previousRounds.clear();
+    previousAddedParticipants.clear();
+    secondsLeft(0);
+    currentIndex(0);
+    isTimesUp(false);
+    isProcessing(false);
+    isStartingRound(false);
+    submittingSelfie(false);
+    isInvitationSend(false);
+    timer = null;
+    textsTimer = null;
   }
 }

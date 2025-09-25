@@ -13,7 +13,7 @@ class CustomTypewriterText extends StatefulWidget {
     required this.text,
     Key? key,
     this.style,
-    this.speed = const Duration(milliseconds: 50),
+    this.speed = const Duration(milliseconds: 150),
     this.maxLines = 20,
     this.minFontSize = 12,
     this.repeat = false,
@@ -49,10 +49,12 @@ class _CustomTypewriterTextState extends State<CustomTypewriterText> {
   String _visibleText = '';
   Timer? _timer;
   int _index = 0;
+  late List<String> _words;
 
   @override
   void initState() {
     super.initState();
+    _words = widget.text.split(' ');
     _startTyping();
   }
 
@@ -61,22 +63,29 @@ class _CustomTypewriterTextState extends State<CustomTypewriterText> {
     _visibleText = '';
     _timer?.cancel();
 
-    _timer = Timer.periodic(widget.speed, (Timer timer) {
-      if (_index < widget.text.length) {
-        setState(() {
-          _visibleText += widget.text[_index];
-          _index++;
-        });
-      } else {
-        if (widget.repeat) {
-          Future<void>.delayed(
-            const Duration(seconds: 1),
-            _startTyping,
-          );
+    _timer = Timer.periodic(
+      widget.speed,
+      (Timer timer) {
+        if (_index < _words.length) {
+          setState(() {
+            if (_visibleText.isEmpty) {
+              _visibleText = _words[_index];
+            } else {
+              _visibleText += ' ${_words[_index]}';
+            }
+            _index++;
+          });
+        } else {
+          if (widget.repeat) {
+            Future<void>.delayed(
+              const Duration(seconds: 1),
+              _startTyping,
+            );
+          }
+          timer.cancel();
         }
-        timer.cancel();
-      }
-    });
+      },
+    );
   }
 
   @override

@@ -37,10 +37,10 @@ class SelfieAvatarIcon extends StatelessWidget {
     final String? selfieUrl = participant.selfieUrl;
     final String? profileUrl = participant.userData?.profileUrl;
 
-    final String? imageUrl = (selfieUrl != null && selfieUrl.isNotEmpty)
-        ? selfieUrl
-        : (profileUrl != null && profileUrl.isNotEmpty)
-            ? profileUrl
+    final String? imageUrl = (profileUrl != null && profileUrl.isNotEmpty)
+        ? profileUrl
+        : (selfieUrl != null && selfieUrl.isNotEmpty)
+            ? selfieUrl
             : null;
 
     final bool hasImage = imageUrl != null && imageUrl.isNotEmpty;
@@ -78,8 +78,8 @@ class SelfieAvatarIcon extends StatelessWidget {
             if (hasImage)
               AnimatedContainer(
                 duration: 300.milliseconds,
-                width: size.w + 4.w,
-                height: size.h + 4.w,
+                width: size.w,
+                height: size.h,
                 padding: showStreakEmoji ? null : REdgeInsets.all(2),
                 decoration: showStreakEmoji
                     ? null
@@ -109,12 +109,20 @@ class SelfieAvatarIcon extends StatelessWidget {
         ),
         6.verticalSpace,
         if (name != null && name!.isNotEmpty)
-          Text(
-            name!,
-            style: AppTextStyle.openRunde(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
+          Center(
+            child: SizedBox(
+              width: 70.w,
+              child: Text(
+                name!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: AppTextStyle.openRunde(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
             ),
           ),
       ],

@@ -2,21 +2,15 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
-import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/animated_list_view.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
-import 'package:fvf_flutter/app/ui/components/common_app_bar.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:fvf_flutter/app/utils/widget_ext.dart';
 import 'package:get/get.dart';
-import 'package:lottie/lottie.dart';
-
-import '../../../utils/dialog_helper.dart';
 import '../../snap_selfies/widgets/selfie_avatar.dart';
 import '../controllers/ai_choosing_controller.dart';
 
@@ -81,32 +75,6 @@ class AiChoosingView extends GetView<AiChoosingController> {
               SafeArea(
                 child: AnimatedListView(
                   children: <Widget>[
-                    CommonAppBar(
-                      leadingIcon: AppImages.closeIconWhite,
-                      onTapOfLeading: () {
-                        DialogHelper.onBackOfAiChoosing(
-                          onPositiveClick: () {
-                            Get.offAllNamed(
-                              Routes.CREATE_BET,
-                            );
-                          },
-                        );
-                      },
-                      actions: <Widget>[
-                        GestureDetector(
-                          onTap: () {},
-                          child: SvgPicture.asset(
-                            AppImages.shareIcon,
-                            width: 24.w,
-                            height: 24.h,
-                            colorFilter: const ColorFilter.mode(
-                              AppColors.kffffff,
-                              BlendMode.srcIn,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ).paddingSymmetric(horizontal: 24),
                     AnimatedSize(
                       duration: 300.milliseconds,
                       curve: Curves.easeInOut,
@@ -199,6 +167,7 @@ class AiChoosingView extends GetView<AiChoosingController> {
                         scrollDirection: Axis.horizontal,
                         child: Obx(
                           () => Row(
+                            spacing: 32,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               ...controller.participants().asMap().entries.map(
@@ -213,13 +182,13 @@ class AiChoosingView extends GetView<AiChoosingController> {
                                                     .participants()
                                                     .length ==
                                             index,
-                                  ).paddingOnly(right: 32);
+                                  );
                                 },
                               ),
                             ],
                           ),
                         ),
-                      ).paddingOnly(left: 32),
+                      ),
                       AnimatedSize(
                         duration: 300.milliseconds,
                         alignment: Alignment.topCenter,
@@ -275,43 +244,5 @@ class AiChoosingView extends GetView<AiChoosingController> {
             ],
           ),
         ).withGPad(context, color: Colors.black),
-      );
-
-  /// Person Card
-  Column personCard({required String name}) => Column(
-        children: <Widget>[
-          Container(
-            height: 56.w,
-            width: 56.w,
-            padding: REdgeInsets.all(2),
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                begin: AlignmentDirectional.topStart,
-                end: Alignment.bottomRight,
-                colors: <Color>[
-                  AppColors.kFB46CD,
-                  AppColors.k6C75FF,
-                  AppColors.k0DBFFF,
-                ],
-              ),
-            ),
-            child: Container(
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.kFAFBFB,
-              ),
-            ),
-          ),
-          4.verticalSpace,
-          Text(
-            name,
-            style: AppTextStyle.openRunde(
-              fontSize: 16.sp,
-              color: AppColors.kffffff,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
       );
 }

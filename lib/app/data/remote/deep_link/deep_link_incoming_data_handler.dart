@@ -1,7 +1,7 @@
 import 'dart:async';
-
+import 'package:fvf_flutter/app/data/local/user_provider.dart';
+import 'package:fvf_flutter/app/data/remote/notification_service/notification_actions_handler.dart';
 import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
-import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:fvf_flutter/app/utils/app_loader.dart';
 import 'package:get/get.dart';
@@ -13,6 +13,9 @@ import '../../models/md_join_invitation.dart';
 /// Observable to track if deep link is being handled
 RxString invitationId = ''.obs;
 
+/// Observable to track if the link is view-only
+RxBool isViewOnly = false.obs;
+
 /// Handle incoming data
 void handleDeepLinkIncomingData(Map<dynamic, dynamic> data) {
   final MdDeepLinkData deepLinkData = MdDeepLinkData.fromJson(data);
@@ -22,21 +25,34 @@ void handleDeepLinkIncomingData(Map<dynamic, dynamic> data) {
         deepLinkData.canonicalIdentifier == 'slay_invite') {
       if (deepLinkData.invitationId?.isNotEmpty ?? false) {
         final bool isHost =
-            deepLinkData.hostId == SupaBaseService.currentUser?.id;
+            deepLinkData.hostId == UserProvider.userId;
 
         final bool isUserLoggedIn =
-            SupaBaseService.isLoggedIn && SupaBaseService.currentUser != null;
+            SupaBaseService.isLoggedIn && UserProvider.currentUser != null;
+
+        final bool isViewOnlyLink = deepLinkData.isViewOnly ?? false;
 
         if (isUserLoggedIn) {
-          if (isHost) {
+          if (isHost && !isViewOnlyLink) {
             return;
           }
-          joinProjectInvitation(
-            deepLinkData.invitationId!,
-          );
+
+          if (isViewOnlyLink) {
+            NotificationActionsHandler.handleRoundDetails(
+              roundId: deepLinkData.invitationId!,
+              isViewOnly: true,
+            );
+          } else {
+            joinProjectInvitation(
+              deepLinkData.invitationId!,
+            );
+          }
+
           invitationId('');
+          isViewOnly(false);
         } else {
           invitationId(deepLinkData.invitationId!);
+          isViewOnly(deepLinkData.isViewOnly);
           appSnackbar(
             message: 'Please log in to join the invitation.',
             snackbarState: SnackbarState.info,
@@ -49,10 +65,10 @@ void handleDeepLinkIncomingData(Map<dynamic, dynamic> data) {
     }
   } else {
     const List<String> branchDomains = <String>[
-      'ikmza.app.link',
-      'ikmza-alternate.app.link',
-      'ikmza.test-app.link',
-      'ikmza-alternate.test-app.link',
+      '0wkmj.app.link',
+      '0wkmj-alternate.app.link',
+      '0wkmj.test-app.link',
+      '0wkmj-alternate.test-app.link',
     ];
 
     final bool isNonBranchLinkPresent = data.containsKey('+non_branch_link');
@@ -81,18 +97,9 @@ Future<void> joinProjectInvitation(String invitationId) async {
     Loader.dismiss();
 
     if (_joinedData != null) {
-      appSnackbar(
-        message: 'You have successfully joined the project!',
-        snackbarState: SnackbarState.success,
-      );
-
-      _joinedData.isFromInvitation = true;
-
-      unawaited(
-        Get.toNamed(
-          Routes.SNAP_SELFIES,
-          arguments: _joinedData,
-        ),
+      await NotificationActionsHandler.handleRoundDetails(
+        roundId: invitationId,
+        isViewOnly: _joinedData.isViewOnly ?? false,
       );
     }
   } on Exception {

@@ -1,36 +1,52 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/src/services/text_formatter.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fvf_flutter/app/modules/profile/controllers/profile_controller.dart';
-import 'package:fvf_flutter/app/ui/components/app_button.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
+import 'package:fvf_flutter/app/utils/app_text_formatter.dart';
 import 'package:get/get.dart';
-
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
+import '../../../ui/components/app_snackbar.dart';
 import '../../../utils/app_text_style.dart';
 
 /// EditDataSheet widget that adapts to keyboard visibility
 class EditDataSheet extends GetView<ProfileController> {
   /// Constructor for EditDataSheet
-  const EditDataSheet({super.key});
+  const EditDataSheet({
+    required this.navigatorTag,
+    super.key,
+  });
+
+  /// Navigator tag
+  final String navigatorTag;
+
+  @override
+  String? get tag => navigatorTag;
 
   @override
   Widget build(BuildContext context) {
+    Get.lazyPut(() => ProfileController(), tag: navigatorTag);
     controller.nameInputController.text =
-        controller.profile()?.user?.username ?? '';
+        controller.profile().user?.username ?? '';
     return GradientCard(
       alignment: AlignmentDirectional.topStart,
       borderRadius: BorderRadius.vertical(
         top: Radius.circular(24.r),
       ),
-      padding: REdgeInsets.all(24),
+      padding: REdgeInsets.only(
+        left: 24,
+        right: 24,
+        top: 24,
+        bottom: _bottom(context),
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            'Edit your name',
+            'What’s Your Name?',
             style: AppTextStyle.openRunde(
               color: AppColors.kffffff,
               fontSize: 24.sp,
@@ -50,6 +66,7 @@ class EditDataSheet extends GetView<ProfileController> {
               controller: controller.nameInputController,
               maxLines: 7,
               minLines: 1,
+              maxLength: 24,
               autofocus: true,
               cursorColor: AppColors.kffffff,
               style: AppTextStyle.openRunde(
@@ -57,6 +74,23 @@ class EditDataSheet extends GetView<ProfileController> {
                 fontWeight: FontWeight.w600,
                 fontSize: 16.sp,
               ),
+              inputFormatters: <TextInputFormatter>[
+                AppTextFormatter(),
+              ],
+              onFieldSubmitted: (String value) {
+                final String trimmed = value.trim();
+                if (trimmed.length < 3 || trimmed.length > 24) {
+                  appSnackbar(
+                    message: 'Name must be between 3 and 24 characters.',
+                    snackbarState: SnackbarState.danger,
+                  );
+                  return;
+                }
+                Navigator.maybePop(context);
+                controller.updateUser(
+                  username: controller.nameInputController.text.trim(),
+                );
+              },
               textInputAction: TextInputAction.go,
               decoration: InputDecoration(
                 hintText: 'Name',
@@ -64,6 +98,8 @@ class EditDataSheet extends GetView<ProfileController> {
                   maxHeight: 24.h,
                   maxWidth: 24.w,
                 ),
+                counterText: '',
+                counter: const SizedBox(),
                 prefixIcon: SvgPicture.asset(
                   AppImages.penIcon,
                   height: 24.h,
@@ -87,21 +123,14 @@ class EditDataSheet extends GetView<ProfileController> {
               ),
             ),
           ),
-          24.verticalSpace,
-          Obx(
-            () => AppButton(
-              isLoading: controller.isLoading(),
-              buttonText: 'Save',
-              onPressed: () {
-                controller.nameInputFocusNode.unfocus();
-                controller.updateUser(
-                  username: controller.nameInputController.text.trim(),
-                );
-              },
-            ),
-          ),
         ],
       ),
     );
   }
+
+  /// Bottom
+  double _bottom(BuildContext context) =>
+      MediaQuery.of(context).systemGestureInsets.bottom > 12
+          ? MediaQuery.of(context).systemGestureInsets.bottom - 12
+          : MediaQuery.of(context).systemGestureInsets.bottom;
 }

@@ -3,16 +3,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
-import 'package:fvf_flutter/app/modules/badge/widgets/badge_extension.dart';
 import 'package:fvf_flutter/app/modules/badge/widgets/rotating_image.dart';
 import 'package:fvf_flutter/app/ui/components/animated_list_view.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
+import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:fvf_flutter/app/ui/components/common_app_bar.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
-import 'package:lottie/lottie.dart';
-
 import '../controllers/badge_controller.dart';
 import '../widgets/lottie_then_child.dart';
 
@@ -27,7 +25,13 @@ class BadgeView extends GetView<BadgeController> {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: AppButton(
           buttonText: 'Claim Badge',
-          onPressed: () {},
+          onPressed: () {
+            Get.back();
+            appSnackbar(
+              message: 'Badge claimed successfully',
+              snackbarState: SnackbarState.success,
+            );
+          },
         ).paddingSymmetric(horizontal: 24.w),
         body: GradientCard(
           padding: REdgeInsets.symmetric(horizontal: 24),
@@ -39,7 +43,7 @@ class BadgeView extends GetView<BadgeController> {
                 ),
                 64.verticalSpace,
                 Text(
-                  'Gold',
+                  controller.badge.badge ?? '',
                   textAlign: TextAlign.center,
                   style: AppTextStyle.openRunde(
                     fontSize: 40.sp,
@@ -50,7 +54,7 @@ class BadgeView extends GetView<BadgeController> {
                 ),
                 24.verticalSpace,
                 Text(
-                  'Gold'.badgeInfo,
+                  controller.badge.badgeInfo,
                   textAlign: TextAlign.center,
                   style: AppTextStyle.openRunde(
                     fontSize: 24.sp,
@@ -72,7 +76,7 @@ class BadgeView extends GetView<BadgeController> {
                         width: 120.w,
                       ),
                       SvgPicture.asset(
-                        'Gold'.badgeIcon,
+                        controller.badge.imageUrl,
                         height: 46.w,
                         width: 46.w,
                       ),

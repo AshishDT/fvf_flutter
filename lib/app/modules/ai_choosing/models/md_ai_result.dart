@@ -1,4 +1,6 @@
+import 'package:fvf_flutter/app/modules/ai_choosing/models/md_crew.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/models/md_result.dart';
+import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 
 import '../../../data/models/md_join_invitation.dart';
 import '../enums/round_status_enum.dart';
@@ -13,23 +15,31 @@ class MdAiResultData {
     this.results,
     this.revealAt,
     this.host,
+    this.crew,
+    this.participants,
+    this.isViewOnly,
   });
 
   /// From JSON
   factory MdAiResultData.fromJson(Map<String, dynamic> json) => MdAiResultData(
-    id: json['id'],
-    status: json['status'] == null
-        ? null
-        : RoundStatusX.fromString(json['status'].toString()),
-    prompt: json['prompt'],
-    results: json['results'] == null
-        ? <MdResult>[]
-        : List<MdResult>.from(
-        json['results'].map((x) => MdResult.fromJson(x))),
-    revealAt:
-    json['revealAt'] == null ? null : DateTime.parse(json['revealAt']),
-    host: json['host'] == null ? null : RoundHost.fromJson(json['host']),
-  );
+        id: json['id'],
+        status: json['status'] == null
+            ? null
+            : RoundStatusX.fromString(json['status'].toString()),
+        prompt: json['prompt'],
+        results: json['results'] == null
+            ? <MdResult>[]
+            : List<MdResult>.from(
+                json['results'].map((x) => MdResult.fromJson(x))),
+        revealAt:
+            json['revealAt'] == null ? null : DateTime.parse(json['revealAt']),
+        host: json['host'] == null ? null : RoundHost.fromJson(json['host']),
+        crew: json['crew'] == null ? null : MdCrew.fromJson(json['crew']),
+        participants: json['participants'] == null
+            ? <MdParticipant>[]
+            : List<MdParticipant>.from(
+                json['participants']!.map((x) => MdParticipant.fromJson(x))),
+      );
 
   /// AI result id
   String? id;
@@ -49,6 +59,15 @@ class MdAiResultData {
   /// Host
   RoundHost? host;
 
+  /// Crew
+  MdCrew? crew;
+
+  /// Participants in the round
+  List<MdParticipant>? participants;
+
+  /// Is view-only
+  bool? isViewOnly;
+
   /// To JSON
   Map<String, dynamic> toJson() => <String, dynamic>{
         'id': id,
@@ -59,7 +78,10 @@ class MdAiResultData {
             : List<dynamic>.from(results!.map((MdResult x) => x.toJson())),
         'revealAt': revealAt?.toIso8601String(),
         'host': host?.toJson(),
+        'crew': crew?.toJson(),
+        'participants': participants == null
+            ? <dynamic>[]
+            : List<dynamic>.from(
+                participants!.map((MdParticipant x) => x.toJson())),
       };
 }
-
-

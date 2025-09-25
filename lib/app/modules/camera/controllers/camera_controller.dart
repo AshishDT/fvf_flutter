@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:io';
-
+import 'dart:typed_data';
 import 'package:camera/camera.dart';
-import 'package:fvf_flutter/app/data/config/logger.dart';
+import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:get/get.dart';
+import 'package:image/image.dart' as img;
+import '../../../data/config/logger.dart';
 
-/// Controller for the Camera module.
+/// Controller for handling selfie camera actions
 class PickSelfieCameraController extends GetxController {
   /// File for preview
   Rx<File> previewFile = File('').obs;
@@ -14,9 +16,15 @@ class PickSelfieCameraController extends GetxController {
   @override
   void onInit() {
     if (Get.arguments != null) {
-      secondsLeft.value = Get.arguments as int;
-      secondsLeft.refresh();
-      startTimer();
+      if (Get.arguments['seconds_left'] != null) {
+        secondsLeft.value = Get.arguments['seconds_left'] as int;
+        secondsLeft.refresh();
+        startTimer();
+      }
+
+      if (Get.arguments['prompt'] != null) {
+        prompt = Get.arguments['prompt'] as String;
+      }
     }
     _setupCamera();
     super.onInit();
@@ -42,6 +50,9 @@ class PickSelfieCameraController extends GetxController {
   /// Future to handle camera initialization
   late Future<void> initializeControllerFuture;
 
+  /// Prompt for the selfie
+  String prompt = '';
+
   /// Observable variables to track camera state
   final RxBool isCameraInitialized = false.obs;
 
@@ -51,10 +62,22 @@ class PickSelfieCameraController extends GetxController {
   /// Seconds left for the timer
   RxInt secondsLeft = 0.obs;
 
+  /// Seconds left for retake timer
+  RxInt retakeSecondsLeft = 0.obs;
+
   /// Timer for countdown
   Timer? _timer;
 
-  /// Starts the timer for 5 minutes (300 seconds)
+  /// Can show retake button
+  RxBool canShowRetake = false.obs;
+
+  /// Is retake loading
+  RxBool isRetakeLoading = false.obs;
+
+  /// Flag to handle pending takePicture delayed callback
+  final RxBool _isTakePicturePending = false.obs;
+
+  /// Starts the timer for countdown
   void startTimer() {
     _timer?.cancel();
     _timer = Timer.periodic(
@@ -104,82 +127,145 @@ class PickSelfieCameraController extends GetxController {
 
   /// On Retake
   Future<void> onRetake() async {
-    previewFile(File(''));
-    isCameraInitialized(false);
-    isCapturing(false);
-    if (cameraController != null) {
-      await cameraController!.dispose();
-      cameraController = null;
+    if (isRetakeLoading()) {
+      return;
     }
-    await _setupCamera();
+
+    isRetakeLoading(true);
+
+    _isTakePicturePending(false);
+
+    try {
+      previewFile(File(''));
+      isCameraInitialized(false);
+      isCapturing(false);
+      canShowRetake(false);
+      if (cameraController != null) {
+        await cameraController!.dispose();
+        cameraController = null;
+      }
+      await _setupCamera();
+    } finally {
+      isRetakeLoading(false);
+    }
   }
 
   /// Called when timer finishes
-  void onTimerFinished() {
-    if (previewFile().path.isNotEmpty) {
+  Future<void> onTimerFinished() async {
+    if (isCapturing()) {
+      return;
+    }
+
+    await cameraController?.dispose();
+    cameraController = null;
+    isCameraInitialized(false);
+
+    if (Get.currentRoute == Routes.CAMERA) {
       Get.back(
-        result: XFile(previewFile().path),
+        result:
+            previewFile().path.isNotEmpty ? XFile(previewFile().path) : null,
       );
     }
   }
 
-  /// Takes a picture using the camera.
+  /// Take picture
   Future<void> takePicture() async {
-    if (cameraController == null || !cameraController!.value.isInitialized) {
-      logE('Camera not ready');
+    final CameraController? controller = cameraController;
+    if (controller == null || !controller.value.isInitialized) {
+      return;
+    }
+    if (controller.value.isTakingPicture || isCapturing()) {
       return;
     }
 
     try {
       isCapturing(true);
-      final XFile _picture = await cameraController!.takePicture();
-      isCapturing(false);
-      previewFile(File(_picture.path));
-    } on Exception catch (e) {
+      canShowRetake(true);
+
+      final XFile xFile = await controller.takePicture();
+      final File file = File(xFile.path);
+
+      if (controller.description.lensDirection == CameraLensDirection.front) {
+        final Uint8List bytes = await file.readAsBytes();
+        final img.Image? imgDecoded = img.decodeImage(bytes);
+        if (imgDecoded != null) {
+          final img.Image fixed = img.flipHorizontal(imgDecoded);
+          await file.writeAsBytes(img.encodeJpg(fixed));
+        }
+      }
+
+      previewFile(file);
+
+      _isTakePicturePending(true);
+      Future<void>.delayed(
+        const Duration(milliseconds: 3600),
+        () {
+          if (_isTakePicturePending() &&
+              !isRetakeLoading() &&
+              previewFile().path.isNotEmpty) {
+            canShowRetake(false);
+            onTimerFinished();
+          }
+          _isTakePicturePending(false);
+        },
+      );
+    } on CameraException catch (e) {
       logE('Capture failed: $e');
+      canShowRetake(false);
+    } finally {
       isCapturing(false);
     }
   }
 
   /// Flip camera
   Future<void> flipCamera() async {
-    if (cameraController == null || !cameraController!.value.isInitialized) {
+    final CameraController? old = cameraController;
+    if (old == null || !old.value.isInitialized) {
       logE('Camera not ready');
       return;
     }
 
+    isCameraInitialized(false);
+
     try {
-      final CameraLensDirection currentDirection =
-          cameraController!.description.lensDirection;
+      final CameraLensDirection current = old.description.lensDirection;
+      final List<CameraDescription> cams = await availableCameras();
+      final CameraDescription target = cams.firstWhere(
+        (c) =>
+            c.lensDirection ==
+            (current == CameraLensDirection.front
+                ? CameraLensDirection.back
+                : CameraLensDirection.front),
+      );
 
-      final List<CameraDescription> cameras = await availableCameras();
+      await old.dispose();
 
-      CameraDescription newCamera;
-
-      if (currentDirection == CameraLensDirection.front) {
-        newCamera = cameras.firstWhere(
-          (CameraDescription cam) =>
-              cam.lensDirection == CameraLensDirection.back,
-        );
-      } else {
-        newCamera = cameras.firstWhere(
-          (CameraDescription cam) =>
-              cam.lensDirection == CameraLensDirection.front,
-        );
-      }
-
-      cameraController = CameraController(
-        newCamera,
+      final CameraController next = CameraController(
+        target,
         ResolutionPreset.high,
         enableAudio: false,
       );
 
-      initializeControllerFuture = cameraController!.initialize();
+      cameraController = next;
 
+      next.addListener(
+        () {
+          if (next.value.hasError) {
+            logE('Camera error: ${next.value.errorDescription}');
+          }
+        },
+      );
+
+      initializeControllerFuture = next.initialize();
       await initializeControllerFuture;
-      isCameraInitialized.value = true;
+
+      isCameraInitialized(true);
+    } on CameraException catch (e) {
+      logE('Flip camera error: $e');
+      isCameraInitialized(false);
     } on Exception catch (e) {
       logE('Flip camera error: $e');
+      isCameraInitialized(false);
     }
   }
 }

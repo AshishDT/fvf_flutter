@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:fvf_flutter/app/data/models/md_user.dart';
 import '../../../data/models/api_reponse.dart';
 import '../../../data/remote/api_service/api_wrapper.dart';
 import '../../../data/remote/api_service/init_api_service.dart';
@@ -88,12 +87,13 @@ class CreateBetApiRepo {
         APIService.post<Map<String, dynamic>>(
           path: 'user/can-create-round',
         ).then(
-              (Response<Map<String, dynamic>>? response) {
+          (Response<Map<String, dynamic>>? response) {
             if (response?.isOk != true || response?.data == null) {
               return null;
             }
 
-            final ApiResponse<MdCanCreateBet> data = ApiResponse<MdCanCreateBet>.fromJson(
+            final ApiResponse<MdCanCreateBet> data =
+                ApiResponse<MdCanCreateBet>.fromJson(
               response!.data!,
               fromJsonT: (dynamic json) => MdCanCreateBet.fromJson(json),
             );
@@ -104,7 +104,7 @@ class CreateBetApiRepo {
 
             appSnackbar(
               message:
-              data.message ?? 'Something went wrong, please try again.',
+                  data.message ?? 'Something went wrong, please try again.',
               snackbarState: SnackbarState.danger,
             );
             return null;
@@ -112,20 +112,17 @@ class CreateBetApiRepo {
         ),
       );
 
-
   /// User Claim
-  static Future<MdUser?> userClaim({
+  static Future<bool?> userClaim({
     required String phone,
     required String countryCode,
-    required String supabaseId,
   }) async =>
-      APIWrapper.handleApiCall<MdUser>(
+      APIWrapper.handleApiCall<bool?>(
         APIService.post<Map<String, dynamic>>(
           path: 'user/claim',
           data: <String, dynamic>{
             'phone': phone,
             'country_code': countryCode,
-            'supabase_id': supabaseId,
           },
         ).then(
           (Response<Map<String, dynamic>>? response) {
@@ -133,17 +130,12 @@ class CreateBetApiRepo {
               return null;
             }
 
-            final ApiResponse<MdUser> data = ApiResponse<MdUser>.fromJson(
+            final ApiResponse<bool> data = ApiResponse<bool>.fromJson(
               response!.data!,
-              fromJsonT: (dynamic json) => MdUser.fromJson(json),
             );
 
-            if (data.success == true) {
-              appSnackbar(
-                message: data.message ?? '',
-                snackbarState: SnackbarState.success,
-              );
-              return data.data;
+            if (data.success ?? false) {
+              return true;
             }
 
             appSnackbar(

@@ -12,7 +12,7 @@ class SocketIoRepo {
 
   static final SocketIoRepo _instance = SocketIoRepo._internal();
 
-  late IO.Socket _socket;
+  IO.Socket? _socket;
 
   /// Timer for auto emit
   Timer? _emitTimer;
@@ -38,7 +38,7 @@ class SocketIoRepo {
       );
 
       _socket
-        ..connect()
+        ?..connect()
         ..onConnect((_) {
           logI('✅ Connected to socket server: $url');
         })
@@ -53,6 +53,7 @@ class SocketIoRepo {
         });
     } on Exception catch (e, st) {
       logWTF('💥 Error initializing socket: $e\n$st');
+      _socket = null;
     }
   }
 
@@ -77,8 +78,11 @@ class SocketIoRepo {
 
   /// Emit function (manual emit if needed)
   void emitGetDate(Map<String, dynamic> payload) {
-    if (_socket.connected) {
-      _socket.emit('getRound', payload);
+    if (_socket?.connected ?? false) {
+      if (_socket != null) {
+        _socket?.emit('getRound', payload);
+      }
+
       logI('📤 Emitted event [getRound] with payload: $payload');
     } else {
       logWTF('⚠️ Tried to emit [getRound] but socket is NOT connected!');
@@ -88,42 +92,70 @@ class SocketIoRepo {
   /// Listen function (subscribe to "roundUpdate")
   void listenForDateEvent(void Function(dynamic data) onData) {
     logI('👂 Subscribing to [roundUpdate] event');
-    _socket.on(
-      'roundUpdate',
-      (dynamic data) {
-        logI('📥 Received [roundUpdate]: $data');
-        receivedData.add(data.toString());
-        onData(data);
-      },
-    );
+    if (_socket != null) {
+      _socket?.on(
+        'roundUpdate',
+        (dynamic data) {
+          logI('📥 Received [roundUpdate]: $data');
+          receivedData.add(data.toString());
+          onData(data);
+        },
+      );
+    }
   }
 
   /// Listen function (subscribe to "roundProcess")
   void listenForRoundProcess(void Function(dynamic data) onData) {
     logI('👂 Subscribing to [roundProcess] event');
-    _socket.on(
-      'roundProcess',
-      (dynamic data) {
-        log('📥 Received [roundProcess]: $data');
-        onData(data);
-      },
-    );
+    if (_socket != null) {
+      _socket?.on(
+        'roundProcess',
+        (dynamic data) {
+          log('📥 Received [roundProcess]: $data');
+          onData(data);
+        },
+      );
+    }
   }
 
   /// Dispose resources
   void dispose() {
     logI('🛑 Disposing socket + clearing listeners');
     stopAutoEmit();
-    _socket
-      ..off('roundUpdate')
-      ..off('roundProcess')
-      ..dispose();
+    if (_socket != null) {
+      _socket
+        ?..off('roundUpdate')
+        ..off('roundProcess')
+        ..dispose();
+    }
   }
 
   /// Dispose only round update listener
   void disposeRoundUpdate() {
     logI('🛑 Disposing only roundUpdate listener');
     stopAutoEmit();
-    _socket.off('roundUpdate');
+    if (_socket != null) {
+      _socket?.off('roundUpdate');
+    }
+  }
+
+  /// Disconnect socket safely
+  void disconnect() {
+    if (_socket != null) {
+      if (_socket!.connected) {
+        logI('🔌 Disconnecting from socket server...');
+        _socket!.disconnect();
+      }
+
+      logI('🛑 Cleaning up socket + listeners');
+      _socket
+        ?..off('roundUpdate')
+        ..off('roundProcess')
+        ..dispose();
+
+      _socket = null;
+    } else {
+      logI('⚠️ No active socket to disconnect');
+    }
   }
 }

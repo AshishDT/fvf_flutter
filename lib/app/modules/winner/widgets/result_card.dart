@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/reaction_menu.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/rotate_and_wiggle.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
@@ -11,12 +10,15 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
+import '../../../ui/components/custom_type_writer.dart';
 import '../../../utils/app_text_style.dart';
+import '../../profile/models/md_profile_args.dart';
 
 /// Result Card Widget
 class ResultCard extends StatelessWidget {
   /// Constructor for ResultCard
   const ResultCard({
+    required this.userId,
     super.key,
     this.ordinalSuffix,
     this.rank,
@@ -25,7 +27,6 @@ class ResultCard extends StatelessWidget {
     this.userName,
     this.reason,
     this.isExposed = false,
-    this.isFromProfile = false,
     this.onReactionSelected,
     this.triggerQuestionMark = false,
     this.reactions,
@@ -52,9 +53,6 @@ class ResultCard extends StatelessWidget {
   /// Is exposed
   final bool isExposed;
 
-  /// Is from profile
-  final bool isFromProfile;
-
   /// On reaction selected
   final void Function(String)? onReactionSelected;
 
@@ -64,13 +62,16 @@ class ResultCard extends StatelessWidget {
   /// Reactions
   final String? reactions;
 
+  /// User id
+  final String userId;
+
   @override
   Widget build(BuildContext context) => Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           Column(
             children: <Widget>[
-              if (isFromProfile || isExposed || rank == 1)
+              if (isExposed || rank == 1)
                 Align(
                   alignment: Alignment.centerRight,
                   child: Row(
@@ -123,7 +124,7 @@ class ResultCard extends StatelessWidget {
                       style: GoogleFonts.fredoka(
                         fontSize: 36.sp,
                         fontWeight: FontWeight.w500,
-                        color: AppColors.kF1F2F2,
+                        color: AppColors.kffffff,
                         shadows: <Shadow>[
                           const Shadow(
                             offset: Offset(0, 4),
@@ -153,8 +154,8 @@ class ResultCard extends StatelessWidget {
                     );
                   },
                   child: reactions == null || (reactions?.isEmpty ?? true)
-                      ? SvgPicture.asset(
-                          AppImages.smilyIcon,
+                      ? Image.asset(
+                          AppImages.smilyIconPng,
                           height: 32.w,
                           width: 32.w,
                         )
@@ -170,8 +171,8 @@ class ResultCard extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 child: GestureDetector(
                   onTap: () {},
-                  child: SvgPicture.asset(
-                    AppImages.shareIconShadow,
+                  child: Image.asset(
+                    AppImages.shareIconPng,
                     height: 32.w,
                     width: 32.w,
                   ),
@@ -184,57 +185,19 @@ class ResultCard extends StatelessWidget {
                     children: <Widget>[
                       36.horizontalSpace,
                       Expanded(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(500.r),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  boxShadow: <BoxShadow>[
-                                    BoxShadow(
-                                      offset: const Offset(0, 1),
-                                      blurRadius: 2,
-                                      color: AppColors.k000000
-                                          .withValues(alpha: .75),
-                                    ),
-                                  ],
-                                ),
-                                child: CachedNetworkImage(
-                                  imageUrl: selfieUrl ?? '',
-                                  width: 24.w,
-                                  height: 24.w,
-                                  fit: BoxFit.cover,
-                                  placeholder: (_, __) => const Center(
-                                      child: CircularProgressIndicator(
-                                          strokeWidth: 2)),
-                                  errorWidget: (_, __, ___) => Container(
-                                    height: 24.w,
-                                    width: 24.w,
-                                    color: Colors.grey.shade200,
-                                    child: const Icon(
-                                      Icons.person,
-                                      size: 16,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            if (userName != null &&
-                                (userName?.isNotEmpty ?? false)) ...<Widget>[
-                              4.horizontalSpace,
-                              Flexible(
-                                child: Text(
-                                  userName ?? '',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: AppTextStyle.openRunde(
-                                    fontSize: 24.sp,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.kffffff,
-                                    shadows: <Shadow>[
-                                      Shadow(
+                        child: GestureDetector(
+                          onTap: () {
+                            _navigateToProfile();
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(500.r),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    boxShadow: <BoxShadow>[
+                                      BoxShadow(
                                         offset: const Offset(0, 1),
                                         blurRadius: 2,
                                         color: AppColors.k000000
@@ -242,10 +205,53 @@ class ResultCard extends StatelessWidget {
                                       ),
                                     ],
                                   ),
+                                  child: CachedNetworkImage(
+                                    imageUrl: selfieUrl ?? '',
+                                    width: 24.w,
+                                    height: 24.w,
+                                    fit: BoxFit.cover,
+                                    placeholder: (_, __) => const Center(
+                                        child: CircularProgressIndicator(
+                                            strokeWidth: 2)),
+                                    errorWidget: (_, __, ___) => Container(
+                                      height: 24.w,
+                                      width: 24.w,
+                                      color: Colors.grey.shade200,
+                                      child: const Icon(
+                                        Icons.person,
+                                        size: 16,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ]
-                          ],
+                              if (userName != null &&
+                                  (userName?.isNotEmpty ?? false)) ...<Widget>[
+                                4.horizontalSpace,
+                                Flexible(
+                                  child: Text(
+                                    userName ?? '',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: AppTextStyle.openRunde(
+                                      fontSize: 24.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.kffffff,
+                                      shadows: <Shadow>[
+                                        Shadow(
+                                          offset: const Offset(0, 1),
+                                          blurRadius: 2,
+                                          color: AppColors.k000000
+                                              .withValues(alpha: .75),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ]
+                            ],
+                          ),
                         ),
                       ),
                       GestureDetector(
@@ -260,10 +266,11 @@ class ResultCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  if (isFromProfile || isExposed || rank == 1) ...<Widget>[
+                  if (isExposed || rank == 1) ...<Widget>[
                     16.verticalSpace,
-                    Text(
-                      reason ?? '',
+                    CustomTypewriterText(
+                      text: reason ?? '',
+                      maxLines: 2,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.inter(
                         fontSize: 20.sp,
@@ -286,4 +293,16 @@ class ResultCard extends StatelessWidget {
           ),
         ],
       );
+
+  /// Navigate to profile
+  void _navigateToProfile() {
+    Get.toNamed(
+      Routes.PROFILE,
+      preventDuplicates: false,
+      arguments: MdProfileArgs(
+        tag: '${userId}_${DateTime.now().millisecondsSinceEpoch}',
+        userId: userId,
+      ),
+    );
+  }
 }

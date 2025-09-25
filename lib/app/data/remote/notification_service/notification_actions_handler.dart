@@ -18,6 +18,7 @@ class NotificationActionsHandler {
   /// Handle notification action
   static Future<void> handleRoundDetails({
     required String roundId,
+    bool isViewOnly = false,
   }) async {
     Loader.show();
     try {
@@ -31,6 +32,7 @@ class NotificationActionsHandler {
             _roundDetails.round?.status ?? RoundStatus.pending;
 
         switch (status) {
+          case RoundStatus.started:
           case RoundStatus.pending:
             final MdRound? _round = _roundDetails.round;
 
@@ -38,7 +40,10 @@ class NotificationActionsHandler {
               return;
             }
 
-            _onPendingStatus(_round);
+            _onPendingStatus(
+              round: _round,
+              isViewOnly: isViewOnly,
+            );
             break;
           case RoundStatus.processing:
             final List<MdParticipant>? participants =
@@ -48,14 +53,15 @@ class NotificationActionsHandler {
               return;
             }
 
-            final bool isHost = _roundDetails.round?.host?.supabaseId ==
-                UserProvider.currentUser?.supabaseId;
+            final bool isHost =
+                _roundDetails.round?.host?.id == UserProvider.userId;
 
             _handleProcessingRound(
               participants: participants,
               prompt: _roundDetails.round?.prompt ?? '',
               roundId: roundId,
               isHost: isHost,
+              isViewOnly: isViewOnly,
             );
             break;
           case RoundStatus.completed:
@@ -74,10 +80,25 @@ class NotificationActionsHandler {
               roundId: roundId,
               host: _roundDetails.round?.host,
               prompt: _roundDetails.round?.prompt ?? '',
+              isViewOnly: isViewOnly,
             );
             break;
           case RoundStatus.failed:
-            // Navigate to error screen
+            final List<MdParticipant>? participants =
+                _roundDetails.round?.participants;
+
+            if (participants == null || participants.isEmpty) {
+              return;
+            }
+
+            final bool isHost =
+                _roundDetails.round?.host?.id == UserProvider.userId;
+            _fallBackToStartAgain(
+              isHost: isHost,
+              participants: participants,
+              roundId: roundId,
+              isViewOnly: isViewOnly,
+            );
             break;
         }
       }
@@ -97,30 +118,33 @@ class NotificationActionsHandler {
     required RoundStatus status,
     DateTime? revealAt,
     RoundHost? host,
+    bool? isViewOnly,
   }) {
-    Get
-      ..until(
-        (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
-      )
-      ..toNamed(
-        Routes.WINNER,
-        arguments: <String, dynamic>{
-          'result_data': MdAiResultData(
-            prompt: prompt,
-            host: host,
-            id: roundId,
-            results: results,
-            status: status,
-            revealAt: revealAt,
-          ),
-        },
-      );
+    Get.offNamedUntil(
+      Routes.WINNER,
+      (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
+      arguments: <String, dynamic>{
+        'result_data': MdAiResultData(
+          prompt: prompt,
+          host: host,
+          id: roundId,
+          results: results,
+          status: status,
+          revealAt: revealAt,
+          isViewOnly: isViewOnly,
+        ),
+      },
+    );
   }
 
   /// On pending status
-  static void _onPendingStatus(MdRound round) {
-    Get.toNamed(
+  static void _onPendingStatus({
+    required MdRound round,
+    bool? isViewOnly,
+  }) {
+    Get.offNamedUntil(
       Routes.SNAP_SELFIES,
+      (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
       arguments: MdJoinInvitation(
         id: round.id ?? '',
         createdAt: round.createdAt?.toIso8601String(),
@@ -129,7 +153,7 @@ class NotificationActionsHandler {
         isCustomPrompt: round.isCustomPrompt ?? false,
         isActive: round.isActive ?? false,
         isDeleted: round.isDeleted ?? false,
-        status: round.status?.value,
+        status: round.status,
         updatedAt: round.updatedAt?.toIso8601String(),
         roundJoinedEndAt: round.roundJoinedEndAt,
         previousRounds: round.previousRounds,
@@ -146,6 +170,7 @@ class NotificationActionsHandler {
         ],
         isFromInvitation: true,
         host: round.host,
+        isViewOnly: isViewOnly,
       ),
     );
   }
@@ -156,6 +181,7 @@ class NotificationActionsHandler {
     required String prompt,
     required String roundId,
     bool isHost = false,
+    bool isViewOnly = false,
   }) {
     final List<MdParticipant> participantsWithSelfies = participants
         .where((MdParticipant participant) =>
@@ -168,12 +194,14 @@ class NotificationActionsHandler {
       _navigateToAiChoosing(
         participants: participantsWithSelfies,
         prompt: prompt,
+        isViewOnly: isViewOnly,
       );
     } else {
       _fallBackToStartAgain(
         participants: participants,
         isHost: isHost,
         roundId: roundId,
+        isViewOnly: isViewOnly,
       );
     }
   }
@@ -182,13 +210,16 @@ class NotificationActionsHandler {
   static void _navigateToAiChoosing({
     required List<MdParticipant> participants,
     required String prompt,
+    bool isViewOnly = false,
   }) {
-    Get.toNamed(
+    Get.offNamedUntil(
       Routes.AI_CHOOSING,
+      (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
       arguments: <String, dynamic>{
         'participants': participants,
         'bet': prompt,
         'from_notification': true,
+        'is_view_only': isViewOnly,
       },
     );
   }
@@ -198,6 +229,7 @@ class NotificationActionsHandler {
     required List<MdParticipant> participants,
     required String roundId,
     required bool isHost,
+    bool isViewOnly = false,
   }) {
     final MdParticipant selfParticipant = participants.firstWhere(
       (MdParticipant participant) => participant.isCurrentUser,
@@ -210,23 +242,25 @@ class NotificationActionsHandler {
           .toList();
 
       final Map<String?, MdParticipant> uniqueMap = <String?, MdParticipant>{
-        for (final MdParticipant p in list) p.userData?.supabaseId: p
+        for (final MdParticipant p in list) p.userData?.id: p
       };
 
       return uniqueMap.values.toList();
     }
 
     final Map<String, dynamic> currentArgs = <String, dynamic>{
-      'reason': 'Only you joined..',
+      'reason': isHost ? 'Only you joined..' : 'Not enough friends joined..',
       'round_id': roundId,
       'is_host': isHost,
       'sub_reason': 'Go again with your friends',
       'self_participant': selfParticipant,
       'participants_without_current_user': participantsWithoutCurrentUser(),
+      'is_view_only': isViewOnly,
     };
 
-    Get.offNamed(
+    Get.offNamedUntil(
       Routes.FAILED_ROUND,
+      (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
       arguments: currentArgs,
     );
   }

@@ -1,3 +1,4 @@
+import '../../modules/ai_choosing/enums/round_status_enum.dart';
 import '../../modules/create_bet/models/md_participant.dart';
 import '../../modules/create_bet/models/md_previous_round.dart';
 
@@ -22,6 +23,8 @@ class MdJoinInvitation {
     this.participants,
     this.isFromInvitation,
     this.previousRounds,
+    this.isViewOnly,
+    this.isAlreadyJoined,
   });
 
   /// From JSON
@@ -30,7 +33,9 @@ class MdJoinInvitation {
         id: json['id'] as String?,
         createdAt: json['createdAt'] as String?,
         updatedAt: json['updatedAt'] as String?,
-        status: json['status'] as String?,
+        status: json['status'] == null
+            ? null
+            : RoundStatusX.fromString(json['status'] as String),
         type: json['type'] as String?,
         prompt: json['prompt'] as String?,
         isCustomPrompt: json['is_custom_prompt'] as bool?,
@@ -50,6 +55,8 @@ class MdJoinInvitation {
             : (json['participants'] as List<dynamic>?)
                 ?.map((e) => MdParticipant.fromJson(e as Map<String, dynamic>))
                 .toList(),
+        isViewOnly: json['is_view_only'],
+        isAlreadyJoined: json['is_already_joined'],
       );
 
   /// Round Id
@@ -62,7 +69,7 @@ class MdJoinInvitation {
   final String? updatedAt;
 
   /// Status
-  final String? status;
+  RoundStatus? status;
 
   /// Type
   final String? type;
@@ -103,12 +110,18 @@ class MdJoinInvitation {
   /// Previous participants
   List<MdPreviousRound>? previousRounds;
 
+  /// Is view only
+  bool? isViewOnly;
+
+  /// Is already joined
+  bool? isAlreadyJoined;
+
   /// To JSON
   Map<String, dynamic> toJson() => <String, dynamic>{
         'id': id,
         'createdAt': createdAt,
         'updatedAt': updatedAt,
-        'status': status,
+        'status': status?.value,
         'type': type,
         'prompt': prompt,
         'is_custom_prompt': isCustomPrompt,
@@ -120,6 +133,9 @@ class MdJoinInvitation {
         'revealAt': revealAt,
         'host': host?.toJson(),
         'participants': participants?.map((e) => e.toJson()).toList(),
+        'previousRounds': previousRounds?.map((e) => e.toJson()).toList(),
+        'is_view_only': isViewOnly,
+        'is_already_joined': isAlreadyJoined,
       };
 }
 
@@ -137,7 +153,6 @@ class RoundHost {
     this.profileUrl,
     this.isClaim,
     this.age,
-    this.linkSupabaseId,
     this.fcmToken,
     this.winnerStreakCount,
     this.totalWins,
@@ -148,7 +163,6 @@ class RoundHost {
     this.isNotified,
     this.isActive,
     this.isDeleted,
-    this.supabaseId,
   });
 
   /// From JSON
@@ -163,7 +177,6 @@ class RoundHost {
         profileUrl: json['profile_url'] as String?,
         isClaim: json['is_claim'] as bool?,
         age: json['age'] as int?,
-        linkSupabaseId: json['link_supabase_id'] as String?,
         fcmToken: json['fcm_token'] as String?,
         winnerStreakCount: json['winner_streak_count'] as int?,
         totalWins: json['total_wins'] as int?,
@@ -174,7 +187,6 @@ class RoundHost {
         isNotified: json['is_notified'] as bool?,
         isActive: json['is_active'] as bool?,
         isDeleted: json['is_deleted'] as bool?,
-        supabaseId: json['supabase_id'] as String?,
       );
 
   /// Host Id
@@ -207,9 +219,6 @@ class RoundHost {
   /// Age
   final int? age;
 
-  /// Link Supabase ID
-  final String? linkSupabaseId;
-
   /// FCM token
   final String? fcmToken;
 
@@ -240,9 +249,6 @@ class RoundHost {
   /// Is deleted
   final bool? isDeleted;
 
-  /// Supabase ID
-  final String? supabaseId;
-
   /// To JSON
   Map<String, dynamic> toJson() => <String, dynamic>{
         'id': id,
@@ -255,7 +261,6 @@ class RoundHost {
         'profile_url': profileUrl,
         'is_claim': isClaim,
         'age': age,
-        'link_supabase_id': linkSupabaseId,
         'fcm_token': fcmToken,
         'winner_streak_count': winnerStreakCount,
         'total_wins': totalWins,
@@ -266,6 +271,5 @@ class RoundHost {
         'is_notified': isNotified,
         'is_active': isActive,
         'is_deleted': isDeleted,
-        'supabase_id': supabaseId,
       };
 }

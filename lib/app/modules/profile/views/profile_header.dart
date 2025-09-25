@@ -29,33 +29,52 @@ class ProfileHeaderSection extends StatelessWidget {
           /// Username + Edit
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              GestureDetector(
-                onTap: () => EditProfileSheetRepo.openEditProfile(
-                  const EditDataSheet(),
-                ),
-                child: Text(
-                  controller.profile().user?.username ?? 'Add Name',
-                  style: AppTextStyle.openRunde(
-                    color: AppColors.kffffff,
-                    fontSize: 32.sp,
-                    fontWeight: FontWeight.w600,
-                    shadows: <Shadow>[
-                      BoxShadow(
-                        offset: const Offset(0, 1),
-                        blurRadius: 2,
-                        color: AppColors.k000000.withValues(alpha: .75),
-                      ),
-                    ],
+              Flexible(
+                child: GestureDetector(
+                  onTap: () {
+                    if (controller.isCurrentUser) {
+                      EditProfileSheetRepo.openEditProfile(
+                        EditDataSheet(
+                          navigatorTag: controller.args.tag,
+                        ),
+                        onComplete: controller.onAddName,
+                      );
+                    }
+                  },
+                  child: Text(
+                    controller.profile().user?.username ?? 'Add Name',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyle.openRunde(
+                      color: AppColors.kffffff,
+                      fontSize: 32.sp,
+                      fontWeight: FontWeight.w600,
+                      shadows: <Shadow>[
+                        BoxShadow(
+                          offset: const Offset(0, 1),
+                          blurRadius: 2,
+                          color: AppColors.k000000.withValues(alpha: .75),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
               if (controller.isCurrentUser) ...<Widget>[
                 4.horizontalSpace,
                 GestureDetector(
-                  onTap: () => EditProfileSheetRepo.openEditProfile(
-                    const EditDataSheet(),
-                  ),
+                  onTap: () {
+                    if (controller.isCurrentUser) {
+                      EditProfileSheetRepo.openEditProfile(
+                        EditDataSheet(
+                          navigatorTag: controller.args.tag,
+                        ),
+                        onComplete: controller.onAddName,
+                      );
+                    }
+                  },
                   child: Obx(
                     () => controller.isLoading()
                         ? Padding(
@@ -69,126 +88,109 @@ class ProfileHeaderSection extends StatelessWidget {
                               ),
                             ),
                           )
-                        : SvgPicture.asset(
-                            AppImages.penShadowIcon,
-                          ).paddingOnly(top: 20.h),
+                        : Image.asset(
+                            AppImages.shadowPen,
+                            height: 18.h,
+                            width: 18.w,
+                          ),
                   ),
                 ),
               ],
             ],
           ),
           16.verticalSpace,
-          if (_canShowBadge) ...<Widget>[
-            Align(
-              child: GestureDetector(
-                onTap: () {
-                  Get.toNamed(
-                    Routes.HALL_OF_FAME,
-                    arguments: controller.badges,
-                  );
-                },
-                child: IntrinsicWidth(
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    alignment: Alignment.center,
-                    children: <Widget>[
-                      Container(
-                        height: 22.h,
-                        padding: REdgeInsets.only(right: 8, left: 28),
-                        alignment: AlignmentDirectional.centerEnd,
-                        decoration: BoxDecoration(
-                          color: AppColors.kF1F2F2.withValues(alpha: .36),
-                          borderRadius: BorderRadius.horizontal(
-                            left: Radius.circular(12.r),
-                            right: Radius.circular(12.r),
+          AnimatedSize(
+            duration: 300.milliseconds,
+            alignment: Alignment.topCenter,
+            curve: Curves.easeInOut,
+            child: Obx(
+              () => Visibility(
+                visible: !controller.isLoading() &&
+                    (controller.currentBadge().badge?.isNotEmpty ?? false),
+                child: Align(
+                  child: GestureDetector(
+                    onTap: () {
+                      Get.toNamed(
+                        Routes.HALL_OF_FAME,
+                        arguments: controller.badges,
+                      );
+                    },
+                    child: IntrinsicWidth(
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        alignment: Alignment.center,
+                        children: <Widget>[
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              8.horizontalSpace,
+                              PhysicalModel(
+                                color:
+                                    AppColors.kF1F2F2.withValues(alpha: 0.36),
+                                shadowColor:
+                                    Colors.black.withValues(alpha: 0.20),
+                                elevation: 2,
+                                borderRadius: BorderRadius.circular(12.r),
+                                child: Container(
+                                  height: 22.h,
+                                  padding: REdgeInsets.only(right: 8, left: 20),
+                                  alignment: AlignmentDirectional.centerEnd,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.horizontal(
+                                      left: Radius.circular(12.r),
+                                      right: Radius.circular(12.r),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    controller.currentBadge().badge ?? '',
+                                    style: GoogleFonts.fredoka(
+                                      color: AppColors.kffffff,
+                                      fontSize: 12.sp,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        child: Text(
-                          controller.currentBadge()?.badge ?? 'No Badge',
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.fredoka(
-                            color: AppColors.kffffff,
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      Align(
-                        alignment: AlignmentDirectional.centerStart,
-                        child: Container(
-                          height: 24.h,
-                          width: 24.w,
-                          padding: REdgeInsets.all(3),
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: <Color>[
-                                AppColors.kFB46CD,
-                                AppColors.k6C75FF,
-                                AppColors.k0DBFFF,
-                              ],
+                          Align(
+                            alignment: AlignmentDirectional.centerStart,
+                            child: Container(
+                              height: 24.h,
+                              width: 24.w,
+                              padding: REdgeInsets.all(3),
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: <Color>[
+                                    AppColors.kFB46CD,
+                                    AppColors.k6C75FF,
+                                    AppColors.k0DBFFF,
+                                  ],
+                                ),
+                              ),
+                              child: SvgPicture.asset(
+                                controller.currentBadge().imageUrl,
+                              ),
                             ),
                           ),
-                          child: SvgPicture.asset(
-                            controller.currentBadge()?.imageUrl ??
-                                AppImages.bronze,
-                          ),
-                        ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
             ),
-            24.verticalSpace,
-          ],
-
-          // /// Streak Chips
-          // if (_canShowBadge() ||
-          //     _canShowDailyFvf() ||
-          //     _canShowWinnerStreak()) ...<Widget>[
-          //   Row(
-          //     spacing: 8.w,
-          //     mainAxisAlignment: MainAxisAlignment.center,
-          //     children: <Widget>[
-          //       if (_canShowWinnerStreak()) ...<Widget>[
-          //         StreakChip(
-          //           onTap: () {
-          //             Get.toNamed(Routes.HALL_OF_FAME);
-          //           },
-          //           iconPath: AppImages.trophyIcon,
-          //           title:
-          //               '${controller.profile().user?.winnerStreakCount ?? 0}x Winner',
-          //           bgColor: AppColors.k09DB84.withValues(alpha: .58),
-          //         ),
-          //       ],
-          //       if (_canShowDailyFvf()) ...<Widget>[
-          //         StreakChip(
-          //           onTap: () {
-          //             Get.toNamed(Routes.HALL_OF_FAME);
-          //           },
-          //           iconPath: AppImages.fireIcon,
-          //           title:
-          //               '${controller.profile().user?.dailyTeamFvfCount ?? 0} Days',
-          //           bgColor: AppColors.kFFC300.withValues(alpha: .87),
-          //         ),
-          //       ],
-          //       if (_canShowBadge()) ...<Widget>[
-          //         StreakChip(
-          //           onTap: () {
-          //             Get.toNamed(Routes.HALL_OF_FAME);
-          //           },
-          //           iconPath: AppImages.emojiIcon,
-          //           title: controller.profile().user?.badge ?? '',
-          //           bgColor: AppColors.kEE4AD1.withValues(alpha: .88),
-          //         ),
-          //       ],
-          //     ],
-          //   ),
-          //   24.verticalSpace,
-          // ],
+          ),
+          Obx(
+            () => Visibility(
+              visible: !controller.isLoading() &&
+                  (controller.currentBadge().badge?.isNotEmpty ?? false),
+              child: 24.verticalSpace,
+            ),
+          ),
 
           /// Stats
           Row(
@@ -211,19 +213,4 @@ class ProfileHeaderSection extends StatelessWidget {
           152.verticalSpace,
         ],
       );
-
-  bool get _canShowBadge =>
-      controller.currentBadge() != null &&
-      (controller.currentBadge()?.badge != null &&
-          (controller.currentBadge()?.badge?.isNotEmpty ?? false));
-
-// bool _canShowBadge() =>
-//     controller.profile().user?.badge != null &&
-//     (controller.profile().user?.badge?.isNotEmpty ?? false);
-//
-// bool _canShowDailyFvf() =>
-//     (controller.profile().user?.dailyTeamFvfCount ?? 0) > 0;
-//
-// bool _canShowWinnerStreak() =>
-//     (controller.profile().user?.winnerStreakCount ?? 0) > 0;
 }

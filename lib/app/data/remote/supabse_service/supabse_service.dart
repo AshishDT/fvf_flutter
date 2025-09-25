@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../config/env_config.dart';
 
@@ -16,14 +15,8 @@ class SupaBaseService {
   /// Supabase instance
   static final SupabaseClient _instance = Supabase.instance.client;
 
-  /// Current user
-  static User? get currentUser => _instance.auth.currentUser;
-
   /// Is logged in
   static bool get isLoggedIn => _instance.auth.currentUser != null;
-
-  /// User ID
-  static String get userId => _instance.auth.currentUser?.id ?? '';
 
   /// Sign in anonymously
   static Future<AuthResponse> signInAnonymously() async {
@@ -35,6 +28,7 @@ class SupaBaseService {
   static Future<void> sendOtp(String phoneNumber) async {
     await _instance.auth.signInWithOtp(
       phone: phoneNumber,
+      shouldCreateUser: false,
     );
   }
 

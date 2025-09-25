@@ -98,9 +98,9 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
               child: hasImage
                   ? AnimatedContainer(
                       duration: 300.milliseconds,
-                      width: size.w + 4.w,
-                      height: size.h + 4.w,
-                      padding: REdgeInsets.all(2),
+                      width: size.w,
+                      height: size.h,
+                      padding: REdgeInsets.all(3),
                       decoration: const BoxDecoration(
                         shape: BoxShape.circle,
                         image: DecorationImage(

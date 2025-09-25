@@ -38,20 +38,7 @@ class CreateBetView extends GetView<CreateBetController> {
               key: controller.scaffoldKey,
               backgroundColor: AppColors.kF5FCFF,
               drawer: const MenuDrawer(),
-              floatingActionButton: Obx(
-                () => AppButton(
-                  buttonText: !(controller.canCreateBetData().allowed ?? false)
-                      ? 'Keep Slaying'
-                      : 'Bet',
-                  isLoading: controller.createRoundLoading() ||
-                      controller.isPurchasing(),
-                  onPressed: !(controller.canCreateBetData().allowed ?? false)
-                      ? () {
-                          controller.openPurchaseSheet();
-                        }
-                      : controller.onBetPressed,
-                ),
-              ).paddingSymmetric(horizontal: 24),
+              floatingActionButton: _floatingButton(),
               floatingActionButtonLocation:
                   FloatingActionButtonLocation.centerFloat,
               body: GradientCard(
@@ -91,7 +78,8 @@ class CreateBetView extends GetView<CreateBetController> {
                               _profileIcon(),
                             ],
                           ),
-                          64.verticalSpace,
+                          _suggestPadding(),
+                          _suggestion(),
                           QuestionCard(
                             child: Row(
                               children: <Widget>[
@@ -173,6 +161,89 @@ class CreateBetView extends GetView<CreateBetController> {
           ),
         ),
       );
+
+  /// Floating button widget
+  Column _floatingButton() => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Obx(
+            () => Visibility(
+              visible: controller.profile().user?.suggestCreateBet ?? false,
+              child: Padding(
+                padding: REdgeInsets.only(bottom: 24),
+                child: Text(
+                  friendsPlayedText(
+                    controller.profile().user?.lastPlayedFriendCount ?? 0,
+                  ),
+                  style: AppTextStyle.openRunde(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.kffffff,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Obx(
+            () => AppButton(
+              buttonText: !(controller.canCreateBetData().allowed ?? false)
+                  ? 'Keep Slaying'
+                  : 'Bet',
+              isLoading:
+                  controller.createRoundLoading() || controller.isPurchasing(),
+              onPressed: !(controller.canCreateBetData().allowed ?? false)
+                  ? () {
+                      controller.openPurchaseSheet();
+                    }
+                  : controller.onBetPressed,
+            ),
+          ).paddingSymmetric(horizontal: 24),
+        ],
+      );
+
+  /// Suggestion to create a bet
+  AnimatedSize _suggestion() => AnimatedSize(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        child: Visibility(
+          visible: controller.profile().user?.suggestCreateBet ?? false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                '🔥 Create Your Own Slay',
+                style: AppTextStyle.openRunde(
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.kffffff,
+                ),
+              ),
+              24.verticalSpace,
+            ],
+          ),
+        ),
+      );
+
+  /// Suggest padding based on whether to show suggestion or not
+  AnimatedSize _suggestPadding() => AnimatedSize(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        child: Obx(
+          () => controller.profile().user?.suggestCreateBet ?? false
+              ? 16.verticalSpace
+              : 64.verticalSpace,
+        ),
+      );
+
+  /// Text for friends played
+  String friendsPlayedText(int count) {
+    if (count <= 0) {
+      return '';
+    }
+    final String friendWord = count == 1 ? 'friend' : 'friends';
+    return '$count $friendWord just played - keep it going';
+  }
 
   /// Profile icon widget
   Obx _profileIcon() => Obx(

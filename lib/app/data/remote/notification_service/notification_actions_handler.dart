@@ -120,32 +120,21 @@ class NotificationActionsHandler {
     RoundHost? host,
     bool? isViewOnly,
   }) {
-    if (Get.currentRoute != Routes.CREATE_BET) {
-      Get.until(
-        (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
-      );
-    }
-
-    if (Get.currentRoute != Routes.WINNER) {
-      Future<void>.microtask(
-        () {
-          Get.toNamed(
-            Routes.WINNER,
-            arguments: <String, dynamic>{
-              'result_data': MdAiResultData(
-                prompt: prompt,
-                host: host,
-                id: roundId,
-                results: results,
-                status: status,
-                revealAt: revealAt,
-                isViewOnly: isViewOnly,
-              ),
-            },
-          );
-        },
-      );
-    }
+    Get.offNamedUntil(
+      Routes.WINNER,
+      (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
+      arguments: <String, dynamic>{
+        'result_data': MdAiResultData(
+          prompt: prompt,
+          host: host,
+          id: roundId,
+          results: results,
+          status: status,
+          revealAt: revealAt,
+          isViewOnly: isViewOnly,
+        ),
+      },
+    );
   }
 
   /// On pending status
@@ -153,48 +142,37 @@ class NotificationActionsHandler {
     required MdRound round,
     bool? isViewOnly,
   }) {
-    if (Get.currentRoute != Routes.CREATE_BET) {
-      Get.until(
-        (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
-      );
-    }
-
-    if (Get.currentRoute != Routes.SNAP_SELFIES) {
-      Future<void>.microtask(
-        () {
-          Get.toNamed(
-            Routes.SNAP_SELFIES,
-            arguments: MdJoinInvitation(
-              id: round.id ?? '',
-              createdAt: round.createdAt?.toIso8601String(),
-              type: round.id,
-              prompt: round.prompt ?? '',
-              isCustomPrompt: round.isCustomPrompt ?? false,
-              isActive: round.isActive ?? false,
-              isDeleted: round.isDeleted ?? false,
-              status: round.status,
-              updatedAt: round.updatedAt?.toIso8601String(),
-              roundJoinedEndAt: round.roundJoinedEndAt,
-              previousRounds: round.previousRounds,
-              participants: <MdParticipant>[
-                MdParticipant(
-                  createdAt: DateTime.now().toIso8601String(),
-                  id: round.host?.id ?? '',
-                  isActive: true,
-                  isDeleted: false,
-                  isHost: true,
-                  joinedAt: DateTime.now().toIso8601String(),
-                  userData: round.host,
-                ),
-              ],
-              isFromInvitation: true,
-              host: round.host,
-              isViewOnly: isViewOnly,
-            ),
-          );
-        },
-      );
-    }
+    Get.offNamedUntil(
+      Routes.SNAP_SELFIES,
+      (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
+      arguments: MdJoinInvitation(
+        id: round.id ?? '',
+        createdAt: round.createdAt?.toIso8601String(),
+        type: round.id,
+        prompt: round.prompt ?? '',
+        isCustomPrompt: round.isCustomPrompt ?? false,
+        isActive: round.isActive ?? false,
+        isDeleted: round.isDeleted ?? false,
+        status: round.status,
+        updatedAt: round.updatedAt?.toIso8601String(),
+        roundJoinedEndAt: round.roundJoinedEndAt,
+        previousRounds: round.previousRounds,
+        participants: <MdParticipant>[
+          MdParticipant(
+            createdAt: DateTime.now().toIso8601String(),
+            id: round.host?.id ?? '',
+            isActive: true,
+            isDeleted: false,
+            isHost: true,
+            joinedAt: DateTime.now().toIso8601String(),
+            userData: round.host,
+          ),
+        ],
+        isFromInvitation: true,
+        host: round.host,
+        isViewOnly: isViewOnly,
+      ),
+    );
   }
 
   /// Handle processing round
@@ -234,27 +212,16 @@ class NotificationActionsHandler {
     required String prompt,
     bool isViewOnly = false,
   }) {
-    if (Get.currentRoute != Routes.CREATE_BET) {
-      Get.until(
-        (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
-      );
-    }
-
-    if (Get.currentRoute != Routes.AI_CHOOSING) {
-      Future<void>.microtask(
-        () {
-          Get.toNamed(
-            Routes.AI_CHOOSING,
-            arguments: <String, dynamic>{
-              'participants': participants,
-              'bet': prompt,
-              'from_notification': true,
-              'is_view_only': isViewOnly,
-            },
-          );
-        },
-      );
-    }
+    Get.offNamedUntil(
+      Routes.AI_CHOOSING,
+      (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
+      arguments: <String, dynamic>{
+        'participants': participants,
+        'bet': prompt,
+        'from_notification': true,
+        'is_view_only': isViewOnly,
+      },
+    );
   }
 
   /// Fall back to start again
@@ -291,21 +258,10 @@ class NotificationActionsHandler {
       'is_view_only': isViewOnly,
     };
 
-    if (Get.currentRoute != Routes.CREATE_BET) {
-      Get.until(
-        (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
-      );
-    }
-
-    if (Get.currentRoute != Routes.FAILED_ROUND) {
-      Future<void>.microtask(
-        () {
-          Get.toNamed(
-            Routes.FAILED_ROUND,
-            arguments: currentArgs,
-          );
-        },
-      );
-    }
+    Get.offNamedUntil(
+      Routes.FAILED_ROUND,
+      (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
+      arguments: currentArgs,
+    );
   }
 }

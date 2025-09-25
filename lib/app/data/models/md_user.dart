@@ -30,6 +30,8 @@ class MdUser {
     this.bio,
     this.badge,
     this.emojiCount,
+    this.isAnyHost,
+    this.lastPlayedFriendCount,
   });
 
   /// From JSON
@@ -72,6 +74,8 @@ class MdUser {
                 json['badge'],
               ),
         emojiCount: json['emoji_count'],
+        isAnyHost: json['is_any_host'],
+        lastPlayedFriendCount: json['last_played_friend_count'],
       );
 
   /// FCM token
@@ -146,6 +150,12 @@ class MdUser {
   /// Emoji count
   int? emojiCount;
 
+  /// Is any host
+  bool? isAnyHost;
+
+  /// Last played friend count
+  int? lastPlayedFriendCount;
+
   /// To JSON
   Map<String, dynamic> toJson() => <String, dynamic>{
         'fcm_token': fcmToken,
@@ -172,8 +182,22 @@ class MdUser {
         'bio': bio,
         'badge': badge?.toJson(),
         'emoji_count': emojiCount,
+        'is_any_host': isAnyHost,
+        'last_played_friend_count': lastPlayedFriendCount,
       };
 
   /// To json
   String asString() => json.encode(toJson());
+
+  /// Suggest creating a Bet
+  bool get suggestCreateBet {
+    final bool hasPlayed =
+        lastPlayedFriendCount != null && lastPlayedFriendCount! > 0;
+
+    if (hasPlayed && !(isAnyHost ?? false)) {
+      return true;
+    }
+
+    return false;
+  }
 }

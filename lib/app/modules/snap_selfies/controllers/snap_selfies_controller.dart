@@ -388,26 +388,23 @@ class SnapSelfiesController extends GetxController
 
     final DateTime? revealedAt = DateTime.tryParse(data.round?.revealAt ?? '');
 
-    Get
-      ..until(
-        (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
-      )
-      ..toNamed(
-        Routes.WINNER,
-        arguments: <String, dynamic>{
-          'result_data': MdAiResultData(
-            revealAt: revealedAt,
-            status: RoundStatus.completed,
-            id: data.round?.id,
-            host: joinedInvitationData().host,
-            participants: data.round?.participants,
-            prompt: joinedInvitationData().prompt,
-            results: data.round?.results,
-            crew: data.round?.crew,
-            isViewOnly: joinedInvitationData().isViewOnly ?? false,
-          ),
-        },
-      );
+    Get.offNamedUntil(
+      Routes.WINNER,
+      (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
+      arguments: <String, dynamic>{
+        'result_data': MdAiResultData(
+          revealAt: revealedAt,
+          status: RoundStatus.completed,
+          id: data.round?.id,
+          host: joinedInvitationData().host,
+          participants: data.round?.participants,
+          prompt: joinedInvitationData().prompt,
+          results: data.round?.results,
+          crew: data.round?.crew,
+          isViewOnly: joinedInvitationData().isViewOnly ?? false,
+        ),
+      },
+    );
   }
 
   /// Handle processing round

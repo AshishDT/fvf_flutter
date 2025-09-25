@@ -129,8 +129,9 @@ class AiChoosingController extends GetxController {
     final bool isFailed = resultData.status == RoundStatus.failed;
 
     if (isComplete) {
-      Get.offNamed(
+      Get.offNamedUntil(
         Routes.WINNER,
+        (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
         arguments: <String, dynamic>{
           'result_data': resultData,
         },

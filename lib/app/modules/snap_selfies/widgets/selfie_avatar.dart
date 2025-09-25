@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 
 import '../../../routes/app_pages.dart';
 import '../../profile/models/md_profile_args.dart';
+import 'circular_gradient_painter.dart';
 
 /// Selfie Avatar widget
 class SelfieAvatar extends StatelessWidget {
@@ -118,32 +119,33 @@ class SelfieAvatar extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            AnimatedContainer(
-              duration: 300.milliseconds,
-              curve: Curves.easeInOut,
-              width: size.w + (showBorder ? 7 : 0),
-              height: size.h + (showBorder ? 7 : 0),
-              child: Stack(
-                alignment: Alignment.center,
-                children: <Widget>[
-                  if (showBorder)
-                    Image.asset(
-                      AppImages.aiChoosingAvatarBg,
-                      width: size.w + 7,
-                      height: size.h + 7,
-                      fit: BoxFit.cover,
-                    ),
-                  ClipOval(
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: <BoxShadow>[
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.30),
+                    offset: const Offset(0, 1),
+                    blurRadius: 2,
+                  ),
+                ],
+              ),
+              child: CustomPaint(
+                painter: showBorder ? CircularGradientBorderPainter() : null,
+                child: AnimatedContainer(
+                  duration: 300.milliseconds,
+                  curve: Curves.easeInOut,
+                  padding: REdgeInsets.all(2),
+                  width: size.w,
+                  height: size.h,
+                  child: ClipOval(
                     child: SizedBox(
                       width: size.w,
                       height: size.h,
-                      child: Padding(
-                        padding: REdgeInsets.only(bottom: 2),
-                        child: avatarContent,
-                      ),
+                      child: avatarContent,
                     ),
                   ),
-                ],
+                ),
               ),
             ),
             4.verticalSpace,

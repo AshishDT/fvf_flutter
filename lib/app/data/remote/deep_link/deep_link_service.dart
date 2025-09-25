@@ -51,9 +51,15 @@ class DeepLinkService {
 
   /// Initialize deep link listener
   static void initBranchListener() {
+    if (branchSubscription != null) {
+      return;
+    }
+
     branchSubscription = FlutterBranchSdk.listSession().listen(
       (Map<dynamic, dynamic> data) {
-        handleDeepLinkIncomingData(data);
+        handleDeepLinkIncomingData(
+          data,
+        );
       },
       onError: (dynamic error) {
         logE('Branch error: $error');

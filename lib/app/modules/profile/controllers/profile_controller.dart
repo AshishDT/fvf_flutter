@@ -89,6 +89,8 @@ class ProfileController extends GetxController
       },
     );
 
+    setupPageController();
+
     if (Get.arguments is MdProfileArgs) {
       final MdProfileArgs _args = Get.arguments as MdProfileArgs;
 
@@ -123,6 +125,21 @@ class ProfileController extends GetxController
 
   /// Previous bottom inset for keyboard
   final RxDouble _prevBottomInset = 0.0.obs;
+
+  /// Setup page controller
+  void setupPageController() {
+    roundPageController = PageController();
+
+    roundPageController.addListener(
+      () {
+        final double currentPage = roundPageController.page ?? 0;
+
+        if (currentPage >= rounds.length - 2 && hasMore()) {
+          getRounds();
+        }
+      },
+    );
+  }
 
   /// On close
   @override
@@ -212,23 +229,33 @@ class ProfileController extends GetxController
     String? profilePic,
     String? username,
   }) async {
-    if ((username?.trim().isEmpty ?? true) &&
-        (profilePic?.trim().isEmpty ?? true)) {
+    if ((username?.trim().isEmpty ?? true) && (profilePic?.isEmpty ?? true)) {
+      return;
+    }
+
+    final String normalizedCurrent =
+        profile().user?.username?.trim().toLowerCase() ?? '';
+    final String normalizedNew = username?.trim().toLowerCase() ?? '';
+
+    if (normalizedCurrent == normalizedNew && (profilePic?.isEmpty ?? true)) {
       return;
     }
 
     try {
       isLoading(true);
-      final bool _isUpdated = await ProfileApiRepo.updateUser(
+      final bool updated = await ProfileApiRepo.updateUser(
         profilePic: profilePic,
         username: username,
       );
-      if (_isUpdated) {
-        await getUser();
+
+      if (updated) {
+        await getUser(args: args);
+        await getRounds(args: args, isRefresh: true);
       }
     } on Exception catch (e, st) {
-      logE('Error getting user: $e');
+      logE('Error updating user: $e');
       logE(st);
+      isLoading(false);
     } finally {
       isLoading(false);
     }
@@ -270,30 +297,26 @@ class ProfileController extends GetxController
     if (isRoundsLoading()) {
       return;
     }
+
     try {
       if (isRefresh) {
         isRoundsLoading(true);
         skip = 0;
         hasMore(true);
         rounds.clear();
-        roundPageController = PageController();
       }
 
       final bool isCurrentUser = args?.userId == UserProvider.userId;
-
-      logWTF(
-        'Fetching rounds for userId: ${isCurrentUser ? "current user" : args?.userId} with skip: $skip and limit: $limit',
-      );
 
       final List<MdRound>? _rounds = await ProfileApiRepo.getRounds(
         skip: skip,
         limit: limit,
         userId: isCurrentUser ? null : args?.userId,
       );
+
       if (_rounds != null && _rounds.isNotEmpty) {
         rounds.addAll(_rounds);
         skip += _rounds.length;
-        logI('Round fetched: ${rounds.length}');
       } else {
         hasMore(false);
       }

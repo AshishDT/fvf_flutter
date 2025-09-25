@@ -312,6 +312,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
               participant: controller.selfParticipant(),
               userName: globalUser().username,
               isInvitationSend: controller.isInvitationSend(),
+              onAddName: controller.onAddName,
             ),
           ),
         ),

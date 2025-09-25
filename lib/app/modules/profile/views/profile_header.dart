@@ -39,6 +39,7 @@ class ProfileHeaderSection extends StatelessWidget {
                         EditDataSheet(
                           navigatorTag: controller.args.tag,
                         ),
+                        onComplete: controller.onAddName,
                       );
                     }
                   },
@@ -70,6 +71,7 @@ class ProfileHeaderSection extends StatelessWidget {
                         EditDataSheet(
                           navigatorTag: controller.args.tag,
                         ),
+                        onComplete: controller.onAddName,
                       );
                     }
                   },

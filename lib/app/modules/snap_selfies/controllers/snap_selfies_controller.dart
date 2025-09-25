@@ -77,21 +77,6 @@ class SnapSelfiesController extends GetxController
       },
     );
     super.onInit();
-
-    // Debounce enteredName updates
-    debounce(
-      enteredName,
-      (_) {
-        if (enteredName.isNotEmpty) {
-          final String trimmed = enteredName.trim();
-          if (trimmed.length < 3 || trimmed.length > 24) {
-            return;
-          }
-          updateUser(username: enteredName.value);
-        }
-      },
-      time: 400.milliseconds,
-    );
   }
 
   /// Initialize WebSocket connection and listeners
@@ -607,8 +592,8 @@ class SnapSelfiesController extends GetxController
     for (final MdPreviousRound _r in _rounds) {
       if (_r.participants != null) {
         for (final MdPreviousParticipant _p in _r.participants!) {
-          if (!previousAddedParticipants.any((MdPreviousParticipant existing) =>
-                  existing.id == _p.id) &&
+          if (!previousAddedParticipants.any(
+                  (MdPreviousParticipant existing) => existing.id == _p.id) &&
               _p.id != UserProvider.userId) {
             _p.isAdded = true;
             previousAddedParticipants.add(_p);
@@ -706,5 +691,19 @@ class SnapSelfiesController extends GetxController
     } finally {
       Loader.dismiss();
     }
+  }
+
+  /// On add name
+  void onAddName() {
+    final String trimmed = nameInputController.text.trim();
+    if (trimmed.length < 3 || trimmed.length > 24) {
+      appSnackbar(
+        message: 'Name must be between 3 and 24 characters.',
+        snackbarState: SnackbarState.danger,
+      );
+      return;
+    }
+    nameInputFocusNode.unfocus();
+    updateUser(username: trimmed);
   }
 }

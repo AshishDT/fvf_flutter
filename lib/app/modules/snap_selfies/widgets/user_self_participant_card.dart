@@ -140,6 +140,7 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
                   onTap: () {
                     ChatFieldSheetRepo.openChatField(
                       const EditNameSheet(),
+                      onComplete: onAddName,
                     );
                   },
                   child: VibrateWiggle(

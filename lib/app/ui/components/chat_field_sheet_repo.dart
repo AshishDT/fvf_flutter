@@ -8,7 +8,10 @@ class ChatFieldSheetRepo {
   static RxBool isSheetOpen = false.obs;
 
   /// Opens the chat input bottom sheet and dismisses it when keyboard closes
-  static void openChatField(Widget child) {
+  static void openChatField(
+    Widget child, {
+    VoidCallback? onComplete,
+  }) {
     isSheetOpen(true);
     showModalBottomSheet(
       context: Get.context!,
@@ -28,6 +31,7 @@ class ChatFieldSheetRepo {
     ).whenComplete(
       () {
         isSheetOpen(false);
+        onComplete?.call();
       },
     );
   }

@@ -71,9 +71,6 @@ class ProfileController extends GetxController
   /// animatedIndex
   RxInt animatedIndex = 0.obs;
 
-  /// Entered name
-  RxString enteredName = ''.obs;
-
   /// MdProfileArgs
   MdProfileArgs args = MdProfileArgs(
     tag: '',
@@ -97,8 +94,6 @@ class ProfileController extends GetxController
 
       args = _args;
 
-      final bool isCurrentUser = _args.userId == UserProvider.userId;
-
       getUser(
         args: _args,
       );
@@ -110,22 +105,6 @@ class ProfileController extends GetxController
       getBadges(
         args: _args,
       );
-
-      if (isCurrentUser) {
-        debounce(
-          enteredName,
-          (_) {
-            if (enteredName.isNotEmpty) {
-              final String trimmed = enteredName.trim();
-              if (trimmed.length < 3 || trimmed.length > 24) {
-                return;
-              }
-              updateUser(username: enteredName.value);
-            }
-          },
-          time: 400.milliseconds,
-        );
-      }
     }
   }
 
@@ -367,5 +346,20 @@ class ProfileController extends GetxController
         folder: 'profile',
       );
     }
+  }
+
+  /// On add name
+  void onAddName() {
+    final String trimmed = nameInputController.text.trim();
+    if (trimmed.length < 3 || trimmed.length > 24) {
+      appSnackbar(
+        message: 'Name must be between 3 and 24 characters.',
+        snackbarState: SnackbarState.danger,
+      );
+      return;
+    }
+    updateUser(
+      username: trimmed,
+    );
   }
 }

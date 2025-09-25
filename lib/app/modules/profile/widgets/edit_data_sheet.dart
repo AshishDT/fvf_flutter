@@ -8,6 +8,7 @@ import 'package:fvf_flutter/app/utils/app_text_formatter.dart';
 import 'package:get/get.dart';
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
+import '../../../ui/components/app_snackbar.dart';
 import '../../../utils/app_text_style.dart';
 
 /// EditDataSheet widget that adapts to keyboard visibility
@@ -79,16 +80,16 @@ class EditDataSheet extends GetView<ProfileController> {
               onFieldSubmitted: (String value) {
                 final String trimmed = value.trim();
                 if (trimmed.length < 3 || trimmed.length > 24) {
+                  appSnackbar(
+                    message: 'Name must be between 3 and 24 characters.',
+                    snackbarState: SnackbarState.danger,
+                  );
                   return;
                 }
                 Navigator.maybePop(context);
-                controller.enteredName(value.trim());
                 controller.updateUser(
                   username: controller.nameInputController.text.trim(),
                 );
-              },
-              onChanged: (String value) {
-                controller.enteredName(value.trim());
               },
               textInputAction: TextInputAction.go,
               decoration: InputDecoration(

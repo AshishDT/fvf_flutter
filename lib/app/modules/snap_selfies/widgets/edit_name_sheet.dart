@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
+import '../../../ui/components/app_snackbar.dart';
 import '../../../utils/app_text_formatter.dart';
 import '../../../utils/app_text_style.dart';
 
@@ -62,15 +63,15 @@ class EditNameSheet extends GetView<SnapSelfiesController> {
                 onFieldSubmitted: (String value) {
                   final String trimmed = value.trim();
                   if (trimmed.length < 3 || trimmed.length > 24) {
+                    appSnackbar(
+                      message: 'Name must be between 3 and 24 characters.',
+                      snackbarState: SnackbarState.danger,
+                    );
                     return;
                   }
                   Navigator.maybePop(context);
                   controller.nameInputFocusNode.unfocus();
-                  controller.enteredName(value.trim());
                   controller.updateUser(username: value.trim());
-                },
-                onChanged: (String value) {
-                  controller.enteredName(value.trim());
                 },
                 style: AppTextStyle.openRunde(
                   color: AppColors.kffffff,

@@ -8,7 +8,10 @@ class EditProfileSheetRepo {
   static RxBool isSheetOpen = false.obs;
 
   /// Opens the edit profile input bottom sheet and dismisses it when keyboard closes
-  static void openEditProfile(Widget child) {
+  static void openEditProfile(
+    Widget child, {
+    VoidCallback? onComplete,
+  }) {
     isSheetOpen(true);
     showModalBottomSheet(
       context: Get.context!,
@@ -28,6 +31,7 @@ class EditProfileSheetRepo {
     ).whenComplete(
       () {
         isSheetOpen(false);
+        onComplete?.call();
       },
     );
   }

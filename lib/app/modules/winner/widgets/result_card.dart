@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/reaction_menu.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/rotate_and_wiggle.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
+import 'package:fvf_flutter/app/ui/components/app_circular_progress.dart';
 import 'package:fvf_flutter/app/utils/emoji_ext.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -211,8 +212,10 @@ class ResultCard extends StatelessWidget {
                                     height: 24.w,
                                     fit: BoxFit.cover,
                                     placeholder: (_, __) => const Center(
-                                        child: CircularProgressIndicator(
-                                            strokeWidth: 2)),
+                                      child: AppCircularProgress(
+                                        size: 20,
+                                      ),
+                                    ),
                                     errorWidget: (_, __, ___) => Container(
                                       height: 24.w,
                                       width: 24.w,

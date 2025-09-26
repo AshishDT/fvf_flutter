@@ -64,7 +64,7 @@ class CircularGradientBorderPainterBlur extends CustomPainter {
         stops: <double>[0.1407, 0.5635, 1],
       ).createShader(Offset.zero & size)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = borderWidth * 1.h
+      ..strokeWidth = borderWidth * 2.h
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12);
 
     canvas.drawCircle(center, radius, glowPaint);

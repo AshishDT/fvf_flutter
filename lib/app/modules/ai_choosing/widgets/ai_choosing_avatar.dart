@@ -4,6 +4,7 @@ import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
+import 'package:fvf_flutter/app/ui/components/app_circular_progress.dart';
 
 /// AiChoosingAvatar widget
 class AiChoosingAvatar extends StatelessWidget {
@@ -49,7 +50,8 @@ class AiChoosingAvatar extends StatelessWidget {
                         height: 202.h,
                         fit: BoxFit.cover,
                         placeholder: (_, __) => const Center(
-                            child: CircularProgressIndicator(strokeWidth: 2)),
+                          child: AppCircularProgress(),
+                        ),
                         errorWidget: (_, __, ___) => const Center(
                           child: Icon(
                             Icons.error,

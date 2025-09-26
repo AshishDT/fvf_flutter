@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../ui/components/app_circular_progress.dart';
+
 /// Profile Avatar Widget
 class ProfileAvatar extends StatelessWidget {
   /// Constructor
@@ -36,8 +38,8 @@ class ProfileAvatar extends StatelessWidget {
                     child: SizedBox(
                       height: 12.h,
                       width: 12.w,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.w,
+                      child: const AppCircularProgress(
+                        size: 20,
                       ),
                     ),
                   ),

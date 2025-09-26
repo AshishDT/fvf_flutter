@@ -11,6 +11,7 @@ import 'package:fvf_flutter/app/modules/profile/models/md_profile_args.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/animated_list_view.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
+import 'package:fvf_flutter/app/ui/components/app_circular_progress.dart';
 import 'package:fvf_flutter/app/ui/components/chat_field_sheet_repo.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
@@ -72,7 +73,7 @@ class CreateBetView extends GetView<CreateBetController> {
                                 () => Visibility(
                                   visible: controller.canShowProfile() ||
                                       controller.isUserLoading(),
-                                  child: 10.horizontalSpace,
+                                  child: 16.horizontalSpace,
                                 ),
                               ),
                               _profileIcon(),
@@ -252,23 +253,8 @@ class CreateBetView extends GetView<CreateBetController> {
                 child: SizedBox(
                   height: 24.h,
                   width: 24.w,
-                  child: SleekCircularSlider(
-                    appearance: CircularSliderAppearance(
-                      spinnerMode: true,
-                      size: 30,
-                      customColors: CustomSliderColors(
-                        dotColor: Colors.transparent,
-                        trackColor: Colors.transparent,
-                        progressBarColor: Colors.transparent,
-                        shadowColor: Colors.black38,
-                        progressBarColors: <Color>[
-                          const Color(0xFFFFDBF6),
-                          const Color(0xFFFF70DB),
-                          const Color(0xFF6C75FF),
-                          const Color(0xFF4DD0FF),
-                        ],
-                      ),
-                    ),
+                  child: const AppCircularProgress(
+                    size: 30,
                   ),
                 ),
               )

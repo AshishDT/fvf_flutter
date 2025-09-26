@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fvf_flutter/app/modules/profile/widgets/participant_wrapper.dart';
+import 'package:fvf_flutter/app/ui/components/app_circular_progress.dart';
 import 'package:get/get.dart';
 import '../../../ui/components/common_app_bar.dart';
 import '../../winner/widgets/result_card.dart';
@@ -77,12 +78,13 @@ class RoundsTimeLinesView extends StatelessWidget {
                                   height: 1.sh,
                                   fit: BoxFit.cover,
                                   placeholder: (_, __) => const Center(
-                                    child: CircularProgressIndicator(
-                                        strokeWidth: 2),
+                                    child: AppCircularProgress(),
                                   ),
                                   errorWidget: (_, __, ___) => const Center(
-                                    child: Icon(Icons.error,
-                                        color: AppColors.kffffff),
+                                    child: Icon(
+                                      Icons.error,
+                                      color: AppColors.kffffff,
+                                    ),
                                   ),
                                 ),
                               ),

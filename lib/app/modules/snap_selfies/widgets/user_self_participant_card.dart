@@ -6,6 +6,7 @@ import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/modules/snap_selfies/widgets/edit_name_sheet.dart';
+import 'package:fvf_flutter/app/ui/components/app_circular_progress.dart';
 import 'package:fvf_flutter/app/ui/components/chat_field_sheet_repo.dart';
 import 'package:fvf_flutter/app/ui/components/vibrate_wiggle.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
@@ -75,8 +76,10 @@ class CurrentUserSelfieAvatar extends StatelessWidget {
           width: size.h,
           height: size.h,
           fit: BoxFit.cover,
-          placeholder: (_, __) => Center(
-            child: CircularProgressIndicator(strokeWidth: 2.w),
+          placeholder: (_, __) => const Center(
+            child: AppCircularProgress(
+              size: 60,
+            ),
           ),
           errorWidget: (_, __, ___) => _buildPlaceholder(),
         ),

@@ -9,6 +9,8 @@ import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:fvf_flutter/app/utils/emoji_ext.dart';
 import 'package:get/get.dart';
 
+import '../../../ui/components/app_circular_progress.dart';
+
 /// Selfie Avatar widget
 class SelfieAvatarIcon extends StatelessWidget {
   /// Constructor for SelfieAvatar
@@ -50,11 +52,13 @@ class SelfieAvatarIcon extends StatelessWidget {
       avatarContent = ClipOval(
         child: CachedNetworkImage(
           imageUrl: imageUrl,
-          width: size.w,
+          width: size.h,
           height: size.h,
           fit: BoxFit.cover,
-          placeholder: (_, __) => Center(
-            child: CircularProgressIndicator(strokeWidth: 2.w),
+          placeholder: (_, __) =>  const Center(
+            child: AppCircularProgress(
+              size: 30,
+            ),
           ),
           errorWidget: (_, __, ___) => const Center(
             child: Icon(
@@ -78,20 +82,22 @@ class SelfieAvatarIcon extends StatelessWidget {
             if (hasImage)
               AnimatedContainer(
                 duration: 300.milliseconds,
-                width: size.w,
+                width: size.h,
                 height: size.h,
-                padding: showStreakEmoji ? null : REdgeInsets.all(2),
                 decoration: showStreakEmoji
                     ? null
                     : BoxDecoration(
-                        color: AppColors.k2A2E2F.withValues(alpha: 0.20),
                         shape: BoxShape.circle,
+                        border: Border.all(
+                          color: AppColors.k2A2E2F.withValues(alpha: 0.20),
+                          width: 2.w,
+                        ),
                       ),
                 child: avatarContent,
               )
             else
               SizedBox(
-                width: size.w,
+                width: size.h,
                 height: size.h,
                 child: avatarContent,
               ),
@@ -131,7 +137,7 @@ class SelfieAvatarIcon extends StatelessWidget {
 
   /// Placeholder when no selfie/profile available
   Widget _buildPlaceholder() => Container(
-        width: size.w,
+        width: size.h,
         height: size.h,
         decoration: BoxDecoration(
           shape: BoxShape.circle,

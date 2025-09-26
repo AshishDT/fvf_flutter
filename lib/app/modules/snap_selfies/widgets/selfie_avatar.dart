@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
+import 'package:fvf_flutter/app/ui/components/app_circular_progress.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
 
@@ -66,11 +67,13 @@ class SelfieAvatar extends StatelessWidget {
       avatarContent = ClipOval(
         child: CachedNetworkImage(
           imageUrl: imageUrl,
-          width: size.w,
+          width: size.h,
           height: size.h,
           fit: BoxFit.cover,
-          placeholder: (_, __) => Center(
-            child: CircularProgressIndicator(strokeWidth: 2.w),
+          placeholder: (_, __) => const Center(
+            child: AppCircularProgress(
+              size: 30,
+            ),
           ),
           errorWidget: (_, __, ___) => const Center(
             child: Icon(
@@ -84,7 +87,7 @@ class SelfieAvatar extends StatelessWidget {
       avatarContent = ClipOval(
         child: Image.asset(
           AppImages.youProfile,
-          width: size.w,
+          width: size.h,
           height: size.h,
           fit: BoxFit.cover,
         ),
@@ -136,11 +139,11 @@ class SelfieAvatar extends StatelessWidget {
                   duration: 300.milliseconds,
                   curve: Curves.easeInOut,
                   padding: REdgeInsets.all(2),
-                  width: size.w,
+                  width: size.h,
                   height: size.h,
                   child: ClipOval(
                     child: SizedBox(
-                      width: size.w,
+                      width: size.h,
                       height: size.h,
                       child: avatarContent,
                     ),

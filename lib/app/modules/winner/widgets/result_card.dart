@@ -160,24 +160,10 @@ class ResultCard extends StatelessWidget {
                           height: 32.w,
                           width: 32.w,
                         )
-                      : Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            boxShadow: <BoxShadow>[
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.75),
-                                offset: const Offset(0, 1),
-                                blurRadius: 2,
-                              ),
-                            ],
-                          ),
-                          child: ClipRRect(
-                            child: Image.asset(
-                              reactions?.emojiImagePath ?? '',
-                              height: 32.w,
-                              width: 32.w,
-                            ),
-                          ),
+                      : Image.asset(
+                          reactions?.emojiImagePath ?? '',
+                          height: 32.w,
+                          width: 32.w,
                         ),
                 ),
               ),

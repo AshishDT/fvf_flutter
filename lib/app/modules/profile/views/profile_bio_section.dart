@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:fvf_flutter/app/ui/components/custom_type_writer.dart';
+import 'package:fvf_flutter/app/ui/components/flying_characters.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../data/config/app_colors.dart';
@@ -39,14 +39,14 @@ class ProfileBioSection extends StatelessWidget {
           if (controller.profile().user?.bio != null &&
               (controller.profile().user?.bio?.isNotEmpty ??
                   false)) ...<Widget>[
-            CustomTypewriterText(
+            FlyingCharacters(
               text: controller.profile().user?.bio ?? '',
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
                 fontSize: 20.sp,
                 fontStyle: FontStyle.italic,
                 color: AppColors.kffffff,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w700,
                 shadows: <Shadow>[
                   BoxShadow(
                     offset: const Offset(0, 1),

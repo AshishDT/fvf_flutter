@@ -129,16 +129,6 @@ class ProfileController extends GetxController
   /// Setup page controller
   void setupPageController() {
     roundPageController = PageController();
-
-    roundPageController.addListener(
-      () {
-        final double currentPage = roundPageController.page ?? 0;
-
-        if (currentPage >= rounds.length - 2 && hasMore()) {
-          getRounds();
-        }
-      },
-    );
   }
 
   /// On close
@@ -308,15 +298,21 @@ class ProfileController extends GetxController
 
       final bool isCurrentUser = args?.userId == UserProvider.userId;
 
-      final List<MdRound>? _rounds = await ProfileApiRepo.getRounds(
+      final MdUserRounds? _roundsData = await ProfileApiRepo.getRounds(
         skip: skip,
         limit: limit,
         userId: isCurrentUser ? null : args?.userId,
       );
 
-      if (_rounds != null && _rounds.isNotEmpty) {
+      final List<MdRound> _rounds = _roundsData?.rounds ?? <MdRound>[];
+
+      if (_rounds.isNotEmpty) {
         rounds.addAll(_rounds);
         skip += _rounds.length;
+
+        if (rounds.length >= (_roundsData?.total ?? 0)) {
+          hasMore(false);
+        }
       } else {
         hasMore(false);
       }

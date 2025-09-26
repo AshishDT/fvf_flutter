@@ -86,12 +86,12 @@ class ProfileApiRepo {
       ).then((bool? value) => value ?? false);
 
   /// Get Participant
-  static Future<List<MdRound>?> getRounds({
+  static Future<MdUserRounds?> getRounds({
     required int skip,
     required int limit,
     String? userId,
   }) async =>
-      APIWrapper.handleApiCall<List<MdRound>>(
+      APIWrapper.handleApiCall<MdUserRounds?>(
         APIService.get<Map<String, dynamic>>(
           path: userId != null && userId.isNotEmpty
               ? 'round/user-rounds/$userId/$skip/$limit'
@@ -110,8 +110,7 @@ class ProfileApiRepo {
             );
 
             if (data.success == true && data.data != null) {
-              final List<MdRound> rounds = data.data!.rounds ?? <MdRound>[];
-              return rounds;
+              return data.data;
             }
 
             appSnackbar(

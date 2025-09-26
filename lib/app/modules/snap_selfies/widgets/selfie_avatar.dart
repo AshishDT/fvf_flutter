@@ -102,10 +102,9 @@ class SelfieAvatar extends StatelessWidget {
             width: 3.w,
           ),
         ),
-        child: Center(
-          child: CircularProgressIndicator(
-            strokeWidth: 2.w,
-            color: Colors.white,
+        child: const Center(
+          child: AppCircularProgress(
+            size: 30,
           ),
         ),
       );

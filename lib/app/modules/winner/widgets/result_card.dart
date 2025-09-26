@@ -197,12 +197,13 @@ class ResultCard extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(500.r),
                                 child: Container(
                                   decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
                                     boxShadow: <BoxShadow>[
                                       BoxShadow(
+                                        color: Colors.black
+                                            .withValues(alpha: 0.30),
                                         offset: const Offset(0, 1),
                                         blurRadius: 2,
-                                        color: AppColors.k000000
-                                            .withValues(alpha: .75),
                                       ),
                                     ],
                                   ),

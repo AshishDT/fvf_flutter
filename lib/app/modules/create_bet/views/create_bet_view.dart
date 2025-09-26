@@ -252,7 +252,7 @@ class CreateBetView extends GetView<CreateBetController> {
             ? Center(
                 child: SizedBox(
                   height: 24.h,
-                  width: 24.w,
+                  width: 24.h,
                   child: const AppCircularProgress(
                     size: 30,
                   ),

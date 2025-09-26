@@ -54,7 +54,9 @@ class Loader {
                 child: SizedBox(
                   width: 45.w,
                   height: 45.h,
-                  child: const AppCircularProgress(),
+                  child: const AppCircularProgress(
+                    useCustomWidth: false,
+                  ),
                 ),
               ),
               if ((msg?.isNotEmpty ?? false) && msg != null) ...[

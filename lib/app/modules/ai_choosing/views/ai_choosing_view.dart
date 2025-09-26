@@ -245,6 +245,6 @@ class AiChoosingView extends GetView<AiChoosingController> {
               ),
             ],
           ),
-        ).withGPad(context, color: Colors.black),
+        ).withGPad(context),
       );
 }

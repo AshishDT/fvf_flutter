@@ -164,6 +164,13 @@ class SelfieAvatar extends StatelessWidget {
                     fontSize: 18.sp,
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
+                    shadows: <Shadow>[
+                      const Shadow(
+                        offset: Offset(0, 4),
+                        blurRadius: 4,
+                        color: Color(0x33000000),
+                      ),
+                    ],
                   ),
                 ),
               ),

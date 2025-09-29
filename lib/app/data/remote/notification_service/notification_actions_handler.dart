@@ -170,17 +170,7 @@ class NotificationActionsHandler {
         roundJoinedEndAt: round.roundJoinedEndAt,
         previousRounds: round.previousRounds,
         isAlreadyJoined: isHost,
-        participants: <MdParticipant>[
-          MdParticipant(
-            createdAt: DateTime.now().toIso8601String(),
-            id: round.host?.id ?? '',
-            isActive: true,
-            isDeleted: false,
-            isHost: true,
-            joinedAt: DateTime.now().toIso8601String(),
-            userData: round.host,
-          ),
-        ],
+        participants: round.participants,
         host: round.host,
         isViewOnly: isViewOnly,
       ),

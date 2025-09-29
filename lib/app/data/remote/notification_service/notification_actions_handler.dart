@@ -150,7 +150,7 @@ class NotificationActionsHandler {
     bool? isViewOnly,
     bool isHost = false,
   }) {
-    if (isHost && Get.currentRoute == Routes.SNAP_SELFIES) {
+    if (Get.currentRoute == Routes.SNAP_SELFIES) {
       return;
     }
 
@@ -217,6 +217,9 @@ class NotificationActionsHandler {
     required String prompt,
     bool isViewOnly = false,
   }) {
+    if (Get.currentRoute == Routes.AI_CHOOSING) {
+      return;
+    }
     Get.offNamedUntil(
       Routes.AI_CHOOSING,
       (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,

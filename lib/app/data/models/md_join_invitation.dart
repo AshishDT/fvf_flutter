@@ -21,7 +21,6 @@ class MdJoinInvitation {
     this.revealAt,
     this.host,
     this.participants,
-    this.isFromInvitation,
     this.previousRounds,
     this.isViewOnly,
     this.isAlreadyJoined,
@@ -103,9 +102,6 @@ class MdJoinInvitation {
 
   /// Participants
   List<MdParticipant>? participants;
-
-  /// Is from invitation
-  bool? isFromInvitation;
 
   /// Previous participants
   List<MdPreviousRound>? previousRounds;

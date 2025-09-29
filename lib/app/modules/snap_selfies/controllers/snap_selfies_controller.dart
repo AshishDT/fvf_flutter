@@ -45,7 +45,11 @@ class SnapSelfiesController extends GetxController
 
       loadPreviousRounds();
 
-      if (joinedInvitationData().isFromInvitation ?? false) {
+      final bool isHost =
+          joinedInvitationData().host?.id == UserProvider.userId;
+
+      if (!isHost ||
+          (isHost && (joinedInvitationData().isAlreadyJoined ?? false))) {
         DateTime? endAt = joinedInvitationData().roundJoinedEndAt;
 
         if (endAt != null && endAt.second > 2) {

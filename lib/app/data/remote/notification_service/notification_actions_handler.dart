@@ -40,9 +40,13 @@ class NotificationActionsHandler {
               return;
             }
 
+            final bool isHost =
+                _roundDetails.round?.host?.id == UserProvider.userId;
+
             _onPendingStatus(
               round: _round,
               isViewOnly: isViewOnly,
+              isHost: isHost,
             );
             break;
           case RoundStatus.processing:
@@ -141,7 +145,12 @@ class NotificationActionsHandler {
   static void _onPendingStatus({
     required MdRound round,
     bool? isViewOnly,
+    bool isHost = false,
   }) {
+    if (isHost && Get.currentRoute == Routes.SNAP_SELFIES) {
+      return;
+    }
+
     Get.offNamedUntil(
       Routes.SNAP_SELFIES,
       (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
@@ -157,6 +166,7 @@ class NotificationActionsHandler {
         updatedAt: round.updatedAt?.toIso8601String(),
         roundJoinedEndAt: round.roundJoinedEndAt,
         previousRounds: round.previousRounds,
+        isAlreadyJoined: isHost,
         participants: <MdParticipant>[
           MdParticipant(
             createdAt: DateTime.now().toIso8601String(),
@@ -168,7 +178,6 @@ class NotificationActionsHandler {
             userData: round.host,
           ),
         ],
-        isFromInvitation: true,
         host: round.host,
         isViewOnly: isViewOnly,
       ),

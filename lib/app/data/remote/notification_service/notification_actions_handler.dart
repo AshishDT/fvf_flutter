@@ -66,6 +66,7 @@ class NotificationActionsHandler {
               roundId: roundId,
               isHost: isHost,
               isViewOnly: isViewOnly,
+              hostId: _roundDetails.round?.host?.id ?? '',
             );
             break;
           case RoundStatus.completed:
@@ -102,6 +103,8 @@ class NotificationActionsHandler {
               participants: participants,
               roundId: roundId,
               isViewOnly: isViewOnly,
+              prompt: _roundDetails.round?.prompt ?? '',
+              hostId: _roundDetails.round?.host?.id ?? '',
             );
             break;
         }
@@ -189,6 +192,7 @@ class NotificationActionsHandler {
     required List<MdParticipant> participants,
     required String prompt,
     required String roundId,
+    required String hostId,
     bool isHost = false,
     bool isViewOnly = false,
   }) {
@@ -211,6 +215,8 @@ class NotificationActionsHandler {
         isHost: isHost,
         roundId: roundId,
         isViewOnly: isViewOnly,
+        prompt: prompt,
+        hostId: hostId,
       );
     }
   }
@@ -237,6 +243,8 @@ class NotificationActionsHandler {
   static void _fallBackToStartAgain({
     required List<MdParticipant> participants,
     required String roundId,
+    required String hostId,
+    required String prompt,
     required bool isHost,
     bool isViewOnly = false,
   }) {
@@ -258,12 +266,16 @@ class NotificationActionsHandler {
     }
 
     final Map<String, dynamic> currentArgs = <String, dynamic>{
-      'reason': isHost ? 'Only you joined..' : 'Not enough friends joined..',
+      'reason': isViewOnly ? 'Round failed' : 'Only you joined..',
       'round_id': roundId,
       'is_host': isHost,
-      'sub_reason': 'Go again with your friends',
+      'sub_reason': isViewOnly
+          ? 'Not enough participants joined to start round'
+          : 'Go again with your friends',
       'self_participant': selfParticipant,
       'participants_without_current_user': participantsWithoutCurrentUser(),
+      'host_id': hostId,
+      'prompt': prompt,
       'is_view_only': isViewOnly,
     };
 

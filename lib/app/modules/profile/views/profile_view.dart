@@ -92,14 +92,16 @@ class ProfileView extends GetView<ProfileController> {
                                       () => Visibility(
                                         visible: !controller.isLoading(),
                                         child: const GradientCard(
-                                            child: SizedBox()),
+                                          child: SizedBox(),
+                                        ),
                                       ),
                                     ),
                                     errorWidget: (_, __, ___) => Obx(
                                       () => Visibility(
                                         visible: !controller.isLoading(),
                                         child: const GradientCard(
-                                            child: SizedBox()),
+                                          child: SizedBox(),
+                                        ),
                                       ),
                                     ),
                                   ),

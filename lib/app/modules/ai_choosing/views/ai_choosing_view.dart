@@ -7,6 +7,7 @@ import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/ui/components/animated_list_view.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
+import 'package:fvf_flutter/app/ui/components/app_circular_progress.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:fvf_flutter/app/utils/widget_ext.dart';
@@ -59,7 +60,8 @@ class AiChoosingView extends GetView<AiChoosingController> {
                           height: 1.sh,
                           fit: BoxFit.cover,
                           placeholder: (_, __) => const Center(
-                              child: CircularProgressIndicator(strokeWidth: 2)),
+                            child: AppCircularProgress(),
+                          ),
                           errorWidget: (_, __, ___) => const Center(
                             child: Icon(
                               Icons.error,
@@ -243,6 +245,6 @@ class AiChoosingView extends GetView<AiChoosingController> {
               ),
             ],
           ),
-        ).withGPad(context, color: Colors.black),
+        ).withGPad(context),
       );
 }

@@ -4,11 +4,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
+import 'package:fvf_flutter/app/ui/components/app_circular_progress.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
 
 import '../../../routes/app_pages.dart';
 import '../../profile/models/md_profile_args.dart';
+import 'circular_gradient_painter.dart';
 
 /// Selfie Avatar widget
 class SelfieAvatar extends StatelessWidget {
@@ -65,11 +67,13 @@ class SelfieAvatar extends StatelessWidget {
       avatarContent = ClipOval(
         child: CachedNetworkImage(
           imageUrl: imageUrl,
-          width: size.w,
+          width: size.h,
           height: size.h,
           fit: BoxFit.cover,
-          placeholder: (_, __) => Center(
-            child: CircularProgressIndicator(strokeWidth: 2.w),
+          placeholder: (_, __) => const Center(
+            child: AppCircularProgress(
+              size: 30,
+            ),
           ),
           errorWidget: (_, __, ___) => const Center(
             child: Icon(
@@ -83,7 +87,7 @@ class SelfieAvatar extends StatelessWidget {
       avatarContent = ClipOval(
         child: Image.asset(
           AppImages.youProfile,
-          width: size.w,
+          width: size.h,
           height: size.h,
           fit: BoxFit.cover,
         ),
@@ -98,10 +102,9 @@ class SelfieAvatar extends StatelessWidget {
             width: 3.w,
           ),
         ),
-        child: Center(
-          child: CircularProgressIndicator(
-            strokeWidth: 2.w,
-            color: Colors.white,
+        child: const Center(
+          child: AppCircularProgress(
+            size: 30,
           ),
         ),
       );
@@ -118,32 +121,33 @@ class SelfieAvatar extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            AnimatedContainer(
-              duration: 300.milliseconds,
-              curve: Curves.easeInOut,
-              width: size.w + (showBorder ? 7 : 0),
-              height: size.h + (showBorder ? 7 : 0),
-              child: Stack(
-                alignment: Alignment.center,
-                children: <Widget>[
-                  if (showBorder)
-                    Image.asset(
-                      AppImages.aiChoosingAvatarBg,
-                      width: size.w + 7,
-                      height: size.h + 7,
-                      fit: BoxFit.cover,
-                    ),
-                  ClipOval(
-                    child: SizedBox(
-                      width: size.w,
-                      height: size.h,
-                      child: Padding(
-                        padding: REdgeInsets.only(bottom: 2),
-                        child: avatarContent,
-                      ),
-                    ),
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: <BoxShadow>[
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.30),
+                    offset: const Offset(0, 1),
+                    blurRadius: 2,
                   ),
                 ],
+              ),
+              child: CustomPaint(
+                painter: showBorder ? CircularGradientBorderPainter() : null,
+                child: AnimatedContainer(
+                  duration: 300.milliseconds,
+                  curve: Curves.easeInOut,
+                  padding: REdgeInsets.all(2),
+                  width: size.h,
+                  height: size.h,
+                  child: ClipOval(
+                    child: SizedBox(
+                      width: size.h,
+                      height: size.h,
+                      child: avatarContent,
+                    ),
+                  ),
+                ),
               ),
             ),
             4.verticalSpace,
@@ -159,6 +163,13 @@ class SelfieAvatar extends StatelessWidget {
                     fontSize: 18.sp,
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
+                    shadows: <Shadow>[
+                      const Shadow(
+                        offset: Offset(0, 4),
+                        blurRadius: 4,
+                        color: Color(0x33000000),
+                      ),
+                    ],
                   ),
                 ),
               ),

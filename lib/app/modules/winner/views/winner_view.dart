@@ -11,6 +11,7 @@ import 'package:fvf_flutter/app/modules/ai_choosing/models/md_result.dart';
 import 'package:fvf_flutter/app/modules/profile/enums/subscription_enum.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/expose_sheet.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
+import 'package:fvf_flutter/app/ui/components/app_circular_progress.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/utils/widget_ext.dart';
@@ -92,7 +93,8 @@ class WinnerView extends GetView<WinnerController> {
                       height: 1.sh,
                       fit: BoxFit.cover,
                       placeholder: (_, __) => const Center(
-                          child: CircularProgressIndicator(strokeWidth: 2)),
+                        child: AppCircularProgress(),
+                      ),
                       errorWidget: (_, __, ___) => const Center(
                         child: Icon(
                           Icons.error,

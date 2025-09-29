@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
+import 'package:fvf_flutter/app/ui/components/app_circular_progress.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../data/config/app_colors.dart';
@@ -82,9 +83,8 @@ class ProfileHeaderSection extends StatelessWidget {
                             child: SizedBox(
                               height: 20.h,
                               width: 20.w,
-                              child: CircularProgressIndicator(
-                                color: AppColors.kffffff,
-                                strokeWidth: 3.w,
+                              child: const AppCircularProgress(
+                                size: 15,
                               ),
                             ),
                           )

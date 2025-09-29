@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:fvf_flutter/app/data/config/logger.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart' as _io;
 
 /// Socket.IO Repository
 class SocketIoRepo {
@@ -12,7 +12,7 @@ class SocketIoRepo {
 
   static final SocketIoRepo _instance = SocketIoRepo._internal();
 
-  IO.Socket? _socket;
+  _io.Socket? _socket;
 
   /// Timer for auto emit
   Timer? _emitTimer;
@@ -25,9 +25,9 @@ class SocketIoRepo {
     try {
       logI('🔌 Initializing socket connection to $url');
 
-      _socket = IO.io(
+      _socket = _io.io(
         url,
-        IO.OptionBuilder()
+        _io.OptionBuilder()
             .setTransports(<String>['websocket'])
             .enableReconnection()
             .setReconnectionAttempts(1000)
@@ -42,13 +42,13 @@ class SocketIoRepo {
         ..onConnect((_) {
           logI('✅ Connected to socket server: $url');
         })
-        ..onConnectError((err) {
+        ..onConnectError((dynamic err) {
           logWTF('❌ Socket connect error: $err');
         })
-        ..onError((err) {
+        ..onError((dynamic err) {
           logWTF('🔥 Socket general error: $err');
         })
-        ..onDisconnect((reason) {
+        ..onDisconnect((dynamic reason) {
           logWTF('❌ Disconnected from socket: $reason');
         });
     } on Exception catch (e, st) {

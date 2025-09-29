@@ -24,19 +24,12 @@ void handleDeepLinkIncomingData(Map<dynamic, dynamic> data) {
     if ((deepLinkData.tags?.contains('slay_invite') ?? false) ||
         deepLinkData.canonicalIdentifier == 'slay_invite') {
       if (deepLinkData.invitationId?.isNotEmpty ?? false) {
-        final bool isHost =
-            deepLinkData.hostId == UserProvider.userId;
-
         final bool isUserLoggedIn =
             SupaBaseService.isLoggedIn && UserProvider.currentUser != null;
 
         final bool isViewOnlyLink = deepLinkData.isViewOnly ?? false;
 
         if (isUserLoggedIn) {
-          if (isHost && !isViewOnlyLink) {
-            return;
-          }
-
           if (isViewOnlyLink) {
             NotificationActionsHandler.handleRoundDetails(
               roundId: deepLinkData.invitationId!,

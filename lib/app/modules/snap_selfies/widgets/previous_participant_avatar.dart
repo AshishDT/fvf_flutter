@@ -51,12 +51,12 @@ class PreviousParticipantAvatarIcon extends StatelessWidget {
       avatarContent = ClipOval(
         child: CachedNetworkImage(
           imageUrl: profileUrl,
-          width: !isSingle ? 38.w : 56.w,
+          width: !isSingle ? 38.h : 56.h,
           height: !isSingle ? 38.h : 56.h,
           fit: BoxFit.cover,
           placeholder: (_, __) => _buildPlaceholder(),
           imageBuilder: (_, ImageProvider imageProvider) => Container(
-            width: !isSingle ? 38.w : 56.w,
+            width: !isSingle ? 38.h : 56.h,
             height: !isSingle ? 38.h : 56.h,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
@@ -97,7 +97,7 @@ class PreviousParticipantAvatarIcon extends StatelessWidget {
                         )
                       : SvgPicture.asset(
                           height: 24.h,
-                          width: 24.w,
+                          width: 24.h,
                           AppImages.plusIcon,
                         ),
                 ),
@@ -130,7 +130,7 @@ class PreviousParticipantAvatarIcon extends StatelessWidget {
 
   /// Placeholder when no selfie/profile available
   Widget _buildPlaceholder() => Container(
-        width: !isSingle ? 38.w : 56.w,
+        width: !isSingle ? 38.h : 56.h,
         height: !isSingle ? 38.h : 56.h,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
@@ -139,7 +139,7 @@ class PreviousParticipantAvatarIcon extends StatelessWidget {
         child: Center(
           child: SvgPicture.asset(
             height: !isSingle ? 25.h : 42.h,
-            width: !isSingle ? 25.w : 42.w,
+            width: !isSingle ? 25.h : 42.h,
             AppImages.personalPlaceholder,
             colorFilter: ColorFilter.mode(
               Colors.white.withValues(alpha: 0.20),

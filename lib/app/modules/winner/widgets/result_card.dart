@@ -4,13 +4,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/reaction_menu.dart';
 import 'package:fvf_flutter/app/modules/winner/widgets/rotate_and_wiggle.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
+import 'package:fvf_flutter/app/ui/components/app_circular_progress.dart';
 import 'package:fvf_flutter/app/utils/emoji_ext.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
-import '../../../ui/components/custom_type_writer.dart';
+import '../../../ui/components/flying_characters.dart';
 import '../../../utils/app_text_style.dart';
 import '../../profile/models/md_profile_args.dart';
 
@@ -196,12 +196,13 @@ class ResultCard extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(500.r),
                                 child: Container(
                                   decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
                                     boxShadow: <BoxShadow>[
                                       BoxShadow(
+                                        color: Colors.black
+                                            .withValues(alpha: 0.30),
                                         offset: const Offset(0, 1),
                                         blurRadius: 2,
-                                        color: AppColors.k000000
-                                            .withValues(alpha: .75),
                                       ),
                                     ],
                                   ),
@@ -211,8 +212,10 @@ class ResultCard extends StatelessWidget {
                                     height: 24.w,
                                     fit: BoxFit.cover,
                                     placeholder: (_, __) => const Center(
-                                        child: CircularProgressIndicator(
-                                            strokeWidth: 2)),
+                                      child: AppCircularProgress(
+                                        size: 20,
+                                      ),
+                                    ),
                                     errorWidget: (_, __, ___) => Container(
                                       height: 24.w,
                                       width: 24.w,
@@ -268,7 +271,7 @@ class ResultCard extends StatelessWidget {
                   ),
                   if (isExposed || rank == 1) ...<Widget>[
                     16.verticalSpace,
-                    CustomTypewriterText(
+                    FlyingCharacters(
                       text: reason ?? '',
                       maxLines: 2,
                       textAlign: TextAlign.center,

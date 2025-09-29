@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:fvf_flutter/app/modules/camera/widgets/retake_button.dart';
+import 'package:fvf_flutter/app/ui/components/app_circular_progress.dart';
 import 'package:fvf_flutter/app/ui/components/common_app_bar.dart';
 import 'package:fvf_flutter/app/utils/widget_ext.dart';
 import 'package:get/get.dart';
@@ -27,7 +28,11 @@ class CameraView extends GetView<PickSelfieCameraController> {
           body: GetX<PickSelfieCameraController>(
             builder: (_) {
               if (!controller.isCameraInitialized()) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(
+                  child: AppCircularProgress(
+                    useCustomWidth: false,
+                  ),
+                );
               }
 
               final bool hasPreview = controller.previewFile().path.isNotEmpty;

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../ui/components/app_circular_progress.dart';
+
 /// Profile Avatar Widget
 class ProfileAvatar extends StatelessWidget {
   /// Constructor
@@ -26,7 +28,7 @@ class ProfileAvatar extends StatelessWidget {
       child: ClipOval(
         child: Container(
           height: 24.h,
-          width: 24.w,
+          width: 24.h,
           color: Colors.grey.shade200,
           child: hasImage
               ? CachedNetworkImage(
@@ -35,15 +37,18 @@ class ProfileAvatar extends StatelessWidget {
                   placeholder: (BuildContext context, String url) => Center(
                     child: SizedBox(
                       height: 12.h,
-                      width: 12.w,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.w,
+                      width: 12.h,
+                      child: const AppCircularProgress(
+                        size: 20,
                       ),
                     ),
                   ),
                   errorWidget:
-                      (BuildContext context, String url, Object error) =>
-                          Icon(Icons.person, size: 16.sp, color: Colors.grey),
+                      (BuildContext context, String url, Object error) => Icon(
+                    Icons.person,
+                    size: 16.sp,
+                    color: Colors.grey,
+                  ),
                 )
               : Icon(
                   Icons.person,

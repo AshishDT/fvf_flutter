@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fvf_flutter/app/modules/profile/widgets/participant_wrapper.dart';
+import 'package:fvf_flutter/app/ui/components/app_circular_progress.dart';
 import 'package:get/get.dart';
 import '../../../ui/components/common_app_bar.dart';
 import '../../winner/widgets/result_card.dart';
@@ -38,117 +39,122 @@ class RoundsTimeLinesView extends StatelessWidget {
           child: controller.rounds().isNotEmpty
               ? NotificationListener<ScrollNotification>(
                   onNotification: _onNotificationListener,
-                  child: PageView.builder(
-                    controller: controller.roundPageController,
-                    itemCount: controller.rounds().length,
-                    scrollDirection: Axis.vertical,
-                    onPageChanged: _onChangeTopPageView,
-                    itemBuilder: (BuildContext context, int index) => Obx(
-                      () {
-                        final MdRound round = controller.rounds[index];
+                  child: Obx(
+                    () => PageView.builder(
+                      controller: controller.roundPageController,
+                      itemCount: controller.rounds().length,
+                      scrollDirection: Axis.vertical,
+                      onPageChanged: _onChangeTopPageView,
+                      itemBuilder: (BuildContext context, int index) => Obx(
+                        () {
+                          final MdRound round = controller.rounds[index];
 
-                        controller.ensureRoundControllers(
-                          index,
-                          round.results?.length ?? 0,
-                        );
+                          controller.ensureRoundControllers(
+                            index,
+                            round.results?.length ?? 0,
+                          );
 
-                        final PageController inner =
-                            controller.roundInnerPageController[index]!;
-                        final int itemCount = round.results?.length ?? 0;
-                        final int currentInner =
-                            controller.roundCurrentResultIndex[index]!();
+                          final PageController inner =
+                              controller.roundInnerPageController[index]!;
+                          final int itemCount = round.results?.length ?? 0;
+                          final int currentInner =
+                              controller.roundCurrentResultIndex[index]!();
 
-                        if (itemCount == 0) {
-                          return const SizedBox.shrink();
-                        }
+                          if (itemCount == 0) {
+                            return const SizedBox.shrink();
+                          }
 
-                        final MdResult currentResult =
-                            round.results![currentInner];
+                          final MdResult currentResult =
+                              round.results![currentInner];
 
-                        return GradientCard(
-                          child: Stack(
-                            children: <Widget>[
-                              AnimatedSize(
-                                duration: const Duration(milliseconds: 300),
-                                curve: Curves.easeInOut,
-                                child: CachedNetworkImage(
-                                  imageUrl: currentResult.selfieUrl ?? '',
-                                  width: 1.sw,
-                                  height: 1.sh,
-                                  fit: BoxFit.cover,
-                                  placeholder: (_, __) => const Center(
-                                    child: CircularProgressIndicator(
-                                        strokeWidth: 2),
-                                  ),
-                                  errorWidget: (_, __, ___) => const Center(
-                                    child: Icon(Icons.error,
-                                        color: AppColors.kffffff),
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                height: 1.sh,
-                                child: Stack(
-                                  children: <Widget>[
-                                    PageView.builder(
-                                      controller: inner,
-                                      itemCount: itemCount,
-                                      onPageChanged: (int i) {
-                                        _onChangeOfInnerPageView(index, i);
-                                      },
-                                      itemBuilder:
-                                          (BuildContext context, int i) {
-                                        final MdResult result =
-                                            round.results![i];
-                                        final RxBool trigger =
-                                            controller.roundWiggleMark[index]!;
-                                        final RxBool isExposedRx =
-                                            controller.roundExposed[index]!;
-
-                                        return Obx(
-                                          () => ResultCard(
-                                            isExposed: isExposedRx(),
-                                            triggerQuestionMark: trigger(),
-                                            userId: result.userId ?? '',
-                                            rank: result.rank ?? 0,
-                                            reason: result.reason ?? '',
-                                            isCurrentRankIs1: isExposedRx() ||
-                                                result.rank == 1,
-                                            ordinalSuffix: getOrdinalSuffix(
-                                                result.rank ?? 0),
-                                            selfieUrl: result.selfieUrl,
-                                            userName: result.userName,
-                                            reactions: result.reactions,
-                                            onReactionSelected: (String emoji) {
-                                              controller.addRoundReaction(
-                                                roundId: round.roundId ?? '',
-                                                emoji: emoji,
-                                                participantId:
-                                                    result.userId ?? '',
-                                              );
-                                              HapticFeedback.mediumImpact();
-                                            },
-                                          ).paddingOnly(
-                                            right: 24.w,
-                                            left: 24.w,
-                                            bottom:
-                                                (isExposedRx()) ? 36.h : 100.h,
-                                          ),
-                                        );
-                                      },
+                          return GradientCard(
+                            child: Stack(
+                              children: <Widget>[
+                                AnimatedSize(
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.easeInOut,
+                                  child: CachedNetworkImage(
+                                    imageUrl: currentResult.selfieUrl ?? '',
+                                    width: 1.sw,
+                                    height: 1.sh,
+                                    fit: BoxFit.cover,
+                                    placeholder: (_, __) => const Center(
+                                      child: AppCircularProgress(),
                                     ),
-                                    _backArrowButton(index),
-                                    _nextArrowButton(index, itemCount),
-                                    _appBar(),
-                                    _promptCard(round),
-                                  ],
+                                    errorWidget: (_, __, ___) => const Center(
+                                      child: Icon(
+                                        Icons.error,
+                                        color: AppColors.kffffff,
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                              _exposeButton(index, round, context),
-                            ],
-                          ),
-                        );
-                      },
+                                Container(
+                                  height: 1.sh,
+                                  child: Stack(
+                                    children: <Widget>[
+                                      PageView.builder(
+                                        controller: inner,
+                                        itemCount: itemCount,
+                                        onPageChanged: (int i) {
+                                          _onChangeOfInnerPageView(index, i);
+                                        },
+                                        itemBuilder:
+                                            (BuildContext context, int i) {
+                                          final MdResult result =
+                                              round.results![i];
+                                          final RxBool trigger = controller
+                                              .roundWiggleMark[index]!;
+                                          final RxBool isExposedRx =
+                                              controller.roundExposed[index]!;
+
+                                          return Obx(
+                                            () => ResultCard(
+                                              isExposed: isExposedRx(),
+                                              triggerQuestionMark: trigger(),
+                                              userId: result.userId ?? '',
+                                              rank: result.rank ?? 0,
+                                              reason: result.reason ?? '',
+                                              isCurrentRankIs1: isExposedRx() ||
+                                                  result.rank == 1,
+                                              ordinalSuffix: getOrdinalSuffix(
+                                                  result.rank ?? 0),
+                                              selfieUrl: result.selfieUrl,
+                                              userName: result.userName,
+                                              reactions: result.reactions,
+                                              onReactionSelected:
+                                                  (String emoji) {
+                                                controller.addRoundReaction(
+                                                  roundId: round.roundId ?? '',
+                                                  emoji: emoji,
+                                                  participantId:
+                                                      result.userId ?? '',
+                                                );
+                                                HapticFeedback.mediumImpact();
+                                              },
+                                            ).paddingOnly(
+                                              right: 24.w,
+                                              left: 24.w,
+                                              bottom: (isExposedRx())
+                                                  ? 36.h
+                                                  : 100.h,
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                      _backArrowButton(index),
+                                      _nextArrowButton(index, itemCount),
+                                      _appBar(),
+                                      _promptCard(round),
+                                    ],
+                                  ),
+                                ),
+                                _exposeButton(index, round, context),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
                 )
@@ -349,6 +355,18 @@ class RoundsTimeLinesView extends StatelessWidget {
 
   /// On change of top page view
   void _onChangeTopPageView(int i) {
+    if (i >= controller.rounds.length) {
+      return;
+    }
+
+    final bool _canPaginated = !controller.isRoundsLoading() &&
+        controller.hasMore() &&
+        i >= controller.rounds.length - 2;
+
+    if (_canPaginated) {
+      controller.getRounds();
+    }
+
     controller.currentRound(i);
 
     if (controller.rounds[i].rank == null) {

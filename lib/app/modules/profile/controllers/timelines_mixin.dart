@@ -223,7 +223,7 @@ mixin TimeLineMixin on GetxController {
       switch (type) {
         case SubscriptionPlanEnum.weekly:
           result = await RevenueCatService.instance.purchaseWeeklySubscription(
-            roundId: roundId,
+            roundId: '',
           );
           break;
         case SubscriptionPlanEnum.oneTime:
@@ -234,15 +234,30 @@ mixin TimeLineMixin on GetxController {
       }
 
       if (result.status == PurchaseStatus.success) {
-        roundExposed[index]!(true);
-        roundExposed[index]!.refresh();
+        if (type == SubscriptionPlanEnum.weekly) {
+          for (int i = 0; i < rounds.length; i++) {
+            roundExposed.putIfAbsent(i, () => false.obs);
+            roundExposed[i]!(true);
+            roundExposed[i]!.refresh();
+
+            rounds[i] = rounds[i].copyWith(hasAccessed: true);
+            updateRoundScreenshotPermission(i);
+          }
+          rounds.refresh();
+        } else {
+          roundExposed[index]!(true);
+          roundExposed[index]!.refresh();
+
+          rounds[index] = rounds[index].copyWith(hasAccessed: true);
+          rounds.refresh();
+
+          updateRoundScreenshotPermission(index);
+        }
 
         appSnackbar(
           message: successMessage,
           snackbarState: SnackbarState.success,
         );
-
-        updateRoundScreenshotPermission(index);
       } else {
         appSnackbar(
           message:

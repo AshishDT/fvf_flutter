@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../data/config/logger.dart';
 import '../../../data/remote/supabse_service/supabse_service.dart';
 import '../../../ui/components/app_snackbar.dart';
+import '../../create_bet/controllers/create_bet_controller.dart';
 import '../../create_bet/repositories/create_bet_api_repo.dart';
 
 /// Claim Phone Controller
@@ -152,6 +153,7 @@ class ClaimPhoneController extends GetxController
           message: 'Phone number claimed successfully!',
           snackbarState: SnackbarState.success,
         );
+        Get.find<CreateBetController>().refreshProfile();
       }
     } on Exception catch (e, st) {
       logE('Error claiming user: $e');

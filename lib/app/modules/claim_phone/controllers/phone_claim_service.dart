@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../data/local/store/local_store.dart';
+import '../../../utils/global_keys.dart';
 import '../views/phone_number_sheet.dart';
 import 'claim_phone_controller.dart';
 
@@ -16,6 +17,17 @@ class PhoneClaimService {
     if (!hasSubmittedFirstRoundPhoto ||
         currentRound <= 1 ||
         (userName?.isEmpty ?? true)) {
+      return;
+    }
+
+    final String? phone = globalUser().phone;
+
+    final bool? isClaimed = globalUser().isClaim;
+
+    final bool isAlreadyClaimed =
+        (phone != null && phone.isNotEmpty) && (isClaimed ?? false);
+
+    if(isAlreadyClaimed){
       return;
     }
 

@@ -217,16 +217,18 @@ class NotificationActionsHandler {
     required String prompt,
     bool isViewOnly = false,
   }) {
-    Get.offNamedUntil(
-      Routes.AI_CHOOSING,
-      (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
-      arguments: <String, dynamic>{
-        'participants': participants,
-        'bet': prompt,
-        'from_notification': true,
-        'is_view_only': isViewOnly,
-      },
-    );
+    if (Get.currentRoute != Routes.AI_CHOOSING) {
+      Get.offNamedUntil(
+        Routes.AI_CHOOSING,
+        (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
+        arguments: <String, dynamic>{
+          'participants': participants,
+          'bet': prompt,
+          'from_notification': true,
+          'is_view_only': isViewOnly,
+        },
+      );
+    }
   }
 
   /// Fall back to start again

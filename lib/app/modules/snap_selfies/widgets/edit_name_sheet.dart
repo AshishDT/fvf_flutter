@@ -73,7 +73,6 @@ class EditNameSheet extends GetView<SnapSelfiesController> {
                     );
                     return;
                   }
-                  Navigator.maybePop(context);
                   controller.updateUser(username: value.trim());
                 },
                 style: AppTextStyle.openRunde(

@@ -11,7 +11,6 @@ class ProfileBinding extends Bindings {
       Get.put(
         () => ProfileController(),
         tag: (Get.arguments as MdProfileArgs).tag,
-        permanent: true,
       );
     }
   }

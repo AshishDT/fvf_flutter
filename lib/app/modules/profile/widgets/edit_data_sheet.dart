@@ -79,7 +79,7 @@ class EditDataSheet extends GetView<ProfileController> {
               onFieldSubmitted: (String value) {
                 final String trimmed = value.trim();
 
-                if(trimmed.isEmpty){
+                if (trimmed.isEmpty) {
                   return;
                 }
 
@@ -90,7 +90,6 @@ class EditDataSheet extends GetView<ProfileController> {
                   );
                   return;
                 }
-                Navigator.maybePop(context);
                 controller.updateUser(
                   username: controller.nameInputController.text.trim(),
                 );

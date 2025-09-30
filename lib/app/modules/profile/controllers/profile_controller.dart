@@ -115,9 +115,13 @@ class ProfileController extends GetxController
     final double currentViewInsets = View.of(Get.context!).viewInsets.bottom;
 
     if (_prevBottomInset() > 0 && currentViewInsets == 0) {
-      if (EditProfileSheetRepo.isSheetOpen()) {
-        Get.close(0);
-      }
+      Future<void>.microtask(
+        () {
+          if (EditProfileSheetRepo.isSheetOpen()) {
+            Get.close(0);
+          }
+        },
+      );
     }
 
     _prevBottomInset.value = currentViewInsets;
@@ -138,6 +142,7 @@ class ProfileController extends GetxController
       pc.dispose();
     }
     roundInnerPageController.clear();
+    WidgetsBinding.instance.removeObserver(this);
     super.onClose();
   }
 

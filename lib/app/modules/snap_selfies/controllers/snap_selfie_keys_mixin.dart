@@ -14,9 +14,6 @@ mixin SnapSelfieKeysMixin on GetxController {
   /// Observable to track keyboard visibility
   RxBool isKeyboardVisible = false.obs;
 
-  /// Previous bottom inset for keyboard
-  final RxDouble prevBottomInset = 0.0.obs;
-
   /// Text editing controller for name input field
   TextEditingController nameInputController = TextEditingController();
 
@@ -268,7 +265,6 @@ mixin SnapSelfieKeysMixin on GetxController {
   /// Reset fields
   void resetFields() {
     isKeyboardVisible(false);
-    prevBottomInset(0);
     nameInputController.clear();
     shouldWiggleAddName(false);
     shouldWiggleSnapPick(false);

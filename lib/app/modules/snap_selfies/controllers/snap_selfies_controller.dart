@@ -22,7 +22,6 @@ import '../../../data/models/md_join_invitation.dart';
 import '../../../data/remote/api_service/init_api_service.dart';
 import '../../../data/remote/deep_link/deep_link_service.dart';
 import '../../../ui/components/app_snackbar.dart';
-import '../../../ui/components/chat_field_sheet_repo.dart';
 import '../../../utils/app_loader.dart';
 import '../../../utils/global_keys.dart';
 import '../../claim_phone/controllers/phone_claim_service.dart';
@@ -30,8 +29,7 @@ import '../models/md_socket_io_response.dart';
 import '../repositories/snap_selfie_api_repo.dart';
 
 /// Snap Selfies Controller
-class SnapSelfiesController extends GetxController
-    with WidgetsBindingObserver, SnapSelfieKeysMixin {
+class SnapSelfiesController extends GetxController with SnapSelfieKeysMixin {
   /// On init
   @override
   void onInit() {
@@ -69,13 +67,6 @@ class SnapSelfiesController extends GetxController
 
       getShareUri();
     }
-
-    WidgetsBinding.instance.addObserver(this);
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) {
-        prevBottomInset.value = View.of(Get.context!).viewInsets.bottom;
-      },
-    );
     super.onInit();
   }
 
@@ -118,21 +109,7 @@ class SnapSelfiesController extends GetxController
   /// On close
   @override
   void onClose() {
-    WidgetsBinding.instance.removeObserver(this);
     super.onClose();
-  }
-
-  @override
-  void didChangeMetrics() {
-    final double currentViewInsets = View.of(Get.context!).viewInsets.bottom;
-
-    if (prevBottomInset() > 0 && currentViewInsets == 0) {
-      if (ChatFieldSheetRepo.isSheetOpen()) {
-        Get.close(0);
-      }
-    }
-
-    prevBottomInset.value = currentViewInsets;
   }
 
   /// Fallback to start again

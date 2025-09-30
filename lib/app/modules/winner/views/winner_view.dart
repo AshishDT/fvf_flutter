@@ -157,7 +157,7 @@ class WinnerView extends GetView<WinnerController> {
                           ).paddingOnly(
                             right: 24.w,
                             left: 24.w,
-                            bottom: controller.isExposed() ? 36.h : 117.h,
+                            bottom: controller.isExposed() ? 36.h : 100.h,
                           ),
                         );
                       },

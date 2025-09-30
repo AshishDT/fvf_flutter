@@ -150,9 +150,9 @@ class NotificationActionsHandler {
     bool? isViewOnly,
     bool isHost = false,
   }) {
-    if (Get.currentRoute == Routes.SNAP_SELFIES) {
-      return;
-    }
+    final bool isAlreadyJoined = round.participants
+            ?.any((MdParticipant participant) => participant.isCurrentUser) ??
+        false;
 
     Get.offNamedUntil(
       Routes.SNAP_SELFIES,
@@ -169,7 +169,7 @@ class NotificationActionsHandler {
         updatedAt: round.updatedAt?.toIso8601String(),
         roundJoinedEndAt: round.roundJoinedEndAt,
         previousRounds: round.previousRounds,
-        isAlreadyJoined: isHost,
+        isAlreadyJoined: isHost || isAlreadyJoined,
         participants: round.participants,
         host: round.host,
         isViewOnly: isViewOnly,
@@ -217,9 +217,6 @@ class NotificationActionsHandler {
     required String prompt,
     bool isViewOnly = false,
   }) {
-    if (Get.currentRoute == Routes.AI_CHOOSING) {
-      return;
-    }
     Get.offNamedUntil(
       Routes.AI_CHOOSING,
       (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,

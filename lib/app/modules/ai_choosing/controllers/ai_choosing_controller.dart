@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/enums/round_status_enum.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
+import 'package:fvf_flutter/app/modules/snap_selfies/controllers/snap_selfies_controller.dart';
 import 'package:get/get.dart';
 import '../../../data/config/env_config.dart';
 import '../../../data/remote/socket_io_repo.dart';
@@ -129,13 +130,19 @@ class AiChoosingController extends GetxController {
     final bool isFailed = resultData.status == RoundStatus.failed;
 
     if (isComplete) {
-      Get.offNamedUntil(
-        Routes.WINNER,
-        (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
-        arguments: <String, dynamic>{
-          'result_data': resultData,
-        },
-      );
+      Get.find<SnapSelfiesController>().socketIoRepo.disconnect();
+
+      if (Get.currentRoute == Routes.AI_CHOOSING &&
+          Get.currentRoute != Routes.WINNER) {
+        Get.offNamedUntil(
+          Routes.WINNER,
+          (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
+          arguments: <String, dynamic>{
+            'result_data': resultData,
+          },
+        );
+      }
+
       return;
     }
 

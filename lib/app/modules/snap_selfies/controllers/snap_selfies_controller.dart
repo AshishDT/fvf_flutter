@@ -45,11 +45,7 @@ class SnapSelfiesController extends GetxController
 
       loadPreviousRounds();
 
-      final bool isHost =
-          joinedInvitationData().host?.id == UserProvider.userId;
-
-      if (!isHost ||
-          (isHost && (joinedInvitationData().isAlreadyJoined ?? false))) {
+      if (joinedInvitationData().isAlreadyJoined ?? false) {
         DateTime? endAt = joinedInvitationData().roundJoinedEndAt;
 
         if (endAt != null && endAt.second > 2) {
@@ -122,11 +118,7 @@ class SnapSelfiesController extends GetxController
   /// On close
   @override
   void onClose() {
-    stopTimer();
-    textsTimer?.cancel();
-    socketIoRepo.disconnect();
     WidgetsBinding.instance.removeObserver(this);
-    nameInputFocusNode.dispose();
     super.onClose();
   }
 
@@ -163,7 +155,9 @@ class SnapSelfiesController extends GetxController
 
     WidgetsBinding.instance.addPostFrameCallback(
       (_) {
-        if (Get.currentRoute != Routes.FAILED_ROUND) {
+        if (Get.currentRoute != Routes.FAILED_ROUND &&
+            Get.currentRoute == Routes.SNAP_SELFIES) {
+          socketIoRepo.disconnect();
           Get.offNamed(
             Routes.FAILED_ROUND,
             arguments: currentArgs,
@@ -392,23 +386,28 @@ class SnapSelfiesController extends GetxController
 
     final DateTime? revealedAt = DateTime.tryParse(data.round?.revealAt ?? '');
 
-    Get.offNamedUntil(
-      Routes.WINNER,
-      (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
-      arguments: <String, dynamic>{
-        'result_data': MdAiResultData(
-          revealAt: revealedAt,
-          status: RoundStatus.completed,
-          id: data.round?.id,
-          host: joinedInvitationData().host,
-          participants: data.round?.participants,
-          prompt: joinedInvitationData().prompt,
-          results: data.round?.results,
-          crew: data.round?.crew,
-          isViewOnly: joinedInvitationData().isViewOnly ?? false,
-        ),
-      },
-    );
+    socketIoRepo.disconnect();
+
+    if (Get.currentRoute != Routes.WINNER &&
+        Get.currentRoute == Routes.SNAP_SELFIES) {
+      Get.offNamedUntil(
+        Routes.WINNER,
+        (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
+        arguments: <String, dynamic>{
+          'result_data': MdAiResultData(
+            revealAt: revealedAt,
+            status: RoundStatus.completed,
+            id: data.round?.id,
+            host: joinedInvitationData().host,
+            participants: data.round?.participants,
+            prompt: joinedInvitationData().prompt,
+            results: data.round?.results,
+            crew: data.round?.crew,
+            isViewOnly: joinedInvitationData().isViewOnly ?? false,
+          ),
+        },
+      );
+    }
   }
 
   /// Handle processing round
@@ -697,6 +696,10 @@ class SnapSelfiesController extends GetxController
   /// On add name
   void onAddName() {
     final String trimmed = nameInputController.text.trim();
+    if (trimmed.isEmpty) {
+      return;
+    }
+
     if (trimmed.length < 3 || trimmed.length > 24) {
       appSnackbar(
         message: 'Name must be between 3 and 24 characters.',
@@ -704,7 +707,6 @@ class SnapSelfiesController extends GetxController
       );
       return;
     }
-    nameInputFocusNode.unfocus();
     updateUser(username: trimmed);
   }
 }

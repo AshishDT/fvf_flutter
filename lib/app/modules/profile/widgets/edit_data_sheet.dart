@@ -79,6 +79,11 @@ class EditDataSheet extends GetView<ProfileController> {
               ],
               onFieldSubmitted: (String value) {
                 final String trimmed = value.trim();
+
+                if(trimmed.isEmpty){
+                  return;
+                }
+
                 if (trimmed.length < 3 || trimmed.length > 24) {
                   appSnackbar(
                     message: 'Name must be between 3 and 24 characters.',

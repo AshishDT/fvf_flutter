@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/data/remote/notification_service/notification_actions_handler.dart';
 import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
@@ -52,11 +53,16 @@ void handleDeepLinkIncomingData(Map<dynamic, dynamic> data) {
           );
         }
       }
+
+      _clearMetaData();
+
       return;
     } else {
       logW('Unknown active deep link canonicalIdentifier: $data');
+      _clearMetaData();
     }
   } else {
+    _clearMetaData();
     const List<String> branchDomains = <String>[
       '0wkmj.app.link',
       '0wkmj-alternate.app.link',
@@ -75,6 +81,13 @@ void handleDeepLinkIncomingData(Map<dynamic, dynamic> data) {
       logWTF('Expired or invalid deep link clicked: $data');
     }
   }
+}
+
+void _clearMetaData() {
+  FlutterBranchSdk.clearPartnerParameters();
+  FlutterBranchSdk.setRequestMetadata('invitation_id', '');
+  FlutterBranchSdk.setRequestMetadata('is_view_only', '');
+  FlutterBranchSdk.setRequestMetadata('host_id', '');
 }
 
 /// Join project invitation

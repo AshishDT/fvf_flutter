@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 /// FlyingCharacters
 /// - Animates each grapheme (emoji-safe) from a random offset into place with fade-in.
@@ -21,7 +22,7 @@ class FlyingCharacters extends StatefulWidget {
     this.textDirection,
     this.textScaleFactor,
     this.maxLines,
-    this.overflow = TextOverflow.visible,
+    this.overflow = TextOverflow.ellipsis,
     this.randomSeed = 7,
   });
 
@@ -83,7 +84,7 @@ class _FlyingCharactersState extends State<FlyingCharacters>
   @override
   void initState() {
     super.initState();
-    _clusters = widget.text.characters; // emoji-safe segmentation [web:1]
+    _clusters = widget.text.characters;
     _controller = AnimationController(
       vsync: this,
       duration: widget.duration + _totalStagger(),
@@ -188,45 +189,77 @@ class _FlyingCharactersState extends State<FlyingCharacters>
 
   @override
   Widget build(BuildContext context) {
-    final TextStyle textStyle =
+    final TextStyle baseStyle =
         DefaultTextStyle.of(context).style.merge(widget.style);
 
-    final List<WidgetSpan> spans = _items
-        .map((_GlyphAnim item) => WidgetSpan(
-              baseline: TextBaseline.alphabetic,
-              alignment: PlaceholderAlignment.baseline,
-              child: AnimatedBuilder(
-                animation: item.animation,
-                builder: (BuildContext context, _) {
-                  final double t = item.animation.value;
-                  final double opacity = t;
-                  final Offset offset =
-                      Offset.lerp(item.initialOffset, Offset.zero, t)!;
-                  return Opacity(
-                    opacity: opacity,
-                    child: Transform.translate(
-                      offset: offset,
-                      child: Text(
-                        item.text,
-                        style: textStyle,
-                        textScaleFactor: widget.textScaleFactor,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ))
-        .toList();
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        double fontSize = baseStyle.fontSize ?? 14.sp;
+         final double minFontSize = 14.sp;
 
-    return RichText(
-      textAlign: widget.textAlign,
-      textDirection: widget.textDirection,
-      maxLines: widget.maxLines,
-      overflow: widget.overflow,
-      text: TextSpan(
-        style: textStyle,
-        children: spans,
-      ),
+        final TextPainter tp = TextPainter(
+          text: TextSpan(
+            text: widget.text,
+            style: baseStyle,
+          ),
+          maxLines: widget.maxLines ?? 3,
+          textDirection: widget.textDirection ?? TextDirection.ltr,
+        );
+
+        while (fontSize > minFontSize) {
+          tp
+            ..text = TextSpan(
+              text: widget.text,
+              style: baseStyle.copyWith(fontSize: fontSize),
+            )
+            ..layout(maxWidth: constraints.maxWidth);
+          if (tp.didExceedMaxLines) {
+            fontSize -= 1;
+          } else {
+            break;
+          }
+        }
+
+        final List<WidgetSpan> spans = _items
+            .map(
+              (_GlyphAnim item) => WidgetSpan(
+                baseline: TextBaseline.alphabetic,
+                alignment: PlaceholderAlignment.baseline,
+                child: AnimatedBuilder(
+                  animation: item.animation,
+                  builder: (BuildContext context, _) {
+                    final double t = item.animation.value;
+                    final double opacity = t;
+                    final Offset offset =
+                        Offset.lerp(item.initialOffset, Offset.zero, t)!;
+                    return Opacity(
+                      opacity: opacity,
+                      child: Transform.translate(
+                        offset: offset,
+                        child: Text(
+                          item.text,
+                          style: baseStyle.copyWith(fontSize: fontSize),
+                          textScaleFactor: widget.textScaleFactor,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            )
+            .toList();
+
+        return RichText(
+          textAlign: widget.textAlign,
+          textDirection: widget.textDirection,
+          maxLines: widget.maxLines ?? 3,
+          overflow: TextOverflow.ellipsis,
+          text: TextSpan(
+            style: baseStyle.copyWith(fontSize: fontSize),
+            children: spans,
+          ),
+        );
+      },
     );
   }
 }

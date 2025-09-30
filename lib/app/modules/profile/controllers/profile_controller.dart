@@ -370,6 +370,11 @@ class ProfileController extends GetxController
   /// On add name
   void onAddName() {
     final String trimmed = nameInputController.text.trim();
+
+    if (trimmed.isEmpty) {
+      return;
+    }
+
     if (trimmed.length < 3 || trimmed.length > 24) {
       appSnackbar(
         message: 'Name must be between 3 and 24 characters.',

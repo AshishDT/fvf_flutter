@@ -62,7 +62,6 @@ class EditDataSheet extends GetView<ProfileController> {
               borderRadius: BorderRadius.circular(28).r,
             ),
             child: TextFormField(
-              focusNode: controller.nameInputFocusNode,
               controller: controller.nameInputController,
               maxLines: 7,
               minLines: 1,

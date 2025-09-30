@@ -134,7 +134,6 @@ class ProfileController extends GetxController
   /// On close
   @override
   void onClose() {
-    nameInputFocusNode.dispose();
     for (final PageController pc in roundInnerPageController.values) {
       pc.dispose();
     }
@@ -144,9 +143,6 @@ class ProfileController extends GetxController
 
   /// isCurrentUser
   bool get isCurrentUser => profile.value.user?.id == UserProvider.userId;
-
-  /// Focus node for chat input field
-  final FocusNode nameInputFocusNode = FocusNode();
 
   /// Text editing controller for chat input field
   TextEditingController nameInputController = TextEditingController();

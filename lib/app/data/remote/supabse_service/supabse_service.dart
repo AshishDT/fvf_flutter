@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../config/env_config.dart';
 
@@ -10,6 +11,10 @@ class SupaBaseService {
       url: EnvConfig.supabaseUrl,
       anonKey: EnvConfig.supabaseAnonKey,
     );
+
+    if (isLoggedIn && !isSessionValid) {
+      await SupaBaseService.refreshSession();
+    }
   }
 
   /// Supabase instance
@@ -17,6 +22,26 @@ class SupaBaseService {
 
   /// Is logged in
   static bool get isLoggedIn => _instance.auth.currentUser != null;
+
+  /// Is session valid
+  static bool get isSessionValid {
+    final Session? session = _instance.auth.currentSession;
+    if (session == null) {
+      return false;
+    }
+    final DateTime expiresAt = session.expiresAt != null
+        ? DateTime.fromMillisecondsSinceEpoch(session.expiresAt! * 1000)
+        : DateTime.now();
+    return DateTime.now().isBefore(expiresAt);
+  }
+
+  /// Refresh session
+  static Future<void> refreshSession() async {
+    final AuthResponse _res = await _instance.auth.refreshSession();
+    log(
+      'Auth refreshed: ${_res.user?.toJson()} || Session refreshed: ${_res.session?.toJson()}',
+    );
+  }
 
   /// Sign in anonymously
   static Future<AuthResponse> signInAnonymously() async {

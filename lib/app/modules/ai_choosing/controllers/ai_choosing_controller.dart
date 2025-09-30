@@ -130,7 +130,11 @@ class AiChoosingController extends GetxController {
     final bool isFailed = resultData.status == RoundStatus.failed;
 
     if (isComplete) {
-      Get.find<SnapSelfiesController>().socketIoRepo.disconnect();
+      if (Get.isRegistered<SnapSelfiesController>()) {
+        final SnapSelfiesController snapSelfiesController =
+            Get.find<SnapSelfiesController>();
+        snapSelfiesController.socketIoRepo.disconnect();
+      }
 
       if (Get.currentRoute == Routes.AI_CHOOSING &&
           Get.currentRoute != Routes.WINNER) {

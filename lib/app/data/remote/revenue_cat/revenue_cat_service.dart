@@ -89,23 +89,16 @@ class RevenueCatService {
   List<StoreProduct> get products => _products;
 
   /// Purchase weekly subscription
-  Future<MdPurchaseResult> purchaseWeeklySubscription({
-    required String roundId,
-  }) async =>
+  Future<MdPurchaseResult> purchaseWeeklySubscription() async =>
       _purchaseProduct(
         weeklyProductId,
         entitlementKey: _premiumEntitlement,
-        roundId: roundId,
       );
 
   /// Purchase one more slay (one-time)
-  Future<MdPurchaseResult> purchaseOneMoreSlay({
-    required String roundId,
-  }) async =>
-      _purchaseProduct(
+  Future<MdPurchaseResult> purchaseOneMoreSlay() async => _purchaseProduct(
         oneMoreSlayProductId,
         entitlementKey: _oneMoreSlayEntitlement,
-        roundId: roundId,
       );
 
   /// Purchase current round (one-time)
@@ -116,15 +109,13 @@ class RevenueCatService {
         currentRoundProductId,
         entitlementKey: _currentRoundEntitlement,
         roundId: roundId,
-        isCurrentRound: true,
       );
 
   /// Purchase a product by productId and return MdPurchaseResult
   Future<MdPurchaseResult> _purchaseProduct(
     String productId, {
     required String entitlementKey,
-    required String roundId,
-    bool isCurrentRound = false,
+    String? roundId,
   }) async {
     final String? userId = UserProvider.currentUser?.id;
 
@@ -132,7 +123,7 @@ class RevenueCatService {
 
     await Purchases.setAttributes(
       <String, String>{
-        if (isCurrentRound && roundId.isNotEmpty) 'round_id': roundId,
+        if (roundId != null && roundId.isNotEmpty) 'round_id': roundId,
         'product_context': entitlementKey,
         'user_id': userId ?? '',
         'fcm_token': _fcmToken ?? '',

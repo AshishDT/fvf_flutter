@@ -222,9 +222,7 @@ mixin TimeLineMixin on GetxController {
     try {
       switch (type) {
         case SubscriptionPlanEnum.weekly:
-          result = await RevenueCatService.instance.purchaseWeeklySubscription(
-            roundId: '',
-          );
+          result = await RevenueCatService.instance.purchaseWeeklySubscription();
           break;
         case SubscriptionPlanEnum.oneTime:
           result = await RevenueCatService.instance.purchaseCurrentRound(

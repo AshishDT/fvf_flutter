@@ -391,9 +391,8 @@ class WinnerView extends GetView<WinnerController> {
     try {
       switch (type) {
         case SubscriptionPlanEnum.weekly:
-          result = await RevenueCatService.instance.purchaseWeeklySubscription(
-            roundId: roundId,
-          );
+          result =
+              await RevenueCatService.instance.purchaseWeeklySubscription();
           break;
         case SubscriptionPlanEnum.oneTime:
           result = await RevenueCatService.instance.purchaseCurrentRound(

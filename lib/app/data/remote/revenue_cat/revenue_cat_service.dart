@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:flutter/services.dart';
 import 'package:fvf_flutter/app/data/config/env_config.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
@@ -119,6 +118,8 @@ class RevenueCatService {
   }) async {
     final String? userId = UserProvider.currentUser?.id;
 
+    final String? supabaseId = UserProvider.currentUser?.supabaseId;
+
     final String? _fcmToken = await NotificationService().getToken();
 
     await Purchases.setAttributes(
@@ -127,6 +128,7 @@ class RevenueCatService {
         'product_context': entitlementKey,
         'user_id': userId ?? '',
         'fcm_token': _fcmToken ?? '',
+        'user_supabase_id': supabaseId ?? '',
       },
     );
 
@@ -200,6 +202,23 @@ class RevenueCatService {
         productId: productId,
         appUserId: UserProvider.currentUser?.id,
       );
+    }
+  }
+
+  /// Check if user has an active subscription for the given entitlement
+  Future<bool> checkUserHasSubscription(String appUserId) async {
+    try {
+      final LogInResult result = await Purchases.logIn(appUserId);
+
+      final CustomerInfo customerInfo = result.customerInfo;
+
+      final bool isActive =
+          customerInfo.entitlements.all[_premiumEntitlement]?.isActive ?? false;
+
+      return isActive;
+    } on Exception catch (e) {
+      logE('Error checking subscription for $appUserId: $e');
+      return false;
     }
   }
 }

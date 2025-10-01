@@ -1,8 +1,11 @@
+import 'package:fvf_flutter/app/data/config/logger.dart';
+import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
 import 'package:fvf_flutter/app/modules/splash/splash_api_repo.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/utils/app_config.dart';
 import 'package:get/get.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 
 /// Splash Controller
 class SplashController extends GetxController {
@@ -10,6 +13,7 @@ class SplashController extends GetxController {
   @override
   void onInit() {
     setAppConfig();
+    setPurchaseId();
     Future<void>.delayed(
       const Duration(seconds: 1),
       () {
@@ -33,6 +37,20 @@ class SplashController extends GetxController {
   @override
   void onClose() {
     super.onClose();
+  }
+
+  /// Set purchase id
+  Future<void> setPurchaseId() async {
+    final bool? isAnonymous = await Purchases.isAnonymous;
+
+    final String supabaseId = UserProvider.currentUser?.supabaseId ?? '';
+
+    if (!(isAnonymous ?? false) && UserProvider.currentUser != null) {
+      if (supabaseId.isNotEmpty) {
+        logW('Login to purchase with supabase Id |Splash| $supabaseId');
+        await Purchases.logIn(supabaseId);
+      }
+    }
   }
 
   /// Set app config

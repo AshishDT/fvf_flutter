@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import '../../../data/models/api_reponse.dart';
+import '../../../data/models/md_user.dart';
 import '../../../data/remote/api_service/api_wrapper.dart';
 import '../../../data/remote/api_service/init_api_service.dart';
 import '../../../ui/components/app_snackbar.dart';
@@ -113,11 +114,11 @@ class CreateBetApiRepo {
       );
 
   /// User Claim
-  static Future<bool?> userClaim({
+  static Future<MdUser?> userClaim({
     required String phone,
     required String countryCode,
   }) async =>
-      APIWrapper.handleApiCall<bool?>(
+      APIWrapper.handleApiCall<MdUser?>(
         APIService.post<Map<String, dynamic>>(
           path: 'user/claim',
           data: <String, dynamic>{
@@ -130,12 +131,13 @@ class CreateBetApiRepo {
               return null;
             }
 
-            final ApiResponse<bool> data = ApiResponse<bool>.fromJson(
+            final ApiResponse<MdUser> data = ApiResponse<MdUser>.fromJson(
               response!.data!,
+              fromJsonT: (dynamic json) => MdUser.fromJson(json),
             );
 
             if (data.success ?? false) {
-              return true;
+              return data.data;
             }
 
             appSnackbar(

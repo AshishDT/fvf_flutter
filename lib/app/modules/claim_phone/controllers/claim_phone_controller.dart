@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:fvf_flutter/app/data/local/user_provider.dart';
+import 'package:fvf_flutter/app/data/remote/revenue_cat/revenue_cat_service.dart';
 import 'package:get/get.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:smart_auth/smart_auth.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../data/config/logger.dart';
+import '../../../data/models/md_user.dart';
 import '../../../data/remote/supabse_service/supabse_service.dart';
 import '../../../ui/components/app_snackbar.dart';
 import '../../create_bet/controllers/create_bet_controller.dart';
 import '../../create_bet/repositories/create_bet_api_repo.dart';
 
 /// Claim Phone Controller
-class ClaimPhoneController extends GetxController
-     {
+class ClaimPhoneController extends GetxController {
   /// Text Controllers
   final TextEditingController phoneController = TextEditingController();
 
@@ -104,11 +107,13 @@ class ClaimPhoneController extends GetxController
 
   /// Verify OTP
   Future<bool> verifyOtp() async {
-    final String phone = phoneController.text.trim();
+    String phone = phoneController.text.trim();
     final String otp = otpController.text.trim();
     if (otp.isEmpty) {
       return false;
     }
+
+    phone = phone.replaceFirst(RegExp(r'^\+*'), '');
 
     try {
       final AuthResponse res = await SupaBaseService.verifyOtp(
@@ -140,18 +145,24 @@ class ClaimPhoneController extends GetxController
     try {
       isUserClaimLoading(true);
 
-      final bool? _isClaimed = await CreateBetApiRepo.userClaim(
+      final MdUser? _user = await CreateBetApiRepo.userClaim(
         phone: phoneController.text.trim(),
         countryCode: '+1',
       );
 
-      if (_isClaimed ?? false) {
+      if (_user != null) {
         phoneController.clear();
         otpController.clear();
         Get.close(1);
         appSnackbar(
           message: 'Phone number claimed successfully!',
           snackbarState: SnackbarState.success,
+        );
+
+        await setPurchaseLogin(
+          linkSupabaseId: _user.linkSupabaseId,
+          supabaseId:
+              _user.supabaseId ?? UserProvider.currentUser?.supabaseId ?? '',
         );
         Get.find<CreateBetController>().refreshProfile();
       }
@@ -160,6 +171,44 @@ class ClaimPhoneController extends GetxController
       logE(st);
     } finally {
       isUserClaimLoading(false);
+    }
+  }
+
+  /// Set purchase login
+  Future<void> setPurchaseLogin({
+    required String supabaseId,
+    String? linkSupabaseId,
+  }) async {
+    try {
+      if (supabaseId.isNotEmpty) {
+        final bool isActive = await RevenueCatService.instance
+            .checkUserHasSubscription(supabaseId);
+
+        if (isActive) {
+          await Purchases.logIn(supabaseId);
+          logI('Logged in with supabaseId $supabaseId (active subscription)');
+          return;
+        }
+      }
+
+      if (linkSupabaseId != null && linkSupabaseId.isNotEmpty) {
+        final bool isActive = await RevenueCatService.instance
+            .checkUserHasSubscription(linkSupabaseId);
+
+        if (isActive) {
+          await Purchases.logIn(linkSupabaseId);
+          logI(
+              'Logged in with linkedSupabaseId $linkSupabaseId (active subscription)');
+          return;
+        }
+      }
+
+      await Purchases.logIn(supabaseId);
+      logI(
+          'Fallback: logged in with supabaseId $supabaseId (no active subscription)');
+    } on Exception catch (e, st) {
+      logE('Error setting RevenueCat login: $e');
+      logE(st);
     }
   }
 }

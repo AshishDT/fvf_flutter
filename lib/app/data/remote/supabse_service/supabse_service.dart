@@ -20,6 +20,9 @@ class SupaBaseService {
   /// Supabase instance
   static final SupabaseClient _instance = Supabase.instance.client;
 
+  /// Current anonymous session
+  static Session? anonymousSession;
+
   /// Is logged in
   static bool get isLoggedIn => _instance.auth.currentUser != null;
 
@@ -51,6 +54,7 @@ class SupaBaseService {
 
   /// Send OTP to phone number
   static Future<void> sendOtp(String phoneNumber) async {
+    anonymousSession = _instance.auth.currentSession;
     await _instance.auth.signInWithOtp(
       phone: phoneNumber,
       shouldCreateUser: false,
@@ -67,6 +71,17 @@ class SupaBaseService {
       token: token,
       type: OtpType.sms,
     );
-    return response;
+
+    final AuthResponse _res;
+
+    if (response.session != null) {
+      _res = await _instance.auth.setSession(
+        anonymousSession?.refreshToken ?? '',
+      );
+    } else {
+      _res = response;
+    }
+
+    return _res;
   }
 }

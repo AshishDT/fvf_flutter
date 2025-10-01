@@ -9,6 +9,7 @@ import 'package:fvf_flutter/app/data/remote/notification_service/notification_se
 import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../data/remote/deep_link/deep_link_incoming_data_handler.dart';
@@ -94,6 +95,15 @@ class AgeInputController extends GetxController {
       );
 
       if (_user != null && (_user.id?.isNotEmpty ?? false)) {
+        final bool? isAnonymous = await Purchases.isAnonymous;
+
+        if (isAnonymous ?? false) {
+          logW(
+            'Init RevenueCat with Supabase ID |Age Controller|:  $supabaseId',
+          );
+          await Purchases.logIn(supabaseId);
+        }
+
         LocalStore.loginTime(DateTime.now().toIso8601String());
         UserProvider.onLogin(
           user: _user,

@@ -202,7 +202,7 @@ class _FlyingCharactersState extends State<FlyingCharacters>
             text: widget.text,
             style: baseStyle,
           ),
-          maxLines: widget.maxLines ?? 3,
+          maxLines: widget.maxLines ?? 2,
           textDirection: widget.textDirection ?? TextDirection.ltr,
         );
 
@@ -239,7 +239,9 @@ class _FlyingCharactersState extends State<FlyingCharacters>
                         child: Text(
                           item.text,
                           style: baseStyle.copyWith(fontSize: fontSize),
-                          textScaleFactor: widget.textScaleFactor,
+                          textScaler: TextScaler.linear(
+                            widget.textScaleFactor ?? 1.0,
+                          ),
                         ),
                       ),
                     );
@@ -252,7 +254,7 @@ class _FlyingCharactersState extends State<FlyingCharacters>
         return RichText(
           textAlign: widget.textAlign,
           textDirection: widget.textDirection,
-          maxLines: widget.maxLines ?? 3,
+          maxLines: widget.maxLines ?? 2,
           overflow: TextOverflow.ellipsis,
           text: TextSpan(
             style: baseStyle.copyWith(fontSize: fontSize),

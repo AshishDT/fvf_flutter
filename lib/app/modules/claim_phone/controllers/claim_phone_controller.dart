@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fvf_flutter/app/data/local/user_provider.dart';
-import 'package:fvf_flutter/app/data/remote/revenue_cat/revenue_cat_service.dart';
 import 'package:get/get.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:smart_auth/smart_auth.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../data/config/logger.dart';
@@ -161,12 +158,6 @@ class ClaimPhoneController extends GetxController {
           snackbarState: SnackbarState.success,
         );
 
-        await setPurchaseLogin(
-          linkSupabaseId: _user.linkSupabaseId,
-          supabaseId:
-              _user.supabaseId ?? UserProvider.currentUser?.supabaseId ?? '',
-        );
-
         Get.find<CreateBetController>().refreshProfile();
       }
     } on Exception catch (e, st) {
@@ -174,44 +165,6 @@ class ClaimPhoneController extends GetxController {
       logE(st);
     } finally {
       isUserClaimLoading(false);
-    }
-  }
-
-  /// Set purchase login
-  Future<void> setPurchaseLogin({
-    required String supabaseId,
-    String? linkSupabaseId,
-  }) async {
-    try {
-      if (supabaseId.isNotEmpty) {
-        final bool isActive = await RevenueCatService.instance
-            .checkUserHasSubscription(supabaseId);
-
-        if (isActive) {
-          await Purchases.logIn(supabaseId);
-          logI('Logged in with supabaseId $supabaseId (active subscription)');
-          return;
-        }
-      }
-
-      if (linkSupabaseId != null && linkSupabaseId.isNotEmpty) {
-        final bool isActive = await RevenueCatService.instance
-            .checkUserHasSubscription(linkSupabaseId);
-
-        if (isActive) {
-          await Purchases.logIn(linkSupabaseId);
-          logI(
-              'Logged in with linkedSupabaseId $linkSupabaseId (active subscription)');
-          return;
-        }
-      }
-
-      await Purchases.logIn(supabaseId);
-      logI(
-          'Fallback: logged in with supabaseId $supabaseId (no active subscription)');
-    } on Exception catch (e, st) {
-      logE('Error setting RevenueCat login: $e');
-      logE(st);
     }
   }
 }

@@ -155,7 +155,7 @@ class RevenueCatService {
       }
 
       final PurchaseResult result =
-          await Purchases.purchaseStoreProduct(product);
+          await Purchases.purchase(PurchaseParams.storeProduct(product));
 
       final bool isActive =
           result.customerInfo.entitlements.all[entitlementKey]?.isActive ??
@@ -205,20 +205,25 @@ class RevenueCatService {
     }
   }
 
-  /// Check if user has an active subscription for the given entitlement
-  Future<bool> checkUserHasSubscription(String appUserId) async {
+  /// Get customer info
+  Future<CustomerInfo?> getCustomerInfo() async {
     try {
-      final LogInResult result = await Purchases.logIn(appUserId);
-
-      final CustomerInfo customerInfo = result.customerInfo;
-
-      final bool isActive =
-          customerInfo.entitlements.all[_premiumEntitlement]?.isActive ?? false;
-
-      return isActive;
+      final CustomerInfo info = await Purchases.getCustomerInfo();
+      return info;
     } on Exception catch (e) {
-      logE('Error checking subscription for $appUserId: $e');
+      logE('Error fetching customer info: $e');
+      return null;
+    }
+  }
+
+  /// Check if user has premium access
+  Future<bool> hasPremiumAccess() async {
+    final CustomerInfo? info = await getCustomerInfo();
+    if (info == null) {
       return false;
     }
+    final bool isActive =
+        info.entitlements.all[_premiumEntitlement]?.isActive ?? false;
+    return isActive;
   }
 }

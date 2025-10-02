@@ -14,7 +14,7 @@ class MdDeepLinkData {
   factory MdDeepLinkData.fromJson(Map<dynamic, dynamic> json) => MdDeepLinkData(
         invitationId: json['invitation_id'] as String?,
         tags: (json[r'~tags'] as List<dynamic>?)
-            ?.map((e) => e.toString())
+            ?.map((dynamic e) => e.toString())
             .toList(),
         canonicalIdentifier: json[r'$canonical_identifier'] as String?,
         clickedBranchLink: json[r'+clicked_branch_link'] == true,

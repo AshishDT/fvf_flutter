@@ -94,7 +94,7 @@ class AppThemes {
       backgroundColor: _lightPrimaryColor,
     ),
     appBarTheme: const AppBarTheme(
-      color: _lightBackgroundAppBarColor,
+      backgroundColor: _lightBackgroundAppBarColor,
       iconTheme: IconThemeData(color: _lightTextColor),
     ),
     colorScheme: const ColorScheme.light(
@@ -124,7 +124,7 @@ class AppThemes {
         Radius.circular(8),
       )),
       enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: _lightBorderColor, width: 1),
+        borderSide: BorderSide(color: _lightBorderColor),
         borderRadius: BorderRadius.all(Radius.circular(8)),
       ),
       focusedBorder: OutlineInputBorder(
@@ -188,7 +188,7 @@ class AppThemes {
       backgroundColor: _darkPrimaryColor,
     ),
     appBarTheme: const AppBarTheme(
-      color: _darkBackgroundAppBarColor,
+      backgroundColor: _darkBackgroundAppBarColor,
       iconTheme: IconThemeData(color: _darkTextColor),
     ),
     colorScheme: const ColorScheme.dark(
@@ -216,12 +216,11 @@ class AppThemes {
       prefixStyle: TextStyle(color: _darkIconColor),
       //labelStyle: TextStyle(color: nevada),
       border: OutlineInputBorder(
-          borderSide: BorderSide(width: 1),
           borderRadius: BorderRadius.all(
             Radius.circular(8),
           )),
       enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: _darkBorderColor, width: 1),
+        borderSide: BorderSide(color: _darkBorderColor),
         borderRadius: BorderRadius.all(Radius.circular(8)),
       ),
       focusedBorder: OutlineInputBorder(

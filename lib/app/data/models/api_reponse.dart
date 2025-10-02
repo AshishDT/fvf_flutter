@@ -30,7 +30,7 @@ class ApiResponse<T> {
   final T? data;
 
   /// To json
-  Map<String, dynamic> toJson(Map<String, dynamic> Function(T) toJsonT) => {
+  Map<String, dynamic> toJson(Map<String, dynamic> Function(T) toJsonT) => <String, dynamic>{
         'success': success,
         'message': message,
         'data': data != null ? toJsonT(data as T) : null,

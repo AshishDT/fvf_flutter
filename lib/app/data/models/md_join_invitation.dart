@@ -52,7 +52,7 @@ class MdJoinInvitation {
         participants: json['participants'] == null
             ? <MdParticipant>[]
             : (json['participants'] as List<dynamic>?)
-                ?.map((e) => MdParticipant.fromJson(e as Map<String, dynamic>))
+                ?.map((dynamic e) => MdParticipant.fromJson(e as Map<String, dynamic>))
                 .toList(),
         isViewOnly: json['is_view_only'],
         isAlreadyJoined: json['is_already_joined'],
@@ -128,8 +128,8 @@ class MdJoinInvitation {
         'round_joined_end_at': roundJoinedEndAt?.toIso8601String(),
         'revealAt': revealAt,
         'host': host?.toJson(),
-        'participants': participants?.map((e) => e.toJson()).toList(),
-        'previousRounds': previousRounds?.map((e) => e.toJson()).toList(),
+        'participants': participants?.map((dynamic e) => e.toJson()).toList(),
+        'previousRounds': previousRounds?.map((dynamic e) => e.toJson()).toList(),
         'is_view_only': isViewOnly,
         'is_already_joined': isAlreadyJoined,
       };

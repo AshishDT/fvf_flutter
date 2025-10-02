@@ -41,6 +41,7 @@ class PickSelfieCameraController extends GetxController {
   void onClose() {
     cameraController?.dispose();
     stopTimer();
+    _autoFinishTimer?.cancel();
     super.onClose();
   }
 
@@ -68,14 +69,14 @@ class PickSelfieCameraController extends GetxController {
   /// Timer for countdown
   Timer? _timer;
 
+  /// Auto-finish timer after capture
+  Timer? _autoFinishTimer;
+
   /// Can show retake button
   RxBool canShowRetake = false.obs;
 
   /// Is retake loading
   RxBool isRetakeLoading = false.obs;
-
-  /// Flag to handle pending takePicture delayed callback
-  final RxBool _isTakePicturePending = false.obs;
 
   /// Starts the timer for countdown
   void startTimer() {
@@ -133,7 +134,8 @@ class PickSelfieCameraController extends GetxController {
 
     isRetakeLoading(true);
 
-    _isTakePicturePending(false);
+    _autoFinishTimer?.cancel();
+    _autoFinishTimer = null;
 
     try {
       previewFile(File(''));
@@ -196,17 +198,15 @@ class PickSelfieCameraController extends GetxController {
 
       previewFile(file);
 
-      _isTakePicturePending(true);
-      Future<void>.delayed(
-        const Duration(milliseconds: 3600),
+      _autoFinishTimer?.cancel();
+
+      _autoFinishTimer = Timer(
+        const Duration(seconds: 3),
         () {
-          if (_isTakePicturePending() &&
-              !isRetakeLoading() &&
-              previewFile().path.isNotEmpty) {
+          if (!isRetakeLoading() && previewFile().path.isNotEmpty) {
             canShowRetake(false);
             onTimerFinished();
           }
-          _isTakePicturePending(false);
         },
       );
     } on CameraException catch (e) {

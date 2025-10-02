@@ -134,8 +134,9 @@ class SnapSelfiesController extends GetxController with SnapSelfieKeysMixin {
         if (Get.currentRoute != Routes.FAILED_ROUND &&
             Get.currentRoute == Routes.SNAP_SELFIES) {
           socketIoRepo.disconnect();
-          Get.offNamed(
+          Get.offNamedUntil(
             Routes.FAILED_ROUND,
+            (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
             arguments: currentArgs,
           );
         }

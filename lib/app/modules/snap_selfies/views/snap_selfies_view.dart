@@ -503,7 +503,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
               bottom: 20,
             ),
             child: Text(
-              'Waiting for the host to start the round...',
+              'You have view only access. Waiting for others to take their selfies.',
               textAlign: TextAlign.center,
               style: AppTextStyle.openRunde(
                 fontSize: 16.sp,
@@ -518,7 +518,8 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
   /// Loading indicator
   Widget _loadingIndicator() => Obx(
         () => Visibility(
-          visible: controller.isInitializing(),
+          visible: controller.isInitializing() &&
+              !(controller.joinedInvitationData().isViewOnly ?? false),
           child: Padding(
             padding: REdgeInsets.only(bottom: 16),
             child: SizedBox(

@@ -273,7 +273,7 @@ class ResultCard extends StatelessWidget {
                     16.verticalSpace,
                     FlyingCharacters(
                       text: reason ?? '',
-                      maxLines: 3,
+                      maxLines: isExposed ? 3 : 2,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.inter(
                         fontSize: 20.sp,

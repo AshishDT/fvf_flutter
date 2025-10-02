@@ -22,7 +22,6 @@ import '../../../data/models/md_join_invitation.dart';
 import '../../../data/remote/api_service/init_api_service.dart';
 import '../../../data/remote/deep_link/deep_link_service.dart';
 import '../../../ui/components/app_snackbar.dart';
-import '../../../utils/app_loader.dart';
 import '../../../utils/global_keys.dart';
 import '../../claim_phone/controllers/phone_claim_service.dart';
 import '../models/md_socket_io_response.dart';
@@ -179,6 +178,7 @@ class SnapSelfiesController extends GetxController with SnapSelfieKeysMixin {
 
   /// Share uri
   Future<void> shareUri({bool fromResend = false}) async {
+    isSharingUri(true);
     try {
       String? _invitationLink;
 
@@ -197,6 +197,7 @@ class SnapSelfiesController extends GetxController with SnapSelfieKeysMixin {
           message: 'Failed to generate invitation link. Please try again.',
           snackbarState: SnackbarState.danger,
         );
+        isSharingUri(false);
         return;
       }
 
@@ -211,14 +212,19 @@ class SnapSelfiesController extends GetxController with SnapSelfieKeysMixin {
         )
             .then(
           (ShareResult result) async {
+            isSharingUri(false);
             if (!fromResend) {
               await startRound();
             }
           },
         ),
       );
+      isSharingUri(false);
     } on Exception {
+      isSharingUri(false);
       logE('Error sharing invitation link');
+    } finally {
+      isSharingUri(false);
     }
   }
 
@@ -582,29 +588,37 @@ class SnapSelfiesController extends GetxController with SnapSelfieKeysMixin {
 
   /// Add previous participants
   Future<void> addPreviousParticipants() async {
-    final List<MdPreviousParticipant> toAdd = previousAddedParticipants()
-        .where((MdPreviousParticipant p) => p.isAdded == true)
-        .toList();
-    if (toAdd.isEmpty) {
-      await shareUri();
-      return;
+    isAddingRunning(true);
+    try {
+      final List<MdPreviousParticipant> toAdd = previousAddedParticipants()
+          .where((MdPreviousParticipant p) => p.isAdded == true)
+          .toList();
+      if (toAdd.isEmpty) {
+        isAddingRunning(false);
+        await shareUri();
+        return;
+      }
+
+      final List<String> userIds = toAdd
+          .where((MdPreviousParticipant p) => p.id != null && p.id!.isNotEmpty)
+          .map((MdPreviousParticipant p) => p.id!)
+          .toList();
+
+      final bool? _isAdded = await SnapSelfieApiRepo.addParticipants(
+        roundId: joinedInvitationData().id ?? '',
+        userIds: userIds,
+      );
+
+      if (!(_isAdded ?? false)) {
+        isAddingRunning(false);
+        return;
+      }
+
+      await startRound();
+      isAddingRunning(false);
+    } finally {
+      isAddingRunning(false);
     }
-
-    final List<String> userIds = toAdd
-        .where((MdPreviousParticipant p) => p.id != null && p.id!.isNotEmpty)
-        .map((MdPreviousParticipant p) => p.id!)
-        .toList();
-
-    final bool? _isAdded = await SnapSelfieApiRepo.addParticipants(
-      roundId: joinedInvitationData().id ?? '',
-      userIds: userIds,
-    );
-
-    if (!(_isAdded ?? false)) {
-      return;
-    }
-
-    await startRound();
   }
 
   /// On add/remove previous participant
@@ -630,44 +644,6 @@ class SnapSelfiesController extends GetxController with SnapSelfieKeysMixin {
 
     previousAddedParticipants.refresh();
     previousRounds.refresh();
-  }
-
-  /// Get view only
-  Future<void> shareViewOnlyLink() async {
-    Loader.show();
-    try {
-      final String? _uri = await DeepLinkService.generateSlayInviteLink(
-        title: joinedInvitationData().prompt ?? '',
-        invitationId: joinedInvitationData().id ?? '',
-        hostId: joinedInvitationData().host?.id ?? '',
-        isViewOnly: true,
-      );
-
-      if (_uri == null || _uri.isEmpty) {
-        Loader.dismiss();
-        appSnackbar(
-          message: 'Failed to generate invitation link. Please try again.',
-          snackbarState: SnackbarState.danger,
-        );
-        return;
-      }
-
-      Loader.dismiss();
-
-      final Uri uri = Uri.parse(_uri);
-
-      unawaited(
-        SharePlus.instance.share(
-          ShareParams(
-            uri: uri,
-          ),
-        ),
-      );
-    } on Exception {
-      Loader.dismiss();
-    } finally {
-      Loader.dismiss();
-    }
   }
 
   /// On add name

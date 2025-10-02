@@ -32,6 +32,12 @@ mixin SnapSelfieKeysMixin on GetxController {
   /// Joined invitation data
   Rx<MdJoinInvitation> joinedInvitationData = MdJoinInvitation().obs;
 
+  /// Is adding running
+  RxBool isAddingRunning = false.obs;
+
+  /// Is sharing URI
+  RxBool isSharingUri = false.obs;
+
   /// Check if current user is host
   RxBool get isHost =>
       (joinedInvitationData().host?.id == UserProvider.userId).obs;

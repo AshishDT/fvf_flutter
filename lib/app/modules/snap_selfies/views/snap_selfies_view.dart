@@ -168,6 +168,8 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
             replacement: const SizedBox(width: double.infinity),
             child: AppButton(
               buttonText: 'Add Friends',
+              isLoading:
+                  controller.isAddingRunning() || controller.isSharingUri(),
               child: controller.isAddedFromPreviousRound()
                   ? null
                   : Row(
@@ -272,7 +274,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
         },
         actions: <Widget>[
           GestureDetector(
-            onTap: controller.shareViewOnlyLink,
+            onTap: controller.shareUri,
             child: SvgPicture.asset(
               width: 24.w,
               height: 24.h,
@@ -515,16 +517,16 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
 
   /// Loading indicator
   Widget _loadingIndicator() => Obx(
-      () => Visibility(
-        visible: controller.isInitializing(),
-        child: Padding(
-          padding: REdgeInsets.only(bottom: 16),
-          child: SizedBox(
-            width: 24.w,
-            height: 24.h,
-            child: const AppCircularProgress(),
+        () => Visibility(
+          visible: controller.isInitializing(),
+          child: Padding(
+            padding: REdgeInsets.only(bottom: 16),
+            child: SizedBox(
+              width: 24.w,
+              height: 24.h,
+              child: const AppCircularProgress(),
+            ),
           ),
         ),
-      ),
-    );
+      );
 }

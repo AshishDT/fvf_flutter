@@ -77,7 +77,6 @@ class PhoneNumberSheet extends GetView<ClaimPhoneController> {
                   controller: controller.phoneController,
                   cursorColor: AppColors.kF1F2F2,
                   keyboardType: TextInputType.number,
-                  maxLength: 10,
                   onFieldSubmitted: (String value) {
                     _onFieldSubmitted(
                       context,
@@ -147,9 +146,18 @@ class PhoneNumberSheet extends GetView<ClaimPhoneController> {
   Future<void> _onFieldSubmitted(BuildContext context, String value) async {
     final String _trimmedValue = value.trim();
 
-    if (_trimmedValue.isEmpty || value.length < 10) {
+    if (_trimmedValue.isEmpty || !_trimmedValue.contains(RegExp(r'^\d+$'))) {
       appSnackbar(
-        message: 'Please enter a valid phone number',
+        message: 'Please enter digits only',
+        snackbarState: SnackbarState.danger,
+      );
+      return;
+    }
+
+    if (_trimmedValue.length <= 10) {
+      appSnackbar(
+        message:
+            'Please enter phone number with country code (e.g. 1XXXXXXXXXX)',
         snackbarState: SnackbarState.danger,
       );
       return;

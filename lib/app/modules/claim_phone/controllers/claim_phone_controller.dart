@@ -83,17 +83,13 @@ class ClaimPhoneController extends GetxController {
 
   /// Send OTP
   Future<bool> sendOtp() async {
-    String phone = phoneController.text.trim();
+    final String phone = phoneController.text.trim();
     if (phone.isEmpty) {
       return false;
     }
 
-    phone = phone.replaceFirst(RegExp(r'^\+*'), '');
-
-    logWTF('Processed Phone Number: $phone');
-
     try {
-      await SupaBaseService.sendOtp('+1$phone');
+      await SupaBaseService.sendOtp('+$phone');
       return true;
     } on Exception catch (e) {
       logE('Error sending OTP: $e');
@@ -107,17 +103,15 @@ class ClaimPhoneController extends GetxController {
 
   /// Verify OTP
   Future<bool> verifyOtp() async {
-    String phone = phoneController.text.trim();
+    final String phone = phoneController.text.trim();
     final String otp = otpController.text.trim();
     if (otp.isEmpty) {
       return false;
     }
 
-    phone = phone.replaceFirst(RegExp(r'^\+*'), '');
-
     try {
       final AuthResponse res = await SupaBaseService.verifyOtp(
-        phoneNumber: '+1$phone',
+        phoneNumber: '+$phone',
         token: otp,
       );
 
@@ -145,9 +139,17 @@ class ClaimPhoneController extends GetxController {
     try {
       isUserClaimLoading(true);
 
+      final String rawInput = phoneController.text.trim();
+
+      final String phone = rawInput.substring(rawInput.length - 10);
+
+      final String countryCode = rawInput.length > 10
+          ? '+${rawInput.substring(0, rawInput.length - 10)}'
+          : '+1';
+
       final MdUser? _user = await CreateBetApiRepo.userClaim(
-        phone: phoneController.text.trim(),
-        countryCode: '+1',
+        phone: phone,
+        countryCode: countryCode,
       );
 
       if (_user != null) {
@@ -164,6 +166,7 @@ class ClaimPhoneController extends GetxController {
           supabaseId:
               _user.supabaseId ?? UserProvider.currentUser?.supabaseId ?? '',
         );
+
         Get.find<CreateBetController>().refreshProfile();
       }
     } on Exception catch (e, st) {

@@ -1,5 +1,5 @@
 name: fvf_flutter
-version: 0.0.1+20
+version: 0.0.1+21
 publish_to: none
 description: A new Flutter project.
 
@@ -47,6 +47,7 @@ dependencies:
   in_app_review: ^2.0.11
   no_screenshot: ^0.3.1
   emoji_regex: ^0.0.5
+  country_picker: ^2.0.27
 
 dev_dependencies:
   build_runner: ^2.9.0

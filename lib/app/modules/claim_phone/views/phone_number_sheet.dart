@@ -1,3 +1,4 @@
+import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -5,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fvf_flutter/app/modules/claim_phone/controllers/claim_phone_controller.dart';
 import 'package:fvf_flutter/app/modules/claim_phone/views/otp_input_sheet.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
+import 'package:fvf_flutter/app/ui/components/country_picker.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:get/get.dart';
 import '../../../data/config/app_colors.dart';
@@ -77,6 +79,8 @@ class PhoneNumberSheet extends GetView<ClaimPhoneController> {
                   controller: controller.phoneController,
                   cursorColor: AppColors.kF1F2F2,
                   keyboardType: TextInputType.number,
+                  autofocus: true,
+                  maxLength: 10,
                   onFieldSubmitted: (String value) {
                     _onFieldSubmitted(
                       context,
@@ -95,21 +99,39 @@ class PhoneNumberSheet extends GetView<ClaimPhoneController> {
                   decoration: InputDecoration(
                     hintText: '',
                     counterText: '',
-                    prefixIconConstraints: BoxConstraints(
-                      maxHeight: 24.h,
-                      maxWidth: 40.w,
-                    ),
-                    prefixIcon: Padding(
-                      padding: REdgeInsets.only(left: 12),
-                      child: SvgPicture.asset(
-                        AppImages.phoneIcon,
-                        height: 24.h,
-                        width: 24.w,
+                    prefix: GestureDetector(
+                      onTap: () {
+                        CountryPicker.show(
+                          context,
+                          onSelect: (Country country) {
+                            controller.country(country);
+                            controller.country.refresh();
+                          },
+                        );
+                      },
+                      child: IntrinsicWidth(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            SvgPicture.asset(
+                              AppImages.phoneIcon,
+                              height: 24.h,
+                              width: 24.w,
+                            ),
+                            5.horizontalSpace,
+                            Obx(
+                              () => Text(
+                                '+ ${controller.country().phoneCode} ',
+                                style: AppTextStyle.openRunde(
+                                  color: AppColors.kffffff,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16.sp,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    contentPadding: REdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 15,
                     ),
                     fillColor: AppColors.kF1F2F2.withValues(alpha: 0.36),
                     hoverColor: AppColors.kF1F2F2.withValues(alpha: 0.36),
@@ -154,10 +176,9 @@ class PhoneNumberSheet extends GetView<ClaimPhoneController> {
       return;
     }
 
-    if (_trimmedValue.length <= 10) {
+    if (_trimmedValue.length < 10) {
       appSnackbar(
-        message:
-            'Please enter phone number with country code (e.g. 1XXXXXXXXXX)',
+        message: 'Please enter a valid phone number',
         snackbarState: SnackbarState.danger,
       );
       return;

@@ -1,9 +1,9 @@
+import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:smart_auth/smart_auth.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../data/config/logger.dart';
-import '../../../data/models/md_user.dart';
 import '../../../data/remote/supabse_service/supabse_service.dart';
 import '../../../ui/components/app_snackbar.dart';
 import '../../create_bet/controllers/create_bet_controller.dart';
@@ -25,6 +25,20 @@ class ClaimPhoneController extends GetxController {
 
   /// Smart auth instance
   final SmartAuth smartAuth = SmartAuth.instance;
+
+  /// Selected country
+  Rx<Country> country = Country(
+    phoneCode: '1',
+    countryCode: 'US',
+    e164Sc: 0,
+    geographic: true,
+    level: 1,
+    name: 'United States',
+    example: '2015550123',
+    displayName: 'United States (US) +1',
+    displayNameNoCountryCode: 'United States (US)',
+    e164Key: '1-US-0',
+  ).obs;
 
   /// On init
   @override
@@ -51,23 +65,39 @@ class ClaimPhoneController extends GetxController {
       isSmartAuthShowed(true);
 
       if (result.hasData) {
-        phoneController.text = result.data ?? '';
+        final String phoneCode = extractCountryCode(result.data ?? '1');
+
+        final String localNumber = extractLocalNumber(result.data ?? '');
+
+        final Country _selectedCountry = Country(
+          phoneCode: '$phoneCode',
+          countryCode: 'US',
+          e164Sc: 0,
+          geographic: true,
+          level: 1,
+          name: 'United States',
+          example: '2015550123',
+          displayName: 'United States (US) +1',
+          displayNameNoCountryCode: 'United States (US)',
+          e164Key: '1-US-0',
+        );
+
+        country(_selectedCountry);
+        country.refresh();
+
+        phoneController.text = localNumber;
       }
     } on Exception catch (e) {
       logE('SmartAuth error: $e');
     }
   }
 
-  /// Remove US/India country code
-  String removeUSIndiaCountryCode(String input) =>
-      input.replaceFirst(RegExp(r'^\+?(1|91)\s?'), '').trim();
-
   /// Extract Country Code (everything before last 10 digits)
   String extractCountryCode(String phoneNumber) {
     if (phoneNumber.startsWith('+') || phoneNumber.length > 10) {
       return phoneNumber.substring(0, phoneNumber.length - 10);
     }
-    return '';
+    return '1';
   }
 
   /// Extracts the local 10-digit number (last 10 digits)
@@ -85,8 +115,10 @@ class ClaimPhoneController extends GetxController {
       return false;
     }
 
+    final String countryCode = country().phoneCode;
+
     try {
-      await SupaBaseService.sendOtp('+$phone');
+      await SupaBaseService.sendOtp('+$countryCode$phone');
       return true;
     } on Exception catch (e) {
       logE('Error sending OTP: $e');
@@ -106,9 +138,11 @@ class ClaimPhoneController extends GetxController {
       return false;
     }
 
+    final String countryCode = country().phoneCode;
+
     try {
       final AuthResponse res = await SupaBaseService.verifyOtp(
-        phoneNumber: '+$phone',
+        phoneNumber: '+$countryCode$phone',
         token: otp,
       );
 
@@ -138,20 +172,15 @@ class ClaimPhoneController extends GetxController {
     try {
       isUserClaimLoading(true);
 
-      final String rawInput = phoneController.text.trim();
+      final String phone = phoneController.text.trim();
+      final String countryCode = country().phoneCode;
 
-      final String phone = rawInput.substring(rawInput.length - 10);
-
-      final String countryCode = rawInput.length > 10
-          ? '+${rawInput.substring(0, rawInput.length - 10)}'
-          : '+1';
-
-      final MdUser? _user = await CreateBetApiRepo.userClaim(
+      final bool? isClaimed = await CreateBetApiRepo.userClaim(
         phone: phone,
         countryCode: countryCode,
       );
 
-      if (_user != null) {
+      if (isClaimed ?? false) {
         phoneController.clear();
         otpController.clear();
         Get.close(1);

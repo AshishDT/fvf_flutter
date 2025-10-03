@@ -121,10 +121,12 @@ class ClaimPhoneController extends GetxController {
         snackbarState: SnackbarState.danger,
       );
       return false;
-    } on Exception catch (e) {
+    } on AuthException catch (e) {
       logE('Error verifying OTP: $e');
       appSnackbar(
-        message: 'Failed to verify OTP. Please try again.',
+        message: e.message.isNotEmpty
+            ? '${e.message}'
+            : 'Failed to verify OTP. Please try again.',
         snackbarState: SnackbarState.danger,
       );
       return false;

@@ -151,8 +151,11 @@ class ProfileView extends GetView<ProfileController> {
                                       duration: 500.milliseconds,
                                       curve: Curves.easeInOut,
                                     );
+
+                                    controller.noScreenshot.screenshotOn();
                                   } else {
                                     Get.back();
+                                    controller.noScreenshot.screenshotOn();
                                   }
                                 },
                                 actions: <Widget>[
@@ -191,6 +194,10 @@ class ProfileView extends GetView<ProfileController> {
 
   /// On page change
   void _onPageChange(int value) {
+    if (value == 0) {
+      controller.noScreenshot.screenshotOn();
+    }
+
     if (controller.isLoading()) {
       return;
     }

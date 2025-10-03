@@ -111,6 +111,12 @@ class ProfileController extends GetxController
   }
 
   @override
+  void onReady() {
+    noScreenshot.screenshotOn();
+    super.onReady();
+  }
+
+  @override
   void didChangeMetrics() {
     final double currentViewInsets = View.of(Get.context!).viewInsets.bottom;
 
@@ -143,6 +149,7 @@ class ProfileController extends GetxController
     }
     roundInnerPageController.clear();
     WidgetsBinding.instance.removeObserver(this);
+    noScreenshot.screenshotOn();
     super.onClose();
   }
 

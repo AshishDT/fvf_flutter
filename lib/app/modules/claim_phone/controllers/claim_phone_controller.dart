@@ -94,18 +94,25 @@ class ClaimPhoneController extends GetxController {
 
   /// Extract Country Code (everything before last 10 digits)
   String extractCountryCode(String phoneNumber) {
-    if (phoneNumber.startsWith('+') || phoneNumber.length > 10) {
-      return phoneNumber.substring(0, phoneNumber.length - 10);
+    final String digits = phoneNumber.replaceAll(RegExp(r'\D'), '');
+    if (digits.length > 10) {
+      final String code = digits.substring(0, digits.length - 10);
+      if (code.isEmpty) {
+        return '1';
+      } else {
+        return code;
+      }
     }
     return '1';
   }
 
-  /// Extracts the local 10-digit number (last 10 digits)
+  /// Extracts only the local 10-digit number.
   String extractLocalNumber(String phoneNumber) {
-    if (phoneNumber.length >= 10) {
-      return phoneNumber.substring(phoneNumber.length - 10);
+    final String digits = phoneNumber.replaceAll(RegExp(r'\D'), '');
+    if (digits.length >= 10) {
+      return digits.substring(digits.length - 10);
     }
-    return phoneNumber;
+    return digits;
   }
 
   /// Send OTP

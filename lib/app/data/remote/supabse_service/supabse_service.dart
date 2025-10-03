@@ -57,7 +57,6 @@ class SupaBaseService {
     anonymousSession = _instance.auth.currentSession;
     await _instance.auth.signInWithOtp(
       phone: phoneNumber,
-      shouldCreateUser: false,
     );
   }
 

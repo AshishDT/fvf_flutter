@@ -70,7 +70,11 @@ class WinnerController extends GetxController {
   /// On close
   @override
   void onClose() {
-    pageController?.dispose();
+    if (pageController != null && pageController!.hasClients) {
+      pageController?.removeListener(updateScreenshotPermission);
+      pageController?.dispose();
+    }
+
     noScreenshot.screenshotOn();
     super.onClose();
   }

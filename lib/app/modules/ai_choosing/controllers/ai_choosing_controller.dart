@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/enums/round_status_enum.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
-import 'package:fvf_flutter/app/modules/snap_selfies/controllers/snap_selfies_controller.dart';
 import 'package:get/get.dart';
 import '../../../data/config/env_config.dart';
 import '../../../data/remote/socket_io_repo.dart';
@@ -22,8 +21,13 @@ class AiChoosingController extends GetxController {
 
   @override
   void onClose() {
-    timer?.cancel();
-    pageController.dispose();
+    if (timer != null) {
+      timer?.cancel();
+    }
+
+    if (pageController.hasClients) {
+      pageController.dispose();
+    }
     resultsRepo.dispose();
     super.onClose();
   }
@@ -130,12 +134,7 @@ class AiChoosingController extends GetxController {
     final bool isFailed = resultData.status == RoundStatus.failed;
 
     if (isComplete) {
-      if (Get.isRegistered<SnapSelfiesController>()) {
-        final SnapSelfiesController snapSelfiesController =
-            Get.find<SnapSelfiesController>();
-        snapSelfiesController.socketIoRepo.disconnect();
-      }
-
+      resultsRepo.disconnect();
       if (Get.currentRoute == Routes.AI_CHOOSING &&
           Get.currentRoute != Routes.WINNER) {
         Get.offNamedUntil(

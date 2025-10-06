@@ -145,7 +145,9 @@ class ProfileController extends GetxController
   @override
   void onClose() {
     for (final PageController pc in roundInnerPageController.values) {
-      pc.dispose();
+      if (pc.hasClients) {
+        pc.dispose();
+      }
     }
     roundInnerPageController.clear();
     WidgetsBinding.instance.removeObserver(this);

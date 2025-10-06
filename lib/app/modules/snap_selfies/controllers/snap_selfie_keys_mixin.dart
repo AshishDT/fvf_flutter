@@ -253,10 +253,9 @@ mixin SnapSelfieKeysMixin on GetxController {
             participant.selfieUrl != null && participant.selfieUrl!.isNotEmpty)
         .toList();
 
-    if (Get.currentRoute == Routes.SNAP_SELFIES &&
-        Get.currentRoute != Routes.AI_CHOOSING) {
-      socketIoRepo.disposeRoundUpdate();
-      Get.toNamed(
+    if (Get.currentRoute != Routes.AI_CHOOSING) {
+      socketIoRepo.disconnect();
+      Get.offNamed(
         Routes.AI_CHOOSING,
         arguments: <String, dynamic>{
           'participants': _participants,

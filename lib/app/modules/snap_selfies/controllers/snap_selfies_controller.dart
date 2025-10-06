@@ -28,11 +28,14 @@ import '../models/md_socket_io_response.dart';
 import '../repositories/snap_selfie_api_repo.dart';
 
 /// Snap Selfies Controller
-class SnapSelfiesController extends GetxController with SnapSelfieKeysMixin {
+class SnapSelfiesController extends GetxController
+    with SnapSelfieKeysMixin, WidgetsBindingObserver {
   /// On init
   @override
   void onInit() {
     resetFields();
+
+    WidgetsBinding.instance.addObserver(this);
 
     if (Get.arguments != null) {
       joinedInvitationData.value = Get.arguments as MdJoinInvitation;
@@ -67,6 +70,26 @@ class SnapSelfiesController extends GetxController with SnapSelfieKeysMixin {
       getShareUri();
     }
     super.onInit();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        log(
+          'App resumed -> reconnect socket',
+        );
+        _initWebSocket();
+        break;
+      case AppLifecycleState.paused:
+        log(
+          'App paused -> disconnect socket',
+        );
+        socketIoRepo.disconnect();
+        break;
+      default:
+        break;
+    }
   }
 
   /// Initialize WebSocket connection and listeners
@@ -108,6 +131,7 @@ class SnapSelfiesController extends GetxController with SnapSelfieKeysMixin {
   /// On close
   @override
   void onClose() {
+    WidgetsBinding.instance.removeObserver(this);
     super.onClose();
   }
 
@@ -131,8 +155,7 @@ class SnapSelfiesController extends GetxController with SnapSelfieKeysMixin {
 
     WidgetsBinding.instance.addPostFrameCallback(
       (_) {
-        if (Get.currentRoute != Routes.FAILED_ROUND &&
-            Get.currentRoute == Routes.SNAP_SELFIES) {
+        if (Get.currentRoute != Routes.FAILED_ROUND) {
           socketIoRepo.disconnect();
           Get.offNamedUntil(
             Routes.FAILED_ROUND,
@@ -369,11 +392,8 @@ class SnapSelfiesController extends GetxController with SnapSelfieKeysMixin {
 
     final DateTime? revealedAt = DateTime.tryParse(data.round?.revealAt ?? '');
 
-    if (Get.currentRoute != Routes.WINNER &&
-        Get.currentRoute == Routes.SNAP_SELFIES) {
-      socketIoRepo
-        ..disposeRoundUpdate()
-        ..disconnect();
+    if (Get.currentRoute != Routes.WINNER) {
+      socketIoRepo.disconnect();
       Get.offNamedUntil(
         Routes.WINNER,
         (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,

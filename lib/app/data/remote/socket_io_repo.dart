@@ -84,8 +84,6 @@ class SocketIoRepo {
       }
 
       logI('📤 Emitted event [getRound] with payload: $payload');
-    } else {
-      logWTF('⚠️ Tried to emit [getRound] but socket is NOT connected!');
     }
   }
 
@@ -115,27 +113,6 @@ class SocketIoRepo {
           onData(data);
         },
       );
-    }
-  }
-
-  /// Dispose resources
-  void dispose() {
-    logI('🛑 Disposing socket + clearing listeners');
-    stopAutoEmit();
-    if (_socket != null) {
-      _socket
-        ?..off('roundUpdate')
-        ..off('roundProcess')
-        ..dispose();
-    }
-  }
-
-  /// Dispose only round update listener
-  void disposeRoundUpdate() {
-    logI('🛑 Disposing only roundUpdate listener');
-    stopAutoEmit();
-    if (_socket != null) {
-      _socket?.off('roundUpdate');
     }
   }
 

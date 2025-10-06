@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/enums/round_status_enum.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
@@ -11,16 +12,18 @@ import '../../failed_round/repositories/failed_round_api_repo.dart';
 import '../models/md_ai_result.dart';
 
 /// AiChoosingController
-class AiChoosingController extends GetxController {
+class AiChoosingController extends GetxController with WidgetsBindingObserver {
   @override
   void onInit() {
     super.onInit();
+    WidgetsBinding.instance.addObserver(this);
 
     _onInit();
   }
 
   @override
   void onClose() {
+    WidgetsBinding.instance.removeObserver(this);
     if (timer != null) {
       timer?.cancel();
     }
@@ -28,12 +31,38 @@ class AiChoosingController extends GetxController {
     if (pageController.hasClients) {
       pageController.dispose();
     }
-    resultsRepo.dispose();
+    socketIoRepo.disconnect();
     super.onClose();
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        log(
+          'App resumed -> reconnect socket',
+        );
+        socketIoRepo
+          ..initSocket(url: EnvConfig.socketUrl)
+          ..listenForRoundProcess(
+            (dynamic data) {
+              _onResults(data);
+            },
+          );
+        break;
+      case AppLifecycleState.paused:
+        log(
+          'App paused -> disconnect socket',
+        );
+        socketIoRepo.disconnect();
+        break;
+      default:
+        break;
+    }
+  }
+
   /// Socket.IO repository instance
-  final SocketIoRepo resultsRepo = SocketIoRepo();
+  final SocketIoRepo socketIoRepo = SocketIoRepo();
 
   /// PageController for the PageView
   late PageController pageController;
@@ -96,24 +125,13 @@ class AiChoosingController extends GetxController {
         bet.refresh();
       }
 
-      final bool fromNotification =
-          (Get.arguments['from_notification'] as bool?) ?? false;
-
-      if (fromNotification) {
-        resultsRepo
-          ..initSocket(url: EnvConfig.socketUrl)
-          ..listenForRoundProcess(
-            (dynamic data) {
-              _onResults(data);
-            },
-          );
-      } else {
-        resultsRepo.listenForRoundProcess(
+      socketIoRepo
+        ..initSocket(url: EnvConfig.socketUrl)
+        ..listenForRoundProcess(
           (dynamic data) {
             _onResults(data);
           },
         );
-      }
     }
   }
 
@@ -135,7 +153,7 @@ class AiChoosingController extends GetxController {
 
     if (isComplete) {
       if (Get.currentRoute != Routes.WINNER) {
-        resultsRepo.disconnect();
+        socketIoRepo.disconnect();
         Get.offNamedUntil(
           Routes.WINNER,
           (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
@@ -167,11 +185,14 @@ class AiChoosingController extends GetxController {
         isAiFailed(false);
         isAiFailed.refresh();
 
-        resultsRepo.listenForRoundProcess(
-          (dynamic data) {
-            _onResults(data);
-          },
-        );
+        socketIoRepo
+          ..disconnect()
+          ..initSocket(url: EnvConfig.socketUrl)
+          ..listenForRoundProcess(
+            (dynamic data) {
+              _onResults(data);
+            },
+          );
       }
     } finally {
       isWakingUp(false);

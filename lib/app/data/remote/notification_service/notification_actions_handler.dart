@@ -224,7 +224,6 @@ class NotificationActionsHandler {
         arguments: <String, dynamic>{
           'participants': participants,
           'bet': prompt,
-          'from_notification': true,
           'is_view_only': isViewOnly,
         },
       );

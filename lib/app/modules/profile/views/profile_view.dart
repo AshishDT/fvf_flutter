@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,7 +14,6 @@ import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/utils/widget_ext.dart';
 import 'package:get/get.dart';
 import '../controllers/profile_controller.dart';
-import '../widgets/empty_profile_placeholder.dart';
 
 /// ProfileView
 class ProfileView extends GetView<ProfileController> {
@@ -75,37 +75,70 @@ class ProfileView extends GetView<ProfileController> {
                               curve: Curves.easeInOut,
                               reverseDuration: 300.milliseconds,
                               child: Obx(
-                                () => Visibility(
-                                  visible: !controller.isLoading(),
-                                  replacement: SizedBox(
-                                    width: 1.sw,
-                                    height: 1.sh,
-                                  ),
-                                  child: CachedNetworkImage(
-                                    imageUrl:
-                                        controller.profile().user?.profileUrl ??
-                                            '',
-                                    width: 1.sw,
-                                    height: 1.sh,
-                                    fit: BoxFit.cover,
-                                    placeholder: (_, __) => Obx(
-                                      () => Visibility(
-                                        visible: !controller.isLoading(),
-                                        child: const GradientCard(
-                                          child: SizedBox(),
-                                        ),
+                                () {
+                                  if (controller.isLoading()) {
+                                    return SizedBox(
+                                      width: 1.sw,
+                                      height: 1.sh,
+                                    );
+                                  }
+
+                                  final String localPath =
+                                      controller.image().path;
+                                  final String profileUrl =
+                                      controller.profile().user?.profileUrl ??
+                                          '';
+
+                                  Widget child;
+
+                                  if (localPath.isNotEmpty) {
+                                    child = Image.file(
+                                      File(localPath),
+                                      width: 1.sw,
+                                      height: 1.sh,
+                                      fit: BoxFit.cover,
+                                      key: const ValueKey<String>(
+                                        'local_image',
                                       ),
-                                    ),
-                                    errorWidget: (_, __, ___) => Obx(
-                                      () => Visibility(
-                                        visible: !controller.isLoading(),
-                                        child: const GradientCard(
-                                          child: SizedBox(),
-                                        ),
+                                    );
+                                  } else if (profileUrl.isNotEmpty) {
+                                    child = CachedNetworkImage(
+                                      imageUrl: profileUrl,
+                                      width: 1.sw,
+                                      height: 1.sh,
+                                      fit: BoxFit.cover,
+                                      placeholder: (_, __) =>
+                                          const GradientCard(
+                                        child: SizedBox(),
                                       ),
+                                      errorWidget: (_, __, ___) =>
+                                          const GradientCard(
+                                        child: SizedBox(),
+                                      ),
+                                      key: const ValueKey<String>(
+                                        'network_image',
+                                      ),
+                                    );
+                                  } else {
+                                    child = const GradientCard(
+                                      key: ValueKey<String>('placeholder'),
+                                      child: SizedBox(),
+                                    );
+                                  }
+
+                                  return AnimatedSwitcher(
+                                    duration: 400.milliseconds,
+                                    switchInCurve: Curves.easeInOut,
+                                    switchOutCurve: Curves.easeInOut,
+                                    transitionBuilder: (Widget child,
+                                            Animation<double> animation) =>
+                                        FadeTransition(
+                                      opacity: animation,
+                                      child: child,
                                     ),
-                                  ),
-                                ),
+                                    child: child,
+                                  );
+                                },
                               ),
                             ),
                             Obx(
@@ -118,14 +151,6 @@ class ProfileView extends GetView<ProfileController> {
                                       controller: controller,
                                     ),
                                     24.verticalSpace,
-                                    Obx(
-                                      () => Visibility(
-                                        visible: _canShowEmptyProfile(),
-                                        child: EmptyProfilePlaceholder(
-                                          navigatorTag: navigatorTag,
-                                        ),
-                                      ),
-                                    ),
                                     const Spacer(),
                                     ProfileBioSection(
                                       controller: controller,
@@ -227,9 +252,4 @@ class ProfileView extends GetView<ProfileController> {
       controller.roundPageController.jumpToPage(roundIndex);
     }
   }
-
-  /// Can show empty profile
-  bool _canShowEmptyProfile() =>
-      !controller.isLoading() &&
-      (controller.profile().user?.profileUrl?.isEmpty ?? true);
 }

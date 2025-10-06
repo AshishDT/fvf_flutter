@@ -43,6 +43,11 @@ class ClaimPhoneController extends GetxController {
   /// On init
   @override
   void onInit() {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        requestPhoneHint();
+      },
+    );
     super.onInit();
   }
 

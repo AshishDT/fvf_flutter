@@ -19,140 +19,138 @@ class PhoneNumberSheet extends GetView<ClaimPhoneController> {
   const PhoneNumberSheet({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Request phone hint as soon as the sheet is opened
-    Future<void>.microtask(() => controller.requestPhoneHint());
-
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-      ),
-      child: SingleChildScrollView(
-        child: GradientCard(
-          padding: REdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(24.r),
-          ),
-          child: Padding(
-            padding: REdgeInsets.only(
-              bottom: _bottom(context),
+  Widget build(BuildContext context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: SingleChildScrollView(
+          child: GradientCard(
+            padding: REdgeInsets.symmetric(
+              horizontal: 24,
+              vertical: 12,
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Center(
-                  child: Container(
-                    height: 4.h,
-                    width: 48.w,
-                    decoration: BoxDecoration(
-                      color: AppColors.kF1F2F2.withValues(alpha: .42),
-                      borderRadius: BorderRadius.circular(2.r),
-                    ),
-                  ),
-                ),
-                16.verticalSpace,
-                Center(
-                  child: Text(
-                    'Keep Your Slay Profile ✨',
-                    style: AppTextStyle.openRunde(
-                      fontSize: 24.sp,
-                      color: AppColors.kffffff,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                16.verticalSpace,
-                Center(
-                  child: Text(
-                    'Add your number to secure it',
-                    style: AppTextStyle.openRunde(
-                      fontSize: 16.sp,
-                      color: AppColors.kFAFBFB,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                24.verticalSpace,
-                TextFormField(
-                  controller: controller.phoneController,
-                  cursorColor: AppColors.kF1F2F2,
-                  keyboardType: TextInputType.number,
-                  autofocus: true,
-                  maxLength: 10,
-                  onFieldSubmitted: (String value) {
-                    _onFieldSubmitted(
-                      context,
-                      value,
-                    );
-                  },
-                  style: AppTextStyle.openRunde(
-                    color: AppColors.kffffff,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16.sp,
-                  ),
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.digitsOnly,
-                  ],
-                  textInputAction: TextInputAction.go,
-                  decoration: InputDecoration(
-                    hintText: '',
-                    counterText: '',
-                    prefix: GestureDetector(
-                      onTap: () {
-                        CountryPicker.show(
-                          context,
-                          onSelect: (Country country) {
-                            controller.country(country);
-                            controller.country.refresh();
-                          },
-                        );
-                      },
-                      child: IntrinsicWidth(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            SvgPicture.asset(
-                              AppImages.phoneIcon,
-                              height: 24.h,
-                              width: 24.w,
-                            ),
-                            5.horizontalSpace,
-                            Obx(
-                              () => Text(
-                                '+ ${controller.country().phoneCode} ',
-                                style: AppTextStyle.openRunde(
-                                  color: AppColors.kffffff,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 16.sp,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(24.r),
+            ),
+            child: Padding(
+              padding: REdgeInsets.only(
+                bottom: _bottom(context),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Center(
+                    child: Container(
+                      height: 4.h,
+                      width: 48.w,
+                      decoration: BoxDecoration(
+                        color: AppColors.kF1F2F2.withValues(alpha: .42),
+                        borderRadius: BorderRadius.circular(2.r),
                       ),
                     ),
-                    fillColor: AppColors.kF1F2F2.withValues(alpha: 0.36),
-                    hoverColor: AppColors.kF1F2F2.withValues(alpha: 0.36),
-                    focusColor: AppColors.kF1F2F2.withValues(alpha: 0.36),
-                    filled: true,
-                    errorStyle: const TextStyle(fontSize: 0),
-                    border: _outlineBorder(),
-                    disabledBorder: _outlineBorder(),
-                    enabledBorder: _outlineBorder(),
-                    focusedBorder: _outlineBorder(),
-                    errorBorder: _outlineBorder(),
-                    focusedErrorBorder: _outlineBorder(),
                   ),
-                ),
-              ],
+                  16.verticalSpace,
+                  Center(
+                    child: Text(
+                      'Keep Your Slay Profile ✨',
+                      style: AppTextStyle.openRunde(
+                        fontSize: 24.sp,
+                        color: AppColors.kffffff,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  16.verticalSpace,
+                  Center(
+                    child: Text(
+                      'Add your number to secure it',
+                      style: AppTextStyle.openRunde(
+                        fontSize: 16.sp,
+                        color: AppColors.kFAFBFB,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  24.verticalSpace,
+                  TextFormField(
+                    controller: controller.phoneController,
+                    cursorColor: AppColors.kF1F2F2,
+                    keyboardType: TextInputType.number,
+                    autofocus: true,
+                    maxLength: 10,
+                    onFieldSubmitted: (String value) {
+                      _onFieldSubmitted(
+                        context,
+                        value,
+                      );
+                    },
+                    style: AppTextStyle.openRunde(
+                      color: AppColors.kffffff,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16.sp,
+                    ),
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly,
+                    ],
+                    textInputAction: TextInputAction.go,
+                    decoration: InputDecoration(
+                      hintText: '',
+                      counterText: '',
+                      prefix: GestureDetector(
+                        onTap: () {
+                          CountryPicker.show(
+                            context,
+                            onSelect: (Country country) {
+                              controller.country(country);
+                              controller.country.refresh();
+                            },
+                          );
+                        },
+                        child: IntrinsicWidth(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              SvgPicture.asset(
+                                AppImages.phoneIcon,
+                                height: 24.h,
+                                width: 24.w,
+                              ),
+                              5.horizontalSpace,
+                              Obx(
+                                () => Text(
+                                  '+ ${controller.country().phoneCode} ',
+                                  style: AppTextStyle.openRunde(
+                                    color: AppColors.kffffff,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16.sp,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      fillColor: AppColors.kF1F2F2.withValues(alpha: 0.36),
+                      hoverColor: AppColors.kF1F2F2.withValues(alpha: 0.36),
+                      focusColor: AppColors.kF1F2F2.withValues(alpha: 0.36),
+                      filled: true,
+                      errorStyle: const TextStyle(fontSize: 0),
+                      border: _outlineBorder(),
+                      disabledBorder: _outlineBorder(),
+                      enabledBorder: _outlineBorder(),
+                      focusedBorder: _outlineBorder(),
+                      errorBorder: _outlineBorder(),
+                      focusedErrorBorder: _outlineBorder(),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-      ),
-    );
-  }
+      );
 
   /// Bottom
   double _bottom(BuildContext context) =>

@@ -366,14 +366,14 @@ class SnapSelfiesController extends GetxController with SnapSelfieKeysMixin {
   void _onRoundCompleted(MdSocketData data) {
     isProcessing(false);
     submittingSelfie(false);
-    socketIoRepo.disposeRoundUpdate();
 
     final DateTime? revealedAt = DateTime.tryParse(data.round?.revealAt ?? '');
 
-    socketIoRepo.disconnect();
-
     if (Get.currentRoute != Routes.WINNER &&
         Get.currentRoute == Routes.SNAP_SELFIES) {
+      socketIoRepo
+        ..disposeRoundUpdate()
+        ..disconnect();
       Get.offNamedUntil(
         Routes.WINNER,
         (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
@@ -405,7 +405,6 @@ class SnapSelfiesController extends GetxController with SnapSelfieKeysMixin {
         participantsWithSelfies.length >= AppConfig.minSubmissions;
 
     if (canStartRound) {
-      socketIoRepo.disposeRoundUpdate();
       onLetGo();
     } else {
       _fallBackToStartAgain();

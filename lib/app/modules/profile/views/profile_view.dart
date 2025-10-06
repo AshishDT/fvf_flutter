@@ -42,6 +42,14 @@ class ProfileView extends GetView<ProfileController> {
               duration: 500.milliseconds,
               curve: Curves.easeInOut,
             );
+            Future<void>.delayed(
+              const Duration(milliseconds: 600),
+              () {
+                controller.getRounds(
+                  isRefresh: true,
+                );
+              },
+            );
           }
         },
         child: Scaffold(
@@ -175,6 +183,15 @@ class ProfileView extends GetView<ProfileController> {
                                       0,
                                       duration: 500.milliseconds,
                                       curve: Curves.easeInOut,
+                                    );
+
+                                    Future<void>.delayed(
+                                      const Duration(milliseconds: 600),
+                                      () {
+                                        controller.getRounds(
+                                          isRefresh: true,
+                                        );
+                                      },
                                     );
 
                                     controller.noScreenshot.screenshotOn();

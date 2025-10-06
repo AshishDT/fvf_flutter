@@ -406,6 +406,15 @@ class WinnerView extends GetView<WinnerController> {
           ..isExposed(true)
           ..isExposed.refresh();
 
+        final List<MdResult> sortedResults = List<MdResult>.from(
+          controller.results(),
+        )..sort(
+            (MdResult a, MdResult b) => a.rank?.compareTo(b.rank ?? 1) ?? 1,
+          );
+
+        controller.results(sortedResults);
+        controller.results.refresh();
+
         appSnackbar(
           message: successMessage,
           snackbarState: SnackbarState.success,

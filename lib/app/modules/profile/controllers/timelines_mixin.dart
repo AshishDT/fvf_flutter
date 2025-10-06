@@ -68,7 +68,7 @@ mixin TimeLineMixin on GetxController {
       final MdResult? firstRank =
           allResults.firstWhereOrNull((MdResult res) => res.rank == 1);
 
-      final List<MdResult> others = allResults.where((res) {
+      final List<MdResult> others = allResults.where((MdResult res) {
         final bool isCurrent = res.userId == effectiveUserId;
         final bool isFirst = res.rank == 1;
         return !isCurrent && !isFirst;
@@ -84,7 +84,7 @@ mixin TimeLineMixin on GetxController {
         ...others,
       ];
 
-      roundsList[i] = r.copyWith(result: finalList);
+      roundsList[i] = r.copyWith(results: finalList);
     }
 
     rounds(roundsList);
@@ -222,7 +222,8 @@ mixin TimeLineMixin on GetxController {
     try {
       switch (type) {
         case SubscriptionPlanEnum.weekly:
-          result = await RevenueCatService.instance.purchaseWeeklySubscription();
+          result =
+              await RevenueCatService.instance.purchaseWeeklySubscription();
           break;
         case SubscriptionPlanEnum.oneTime:
           result = await RevenueCatService.instance.purchaseCurrentRound(
@@ -239,6 +240,14 @@ mixin TimeLineMixin on GetxController {
             roundExposed[i]!.refresh();
 
             rounds[i] = rounds[i].copyWith(hasAccessed: true);
+
+            final List<MdResult> sortedResults = List<MdResult>.from(
+              rounds[i].results ?? <dynamic>[],
+            )..sort(
+                (MdResult a, MdResult b) => a.rank?.compareTo(b.rank ?? 1) ?? 1,
+              );
+            rounds[i] = rounds[i].copyWith(results: sortedResults);
+
             updateRoundScreenshotPermission(i);
           }
           rounds.refresh();
@@ -247,6 +256,13 @@ mixin TimeLineMixin on GetxController {
           roundExposed[index]!.refresh();
 
           rounds[index] = rounds[index].copyWith(hasAccessed: true);
+
+          final List<MdResult> sortedResults = List<MdResult>.from(
+            rounds[index].results ?? <dynamic>[],
+          )..sort(
+              (MdResult a, MdResult b) => a.rank?.compareTo(b.rank ?? 1) ?? 1);
+          rounds[index] = rounds[index].copyWith(results: sortedResults);
+
           rounds.refresh();
 
           updateRoundScreenshotPermission(index);

@@ -178,6 +178,9 @@ class RoundsTimeLinesView extends StatelessWidget {
           const Duration(milliseconds: 600),
           () {
             _resetInnerPages();
+            controller.getRounds(
+              isRefresh: true,
+            );
           },
         );
 

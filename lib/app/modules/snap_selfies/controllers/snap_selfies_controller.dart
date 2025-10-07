@@ -22,8 +22,6 @@ import '../../../data/models/md_join_invitation.dart';
 import '../../../data/remote/api_service/init_api_service.dart';
 import '../../../data/remote/deep_link/deep_link_service.dart';
 import '../../../ui/components/app_snackbar.dart';
-import '../../../ui/components/chat_field_sheet_repo.dart';
-import '../../../utils/app_loader.dart';
 import '../../../utils/global_keys.dart';
 import '../../claim_phone/controllers/phone_claim_service.dart';
 import '../models/md_socket_io_response.dart';
@@ -31,11 +29,13 @@ import '../repositories/snap_selfie_api_repo.dart';
 
 /// Snap Selfies Controller
 class SnapSelfiesController extends GetxController
-    with WidgetsBindingObserver, SnapSelfieKeysMixin {
+    with SnapSelfieKeysMixin, WidgetsBindingObserver {
   /// On init
   @override
   void onInit() {
     resetFields();
+
+    WidgetsBinding.instance.addObserver(this);
 
     if (Get.arguments != null) {
       joinedInvitationData.value = Get.arguments as MdJoinInvitation;
@@ -45,7 +45,7 @@ class SnapSelfiesController extends GetxController
 
       loadPreviousRounds();
 
-      if (joinedInvitationData().isFromInvitation ?? false) {
+      if (joinedInvitationData().isAlreadyJoined ?? false) {
         DateTime? endAt = joinedInvitationData().roundJoinedEndAt;
 
         if (endAt != null && endAt.second > 2) {
@@ -69,14 +69,27 @@ class SnapSelfiesController extends GetxController
 
       getShareUri();
     }
-
-    WidgetsBinding.instance.addObserver(this);
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) {
-        prevBottomInset.value = View.of(Get.context!).viewInsets.bottom;
-      },
-    );
     super.onInit();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        log(
+          'App resumed -> reconnect socket',
+        );
+        _initWebSocket();
+        break;
+      case AppLifecycleState.paused:
+        log(
+          'App paused -> disconnect socket',
+        );
+        socketIoRepo.disconnect();
+        break;
+      default:
+        break;
+    }
   }
 
   /// Initialize WebSocket connection and listeners
@@ -118,25 +131,8 @@ class SnapSelfiesController extends GetxController
   /// On close
   @override
   void onClose() {
-    stopTimer();
-    textsTimer?.cancel();
-    socketIoRepo.disconnect();
     WidgetsBinding.instance.removeObserver(this);
-    nameInputFocusNode.dispose();
     super.onClose();
-  }
-
-  @override
-  void didChangeMetrics() {
-    final double currentViewInsets = View.of(Get.context!).viewInsets.bottom;
-
-    if (prevBottomInset() > 0 && currentViewInsets == 0) {
-      if (ChatFieldSheetRepo.isSheetOpen()) {
-        Get.close(0);
-      }
-    }
-
-    prevBottomInset.value = currentViewInsets;
   }
 
   /// Fallback to start again
@@ -160,8 +156,10 @@ class SnapSelfiesController extends GetxController
     WidgetsBinding.instance.addPostFrameCallback(
       (_) {
         if (Get.currentRoute != Routes.FAILED_ROUND) {
-          Get.offNamed(
+          socketIoRepo.disconnect();
+          Get.offNamedUntil(
             Routes.FAILED_ROUND,
+            (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
             arguments: currentArgs,
           );
         }
@@ -204,6 +202,7 @@ class SnapSelfiesController extends GetxController
 
   /// Share uri
   Future<void> shareUri({bool fromResend = false}) async {
+    isSharingUri(true);
     try {
       String? _invitationLink;
 
@@ -222,6 +221,7 @@ class SnapSelfiesController extends GetxController
           message: 'Failed to generate invitation link. Please try again.',
           snackbarState: SnackbarState.danger,
         );
+        isSharingUri(false);
         return;
       }
 
@@ -236,14 +236,19 @@ class SnapSelfiesController extends GetxController
         )
             .then(
           (ShareResult result) async {
+            isSharingUri(false);
             if (!fromResend) {
               await startRound();
             }
           },
         ),
       );
+      isSharingUri(false);
     } on Exception {
+      isSharingUri(false);
       logE('Error sharing invitation link');
+    } finally {
+      isSharingUri(false);
     }
   }
 
@@ -384,27 +389,29 @@ class SnapSelfiesController extends GetxController
   void _onRoundCompleted(MdSocketData data) {
     isProcessing(false);
     submittingSelfie(false);
-    socketIoRepo.disposeRoundUpdate();
 
     final DateTime? revealedAt = DateTime.tryParse(data.round?.revealAt ?? '');
 
-    Get.offNamedUntil(
-      Routes.WINNER,
-      (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
-      arguments: <String, dynamic>{
-        'result_data': MdAiResultData(
-          revealAt: revealedAt,
-          status: RoundStatus.completed,
-          id: data.round?.id,
-          host: joinedInvitationData().host,
-          participants: data.round?.participants,
-          prompt: joinedInvitationData().prompt,
-          results: data.round?.results,
-          crew: data.round?.crew,
-          isViewOnly: joinedInvitationData().isViewOnly ?? false,
-        ),
-      },
-    );
+    if (Get.currentRoute != Routes.WINNER) {
+      socketIoRepo.disconnect();
+      Get.offNamedUntil(
+        Routes.WINNER,
+        (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
+        arguments: <String, dynamic>{
+          'result_data': MdAiResultData(
+            revealAt: revealedAt,
+            status: RoundStatus.completed,
+            id: data.round?.id,
+            host: joinedInvitationData().host,
+            participants: data.round?.participants,
+            prompt: joinedInvitationData().prompt,
+            results: data.round?.results,
+            crew: data.round?.crew,
+            isViewOnly: joinedInvitationData().isViewOnly ?? false,
+          ),
+        },
+      );
+    }
   }
 
   /// Handle processing round
@@ -418,7 +425,6 @@ class SnapSelfiesController extends GetxController
         participantsWithSelfies.length >= AppConfig.minSubmissions;
 
     if (canStartRound) {
-      socketIoRepo.disposeRoundUpdate();
       onLetGo();
     } else {
       _fallBackToStartAgain();
@@ -602,29 +608,37 @@ class SnapSelfiesController extends GetxController
 
   /// Add previous participants
   Future<void> addPreviousParticipants() async {
-    final List<MdPreviousParticipant> toAdd = previousAddedParticipants()
-        .where((MdPreviousParticipant p) => p.isAdded == true)
-        .toList();
-    if (toAdd.isEmpty) {
-      await shareUri();
-      return;
+    isAddingRunning(true);
+    try {
+      final List<MdPreviousParticipant> toAdd = previousAddedParticipants()
+          .where((MdPreviousParticipant p) => p.isAdded == true)
+          .toList();
+      if (toAdd.isEmpty) {
+        isAddingRunning(false);
+        await shareUri();
+        return;
+      }
+
+      final List<String> userIds = toAdd
+          .where((MdPreviousParticipant p) => p.id != null && p.id!.isNotEmpty)
+          .map((MdPreviousParticipant p) => p.id!)
+          .toList();
+
+      final bool? _isAdded = await SnapSelfieApiRepo.addParticipants(
+        roundId: joinedInvitationData().id ?? '',
+        userIds: userIds,
+      );
+
+      if (!(_isAdded ?? false)) {
+        isAddingRunning(false);
+        return;
+      }
+
+      await startRound();
+      isAddingRunning(false);
+    } finally {
+      isAddingRunning(false);
     }
-
-    final List<String> userIds = toAdd
-        .where((MdPreviousParticipant p) => p.id != null && p.id!.isNotEmpty)
-        .map((MdPreviousParticipant p) => p.id!)
-        .toList();
-
-    final bool? _isAdded = await SnapSelfieApiRepo.addParticipants(
-      roundId: joinedInvitationData().id ?? '',
-      userIds: userIds,
-    );
-
-    if (!(_isAdded ?? false)) {
-      return;
-    }
-
-    await startRound();
   }
 
   /// On add/remove previous participant
@@ -652,47 +666,13 @@ class SnapSelfiesController extends GetxController
     previousRounds.refresh();
   }
 
-  /// Get view only
-  Future<void> shareViewOnlyLink() async {
-    Loader.show();
-    try {
-      final String? _uri = await DeepLinkService.generateSlayInviteLink(
-        title: joinedInvitationData().prompt ?? '',
-        invitationId: joinedInvitationData().id ?? '',
-        hostId: joinedInvitationData().host?.id ?? '',
-        isViewOnly: true,
-      );
-
-      if (_uri == null || _uri.isEmpty) {
-        Loader.dismiss();
-        appSnackbar(
-          message: 'Failed to generate invitation link. Please try again.',
-          snackbarState: SnackbarState.danger,
-        );
-        return;
-      }
-
-      Loader.dismiss();
-
-      final Uri uri = Uri.parse(_uri);
-
-      unawaited(
-        SharePlus.instance.share(
-          ShareParams(
-            uri: uri,
-          ),
-        ),
-      );
-    } on Exception {
-      Loader.dismiss();
-    } finally {
-      Loader.dismiss();
-    }
-  }
-
   /// On add name
   void onAddName() {
     final String trimmed = nameInputController.text.trim();
+    if (trimmed.isEmpty) {
+      return;
+    }
+
     if (trimmed.length < 3 || trimmed.length > 24) {
       appSnackbar(
         message: 'Name must be between 3 and 24 characters.',
@@ -700,7 +680,6 @@ class SnapSelfiesController extends GetxController
       );
       return;
     }
-    nameInputFocusNode.unfocus();
     updateUser(username: trimmed);
   }
 }

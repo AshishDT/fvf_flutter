@@ -43,6 +43,9 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:label="Slay"
+        android:allowBackup="false"
+        android:usesCleartextTraffic="true"
+        android:resizeableActivity="false"
         android:requestLegacyExternalStorage="true">
 
         <activity
@@ -51,7 +54,7 @@
             android:enableOnBackInvokedCallback="true"
             android:exported="true"
             android:hardwareAccelerated="true"
-            android:launchMode="singleTop"
+            android:launchMode="singleInstance"
             android:theme="@style/LaunchTheme"
             android:windowSoftInputMode="adjustResize">
 

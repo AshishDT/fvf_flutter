@@ -130,7 +130,7 @@ class CreateBetApiRepo {
               return null;
             }
 
-            final ApiResponse<bool> data = ApiResponse<bool>.fromJson(
+            final ApiResponse<bool?> data = ApiResponse<bool>.fromJson(
               response!.data!,
             );
 

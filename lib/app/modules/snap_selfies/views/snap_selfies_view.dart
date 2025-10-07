@@ -6,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_previous_round.dart';
 import 'package:fvf_flutter/app/modules/snap_selfies/widgets/animated_switcher.dart';
+import 'package:fvf_flutter/app/ui/components/app_circular_progress.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:fvf_flutter/app/ui/components/vibrate_wiggle.dart';
@@ -78,6 +79,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
   Widget _floatingActionSection() => Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
+          _loadingIndicator(),
           _timerWidget(),
           _preSelfieText(),
           _addFriendsButton(),
@@ -166,6 +168,8 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
             replacement: const SizedBox(width: double.infinity),
             child: AppButton(
               buttonText: 'Add Friends',
+              isLoading:
+                  controller.isAddingRunning() || controller.isSharingUri(),
               child: controller.isAddedFromPreviousRound()
                   ? null
                   : Row(
@@ -270,7 +274,7 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
         },
         actions: <Widget>[
           GestureDetector(
-            onTap: controller.shareViewOnlyLink,
+            onTap: controller.shareUri,
             child: SvgPicture.asset(
               width: 24.w,
               height: 24.h,
@@ -499,13 +503,29 @@ class SnapSelfiesView extends GetView<SnapSelfiesController> {
               bottom: 20,
             ),
             child: Text(
-              'Waiting for the host to start the round...',
+              'You have view only access. Waiting for others to take their selfies.',
               textAlign: TextAlign.center,
               style: AppTextStyle.openRunde(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w500,
                 color: AppColors.kffffff.withValues(alpha: 0.80),
               ),
+            ),
+          ),
+        ),
+      );
+
+  /// Loading indicator
+  Widget _loadingIndicator() => Obx(
+        () => Visibility(
+          visible: controller.isInitializing() &&
+              !(controller.joinedInvitationData().isViewOnly ?? false),
+          child: Padding(
+            padding: REdgeInsets.only(bottom: 16),
+            child: SizedBox(
+              width: 24.w,
+              height: 24.h,
+              child: const AppCircularProgress(),
             ),
           ),
         ),

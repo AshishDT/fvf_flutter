@@ -111,13 +111,23 @@ class ProfileController extends GetxController
   }
 
   @override
+  void onReady() {
+    noScreenshot.screenshotOn();
+    super.onReady();
+  }
+
+  @override
   void didChangeMetrics() {
     final double currentViewInsets = View.of(Get.context!).viewInsets.bottom;
 
     if (_prevBottomInset() > 0 && currentViewInsets == 0) {
-      if (EditProfileSheetRepo.isSheetOpen()) {
-        Get.close(0);
-      }
+      Future<void>.microtask(
+        () {
+          if (EditProfileSheetRepo.isSheetOpen()) {
+            Get.close(0);
+          }
+        },
+      );
     }
 
     _prevBottomInset.value = currentViewInsets;
@@ -134,19 +144,19 @@ class ProfileController extends GetxController
   /// On close
   @override
   void onClose() {
-    nameInputFocusNode.dispose();
     for (final PageController pc in roundInnerPageController.values) {
-      pc.dispose();
+      if (pc.hasClients) {
+        pc.dispose();
+      }
     }
     roundInnerPageController.clear();
+    WidgetsBinding.instance.removeObserver(this);
+    noScreenshot.screenshotOn();
     super.onClose();
   }
 
   /// isCurrentUser
   bool get isCurrentUser => profile.value.user?.id == UserProvider.userId;
-
-  /// Focus node for chat input field
-  final FocusNode nameInputFocusNode = FocusNode();
 
   /// Text editing controller for chat input field
   TextEditingController nameInputController = TextEditingController();
@@ -177,11 +187,14 @@ class ProfileController extends GetxController
   /// Get User
   Future<void> getUser({
     MdProfileArgs? args,
+    bool showLoader = true,
   }) async {
     try {
       final bool isCurrentUser = args?.userId == UserProvider.userId;
 
-      isLoading(true);
+      if (showLoader) {
+        isLoading(true);
+      }
 
       final MdProfile? _user = await ProfileApiRepo.getUser(
         userId: isCurrentUser ? null : args?.userId,
@@ -206,11 +219,16 @@ class ProfileController extends GetxController
         }
       }
     } on Exception catch (e, st) {
-      isLoading(false);
+      if (showLoader) {
+        isLoading(false);
+      }
+
       logE('Error getting user: $e');
       logE(st);
     } finally {
-      isLoading(false);
+      if (showLoader) {
+        isLoading(false);
+      }
     }
   }
 
@@ -218,6 +236,7 @@ class ProfileController extends GetxController
   Future<void> updateUser({
     String? profilePic,
     String? username,
+    bool showLoader = true,
   }) async {
     if ((username?.trim().isEmpty ?? true) && (profilePic?.isEmpty ?? true)) {
       return;
@@ -232,22 +251,36 @@ class ProfileController extends GetxController
     }
 
     try {
-      isLoading(true);
+      if (showLoader) {
+        isLoading(true);
+      }
+
       final bool updated = await ProfileApiRepo.updateUser(
         profilePic: profilePic,
         username: username,
       );
 
       if (updated) {
-        await getUser(args: args);
-        await getRounds(args: args, isRefresh: true);
+        await getUser(
+          args: args,
+          showLoader: showLoader,
+        );
+        await getRounds(
+          args: args,
+          isRefresh: true,
+          showLoader: showLoader,
+        );
       }
     } on Exception catch (e, st) {
       logE('Error updating user: $e');
       logE(st);
-      isLoading(false);
+      if (showLoader) {
+        isLoading(false);
+      }
     } finally {
-      isLoading(false);
+      if (showLoader) {
+        isLoading(false);
+      }
     }
   }
 
@@ -255,27 +288,38 @@ class ProfileController extends GetxController
   Future<void> uploadFile({
     required File pickedImage,
     required String folder,
+    bool showLoader = true,
   }) async {
-    Loader.show();
+    if (showLoader) {
+      Loader.show();
+    }
+
     try {
       final String? _uploadedUrl =
           await APIService.uploadFile(file: pickedImage, folder: folder);
       if (_uploadedUrl != null) {
-        Loader.dismiss();
+        if (showLoader) {
+          Loader.dismiss();
+        }
         await updateUser(
+          showLoader: showLoader,
           profilePic: _uploadedUrl,
         );
       }
     } on DioException catch (e) {
       logE('Error getting upload file: $e');
       image(File(''));
-      Loader.dismiss();
+      if (showLoader) {
+        Loader.dismiss();
+      }
       appSnackbar(
         message: 'Profile upload failed, please try again.',
         snackbarState: SnackbarState.danger,
       );
     } finally {
-      Loader.dismiss();
+      if (showLoader) {
+        Loader.dismiss();
+      }
     }
   }
 
@@ -283,6 +327,7 @@ class ProfileController extends GetxController
   Future<void> getRounds({
     bool isRefresh = false,
     MdProfileArgs? args,
+    bool showLoader = true,
   }) async {
     if (isRoundsLoading()) {
       return;
@@ -290,7 +335,10 @@ class ProfileController extends GetxController
 
     try {
       if (isRefresh) {
-        isRoundsLoading(true);
+        if (showLoader) {
+          isRoundsLoading(true);
+        }
+
         skip = 0;
         hasMore(true);
         rounds.clear();
@@ -325,11 +373,16 @@ class ProfileController extends GetxController
         userId: isCurrentUser ? null : args?.userId,
       );
     } on Exception catch (e, st) {
-      isRoundsLoading(false);
+      if (showLoader) {
+        isRoundsLoading(false);
+      }
+
       logE('Error getting participants: $e');
       logE(st);
     } finally {
-      isRoundsLoading(false);
+      if (showLoader) {
+        isRoundsLoading(false);
+      }
     }
   }
 
@@ -363,6 +416,7 @@ class ProfileController extends GetxController
       await uploadFile(
         pickedImage: pickedImage,
         folder: 'profile',
+        showLoader: false,
       );
     }
   }
@@ -370,6 +424,11 @@ class ProfileController extends GetxController
   /// On add name
   void onAddName() {
     final String trimmed = nameInputController.text.trim();
+
+    if (trimmed.isEmpty) {
+      return;
+    }
+
     if (trimmed.length < 3 || trimmed.length > 24) {
       appSnackbar(
         message: 'Name must be between 3 and 24 characters.',

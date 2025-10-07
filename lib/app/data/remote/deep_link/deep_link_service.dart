@@ -57,9 +57,16 @@ class DeepLinkService {
 
     branchSubscription = FlutterBranchSdk.listSession().listen(
       (Map<dynamic, dynamic> data) {
-        handleDeepLinkIncomingData(
-          data,
-        );
+        if (!data.containsKey('+clicked_branch_link')) {
+          return;
+        }
+
+        final bool clicked = data['+clicked_branch_link'] == true;
+        if (!clicked) {
+          return;
+        }
+
+        handleDeepLinkIncomingData(data);
       },
       onError: (dynamic error) {
         logE('Branch error: $error');

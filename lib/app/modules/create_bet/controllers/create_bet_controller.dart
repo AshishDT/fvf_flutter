@@ -72,9 +72,13 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
     final double currentViewInsets = View.of(Get.context!).viewInsets.bottom;
 
     if (_prevBottomInset() > 0 && currentViewInsets == 0) {
-      if (ChatFieldSheetRepo.isSheetOpen()) {
-        Get.close(0);
-      }
+      Future<void>.microtask(
+        () {
+          if (ChatFieldSheetRepo.isSheetOpen()) {
+            Get.close(0);
+          }
+        },
+      );
     }
 
     _prevBottomInset.value = currentViewInsets;
@@ -387,14 +391,11 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
     try {
       switch (type) {
         case SubscriptionPlanEnum.weekly:
-          result = await RevenueCatService.instance.purchaseWeeklySubscription(
-            roundId: '',
-          );
+          result =
+              await RevenueCatService.instance.purchaseWeeklySubscription();
           break;
         case SubscriptionPlanEnum.oneTime:
-          result = await RevenueCatService.instance.purchaseOneMoreSlay(
-            roundId: '',
-          );
+          result = await RevenueCatService.instance.purchaseOneMoreSlay();
           break;
       }
 

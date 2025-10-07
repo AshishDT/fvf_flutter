@@ -62,7 +62,6 @@ class EditDataSheet extends GetView<ProfileController> {
               borderRadius: BorderRadius.circular(28).r,
             ),
             child: TextFormField(
-              focusNode: controller.nameInputFocusNode,
               controller: controller.nameInputController,
               maxLines: 7,
               minLines: 1,
@@ -79,6 +78,11 @@ class EditDataSheet extends GetView<ProfileController> {
               ],
               onFieldSubmitted: (String value) {
                 final String trimmed = value.trim();
+
+                if (trimmed.isEmpty) {
+                  return;
+                }
+
                 if (trimmed.length < 3 || trimmed.length > 24) {
                   appSnackbar(
                     message: 'Name must be between 3 and 24 characters.',
@@ -86,7 +90,6 @@ class EditDataSheet extends GetView<ProfileController> {
                   );
                   return;
                 }
-                Navigator.maybePop(context);
                 controller.updateUser(
                   username: controller.nameInputController.text.trim(),
                 );

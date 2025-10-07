@@ -17,6 +17,7 @@ class EditProfileSheetRepo {
       context: Get.context!,
       useSafeArea: true,
       isScrollControlled: true,
+      useRootNavigator: true,
       shape: RoundedRectangleBorder(
         borderRadius: const BorderRadius.vertical(
           top: Radius.circular(24),

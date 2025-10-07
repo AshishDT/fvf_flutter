@@ -9,8 +9,6 @@ import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
 import 'package:no_screenshot/no_screenshot.dart';
-
-import '../../../utils/global_keys.dart';
 import '../../ai_choosing/models/md_ai_result.dart';
 
 /// Winner Controller
@@ -70,7 +68,11 @@ class WinnerController extends GetxController {
   /// On close
   @override
   void onClose() {
-    pageController?.dispose();
+    if (pageController != null && pageController!.hasClients) {
+      pageController?.removeListener(updateScreenshotPermission);
+      pageController?.dispose();
+    }
+
     noScreenshot.screenshotOn();
     super.onClose();
   }
@@ -95,11 +97,6 @@ class WinnerController extends GetxController {
 
   /// Prompt
   RxString get prompt => (roundDetails().round?.prompt ?? '').obs;
-
-  /// currentUserResult
-  MdResult? get currentUserResult => roundDetails().round?.results?.firstWhere(
-        (MdResult element) => element.userId == globalUser().id,
-      );
 
   /// pageController
   PageController? pageController = PageController(initialPage: 0);

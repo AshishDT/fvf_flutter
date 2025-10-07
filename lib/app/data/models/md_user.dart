@@ -32,6 +32,8 @@ class MdUser {
     this.emojiCount,
     this.isAnyHost,
     this.lastPlayedFriendCount,
+    this.supabaseId,
+    this.linkSupabaseId,
   });
 
   /// From JSON
@@ -76,6 +78,8 @@ class MdUser {
         emojiCount: json['emoji_count'],
         isAnyHost: json['is_any_host'],
         lastPlayedFriendCount: json['last_played_friend_count'],
+        supabaseId: json['supabase_id'],
+        linkSupabaseId: json['link_supabase_id'],
       );
 
   /// FCM token
@@ -156,6 +160,12 @@ class MdUser {
   /// Last played friend count
   int? lastPlayedFriendCount;
 
+  /// Supabase ID
+  String? supabaseId;
+
+  /// Link supabase ID
+  String? linkSupabaseId;
+
   /// To JSON
   Map<String, dynamic> toJson() => <String, dynamic>{
         'fcm_token': fcmToken,
@@ -184,6 +194,8 @@ class MdUser {
         'emoji_count': emojiCount,
         'is_any_host': isAnyHost,
         'last_played_friend_count': lastPlayedFriendCount,
+        'supabase_id': supabaseId,
+        'link_supabase_id': linkSupabaseId,
       };
 
   /// To json

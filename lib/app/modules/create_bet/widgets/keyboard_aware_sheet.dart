@@ -59,8 +59,6 @@ class KeyboardAwareSheet extends GetView<CreateBetController> {
                   AppTextFormatter(),
                 ],
                 onFieldSubmitted: (String value) {
-                  Navigator.maybePop(context);
-
                   if (value.isNotEmpty) {
                     controller.enteredBet(value);
                   } else {

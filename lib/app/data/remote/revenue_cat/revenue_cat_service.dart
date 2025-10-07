@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:flutter/services.dart';
 import 'package:fvf_flutter/app/data/config/env_config.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
@@ -89,23 +88,16 @@ class RevenueCatService {
   List<StoreProduct> get products => _products;
 
   /// Purchase weekly subscription
-  Future<MdPurchaseResult> purchaseWeeklySubscription({
-    required String roundId,
-  }) async =>
+  Future<MdPurchaseResult> purchaseWeeklySubscription() async =>
       _purchaseProduct(
         weeklyProductId,
         entitlementKey: _premiumEntitlement,
-        roundId: roundId,
       );
 
   /// Purchase one more slay (one-time)
-  Future<MdPurchaseResult> purchaseOneMoreSlay({
-    required String roundId,
-  }) async =>
-      _purchaseProduct(
+  Future<MdPurchaseResult> purchaseOneMoreSlay() async => _purchaseProduct(
         oneMoreSlayProductId,
         entitlementKey: _oneMoreSlayEntitlement,
-        roundId: roundId,
       );
 
   /// Purchase current round (one-time)
@@ -116,26 +108,27 @@ class RevenueCatService {
         currentRoundProductId,
         entitlementKey: _currentRoundEntitlement,
         roundId: roundId,
-        isCurrentRound: true,
       );
 
   /// Purchase a product by productId and return MdPurchaseResult
   Future<MdPurchaseResult> _purchaseProduct(
     String productId, {
     required String entitlementKey,
-    required String roundId,
-    bool isCurrentRound = false,
+    String? roundId,
   }) async {
     final String? userId = UserProvider.currentUser?.id;
+
+    final String? supabaseId = UserProvider.currentUser?.supabaseId;
 
     final String? _fcmToken = await NotificationService().getToken();
 
     await Purchases.setAttributes(
       <String, String>{
-        if (isCurrentRound && roundId.isNotEmpty) 'round_id': roundId,
+        if (roundId != null && roundId.isNotEmpty) 'round_id': roundId,
         'product_context': entitlementKey,
         'user_id': userId ?? '',
         'fcm_token': _fcmToken ?? '',
+        'user_supabase_id': supabaseId ?? '',
       },
     );
 
@@ -162,7 +155,7 @@ class RevenueCatService {
       }
 
       final PurchaseResult result =
-          await Purchases.purchaseStoreProduct(product);
+          await Purchases.purchase(PurchaseParams.storeProduct(product));
 
       final bool isActive =
           result.customerInfo.entitlements.all[entitlementKey]?.isActive ??
@@ -210,5 +203,27 @@ class RevenueCatService {
         appUserId: UserProvider.currentUser?.id,
       );
     }
+  }
+
+  /// Get customer info
+  Future<CustomerInfo?> getCustomerInfo() async {
+    try {
+      final CustomerInfo info = await Purchases.getCustomerInfo();
+      return info;
+    } on Exception catch (e) {
+      logE('Error fetching customer info: $e');
+      return null;
+    }
+  }
+
+  /// Check if user has premium access
+  Future<bool> hasPremiumAccess() async {
+    final CustomerInfo? info = await getCustomerInfo();
+    if (info == null) {
+      return false;
+    }
+    final bool isActive =
+        info.entitlements.all[_premiumEntitlement]?.isActive ?? false;
+    return isActive;
   }
 }

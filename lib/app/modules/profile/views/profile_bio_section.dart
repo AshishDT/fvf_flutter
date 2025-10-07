@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -41,6 +40,7 @@ class ProfileBioSection extends StatelessWidget {
                   false)) ...<Widget>[
             FlyingCharacters(
               text: controller.profile().user?.bio ?? '',
+              maxLines: 5,
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
                 fontSize: 20.sp,
@@ -58,23 +58,32 @@ class ProfileBioSection extends StatelessWidget {
             ),
             16.verticalSpace,
           ],
-          if (controller.rounds().isNotEmpty)
-            IconButton(
-              padding: EdgeInsets.zero,
-              constraints: BoxConstraints(minWidth: 56.w, minHeight: 56.w),
-              onPressed: () {
-                controller.pageController.animateToPage(
-                  1,
-                  duration: 500.milliseconds,
-                  curve: Curves.easeInOut,
-                );
-                controller.currentIndex(1);
-              },
-              icon: SvgPicture.asset(
-                AppImages.downSideArrow,
-                width: 42.w,
+          AnimatedSize(
+            duration: 300.milliseconds,
+            curve: Curves.easeInOut,
+            alignment: Alignment.topCenter,
+            child: Obx(
+              () => Visibility(
+                visible: controller.rounds().isNotEmpty,
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: BoxConstraints(minWidth: 56.w, minHeight: 56.w),
+                  onPressed: () {
+                    controller.pageController.animateToPage(
+                      1,
+                      duration: 500.milliseconds,
+                      curve: Curves.easeInOut,
+                    );
+                    controller.currentIndex(1);
+                  },
+                  icon: SvgPicture.asset(
+                    AppImages.downSideArrow,
+                    width: 42.w,
+                  ),
+                ),
               ),
             ),
+          ),
         ],
       );
 }

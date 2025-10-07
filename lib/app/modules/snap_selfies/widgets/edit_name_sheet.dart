@@ -50,7 +50,6 @@ class EditNameSheet extends GetView<SnapSelfiesController> {
                 borderRadius: BorderRadius.circular(28).r,
               ),
               child: TextFormField(
-                focusNode: controller.nameInputFocusNode,
                 controller: controller.nameInputController,
                 maxLines: 7,
                 minLines: 1,
@@ -62,6 +61,11 @@ class EditNameSheet extends GetView<SnapSelfiesController> {
                 cursorColor: AppColors.kF1F2F2,
                 onFieldSubmitted: (String value) {
                   final String trimmed = value.trim();
+
+                  if (trimmed.isEmpty) {
+                    return;
+                  }
+
                   if (trimmed.length < 3 || trimmed.length > 24) {
                     appSnackbar(
                       message: 'Name must be between 3 and 24 characters.',
@@ -69,8 +73,6 @@ class EditNameSheet extends GetView<SnapSelfiesController> {
                     );
                     return;
                   }
-                  Navigator.maybePop(context);
-                  controller.nameInputFocusNode.unfocus();
                   controller.updateUser(username: value.trim());
                 },
                 style: AppTextStyle.openRunde(

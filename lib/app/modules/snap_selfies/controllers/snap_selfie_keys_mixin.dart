@@ -14,12 +14,6 @@ mixin SnapSelfieKeysMixin on GetxController {
   /// Observable to track keyboard visibility
   RxBool isKeyboardVisible = false.obs;
 
-  /// Previous bottom inset for keyboard
-  final RxDouble prevBottomInset = 0.0.obs;
-
-  /// Focus node for name input field
-  final FocusNode nameInputFocusNode = FocusNode();
-
   /// Text editing controller for name input field
   TextEditingController nameInputController = TextEditingController();
 
@@ -38,6 +32,12 @@ mixin SnapSelfieKeysMixin on GetxController {
   /// Joined invitation data
   Rx<MdJoinInvitation> joinedInvitationData = MdJoinInvitation().obs;
 
+  /// Is adding running
+  RxBool isAddingRunning = false.obs;
+
+  /// Is sharing URI
+  RxBool isSharingUri = false.obs;
+
   /// Check if current user is host
   RxBool get isHost =>
       (joinedInvitationData().host?.id == UserProvider.userId).obs;
@@ -48,6 +48,15 @@ mixin SnapSelfieKeysMixin on GetxController {
         (MdParticipant participant) => participant.isCurrentUser,
         orElse: () => MdParticipant(),
       )
+      .obs;
+
+  /// Check if initializing
+  RxBool get isInitializing => (!isProcessing() &&
+          !isStartingRound() &&
+          !submittingSelfie() &&
+          secondsLeft() <= 0 &&
+          (joinedInvitationData().isAlreadyJoined ?? false) &&
+          isInvitationSend())
       .obs;
 
   /// Participants
@@ -244,21 +253,24 @@ mixin SnapSelfieKeysMixin on GetxController {
             participant.selfieUrl != null && participant.selfieUrl!.isNotEmpty)
         .toList();
 
-    Get.toNamed(
-      Routes.AI_CHOOSING,
-      arguments: <String, dynamic>{
-        'participants': _participants,
-        'bet': joinedInvitationData().prompt ?? '',
-        'is_view_only': joinedInvitationData().isViewOnly ?? false,
-      },
-    );
+    if (Get.currentRoute != Routes.AI_CHOOSING) {
+      socketIoRepo.disconnect();
+      Get.offNamed(
+        Routes.AI_CHOOSING,
+        arguments: <String, dynamic>{
+          'participants': _participants,
+          'bet': joinedInvitationData().prompt ?? '',
+          'is_view_only': joinedInvitationData().isViewOnly ?? false,
+        },
+      );
+    }
+
     isProcessing(false);
   }
 
   /// Reset fields
   void resetFields() {
     isKeyboardVisible(false);
-    prevBottomInset(0);
     nameInputController.clear();
     shouldWiggleAddName(false);
     shouldWiggleSnapPick(false);

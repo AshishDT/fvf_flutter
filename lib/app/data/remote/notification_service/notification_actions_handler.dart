@@ -40,9 +40,13 @@ class NotificationActionsHandler {
               return;
             }
 
+            final bool isHost =
+                _roundDetails.round?.host?.id == UserProvider.userId;
+
             _onPendingStatus(
               round: _round,
               isViewOnly: isViewOnly,
+              isHost: isHost,
             );
             break;
           case RoundStatus.processing:
@@ -62,6 +66,7 @@ class NotificationActionsHandler {
               roundId: roundId,
               isHost: isHost,
               isViewOnly: isViewOnly,
+              hostId: _roundDetails.round?.host?.id ?? '',
             );
             break;
           case RoundStatus.completed:
@@ -98,6 +103,8 @@ class NotificationActionsHandler {
               participants: participants,
               roundId: roundId,
               isViewOnly: isViewOnly,
+              prompt: _roundDetails.round?.prompt ?? '',
+              hostId: _roundDetails.round?.host?.id ?? '',
             );
             break;
         }
@@ -141,7 +148,12 @@ class NotificationActionsHandler {
   static void _onPendingStatus({
     required MdRound round,
     bool? isViewOnly,
+    bool isHost = false,
   }) {
+    final bool isAlreadyJoined = round.participants
+            ?.any((MdParticipant participant) => participant.isCurrentUser) ??
+        false;
+
     Get.offNamedUntil(
       Routes.SNAP_SELFIES,
       (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
@@ -157,18 +169,8 @@ class NotificationActionsHandler {
         updatedAt: round.updatedAt?.toIso8601String(),
         roundJoinedEndAt: round.roundJoinedEndAt,
         previousRounds: round.previousRounds,
-        participants: <MdParticipant>[
-          MdParticipant(
-            createdAt: DateTime.now().toIso8601String(),
-            id: round.host?.id ?? '',
-            isActive: true,
-            isDeleted: false,
-            isHost: true,
-            joinedAt: DateTime.now().toIso8601String(),
-            userData: round.host,
-          ),
-        ],
-        isFromInvitation: true,
+        isAlreadyJoined: isHost || isAlreadyJoined,
+        participants: round.participants,
         host: round.host,
         isViewOnly: isViewOnly,
       ),
@@ -180,6 +182,7 @@ class NotificationActionsHandler {
     required List<MdParticipant> participants,
     required String prompt,
     required String roundId,
+    required String hostId,
     bool isHost = false,
     bool isViewOnly = false,
   }) {
@@ -202,6 +205,8 @@ class NotificationActionsHandler {
         isHost: isHost,
         roundId: roundId,
         isViewOnly: isViewOnly,
+        prompt: prompt,
+        hostId: hostId,
       );
     }
   }
@@ -212,22 +217,25 @@ class NotificationActionsHandler {
     required String prompt,
     bool isViewOnly = false,
   }) {
-    Get.offNamedUntil(
-      Routes.AI_CHOOSING,
-      (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
-      arguments: <String, dynamic>{
-        'participants': participants,
-        'bet': prompt,
-        'from_notification': true,
-        'is_view_only': isViewOnly,
-      },
-    );
+    if (Get.currentRoute != Routes.AI_CHOOSING) {
+      Get.offNamedUntil(
+        Routes.AI_CHOOSING,
+        (Route<dynamic> route) => route.settings.name == Routes.CREATE_BET,
+        arguments: <String, dynamic>{
+          'participants': participants,
+          'bet': prompt,
+          'is_view_only': isViewOnly,
+        },
+      );
+    }
   }
 
   /// Fall back to start again
   static void _fallBackToStartAgain({
     required List<MdParticipant> participants,
     required String roundId,
+    required String hostId,
+    required String prompt,
     required bool isHost,
     bool isViewOnly = false,
   }) {
@@ -249,12 +257,16 @@ class NotificationActionsHandler {
     }
 
     final Map<String, dynamic> currentArgs = <String, dynamic>{
-      'reason': isHost ? 'Only you joined..' : 'Not enough friends joined..',
+      'reason': isViewOnly ? 'Round failed' : 'Only you joined..',
       'round_id': roundId,
       'is_host': isHost,
-      'sub_reason': 'Go again with your friends',
+      'sub_reason': isViewOnly
+          ? 'Not enough participants joined to start round'
+          : 'Go again with your friends',
       'self_participant': selfParticipant,
       'participants_without_current_user': participantsWithoutCurrentUser(),
+      'host_id': hostId,
+      'prompt': prompt,
       'is_view_only': isViewOnly,
     };
 

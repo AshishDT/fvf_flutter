@@ -52,6 +52,7 @@ void handleDeepLinkIncomingData(Map<dynamic, dynamic> data) {
           );
         }
       }
+
       return;
     } else {
       logW('Unknown active deep link canonicalIdentifier: $data');

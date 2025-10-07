@@ -157,7 +157,7 @@ class WinnerView extends GetView<WinnerController> {
                           ).paddingOnly(
                             right: 24.w,
                             left: 24.w,
-                            bottom: controller.isExposed() ? 36.h : 117.h,
+                            bottom: controller.isExposed() ? 36.h : 100.h,
                           ),
                         );
                       },
@@ -391,9 +391,8 @@ class WinnerView extends GetView<WinnerController> {
     try {
       switch (type) {
         case SubscriptionPlanEnum.weekly:
-          result = await RevenueCatService.instance.purchaseWeeklySubscription(
-            roundId: roundId,
-          );
+          result =
+              await RevenueCatService.instance.purchaseWeeklySubscription();
           break;
         case SubscriptionPlanEnum.oneTime:
           result = await RevenueCatService.instance.purchaseCurrentRound(
@@ -406,6 +405,15 @@ class WinnerView extends GetView<WinnerController> {
         controller
           ..isExposed(true)
           ..isExposed.refresh();
+
+        final List<MdResult> sortedResults = List<MdResult>.from(
+          controller.results(),
+        )..sort(
+            (MdResult a, MdResult b) => a.rank?.compareTo(b.rank ?? 1) ?? 1,
+          );
+
+        controller.results(sortedResults);
+        controller.results.refresh();
 
         appSnackbar(
           message: successMessage,

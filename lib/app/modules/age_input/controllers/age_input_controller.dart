@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/data/local/store/local_store.dart';
@@ -97,8 +99,10 @@ class AgeInputController extends GetxController {
           user: _user,
           userAuthToken: _user.token ?? '',
         );
-        await Get.offAllNamed(
-          Routes.CREATE_BET,
+        unawaited(
+          Get.offAllNamed(
+            Routes.CREATE_BET,
+          ),
         );
 
         if (invitationId().isNotEmpty) {

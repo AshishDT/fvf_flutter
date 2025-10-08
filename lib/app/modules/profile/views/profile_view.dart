@@ -251,7 +251,7 @@ class ProfileView extends GetView<ProfileController> {
           innerPC.jumpToPage(0);
         }
 
-        controller.roundWiggleMark[roundIndex]?.call(false);
+        controller.roundWiggleMark[roundIndex]?.call(true);
         controller.roundWiggleMark[roundIndex]?.refresh();
 
         controller.updateRoundScreenshotPermission(roundIndex);

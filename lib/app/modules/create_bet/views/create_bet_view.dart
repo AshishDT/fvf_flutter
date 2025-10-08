@@ -192,11 +192,18 @@ class CreateBetView extends GetView<CreateBetController> {
                   : 'Bet',
               isLoading:
                   controller.createRoundLoading() || controller.isPurchasing(),
-              onPressed: !(controller.canCreateBetData().allowed ?? false)
+              onPressed: controller.isUserLoading()
                   ? () {
-                      controller.openPurchaseSheet();
+                      appSnackbar(
+                        message: 'Please wait, Performing refresh...',
+                        snackbarState: SnackbarState.info,
+                      );
                     }
-                  : controller.onBetPressed,
+                  : !(controller.canCreateBetData().allowed ?? false)
+                      ? () {
+                          controller.openPurchaseSheet();
+                        }
+                      : controller.onBetPressed,
             ),
           ).paddingSymmetric(horizontal: 24),
         ],

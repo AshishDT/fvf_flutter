@@ -10,11 +10,8 @@ import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
-import '../../../data/models/md_preminum_access.dart';
 import '../../../data/remote/deep_link/deep_link_incoming_data_handler.dart';
 import '../../../data/remote/notification_service/notification_actions_handler.dart';
-import '../../../data/remote/revenue_cat/revenue_cat_service.dart';
 import '../../../data/remote/supabse_service/supabse_service.dart';
 import '../../auth/repositories/auth_api_repo.dart';
 
@@ -96,11 +93,6 @@ class AgeInputController extends GetxController {
       );
 
       if (_user != null && (_user.id?.isNotEmpty ?? false)) {
-        unawaited(
-          claimSubscription(
-            hasSubscription: _user.hasSubscription ?? false,
-          ),
-        );
         LocalStore.loginTime(DateTime.now().toIso8601String());
         UserProvider.onLogin(
           user: _user,
@@ -169,36 +161,5 @@ class AgeInputController extends GetxController {
     }
 
     createAnonymousUser(ageValue);
-  }
-
-  /// Claim subscription after purchase
-  Future<void> claimSubscription({
-    required bool hasSubscription,
-  }) async {
-    try {
-      final MdPremiumAccess? _access =
-          await RevenueCatService.instance.hasPremiumAccess();
-
-      if (_access == null) {
-        return;
-      }
-
-      final bool isAppUserIdNotNull =
-          _access.appUserId != null && (_access.appUserId?.isNotEmpty ?? false);
-
-      if (!isAppUserIdNotNull) {
-        return;
-      }
-
-      final bool isActive = (_access.isActive ?? false) && isAppUserIdNotNull;
-
-      if (isActive && !hasSubscription) {
-        await AuthApiRepo.claimSubscription(
-          appUserId: _access.appUserId ?? '',
-        );
-      }
-    } on Exception {
-      logE('Error claiming subscription');
-    }
   }
 }

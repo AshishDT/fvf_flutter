@@ -261,6 +261,7 @@ mixin SnapSelfieKeysMixin on GetxController {
           'participants': _participants,
           'bet': joinedInvitationData().prompt ?? '',
           'is_view_only': joinedInvitationData().isViewOnly ?? false,
+          'round_id': joinedInvitationData().id ?? '',
         },
       );
     }

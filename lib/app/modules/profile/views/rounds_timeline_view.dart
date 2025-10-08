@@ -206,7 +206,7 @@ class RoundsTimeLinesView extends StatelessWidget {
         innerPC.jumpToPage(0);
       }
 
-      controller.roundWiggleMark[0]?.call(false);
+      controller.roundWiggleMark[0]?.call(true);
       controller.roundWiggleMark[0]?.refresh();
 
       controller.updateRoundScreenshotPermission(0);
@@ -397,7 +397,7 @@ class RoundsTimeLinesView extends StatelessWidget {
     }
 
     controller.updateRoundScreenshotPermission(i);
-    controller.roundWiggleMark[i]?.call(false);
+    controller.roundWiggleMark[i]?.call(true);
     controller.roundWiggleMark[i]?.refresh();
 
     if (!(controller.roundExposed[i]?.call() ?? false)) {

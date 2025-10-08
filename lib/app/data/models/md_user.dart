@@ -34,6 +34,7 @@ class MdUser {
     this.lastPlayedFriendCount,
     this.supabaseId,
     this.linkSupabaseId,
+    this.hasSubscription,
   });
 
   /// From JSON
@@ -80,6 +81,7 @@ class MdUser {
         lastPlayedFriendCount: json['last_played_friend_count'],
         supabaseId: json['supabase_id'],
         linkSupabaseId: json['link_supabase_id'],
+        hasSubscription: json['has_subscription'],
       );
 
   /// FCM token
@@ -166,6 +168,9 @@ class MdUser {
   /// Link supabase ID
   String? linkSupabaseId;
 
+  /// Has subscription
+  bool? hasSubscription;
+
   /// To JSON
   Map<String, dynamic> toJson() => <String, dynamic>{
         'fcm_token': fcmToken,
@@ -196,6 +201,7 @@ class MdUser {
         'last_played_friend_count': lastPlayedFriendCount,
         'supabase_id': supabaseId,
         'link_supabase_id': linkSupabaseId,
+        'has_subscription': hasSubscription,
       };
 
   /// To json

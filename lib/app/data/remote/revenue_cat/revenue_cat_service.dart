@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 import '../../enums/purchase_status.dart';
+import '../../models/md_preminum_access.dart';
 import '../../models/md_purchase_result.dart';
 import '../notification_service/notification_service.dart';
 
@@ -217,13 +218,50 @@ class RevenueCatService {
   }
 
   /// Check if user has premium access
-  Future<bool> hasPremiumAccess() async {
+  Future<MdPremiumAccess?> hasPremiumAccess() async {
     final CustomerInfo? info = await getCustomerInfo();
+
+    log('Customer Info: $info');
     if (info == null) {
-      return false;
+      return null;
     }
+
     final bool isActive =
         info.entitlements.all[_premiumEntitlement]?.isActive ?? false;
-    return isActive;
+
+    if (!isActive) {
+      return null;
+    }
+
+    final String? identifier =
+        info.entitlements.all[_premiumEntitlement]?.identifier;
+
+    final String? latestPurchaseDate =
+        info.entitlements.all[_premiumEntitlement]?.latestPurchaseDate;
+
+    final String? originalPurchaseDate =
+        info.entitlements.all[_premiumEntitlement]?.originalPurchaseDate;
+
+    final String? expirationDate =
+        info.entitlements.all[_premiumEntitlement]?.expirationDate;
+
+    final String? productPlan =
+        info.entitlements.all[_premiumEntitlement]?.productPlanIdentifier;
+
+    final String? unsubscribeDetectedAt =
+        info.entitlements.all[_premiumEntitlement]?.unsubscribeDetectedAt;
+
+    final String? appUserId = info.originalAppUserId;
+
+    return MdPremiumAccess(
+      isActive: isActive,
+      identifier: identifier,
+      latestPurchaseDate: latestPurchaseDate,
+      originalPurchaseDate: originalPurchaseDate,
+      expirationDate: expirationDate,
+      productPlan: productPlan,
+      unsubscribeDetectedAt: unsubscribeDetectedAt,
+      appUserId: appUserId,
+    );
   }
 }

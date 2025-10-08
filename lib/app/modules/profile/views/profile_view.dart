@@ -42,13 +42,8 @@ class ProfileView extends GetView<ProfileController> {
               duration: 500.milliseconds,
               curve: Curves.easeInOut,
             );
-            Future<void>.delayed(
-              const Duration(milliseconds: 600),
-              () {
-                controller.getRounds(
-                  isRefresh: true,
-                );
-              },
+            controller.getRounds(
+              isRefresh: true,
             );
           }
         },
@@ -184,16 +179,6 @@ class ProfileView extends GetView<ProfileController> {
                                       duration: 500.milliseconds,
                                       curve: Curves.easeInOut,
                                     );
-
-                                    Future<void>.delayed(
-                                      const Duration(milliseconds: 600),
-                                      () {
-                                        controller.getRounds(
-                                          isRefresh: true,
-                                        );
-                                      },
-                                    );
-
                                     controller.noScreenshot.screenshotOn();
                                   } else {
                                     Get.back();
@@ -236,12 +221,18 @@ class ProfileView extends GetView<ProfileController> {
 
   /// On page change
   void _onPageChange(int value) {
-    if (value == 0) {
-      controller.noScreenshot.screenshotOn();
-    }
-
     if (controller.isLoading()) {
       return;
+    }
+
+    if (value == 0) {
+      controller.noScreenshot.screenshotOn();
+      if (controller.canRefreshRounds()) {
+        controller.canRefreshRounds(false);
+        controller.getRounds(
+          isRefresh: true,
+        );
+      }
     }
 
     controller.currentIndex(value);

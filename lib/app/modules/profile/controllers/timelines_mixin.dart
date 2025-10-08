@@ -36,6 +36,9 @@ mixin TimeLineMixin on GetxController {
   /// Round secure
   final Map<int, RxBool> roundSecure = <int, RxBool>{};
 
+  /// Is exposed rounds - Can be used to refresh rounds list after purchase
+  final RxBool canRefreshRounds = false.obs;
+
   /// Rounds list
   RxList<MdRound> get rounds;
 
@@ -268,6 +271,8 @@ mixin TimeLineMixin on GetxController {
           updateRoundScreenshotPermission(index);
         }
 
+        canRefreshRounds(true);
+
         appSnackbar(
           message: successMessage,
           snackbarState: SnackbarState.success,
@@ -278,8 +283,10 @@ mixin TimeLineMixin on GetxController {
               'Purchase failed or was cancelled. Status: ${result.status.name}',
           snackbarState: SnackbarState.danger,
         );
+        canRefreshRounds(false);
       }
     } on Exception catch (e) {
+      canRefreshRounds(false);
       appSnackbar(
         message: 'Error occurred: $e',
         snackbarState: SnackbarState.danger,

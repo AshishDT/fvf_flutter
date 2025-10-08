@@ -174,15 +174,14 @@ class RoundsTimeLinesView extends StatelessWidget {
           curve: Curves.ease,
         );
 
-        Future<void>.delayed(
-          const Duration(milliseconds: 600),
-          () {
-            _resetInnerPages();
-            controller.getRounds(
-              isRefresh: true,
-            );
-          },
-        );
+        _resetInnerPages();
+        controller.noScreenshot.screenshotOn();
+        if (controller.canRefreshRounds()) {
+          controller.canRefreshRounds(false);
+          controller.getRounds(
+            isRefresh: true,
+          );
+        }
 
         return true;
       }
@@ -274,8 +273,17 @@ class RoundsTimeLinesView extends StatelessWidget {
                 duration: 500.milliseconds,
                 curve: Curves.easeInOut,
               );
+
+              controller.noScreenshot.screenshotOn();
+              if (controller.canRefreshRounds()) {
+                controller.canRefreshRounds(false);
+                controller.getRounds(
+                  isRefresh: true,
+                );
+              }
             } else {
               Get.back();
+              controller.noScreenshot.screenshotOn();
             }
           },
           actions: <Widget>[
@@ -394,7 +402,7 @@ class RoundsTimeLinesView extends StatelessWidget {
 
     if (!(controller.roundExposed[i]?.call() ?? false)) {
       Future<void>.delayed(
-        const Duration(milliseconds: 600),
+        const Duration(milliseconds: 300),
         () {
           controller.roundWiggleMark[i]!(true);
           controller.roundWiggleMark[i]!.refresh();

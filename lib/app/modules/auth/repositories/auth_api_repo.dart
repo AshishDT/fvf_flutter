@@ -45,4 +45,38 @@ class AuthApiRepo {
           },
         ),
       );
+
+  /// Claim subscription
+  static Future<bool?> claimSubscription({
+    required String appUserId,
+  }) async =>
+      APIWrapper.handleApiCall<bool?>(
+        APIService.post<Map<String, dynamic>>(
+          path: 'round-subscription/claim-subscription',
+          data: <String, dynamic>{
+            'app_user_id': appUserId,
+          },
+        ).then(
+          (Response<Map<String, dynamic>>? response) {
+            if (response?.isOk != true || response?.data == null) {
+              return null;
+            }
+
+            final ApiResponse<bool?> data = ApiResponse<bool>.fromJson(
+              response!.data!,
+            );
+
+            if (data.success ?? false) {
+              return true;
+            }
+
+            appSnackbar(
+              message:
+                  data.message ?? 'Something went wrong, please try again.',
+              snackbarState: SnackbarState.danger,
+            );
+            return null;
+          },
+        ),
+      );
 }

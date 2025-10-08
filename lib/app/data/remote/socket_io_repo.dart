@@ -134,5 +134,7 @@ class SocketIoRepo {
     } else {
       logI('⚠️ No active socket to disconnect');
     }
+
+    stopAutoEmit();
   }
 }

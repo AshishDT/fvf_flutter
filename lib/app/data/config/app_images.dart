@@ -170,4 +170,7 @@ class AppImages {
 
   /// Notification App Logo
   static const String notificationAppLogo = '$_svgPath/notification_app_logo.svg';
+
+  /// Report Flag Icon
+  static const String reportFlag = '$_svgPath/report_flag.svg';
 }

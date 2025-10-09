@@ -8,6 +8,7 @@ import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:fvf_flutter/app/modules/profile/views/rounds_timeline_view.dart';
 import 'package:fvf_flutter/app/modules/profile/views/profile_bio_section.dart';
 import 'package:fvf_flutter/app/modules/profile/views/profile_header.dart';
+import 'package:fvf_flutter/app/modules/profile/widgets/more_sheet.dart';
 import 'package:fvf_flutter/app/modules/profile/widgets/profile_wrapper.dart';
 import 'package:fvf_flutter/app/ui/components/common_app_bar.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
@@ -186,8 +187,15 @@ class ProfileView extends GetView<ProfileController> {
                                   }
                                 },
                                 actions: <Widget>[
-                                  GestureDetector(
-                                    onTap: () {},
+                                  InkWell(
+                                    onTap: () async {
+                                      await showModalBottomSheet(
+                                        context: Get.context!,
+                                        isScrollControlled: true,
+                                        backgroundColor: Colors.transparent,
+                                        builder: (_) => const MoreSheet(),
+                                      );
+                                    },
                                     child: SvgPicture.asset(
                                       AppImages.moreVertical,
                                       width: 24.w,

@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:flutter/material.dart';
 import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/data/local/store/local_store.dart';
 import 'package:fvf_flutter/app/data/local/user_provider.dart';
@@ -38,8 +36,8 @@ class AgeInputController extends GetxController {
   /// Observable to track if user creation is in progress
   RxBool creatingUser = false.obs;
 
-  /// Text editing controller for age input
-  TextEditingController ageInputController = TextEditingController();
+  /// Selected date observable
+  Rx<DateTime> selectedDate = DateTime.now().obs;
 
   /// Sign in anonymously
   Future<String?> signInAnonymously() async {
@@ -132,17 +130,15 @@ class AgeInputController extends GetxController {
 
   /// Callback for when the "Next" button is pressed
   void onNext() {
-    final String age = ageInputController.text.trim();
+    final DateTime birthDate = selectedDate.value;
 
-    if (age.isEmpty) {
-      appSnackbar(
-        message: 'Please enter your age',
-        snackbarState: SnackbarState.info,
-      );
-      return;
+    final DateTime today = DateTime.now();
+    int ageValue = today.year - birthDate.year;
+
+    if (today.month < birthDate.month ||
+        (today.month == birthDate.month && today.day < birthDate.day)) {
+      ageValue--;
     }
-
-    final int ageValue = int.tryParse(age) ?? 0;
 
     if (ageValue < 18) {
       appSnackbar(

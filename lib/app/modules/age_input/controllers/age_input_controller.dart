@@ -37,7 +37,11 @@ class AgeInputController extends GetxController {
   RxBool creatingUser = false.obs;
 
   /// Selected date observable
-  Rx<DateTime> selectedDate = DateTime.now().obs;
+  Rx<DateTime> selectedDate = DateTime.now()
+      .subtract(
+        const Duration(days: 365 * 18),
+      )
+      .obs;
 
   /// Sign in anonymously
   Future<String?> signInAnonymously() async {
@@ -63,7 +67,7 @@ class AgeInputController extends GetxController {
   }
 
   /// Create anonymous user
-  Future<void> createAnonymousUser(int age) async {
+  Future<void> createAnonymousUser() async {
     creatingUser(true);
     try {
       final String? _fcmToken = await NotificationService().getToken();
@@ -86,7 +90,7 @@ class AgeInputController extends GetxController {
 
       final MdUser? _user = await AuthApiRepo.createUser(
         supabaseId: supabaseId,
-        age: age,
+        date: selectedDate().toIso8601String(),
         fcmToken: _fcmToken,
       );
 
@@ -156,6 +160,6 @@ class AgeInputController extends GetxController {
       return;
     }
 
-    createAnonymousUser(ageValue);
+    createAnonymousUser();
   }
 }

@@ -18,7 +18,10 @@ import '../modules/failed_round/bindings/failed_round_binding.dart';
 import '../modules/failed_round/views/failed_round_view.dart';
 import '../modules/hall_of_fame/bindings/hall_of_fame_binding.dart';
 import '../modules/hall_of_fame/views/hall_of_fame_view.dart';
+import '../modules/notifications/bindings/notifications_binding.dart';
+import '../modules/notifications/views/notifications_view.dart';
 import '../modules/profile/bindings/profile_binding.dart';
+import '../modules/profile/models/md_profile_args.dart';
 import '../modules/profile/views/profile_view.dart';
 import '../modules/rating/bindings/rating_binding.dart';
 import '../modules/rating/views/rating_view.dart';
@@ -28,7 +31,6 @@ import '../modules/splash/bindings/splash_binding.dart';
 import '../modules/splash/views/splash_view.dart';
 import '../modules/winner/bindings/winner_binding.dart';
 import '../modules/winner/views/winner_view.dart';
-import '../modules/profile/models/md_profile_args.dart';
 
 part 'app_routes.dart';
 
@@ -55,7 +57,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.PROFILE,
-      page: () =>  ProfileView(
+      page: () => ProfileView(
         navigatorTag: (Get.arguments as MdProfileArgs).tag,
       ),
       binding: ProfileBinding(),
@@ -109,6 +111,11 @@ class AppPages {
       name: _Paths.RATING,
       page: () => const RatingView(),
       binding: RatingBinding(),
+    ),
+    GetPage(
+      name: _Paths.NOTIFICATIONS,
+      page: () => NotificationsView(),
+      binding: NotificationsBinding(),
     ),
   ];
 }

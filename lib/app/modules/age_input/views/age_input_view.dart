@@ -62,11 +62,14 @@ class AgeInputView extends GetView<AgeInputController> {
                       ),
                       100.verticalSpace,
                       IntrinsicWidth(
-                        child: CupertinoDatePickerWidget(
-                          onDateChanged: (DateTime newDate) {
-                            controller.selectedDate(newDate);
-                            controller.selectedDate.refresh();
-                          },
+                        child: Obx(
+                          () => CupertinoDatePickerWidget(
+                            initialDate: controller.selectedDate(),
+                            onDateChanged: (DateTime newDate) {
+                              controller.selectedDate(newDate);
+                              controller.selectedDate.refresh();
+                            },
+                          ),
                         ),
                       ),
                     ],

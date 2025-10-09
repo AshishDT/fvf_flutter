@@ -9,19 +9,48 @@ class CupertinoDatePickerWidget extends StatelessWidget {
   /// Constructor
   const CupertinoDatePickerWidget({
     required this.onDateChanged,
+    this.initialDate,
     super.key,
   });
 
   /// On date changed callback
   final ValueChanged<DateTime> onDateChanged;
 
+  /// Initial date
+  final DateTime? initialDate;
+
   @override
   Widget build(BuildContext context) {
     final DateTime now = DateTime.now();
-    final int currentYear = now.year;
-    final int initialYear = currentYear - 18;
 
-    final DateTime initialDate = DateTime(initialYear);
+    final DateTime selectedInitialDate = initialDate ??
+        DateTime(
+          now.year - 18,
+          now.month,
+          now.day,
+        );
+
+    final int currentYear = now.year;
+    final int initialYear = selectedInitialDate.year;
+
+    final int minYear = currentYear - 100;
+    final int maxYear = currentYear;
+
+    final List<int> years =
+        List<int>.generate(maxYear - minYear + 1, (int i) => minYear + i);
+
+    final FixedExtentScrollController yearController =
+        FixedExtentScrollController(initialItem: initialYear - minYear);
+    final FixedExtentScrollController monthController =
+        FixedExtentScrollController(initialItem: selectedInitialDate.month - 1);
+    final FixedExtentScrollController dayController =
+        FixedExtentScrollController(initialItem: selectedInitialDate.day - 1);
+
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        onDateChanged(selectedInitialDate);
+      },
+    );
 
     final List<String> months = <String>[
       'January',
@@ -38,19 +67,6 @@ class CupertinoDatePickerWidget extends StatelessWidget {
       'December'
     ];
     final List<int> days = List<int>.generate(31, (int i) => i + 1);
-    final int minYear = currentYear - 100;
-    final int maxYear = currentYear;
-
-    final List<int> years =
-        List<int>.generate(maxYear - minYear + 1, (int i) => minYear + i);
-
-    final FixedExtentScrollController yearController =
-        FixedExtentScrollController(initialItem: initialYear - minYear);
-
-    final FixedExtentScrollController monthController =
-        FixedExtentScrollController(initialItem: initialDate.month - 1);
-    final FixedExtentScrollController dayController =
-        FixedExtentScrollController(initialItem: initialDate.day - 1);
 
     return Align(
       child: Container(

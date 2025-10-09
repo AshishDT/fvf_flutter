@@ -167,4 +167,7 @@ class AppImages {
 
   /// Otp one two three
   static const String otp123 = '$_svgPath/otp_123.svg';
+
+  /// Notification App Logo
+  static const String notificationAppLogo = '$_svgPath/notification_app_logo.svg';
 }

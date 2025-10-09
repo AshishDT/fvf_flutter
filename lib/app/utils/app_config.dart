@@ -20,4 +20,10 @@ class AppConfig {
 
     return (minutes * 60) + (fractionalMinutes * 60).round();
   }
+
+  /// Privacy policy URL
+  static String privacyPolicyUrl = 'https://slayapp.io/privacy_policy';
+
+  /// Terms of service URL
+  static String termsOfServiceUrl = 'https://slayapp.io/terms_of_service';
 }

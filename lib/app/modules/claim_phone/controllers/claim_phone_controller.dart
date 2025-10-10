@@ -1,13 +1,26 @@
-import 'package:country_picker/country_picker.dart';
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:fvf_flutter/app/data/models/md_user.dart';
+import 'package:fvf_flutter/app/modules/claim_phone/models/md_check_phone.dart';
 import 'package:get/get.dart';
 import 'package:smart_auth/smart_auth.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../data/config/logger.dart';
+import '../../../data/local/store/local_store.dart';
+import '../../../data/local/user_provider.dart';
+import '../../../data/remote/deep_link/deep_link_incoming_data_handler.dart';
+import '../../../data/remote/notification_service/notification_actions_handler.dart';
+import '../../../data/remote/notification_service/notification_service.dart';
 import '../../../data/remote/supabse_service/supabse_service.dart';
+import '../../../routes/app_pages.dart';
 import '../../../ui/components/app_snackbar.dart';
 import '../../create_bet/controllers/create_bet_controller.dart';
 import '../../create_bet/repositories/create_bet_api_repo.dart';
+import '../models/md_auth_data.dart';
+import '../models/md_country_info.dart';
+import '../models/md_phone_data.dart';
+import '../repositories/claim_phone_api_repo.dart';
 
 /// Claim Phone Controller
 class ClaimPhoneController extends GetxController {
@@ -20,24 +33,23 @@ class ClaimPhoneController extends GetxController {
   /// Is Smart Auth Showed
   RxBool isSmartAuthShowed = false.obs;
 
-  /// User claim loading
-  RxBool isUserClaimLoading = false.obs;
+  /// Is from login
+  RxBool isFromLogin = false.obs;
 
   /// Smart auth instance
   final SmartAuth smartAuth = SmartAuth.instance;
 
+  /// Validator key
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  /// Otp validator key
+  final GlobalKey<FormState> otpFormKey = GlobalKey<FormState>();
+
   /// Selected country
-  Rx<Country> country = Country(
+  Rx<MdPhoneData> country = MdPhoneData(
     phoneCode: '1',
+    flagEmoji: '🇺🇸',
     countryCode: 'US',
-    e164Sc: 0,
-    geographic: true,
-    level: 1,
-    name: 'United States',
-    example: '2015550123',
-    displayName: 'United States (US) +1',
-    displayNameNoCountryCode: 'United States (US)',
-    e164Key: '1-US-0',
   ).obs;
 
   /// On init
@@ -58,6 +70,23 @@ class ClaimPhoneController extends GetxController {
     super.onClose();
   }
 
+  /// Invitation ID
+  Future<void> resetAllFields() async {
+    phoneController.clear();
+    otpController.clear();
+    isSmartAuthShowed(false);
+    isFromLogin(false);
+    country(
+      MdPhoneData(
+        phoneCode: '1',
+        countryCode: 'US',
+        flagEmoji: '🇺🇸',
+      ),
+    );
+    formKey.currentState?.reset();
+    otpFormKey.currentState?.reset();
+  }
+
   /// Request phone hint
   Future<void> requestPhoneHint() async {
     try {
@@ -74,17 +103,12 @@ class ClaimPhoneController extends GetxController {
 
         final String localNumber = extractLocalNumber(result.data ?? '');
 
-        final Country _selectedCountry = Country(
+        final CountryInfo info = getCountryInfoFromPhoneCode(phoneCode);
+
+        final MdPhoneData _selectedCountry = MdPhoneData(
           phoneCode: '$phoneCode',
-          countryCode: 'US',
-          e164Sc: 0,
-          geographic: true,
-          level: 1,
-          name: 'United States',
-          example: '2015550123',
-          displayName: 'United States (US) +1',
-          displayNameNoCountryCode: 'United States (US)',
-          e164Key: '1-US-0',
+          countryCode: info.countryCode,
+          flagEmoji: info.flagEmoji,
         );
 
         country(_selectedCountry);
@@ -130,7 +154,10 @@ class ClaimPhoneController extends GetxController {
     final String countryCode = country().phoneCode;
 
     try {
-      await SupaBaseService.sendOtp('+$countryCode$phone');
+      await SupaBaseService.sendOtp(
+        phoneNumber: '+$countryCode$phone',
+        fromLogin: isFromLogin(),
+      );
       return true;
     } on Exception catch (e) {
       logE('Error sending OTP: $e');
@@ -143,11 +170,11 @@ class ClaimPhoneController extends GetxController {
   }
 
   /// Verify OTP
-  Future<bool> verifyOtp() async {
+  Future<AuthResponse?> verifyOtp() async {
     final String phone = phoneController.text.trim();
     final String otp = otpController.text.trim();
     if (otp.isEmpty) {
-      return false;
+      return null;
     }
 
     final String countryCode = country().phoneCode;
@@ -156,17 +183,18 @@ class ClaimPhoneController extends GetxController {
       final AuthResponse res = await SupaBaseService.verifyOtp(
         phoneNumber: '+$countryCode$phone',
         token: otp,
+        fromLogin: isFromLogin(),
       );
 
       if (res.session != null) {
-        return true;
+        return res;
       }
 
       appSnackbar(
         message: 'Invalid OTP. Please try again.',
         snackbarState: SnackbarState.danger,
       );
-      return false;
+      return null;
     } on AuthException catch (e) {
       logE('Error verifying OTP: $e');
       appSnackbar(
@@ -175,21 +203,19 @@ class ClaimPhoneController extends GetxController {
             : 'Failed to verify OTP. Please try again.',
         snackbarState: SnackbarState.danger,
       );
-      return false;
+      return null;
     }
   }
 
   /// Claim user
   Future<void> claimUser() async {
     try {
-      isUserClaimLoading(true);
-
       final String phone = phoneController.text.trim();
       final String countryCode = country().phoneCode;
 
       final bool? isClaimed = await CreateBetApiRepo.userClaim(
         phone: phone,
-        countryCode: countryCode,
+        countryCode: '+$countryCode',
       );
 
       if (isClaimed ?? false) {
@@ -206,8 +232,124 @@ class ClaimPhoneController extends GetxController {
     } on Exception catch (e, st) {
       logE('Error claiming user: $e');
       logE(st);
-    } finally {
-      isUserClaimLoading(false);
+    }
+  }
+
+  /// Open URL
+  Future<void> openUrl(String url) async {
+    final Uri _url = Uri.parse(url);
+    final bool _launched = await launchUrl(
+      _url,
+      mode: LaunchMode.externalApplication,
+    );
+
+    if (!_launched) {
+      appSnackbar(
+        message: 'Could not launch $url',
+        snackbarState: SnackbarState.danger,
+      );
+    }
+  }
+
+  /// After verify OTP
+  Future<void> afterVerifyOtp({
+    required AuthResponse authResponse,
+  }) async {
+    if (isFromLogin()) {
+      await checkPhone(authResponse: authResponse);
+      return;
+    }
+
+    await claimUser();
+  }
+
+  /// Check phone
+  Future<void> checkPhone({
+    required AuthResponse authResponse,
+  }) async {
+    try {
+      final String phone = phoneController.text.trim();
+      final String countryCode = country().phoneCode;
+
+      final MdCheckPhone? _checkPhone = await ClaimPhoneApiRepo.checkPhone(
+        phone: phone,
+        phoneCode: '+$countryCode',
+      );
+
+      if (_checkPhone?.isExist ?? false) {
+        final String? _fcmToken = await NotificationService().getToken();
+        logI('FCM Token: $_fcmToken');
+
+        if (_fcmToken == null || _fcmToken.isEmpty) {
+          appSnackbar(
+            message: 'Something went wrong! Please try again later.',
+            snackbarState: SnackbarState.danger,
+          );
+          return;
+        }
+
+        final MdUser? _user = await ClaimPhoneApiRepo.login(
+          phone: phone,
+          phoneCode: '+$countryCode',
+          fcmToken: _fcmToken,
+          userId: _checkPhone?.id ?? '',
+        );
+
+        if (_user != null && (_user.id?.isNotEmpty ?? false)) {
+          LocalStore.loginTime(DateTime.now().toIso8601String());
+          UserProvider.onLogin(
+            user: _user,
+            userAuthToken: _user.token ?? '',
+          );
+          unawaited(
+            Get.offAllNamed(
+              Routes.CREATE_BET,
+            ),
+          );
+
+          appSnackbar(
+            message: (_user.username?.isNotEmpty ?? false)
+                ? 'Login successful! Welcome back ${_user.username ?? ''}'
+                : 'Login successful! Welcome back',
+            snackbarState: SnackbarState.success,
+          );
+
+          if (invitationId().isNotEmpty) {
+            if (isViewOnly()) {
+              await NotificationActionsHandler.handleRoundDetails(
+                roundId: invitationId(),
+                isViewOnly: true,
+              );
+              invitationId('');
+              isViewOnly(false);
+              return;
+            }
+
+            await joinProjectInvitation(invitationId());
+            invitationId('');
+            isViewOnly(false);
+          }
+        } else {
+          appSnackbar(
+            message: 'Oops! Something went wrong, please try again.',
+            snackbarState: SnackbarState.danger,
+          );
+        }
+      } else {
+        Get.close(0);
+        unawaited(
+          Get.toNamed(
+            Routes.AGE_INPUT,
+            arguments: MdAuthData(
+              authResponse: authResponse,
+              phone: phone,
+              countryCode: '+$countryCode',
+            ),
+          ),
+        );
+      }
+    } on Exception catch (e) {
+      logE('Error checking phone: $e');
     }
   }
 }

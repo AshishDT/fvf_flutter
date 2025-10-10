@@ -15,6 +15,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import '../../../utils/app_loader.dart';
 import '../../../utils/global_keys.dart';
+import '../../claim_phone/controllers/phone_claim_service.dart';
 import '../models/md_profile_args.dart';
 import '../repositories/edit_profile_sheet_repo.dart';
 
@@ -113,6 +114,12 @@ class ProfileController extends GetxController
   @override
   void onReady() {
     noScreenshot.screenshotOn();
+    Future<void>.delayed(
+      const Duration(seconds: 1),
+      () {
+        PhoneClaimService.open();
+      },
+    );
     super.onReady();
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
 import '../../../data/config/app_colors.dart';
@@ -7,6 +8,7 @@ import '../../../ui/components/animated_list_view.dart';
 import '../../../ui/components/app_button.dart';
 import '../../../ui/components/common_app_bar.dart';
 import '../../../ui/components/gradient_card.dart';
+import '../../claim_phone/models/md_auth_data.dart';
 import '../controllers/age_input_controller.dart';
 import '../widgets/cupertino_date_picker.dart';
 
@@ -19,6 +21,12 @@ class AgeInputView extends GetView<AgeInputController> {
   Widget build(BuildContext context) => Obx(
         () => PopScope(
           canPop: !controller.creatingUser(),
+          onPopInvokedWithResult: (bool bool, _) {
+            if (controller.isFromLogin) {
+              SupaBaseService.logout();
+              controller.authData = MdAuthData();
+            }
+          },
           child: Scaffold(
             backgroundColor: AppColors.kF5FCFF,
             resizeToAvoidBottomInset: false,
@@ -46,6 +54,10 @@ class AgeInputView extends GetView<AgeInputController> {
                             return;
                           }
 
+                          if (controller.isFromLogin) {
+                            SupaBaseService.logout();
+                            controller.authData = MdAuthData();
+                          }
                           Get.back();
                         },
                       ),

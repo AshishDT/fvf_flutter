@@ -173,4 +173,7 @@ class AppImages {
 
   /// Report Flag Icon
   static const String reportFlag = '$_svgPath/report_flag.svg';
+
+  /// Log Out Icon
+  static const String logOutIcon = '$_svgPath/log_out.svg';
 }

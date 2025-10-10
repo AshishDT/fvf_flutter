@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fvf_flutter/app/data/config/app_colors.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
+import 'package:fvf_flutter/app/modules/claim_phone/controllers/phone_claim_service.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
 import 'package:fvf_flutter/app/ui/components/animated_column.dart';
 import 'package:fvf_flutter/app/ui/components/app_button.dart';
@@ -44,7 +45,7 @@ class AuthView extends GetView<AuthController> {
                 style: AppTextStyle.openRunde(
                   color: AppColors.kA8B3B5,
                   fontSize: 12.sp,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w500,
                 ),
                 children: <TextSpan>[
                   TextSpan(
@@ -66,7 +67,7 @@ class AuthView extends GetView<AuthController> {
                     style: AppTextStyle.openRunde(
                       color: AppColors.kA8B3B5,
                       fontSize: 12.sp,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   TextSpan(
@@ -101,7 +102,11 @@ class AuthView extends GetView<AuthController> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
                         InkWell(
-                          onTap: () {},
+                          onTap: () {
+                            PhoneClaimService.open(
+                              fromLogin: true,
+                            );
+                          },
                           child: Text(
                             'Login',
                             style: AppTextStyle.openRunde(

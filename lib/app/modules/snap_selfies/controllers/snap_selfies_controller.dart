@@ -349,15 +349,6 @@ class SnapSelfiesController extends GetxController
 
       _checkAddNameWiggle();
       _checkSnapPickWiggle();
-
-      unawaited(
-        PhoneClaimService.open(
-          currentRound: roundData().totalRound ?? 0,
-          hasSubmittedFirstRoundPhoto: selfParticipant().selfieUrl != null &&
-              (selfParticipant().selfieUrl?.isNotEmpty ?? false),
-          userName: selfParticipant().userData?.username,
-        ),
-      );
     }
   }
 

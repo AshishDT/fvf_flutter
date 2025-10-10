@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../config/env_config.dart';
 
@@ -38,6 +39,11 @@ class SupaBaseService {
     return DateTime.now().isBefore(expiresAt);
   }
 
+  /// Current user log out
+  static Future<void> logout() async {
+    await _instance.auth.signOut();
+  }
+
   /// Refresh session
   static Future<void> refreshSession() async {
     final AuthResponse _res = await _instance.auth.refreshSession();
@@ -53,8 +59,14 @@ class SupaBaseService {
   }
 
   /// Send OTP to phone number
-  static Future<void> sendOtp(String phoneNumber) async {
-    anonymousSession = _instance.auth.currentSession;
+  static Future<void> sendOtp({
+    required String phoneNumber,
+    bool fromLogin = false,
+  }) async {
+    if (!fromLogin) {
+      anonymousSession = _instance.auth.currentSession;
+    }
+
     await _instance.auth.signInWithOtp(
       phone: phoneNumber,
     );
@@ -64,6 +76,7 @@ class SupaBaseService {
   static Future<AuthResponse> verifyOtp({
     required String phoneNumber,
     required String token,
+    bool fromLogin = false,
   }) async {
     final AuthResponse response = await _instance.auth.verifyOTP(
       phone: phoneNumber,
@@ -71,16 +84,23 @@ class SupaBaseService {
       type: OtpType.sms,
     );
 
-    final AuthResponse _res;
-
-    if (response.session != null) {
-      _res = await _instance.auth.setSession(
-        anonymousSession?.refreshToken ?? '',
-      );
-    } else {
-      _res = response;
+    if (fromLogin) {
+      anonymousSession = null;
     }
 
-    return _res;
+    if (response.session == null) {
+      return response;
+    }
+
+    if (!fromLogin) {
+      final String? refreshToken = anonymousSession?.refreshToken;
+      if (refreshToken == null || refreshToken.isEmpty) {
+        logE('Missing refresh token for anonymous session');
+        return response;
+      }
+      return _instance.auth.setSession(refreshToken);
+    }
+
+    return response;
   }
 }

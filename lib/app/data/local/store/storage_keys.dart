@@ -56,9 +56,15 @@ class LocalStore {
   static final _StoreObject<bool> phoneSheetFirstProfileVisit =
       _StoreObject<bool>(key: 'is_first_profile_visit');
 
+  /// To avoid showing the phone sheet multiple times in a short period
   static final _StoreObject<int> phoneSheetLastDeclineRound =
       _StoreObject<int>(key: 'last_decline_round');
 
+  /// Number of times user has declined phone sheet
   static final _StoreObject<int> phoneSheetDeclineCount =
       _StoreObject<int>(key: 'decline_count');
+
+  /// To avoid showing the notification permission sheet multiple times
+  static final _StoreObject<String> notificationSheetId =
+  _StoreObject<String>(key: 'shown_notification_sheet');
 }

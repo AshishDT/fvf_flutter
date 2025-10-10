@@ -26,4 +26,7 @@ class AppConfig {
 
   /// Terms of service URL
   static String termsOfServiceUrl = 'https://slayapp.io/terms_of_service';
+
+  /// App URL
+  static String appUrl = 'https://play.google.com/store/apps/details?id=com.slay.org.app';
 }

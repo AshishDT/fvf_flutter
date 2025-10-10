@@ -36,6 +36,9 @@ class ClaimPhoneController extends GetxController {
   /// Is from login
   RxBool isFromLogin = false.obs;
 
+  /// Is from menu
+  RxBool isFromMenu = false.obs;
+
   /// Smart auth instance
   final SmartAuth smartAuth = SmartAuth.instance;
 
@@ -79,6 +82,7 @@ class ClaimPhoneController extends GetxController {
     otpController.clear();
     isSmartAuthShowed(false);
     isFromLogin(false);
+    isFromMenu(false);
     country(
       MdPhoneData(
         phoneCode: '1',
@@ -161,6 +165,7 @@ class ClaimPhoneController extends GetxController {
       await SupaBaseService.sendOtp(
         phoneNumber: '+$countryCode$phone',
         fromLogin: isFromLogin(),
+        fromMenu: isFromMenu(),
       );
       return true;
     } on Exception catch (e) {
@@ -188,6 +193,7 @@ class ClaimPhoneController extends GetxController {
         phoneNumber: '+$countryCode$phone',
         token: otp,
         fromLogin: isFromLogin(),
+        fromMenu: isFromMenu(),
       );
 
       if (res.session != null) {
@@ -282,18 +288,18 @@ class ClaimPhoneController extends GetxController {
         phoneCode: '+$countryCode',
       );
 
+      final String? _fcmToken = await NotificationService().getToken();
+      logI('FCM Token: $_fcmToken');
+
+      if (_fcmToken == null || _fcmToken.isEmpty) {
+        appSnackbar(
+          message: 'Something went wrong! Please try again later.',
+          snackbarState: SnackbarState.danger,
+        );
+        return;
+      }
+
       if (_checkPhone?.isExist ?? false) {
-        final String? _fcmToken = await NotificationService().getToken();
-        logI('FCM Token: $_fcmToken');
-
-        if (_fcmToken == null || _fcmToken.isEmpty) {
-          appSnackbar(
-            message: 'Something went wrong! Please try again later.',
-            snackbarState: SnackbarState.danger,
-          );
-          return;
-        }
-
         final MdUser? _user = await ClaimPhoneApiRepo.login(
           phone: phone,
           phoneCode: '+$countryCode',
@@ -307,6 +313,19 @@ class ClaimPhoneController extends GetxController {
             user: _user,
             userAuthToken: _user.token ?? '',
           );
+
+          if (isFromMenu()) {
+            Get.close(0);
+            Get.find<CreateBetController>().refreshProfile();
+            appSnackbar(
+              message: (_user.username?.isNotEmpty ?? false)
+                  ? 'Login successful! Welcome back ${_user.username ?? ''}'
+                  : 'Login successful! Phone number linked.',
+              snackbarState: SnackbarState.success,
+            );
+            return;
+          }
+
           unawaited(
             Get.offAllNamed(
               Routes.CREATE_BET,
@@ -316,7 +335,7 @@ class ClaimPhoneController extends GetxController {
           appSnackbar(
             message: (_user.username?.isNotEmpty ?? false)
                 ? 'Login successful! Welcome back ${_user.username ?? ''}'
-                : 'Login successful! Welcome back',
+                : 'Login successful! Phone number linked.',
             snackbarState: SnackbarState.success,
           );
 
@@ -342,6 +361,38 @@ class ClaimPhoneController extends GetxController {
           );
         }
       } else {
+        if (isFromMenu()) {
+          final MdUser? _user = await ClaimPhoneApiRepo.login(
+            phone: phone,
+            phoneCode: '+$countryCode',
+            fcmToken: _fcmToken,
+            userId: authResponse.user?.id ?? '',
+            dob: UserProvider.currentUser?.dob?.toIso8601String(),
+          );
+
+          if (_user != null) {
+            Get.close(0);
+            LocalStore.loginTime(DateTime.now().toIso8601String());
+            UserProvider.onLogin(
+              user: _user,
+              userAuthToken: _user.token ?? '',
+            );
+
+            appSnackbar(
+              message: 'Login successful! Phone number linked.',
+              snackbarState: SnackbarState.success,
+            );
+            Get.find<CreateBetController>().refreshProfile();
+          } else {
+            appSnackbar(
+              message: 'Oops! Something went wrong, please try again.',
+              snackbarState: SnackbarState.danger,
+            );
+          }
+
+          return;
+        }
+
         Get.close(0);
         unawaited(
           Get.toNamed(
@@ -376,6 +427,7 @@ class ClaimPhoneController extends GetxController {
       await SupaBaseService.sendOtp(
         phoneNumber: '+$countryCode$phone',
         fromLogin: isFromLogin(),
+        fromMenu: isFromMenu(),
       );
       showResendOtp(false);
     } on Exception catch (e) {

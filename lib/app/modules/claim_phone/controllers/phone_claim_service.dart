@@ -9,10 +9,12 @@ class PhoneClaimService {
   /// Opens the claim flow if criteria match
   static Future<void> open({
     bool fromLogin = false,
+    bool fromMenu = false,
   }) async {
     if (fromLogin) {
       await _showPhoneSheet(
         isFromLogin: true,
+        fromMenu: fromMenu,
       );
       return;
     }
@@ -35,6 +37,7 @@ class PhoneClaimService {
   /// Internal method to show phone sheet and OTP flow
   static Future<void> _showPhoneSheet({
     bool isFromLogin = false,
+    bool fromMenu = false,
   }) async {
     final ClaimPhoneController controller = Get.put(ClaimPhoneController());
 
@@ -42,6 +45,8 @@ class PhoneClaimService {
 
     controller.isFromLogin(isFromLogin);
     controller.isFromLogin.refresh();
+    controller.isFromMenu(fromMenu);
+    controller.isFromMenu.refresh();
 
     await showModalBottomSheet(
       context: Get.context!,

@@ -35,6 +35,7 @@ class MdUser {
     this.supabaseId,
     this.linkSupabaseId,
     this.hasSubscription,
+    this.dob,
   });
 
   /// From JSON
@@ -82,6 +83,7 @@ class MdUser {
         supabaseId: json['supabase_id'],
         linkSupabaseId: json['link_supabase_id'],
         hasSubscription: json['has_subscription'],
+        dob: json['dob'] == null ? null : DateTime.parse(json['dob']),
       );
 
   /// FCM token
@@ -171,6 +173,9 @@ class MdUser {
   /// Has subscription
   bool? hasSubscription;
 
+  /// Date of birth
+  DateTime? dob;
+
   /// To JSON
   Map<String, dynamic> toJson() => <String, dynamic>{
         'fcm_token': fcmToken,
@@ -202,6 +207,7 @@ class MdUser {
         'supabase_id': supabaseId,
         'link_supabase_id': linkSupabaseId,
         'has_subscription': hasSubscription,
+        'dob': dob?.toIso8601String(),
       };
 
   /// To json
@@ -218,4 +224,8 @@ class MdUser {
 
     return false;
   }
+
+  /// Can show login
+  bool get canShowLogin =>
+      !(isClaim ?? false) && (phone == null || phone!.isEmpty);
 }

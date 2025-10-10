@@ -23,7 +23,6 @@ import '../../../data/remote/api_service/init_api_service.dart';
 import '../../../data/remote/deep_link/deep_link_service.dart';
 import '../../../ui/components/app_snackbar.dart';
 import '../../../utils/global_keys.dart';
-import '../../claim_phone/controllers/phone_claim_service.dart';
 import '../models/md_socket_io_response.dart';
 import '../repositories/snap_selfie_api_repo.dart';
 

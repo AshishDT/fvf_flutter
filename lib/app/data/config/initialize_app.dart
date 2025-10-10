@@ -9,6 +9,7 @@ import 'package:fvf_flutter/app/data/remote/revenue_cat/revenue_cat_service.dart
 import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
 import 'package:fvf_flutter/firebase_options.dart';
 import 'package:get_storage/get_storage.dart';
+import '../../utils/package_info.dart';
 
 /// Initialize all core functionalities
 Future<void> initializeCoreApp({
@@ -31,6 +32,8 @@ Future<void> initializeCoreApp({
 
   // Initialize branch
   await FlutterBranchSdk.init();
+
+  await PackageInfoRepo.initPackageInfo();
 
   APIService.initializeAPIService(
     encryptData: encryption,

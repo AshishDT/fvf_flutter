@@ -62,8 +62,9 @@ class SupaBaseService {
   static Future<void> sendOtp({
     required String phoneNumber,
     bool fromLogin = false,
+    bool fromMenu = false,
   }) async {
-    if (!fromLogin) {
+    if (!fromLogin && !fromMenu) {
       anonymousSession = _instance.auth.currentSession;
     }
 
@@ -77,6 +78,7 @@ class SupaBaseService {
     required String phoneNumber,
     required String token,
     bool fromLogin = false,
+    bool fromMenu = false,
   }) async {
     final AuthResponse response = await _instance.auth.verifyOTP(
       phone: phoneNumber,
@@ -84,7 +86,7 @@ class SupaBaseService {
       type: OtpType.sms,
     );
 
-    if (fromLogin) {
+    if (fromLogin && !fromMenu) {
       anonymousSession = null;
     }
 
@@ -92,7 +94,7 @@ class SupaBaseService {
       return response;
     }
 
-    if (!fromLogin) {
+    if (!fromLogin || fromMenu) {
       final String? refreshToken = anonymousSession?.refreshToken;
       if (refreshToken == null || refreshToken.isEmpty) {
         logE('Missing refresh token for anonymous session');

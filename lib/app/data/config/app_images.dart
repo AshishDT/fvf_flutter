@@ -176,4 +176,10 @@ class AppImages {
 
   /// Log Out Icon
   static const String logOutIcon = '$_svgPath/log_out.svg';
+
+  /// Person Icon
+  static const String personIcon = '$_svgPath/person_icon.svg';
+
+  /// Chat Icon
+  static const String chatIcon = '$_svgPath/chat_icon.svg';
 }

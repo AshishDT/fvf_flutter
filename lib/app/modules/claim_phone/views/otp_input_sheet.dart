@@ -4,10 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:fvf_flutter/app/modules/claim_phone/controllers/claim_phone_controller.dart';
-import 'package:fvf_flutter/app/ui/components/app_snackbar.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:get/get.dart';
-
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../data/config/app_colors.dart';
 import '../../../utils/app_text_style.dart';
 
@@ -57,63 +56,98 @@ class OtpSheet extends GetView<ClaimPhoneController> {
                   ),
                   16.verticalSpace,
                   Center(
-                    child: Text(
-                      'Please enter the code we sent',
-                      style: AppTextStyle.openRunde(
-                        fontSize: 16.sp,
-                        color: AppColors.kFAFBFB,
-                        fontWeight: FontWeight.w500,
+                    child: GestureDetector(
+                      onTap: () {
+                        if (controller.showResendOtp()) {
+                          controller.resendOtp();
+                        }
+                      },
+                      child: Obx(
+                        () => AnimatedDefaultTextStyle(
+                          style: AppTextStyle.openRunde(
+                            fontSize: 16.sp,
+                            color: controller.showResendOtp()
+                                ? AppColors.kD9DEDF
+                                : AppColors.kFAFBFB,
+                            fontWeight: controller.showResendOtp()
+                                ? FontWeight.w700
+                                : FontWeight.w500,
+                          ),
+                          duration: const Duration(milliseconds: 300),
+                          child: Text(
+                            controller.showResendOtp()
+                                ? 'Resend Code'
+                                : 'Please enter the code we sent',
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
                       ),
-                      textAlign: TextAlign.center,
                     ),
                   ),
                   24.verticalSpace,
-                  TextFormField(
-                    controller: controller.otpController,
-                    cursorColor: AppColors.kF1F2F2,
-                    keyboardType: TextInputType.number,
-                    maxLength: 6,
-                    style: AppTextStyle.openRunde(
-                      color: AppColors.kffffff,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16.sp,
-                    ),
-                    textInputAction: TextInputAction.go,
-                    onFieldSubmitted: (String value) {
-                      _onFieldSubmitted(context, value);
-                    },
-                    inputFormatters: <TextInputFormatter>[
-                      FilteringTextInputFormatter.digitsOnly,
-                    ],
-                    decoration: InputDecoration(
-                      hintText: '',
-                      prefixIconConstraints: BoxConstraints(
-                        maxHeight: 24.h,
-                        maxWidth: 40.w,
+                  Form(
+                    key: controller.otpFormKey,
+                    child: TextFormField(
+                      controller: controller.otpController,
+                      cursorColor: AppColors.kF1F2F2,
+                      keyboardType: TextInputType.number,
+                      maxLength: 6,
+                      style: AppTextStyle.openRunde(
+                        color: AppColors.kffffff,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16.sp,
                       ),
-                      prefixIcon: Padding(
-                        padding: REdgeInsets.only(left: 12, top: 3),
-                        child: SvgPicture.asset(
-                          AppImages.otp123,
-                          height: 24.h,
-                          width: 24.w,
+                      textInputAction: TextInputAction.go,
+                      onFieldSubmitted: (String value) {
+                        _onFieldSubmitted(context);
+                      },
+                      validator: (String? value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter the OTP';
+                        }
+                        if (value.length < 6) {
+                          return 'Incorrect code. Please try again.';
+                        }
+                        return null;
+                      },
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                      decoration: InputDecoration(
+                        hintText: '',
+                        prefixIconConstraints: BoxConstraints(
+                          maxHeight: 24.h,
+                          maxWidth: 40.w,
                         ),
+                        prefixIcon: Padding(
+                          padding: REdgeInsets.only(left: 12, top: 3),
+                          child: SvgPicture.asset(
+                            AppImages.otp123,
+                            height: 24.h,
+                            width: 24.w,
+                          ),
+                        ),
+                        contentPadding: REdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 15,
+                        ),
+                        fillColor: AppColors.kF1F2F2.withValues(alpha: 0.36),
+                        hoverColor: AppColors.kF1F2F2.withValues(alpha: 0.36),
+                        focusColor: AppColors.kF1F2F2.withValues(alpha: 0.36),
+                        filled: true,
+                        counterText: '',
+                        errorStyle: AppTextStyle.openRunde(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.kB52F4A,
+                        ),
+                        border: _outlineBorder(),
+                        disabledBorder: _outlineBorder(),
+                        enabledBorder: _outlineBorder(),
+                        focusedBorder: _outlineBorder(),
+                        errorBorder: _outlineBorder(),
+                        focusedErrorBorder: _outlineBorder(),
                       ),
-                      contentPadding: REdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 15,
-                      ),
-                      fillColor: AppColors.kF1F2F2.withValues(alpha: 0.36),
-                      hoverColor: AppColors.kF1F2F2.withValues(alpha: 0.36),
-                      focusColor: AppColors.kF1F2F2.withValues(alpha: 0.36),
-                      filled: true,
-                      counterText: '',
-                      border: _outlineBorder(),
-                      disabledBorder: _outlineBorder(),
-                      enabledBorder: _outlineBorder(),
-                      focusedBorder: _outlineBorder(),
-                      errorBorder: _outlineBorder(),
-                      focusedErrorBorder: _outlineBorder(),
                     ),
                   ),
                 ],
@@ -134,20 +168,15 @@ class OtpSheet extends GetView<ClaimPhoneController> {
         borderSide: BorderSide.none,
       );
 
-  Future<void> _onFieldSubmitted(BuildContext context, String value) async {
-    final String _otp = value.trim();
-
-    if (_otp.length < 6) {
-      appSnackbar(
-        message: 'Please enter a valid 6-digit OTP',
-        snackbarState: SnackbarState.danger,
-      );
+  Future<void> _onFieldSubmitted(BuildContext context) async {
+    if (!(controller.otpFormKey.currentState?.validate() ?? false)) {
+      controller.showResendOtp(true);
       return;
     }
 
-    final bool isOtpVerified = await controller.verifyOtp();
-    if (isOtpVerified) {
-      await controller.claimUser();
+    final AuthResponse? _authResponse = await controller.verifyOtp();
+    if (_authResponse != null) {
+      await controller.afterVerifyOtp(authResponse: _authResponse);
     }
   }
 }

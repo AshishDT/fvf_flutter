@@ -10,7 +10,7 @@ class AuthApiRepo {
   /// Create user
   static Future<MdUser?> createUser({
     required String supabaseId,
-    required int age,
+    required String date,
     required String fcmToken,
   }) async =>
       APIWrapper.handleApiCall<MdUser>(
@@ -18,7 +18,7 @@ class AuthApiRepo {
           path: 'user/create-anonymous-user',
           data: <String, dynamic>{
             'supabase_id': supabaseId,
-            'age': age,
+            'dob': date,
             'fcm_token': fcmToken,
           },
         ).then(

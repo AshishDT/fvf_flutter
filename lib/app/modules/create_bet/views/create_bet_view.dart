@@ -64,10 +64,17 @@ class CreateBetView extends GetView<CreateBetController> {
                               controller.scaffoldKey.currentState?.openDrawer();
                             },
                             actions: <Widget>[
-                              SvgPicture.asset(
-                                height: 24.h,
-                                width: 24.w,
-                                AppImages.notificationIcon,
+                              InkWell(
+                                onTap: () {
+                                  Get.toNamed(
+                                    Routes.NOTIFICATIONS,
+                                  );
+                                },
+                                child: SvgPicture.asset(
+                                  height: 24.h,
+                                  width: 24.w,
+                                  AppImages.notificationIcon,
+                                ),
                               ),
                               Obx(
                                 () => Visibility(

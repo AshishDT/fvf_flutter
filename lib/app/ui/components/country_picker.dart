@@ -26,7 +26,6 @@ class CountryPicker {
           topLeft: const Radius.circular(20).r,
           topRight: const Radius.circular(20).r,
         ),
-        //Optional. Styles the search field.
         inputDecoration: const InputDecoration(
           labelText: 'Search',
           hintText: 'Start typing to search',

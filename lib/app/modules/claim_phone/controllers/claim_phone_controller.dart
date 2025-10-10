@@ -39,6 +39,9 @@ class ClaimPhoneController extends GetxController {
   /// Smart auth instance
   final SmartAuth smartAuth = SmartAuth.instance;
 
+  /// Show resend otp
+  RxBool showResendOtp = false.obs;
+
   /// Validator key
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -85,6 +88,7 @@ class ClaimPhoneController extends GetxController {
     );
     formKey.currentState?.reset();
     otpFormKey.currentState?.reset();
+    showResendOtp(false);
   }
 
   /// Request phone hint
@@ -190,12 +194,14 @@ class ClaimPhoneController extends GetxController {
         return res;
       }
 
+      showResendOtp(true);
       appSnackbar(
         message: 'Invalid OTP. Please try again.',
         snackbarState: SnackbarState.danger,
       );
       return null;
     } on AuthException catch (e) {
+      showResendOtp(true);
       logE('Error verifying OTP: $e');
       appSnackbar(
         message: e.message.isNotEmpty
@@ -350,6 +356,34 @@ class ClaimPhoneController extends GetxController {
       }
     } on Exception catch (e) {
       logE('Error checking phone: $e');
+    }
+  }
+
+  /// Join project invitation
+  Future<void> resendOtp() async {
+    final String phone = phoneController.text.trim();
+    if (phone.isEmpty) {
+      return;
+    }
+
+    otpController.clear();
+    otpFormKey.currentState?.reset();
+    otpFormKey.currentState?.save();
+
+    final String countryCode = country().phoneCode;
+
+    try {
+      await SupaBaseService.sendOtp(
+        phoneNumber: '+$countryCode$phone',
+        fromLogin: isFromLogin(),
+      );
+      showResendOtp(false);
+    } on Exception catch (e) {
+      logE('Error resending OTP: $e');
+      appSnackbar(
+        message: 'Failed to resend OTP. Please try again.',
+        snackbarState: SnackbarState.danger,
+      );
     }
   }
 }

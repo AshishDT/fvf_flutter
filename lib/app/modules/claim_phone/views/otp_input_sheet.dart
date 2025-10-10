@@ -56,14 +56,32 @@ class OtpSheet extends GetView<ClaimPhoneController> {
                   ),
                   16.verticalSpace,
                   Center(
-                    child: Text(
-                      'Please enter the code we sent',
-                      style: AppTextStyle.openRunde(
-                        fontSize: 16.sp,
-                        color: AppColors.kFAFBFB,
-                        fontWeight: FontWeight.w500,
+                    child: GestureDetector(
+                      onTap: () {
+                        if (controller.showResendOtp()) {
+                          controller.resendOtp();
+                        }
+                      },
+                      child: Obx(
+                        () => AnimatedDefaultTextStyle(
+                          style: AppTextStyle.openRunde(
+                            fontSize: 16.sp,
+                            color: controller.showResendOtp()
+                                ? AppColors.kD9DEDF
+                                : AppColors.kFAFBFB,
+                            fontWeight: controller.showResendOtp()
+                                ? FontWeight.w700
+                                : FontWeight.w500,
+                          ),
+                          duration: const Duration(milliseconds: 300),
+                          child: Text(
+                            controller.showResendOtp()
+                                ? 'Resend Code'
+                                : 'Please enter the code we sent',
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
                       ),
-                      textAlign: TextAlign.center,
                     ),
                   ),
                   24.verticalSpace,
@@ -151,6 +169,11 @@ class OtpSheet extends GetView<ClaimPhoneController> {
       );
 
   Future<void> _onFieldSubmitted(BuildContext context) async {
+    if (!(controller.otpFormKey.currentState?.validate() ?? false)) {
+      controller.showResendOtp(true);
+      return;
+    }
+
     final AuthResponse? _authResponse = await controller.verifyOtp();
     if (_authResponse != null) {
       await controller.afterVerifyOtp(authResponse: _authResponse);

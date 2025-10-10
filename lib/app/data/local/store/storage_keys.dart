@@ -51,4 +51,14 @@ class LocalStore {
   /// Rating has user already rated
   static final _StoreObject<bool> ratingHasRated =
       _StoreObject<bool>(key: 'rating_has_rated');
+
+  /// Phone sheet – eligibility tracking
+  static final _StoreObject<bool> phoneSheetFirstProfileVisit =
+      _StoreObject<bool>(key: 'is_first_profile_visit');
+
+  static final _StoreObject<int> phoneSheetLastDeclineRound =
+      _StoreObject<int>(key: 'last_decline_round');
+
+  static final _StoreObject<int> phoneSheetDeclineCount =
+      _StoreObject<int>(key: 'decline_count');
 }

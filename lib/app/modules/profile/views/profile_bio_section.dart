@@ -40,7 +40,7 @@ class ProfileBioSection extends StatelessWidget {
                   false)) ...<Widget>[
             FlyingCharacters(
               text: controller.profile().user?.bio ?? '',
-              maxLines: 5,
+              maxLines: 7,
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
                 fontSize: 20.sp,

@@ -1,3 +1,5 @@
+import 'package:fvf_flutter/app/data/config/logger.dart';
+import 'package:fvf_flutter/app/data/local/user_provider.dart';
 import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
 import 'package:fvf_flutter/app/modules/splash/splash_api_repo.dart';
 import 'package:fvf_flutter/app/routes/app_pages.dart';
@@ -10,10 +12,11 @@ class SplashController extends GetxController {
   @override
   void onInit() {
     setAppConfig();
+    setLoginMath();
     Future<void>.delayed(
       const Duration(seconds: 1),
       () {
-        if (SupaBaseService.isLoggedIn) {
+        if (SupaBaseService.isLoggedIn && UserProvider.isLoggedIn) {
           Get.offAllNamed(Routes.CREATE_BET);
         } else {
           Get.offAllNamed(Routes.AUTH);
@@ -33,6 +36,18 @@ class SplashController extends GetxController {
   @override
   void onClose() {
     super.onClose();
+  }
+
+  /// Set login match
+  void setLoginMath() {
+    if (!UserProvider.isLoggedIn) {
+      if (SupaBaseService.isLoggedIn) {
+        logWTF(
+          'UserProvider is not logged in but Supabase is logged in',
+        );
+        SupaBaseService.logout();
+      }
+    }
   }
 
   /// Set app config

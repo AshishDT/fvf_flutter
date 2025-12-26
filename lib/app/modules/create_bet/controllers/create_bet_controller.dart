@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 import '../../../data/enums/purchase_status.dart';
 import '../../../data/local/user_provider.dart';
 import '../../../data/models/md_join_invitation.dart';
+import '../../../data/models/md_preminum_access.dart';
 import '../../../data/models/md_purchase_result.dart';
 import '../../../data/remote/deep_link/deep_link_service.dart';
 import '../../../data/remote/notification_service/notification_actions.dart';
@@ -19,6 +20,7 @@ import '../../../data/remote/revenue_cat/revenue_cat_service.dart';
 import '../../../routes/app_pages.dart';
 import '../../../ui/components/chat_field_sheet_repo.dart';
 import '../../../utils/global_keys.dart';
+import '../../auth/repositories/auth_api_repo.dart';
 import '../../profile/enums/subscription_enum.dart';
 import '../../profile/models/md_profile.dart';
 import '../../profile/repositories/profile_api_repo.dart';
@@ -317,6 +319,10 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
           userAuthToken: userAuthToken ?? '',
         );
 
+        await claimSubscription(
+          hasSubscription: _user.user?.hasSubscription ?? false,
+        );
+
         await _checkForReview(_user);
       }
       isUserLoading(false);
@@ -405,6 +411,7 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
           snackbarState: SnackbarState.success,
         );
 
+        await Future<void>.delayed(const Duration(seconds: 2));
         await onBetPressed();
         isPurchasing(false);
       } else {
@@ -444,5 +451,36 @@ class CreateBetController extends GetxController with WidgetsBindingObserver {
         );
       },
     );
+  }
+
+  /// Claim subscription on the backend
+  Future<void> claimSubscription({
+    required bool hasSubscription,
+  }) async {
+    try {
+      final MdPremiumAccess? _access =
+          await RevenueCatService.instance.hasPremiumAccess();
+
+      if (_access == null) {
+        return;
+      }
+
+      final bool isAppUserIdNotNull =
+          _access.appUserId != null && (_access.appUserId?.isNotEmpty ?? false);
+
+      if (!isAppUserIdNotNull) {
+        return;
+      }
+
+      final bool isActive = (_access.isActive ?? false) && isAppUserIdNotNull;
+
+      if (isActive && !hasSubscription) {
+        await AuthApiRepo.claimSubscription(
+          appUserId: _access.appUserId ?? '',
+        );
+      }
+    } on Exception {
+      logE('Error claiming subscription');
+    }
   }
 }

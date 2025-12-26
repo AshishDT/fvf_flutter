@@ -52,15 +52,19 @@ class LocalStore {
   static final _StoreObject<bool> ratingHasRated =
       _StoreObject<bool>(key: 'rating_has_rated');
 
-  /// Phone claim attempt count
-  static final _StoreObject<int> phoneClaimAttempt =
-  _StoreObject<int>(key: 'phone_claim_attempt');
+  /// Phone sheet – eligibility tracking
+  static final _StoreObject<bool> phoneSheetFirstProfileVisit =
+      _StoreObject<bool>(key: 'is_first_profile_visit');
 
-  /// Phone claim last round attempted
-  static final _StoreObject<int> phoneClaimLastRound =
-  _StoreObject<int>(key: 'phone_claim_last_round');
+  /// To avoid showing the phone sheet multiple times in a short period
+  static final _StoreObject<int> phoneSheetLastDeclineRound =
+      _StoreObject<int>(key: 'last_decline_round');
 
-  /// Phone claim last time attempted (ISO string)
-  static final _StoreObject<String> phoneClaimLastTime =
-  _StoreObject<String>(key: 'phone_claim_last_time');
+  /// Number of times user has declined phone sheet
+  static final _StoreObject<int> phoneSheetDeclineCount =
+      _StoreObject<int>(key: 'decline_count');
+
+  /// To avoid showing the notification permission sheet multiple times
+  static final _StoreObject<String> notificationSheetId =
+  _StoreObject<String>(key: 'shown_notification_sheet');
 }

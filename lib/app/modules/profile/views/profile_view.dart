@@ -8,6 +8,7 @@ import 'package:fvf_flutter/app/data/config/app_images.dart';
 import 'package:fvf_flutter/app/modules/profile/views/rounds_timeline_view.dart';
 import 'package:fvf_flutter/app/modules/profile/views/profile_bio_section.dart';
 import 'package:fvf_flutter/app/modules/profile/views/profile_header.dart';
+import 'package:fvf_flutter/app/modules/profile/widgets/more_sheet.dart';
 import 'package:fvf_flutter/app/modules/profile/widgets/profile_wrapper.dart';
 import 'package:fvf_flutter/app/ui/components/common_app_bar.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
@@ -42,13 +43,8 @@ class ProfileView extends GetView<ProfileController> {
               duration: 500.milliseconds,
               curve: Curves.easeInOut,
             );
-            Future<void>.delayed(
-              const Duration(milliseconds: 600),
-              () {
-                controller.getRounds(
-                  isRefresh: true,
-                );
-              },
+            controller.getRounds(
+              isRefresh: true,
             );
           }
         },
@@ -184,16 +180,6 @@ class ProfileView extends GetView<ProfileController> {
                                       duration: 500.milliseconds,
                                       curve: Curves.easeInOut,
                                     );
-
-                                    Future<void>.delayed(
-                                      const Duration(milliseconds: 600),
-                                      () {
-                                        controller.getRounds(
-                                          isRefresh: true,
-                                        );
-                                      },
-                                    );
-
                                     controller.noScreenshot.screenshotOn();
                                   } else {
                                     Get.back();
@@ -201,8 +187,15 @@ class ProfileView extends GetView<ProfileController> {
                                   }
                                 },
                                 actions: <Widget>[
-                                  GestureDetector(
-                                    onTap: () {},
+                                  InkWell(
+                                    onTap: () async {
+                                      await showModalBottomSheet(
+                                        context: Get.context!,
+                                        isScrollControlled: true,
+                                        backgroundColor: Colors.transparent,
+                                        builder: (_) => const MoreSheet(),
+                                      );
+                                    },
                                     child: SvgPicture.asset(
                                       AppImages.moreVertical,
                                       width: 24.w,
@@ -236,12 +229,18 @@ class ProfileView extends GetView<ProfileController> {
 
   /// On page change
   void _onPageChange(int value) {
-    if (value == 0) {
-      controller.noScreenshot.screenshotOn();
-    }
-
     if (controller.isLoading()) {
       return;
+    }
+
+    if (value == 0) {
+      controller.noScreenshot.screenshotOn();
+      if (controller.canRefreshRounds()) {
+        controller.canRefreshRounds(false);
+        controller.getRounds(
+          isRefresh: true,
+        );
+      }
     }
 
     controller.currentIndex(value);
@@ -260,7 +259,7 @@ class ProfileView extends GetView<ProfileController> {
           innerPC.jumpToPage(0);
         }
 
-        controller.roundWiggleMark[roundIndex]?.call(false);
+        controller.roundWiggleMark[roundIndex]?.call(true);
         controller.roundWiggleMark[roundIndex]?.refresh();
 
         controller.updateRoundScreenshotPermission(roundIndex);

@@ -174,15 +174,14 @@ class RoundsTimeLinesView extends StatelessWidget {
           curve: Curves.ease,
         );
 
-        Future<void>.delayed(
-          const Duration(milliseconds: 600),
-          () {
-            _resetInnerPages();
-            controller.getRounds(
-              isRefresh: true,
-            );
-          },
-        );
+        _resetInnerPages();
+        controller.noScreenshot.screenshotOn();
+        if (controller.canRefreshRounds()) {
+          controller.canRefreshRounds(false);
+          controller.getRounds(
+            isRefresh: true,
+          );
+        }
 
         return true;
       }
@@ -207,7 +206,7 @@ class RoundsTimeLinesView extends StatelessWidget {
         innerPC.jumpToPage(0);
       }
 
-      controller.roundWiggleMark[0]?.call(false);
+      controller.roundWiggleMark[0]?.call(true);
       controller.roundWiggleMark[0]?.refresh();
 
       controller.updateRoundScreenshotPermission(0);
@@ -274,8 +273,17 @@ class RoundsTimeLinesView extends StatelessWidget {
                 duration: 500.milliseconds,
                 curve: Curves.easeInOut,
               );
+
+              controller.noScreenshot.screenshotOn();
+              if (controller.canRefreshRounds()) {
+                controller.canRefreshRounds(false);
+                controller.getRounds(
+                  isRefresh: true,
+                );
+              }
             } else {
               Get.back();
+              controller.noScreenshot.screenshotOn();
             }
           },
           actions: <Widget>[
@@ -389,12 +397,12 @@ class RoundsTimeLinesView extends StatelessWidget {
     }
 
     controller.updateRoundScreenshotPermission(i);
-    controller.roundWiggleMark[i]?.call(false);
+    controller.roundWiggleMark[i]?.call(true);
     controller.roundWiggleMark[i]?.refresh();
 
     if (!(controller.roundExposed[i]?.call() ?? false)) {
       Future<void>.delayed(
-        const Duration(milliseconds: 600),
+        const Duration(milliseconds: 300),
         () {
           controller.roundWiggleMark[i]!(true);
           controller.roundWiggleMark[i]!.refresh();

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/services/text_formatter.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
 import 'package:get/get.dart';
 import '../../../data/config/app_colors.dart';
@@ -8,7 +8,9 @@ import '../../../ui/components/animated_list_view.dart';
 import '../../../ui/components/app_button.dart';
 import '../../../ui/components/common_app_bar.dart';
 import '../../../ui/components/gradient_card.dart';
+import '../../claim_phone/models/md_auth_data.dart';
 import '../controllers/age_input_controller.dart';
+import '../widgets/cupertino_date_picker.dart';
 
 /// Age Input View
 class AgeInputView extends GetView<AgeInputController> {
@@ -19,15 +21,20 @@ class AgeInputView extends GetView<AgeInputController> {
   Widget build(BuildContext context) => Obx(
         () => PopScope(
           canPop: !controller.creatingUser(),
+          onPopInvokedWithResult: (bool bool, _) {
+            if (controller.isFromLogin) {
+              SupaBaseService.logout();
+              controller.authData = MdAuthData();
+            }
+          },
           child: Scaffold(
             backgroundColor: AppColors.kF5FCFF,
             resizeToAvoidBottomInset: false,
             floatingActionButton: Obx(
               () => AppButton(
-                buttonText: 'Next',
+                buttonText: 'Continue',
                 isLoading: controller.creatingUser(),
                 onPressed: () {
-                  FocusScope.of(context).unfocus();
                   controller.onNext();
                 },
               ),
@@ -47,13 +54,17 @@ class AgeInputView extends GetView<AgeInputController> {
                             return;
                           }
 
+                          if (controller.isFromLogin) {
+                            SupaBaseService.logout();
+                            controller.authData = MdAuthData();
+                          }
                           Get.back();
                         },
                       ),
                       64.verticalSpace,
                       Align(
                         child: Text(
-                          'How old are you?',
+                          'Your birthday?',
                           style: AppTextStyle.openRunde(
                             fontSize: 32.sp,
                             fontWeight: FontWeight.w600,
@@ -61,79 +72,15 @@ class AgeInputView extends GetView<AgeInputController> {
                           ),
                         ),
                       ),
-                      16.verticalSpace,
-                      Align(
-                        child: Text(
-                          'Just to confirm you can join',
-                          style: AppTextStyle.openRunde(
-                            fontSize: 20.sp,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.kFAFBFB,
-                          ),
-                        ),
-                      ),
-                      165.verticalSpace,
-                      Align(
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          width: 273.w,
-                          padding: REdgeInsets.symmetric(
-                              horizontal: 16, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: AppColors.kF1F2F2.withValues(alpha: 0.36),
-                            borderRadius: BorderRadius.circular(28).r,
-                          ),
-                          child: Obx(
-                            () => TextFormField(
-                              controller: controller.ageInputController,
-                              maxLines: 7,
-                              minLines: 1,
-                              maxLength: 3,
-                              autofocus: true,
-                              enabled: !controller.creatingUser(),
-                              readOnly: controller.creatingUser(),
-                              cursorColor: AppColors.kffffff,
-                              keyboardType: TextInputType.number,
-                              onFieldSubmitted: (String value) {
-                                FocusScope.of(context).unfocus();
-                                Future<void>.delayed(
-                                  const Duration(milliseconds: 300),
-                                  () {
-                                    controller.onNext();
-                                  },
-                                );
-                              },
-                              inputFormatters: <TextInputFormatter>[
-                                FilteringTextInputFormatter.digitsOnly,
-                              ],
-                              style: AppTextStyle.openRunde(
-                                color: AppColors.kffffff,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16.sp,
-                              ),
-                              textAlign: TextAlign.center,
-                              textInputAction: TextInputAction.done,
-                              decoration: InputDecoration(
-                                hintText: 'Age',
-                                hintTextDirection: TextDirection.ltr,
-                                counter: const SizedBox(),
-                                prefixIconConstraints: BoxConstraints(
-                                  maxHeight: 24.h,
-                                  maxWidth: 24.w,
-                                ),
-                                hintStyle: AppTextStyle.openRunde(
-                                  color: AppColors.kffffff,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 16.sp,
-                                ),
-                                border: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                disabledBorder: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                errorBorder: InputBorder.none,
-                                focusedErrorBorder: InputBorder.none,
-                              ),
-                            ),
+                      100.verticalSpace,
+                      IntrinsicWidth(
+                        child: Obx(
+                          () => CupertinoDatePickerWidget(
+                            initialDate: controller.selectedDate(),
+                            onDateChanged: (DateTime newDate) {
+                              controller.selectedDate(newDate);
+                              controller.selectedDate.refresh();
+                            },
                           ),
                         ),
                       ),

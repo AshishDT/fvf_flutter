@@ -14,6 +14,7 @@ import 'package:fvf_flutter/app/ui/components/app_button.dart';
 import 'package:fvf_flutter/app/ui/components/app_circular_progress.dart';
 import 'package:fvf_flutter/app/ui/components/chat_field_sheet_repo.dart';
 import 'package:fvf_flutter/app/utils/app_text_style.dart';
+import 'package:fvf_flutter/app/utils/global_keys.dart';
 import 'package:get/get.dart';
 import '../../../ui/components/app_snackbar.dart';
 import '../../../ui/components/common_app_bar.dart';
@@ -63,10 +64,17 @@ class CreateBetView extends GetView<CreateBetController> {
                               controller.scaffoldKey.currentState?.openDrawer();
                             },
                             actions: <Widget>[
-                              SvgPicture.asset(
-                                height: 24.h,
-                                width: 24.w,
-                                AppImages.notificationIcon,
+                              InkWell(
+                                onTap: () {
+                                  Get.toNamed(
+                                    Routes.NOTIFICATIONS,
+                                  );
+                                },
+                                child: SvgPicture.asset(
+                                  height: 24.h,
+                                  width: 24.w,
+                                  AppImages.notificationIcon,
+                                ),
                               ),
                               Obx(
                                 () => Visibility(
@@ -191,11 +199,18 @@ class CreateBetView extends GetView<CreateBetController> {
                   : 'Bet',
               isLoading:
                   controller.createRoundLoading() || controller.isPurchasing(),
-              onPressed: !(controller.canCreateBetData().allowed ?? false)
+              onPressed: controller.isUserLoading()
                   ? () {
-                      controller.openPurchaseSheet();
+                      appSnackbar(
+                        message: 'Please wait, Performing refresh...',
+                        snackbarState: SnackbarState.info,
+                      );
                     }
-                  : controller.onBetPressed,
+                  : !(controller.canCreateBetData().allowed ?? false)
+                      ? () {
+                          controller.openPurchaseSheet();
+                        }
+                      : controller.onBetPressed,
             ),
           ).paddingSymmetric(horizontal: 24),
         ],
@@ -260,7 +275,7 @@ class CreateBetView extends GetView<CreateBetController> {
             : !controller.canShowProfile()
                 ? const SizedBox()
                 : ProfileAvatar(
-                    profileUrl: controller.profile().user?.profileUrl ?? '',
+                    profileUrl: globalUser().profileUrl,
                     onTap: () {
                       _navigateToProfile();
                     },

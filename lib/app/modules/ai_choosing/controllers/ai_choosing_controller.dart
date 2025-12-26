@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:developer';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:fvf_flutter/app/data/config/logger.dart';
 import 'package:fvf_flutter/app/modules/ai_choosing/enums/round_status_enum.dart';
 import 'package:fvf_flutter/app/modules/create_bet/models/md_participant.dart';
 import 'package:get/get.dart';
@@ -9,6 +11,8 @@ import '../../../data/remote/socket_io_repo.dart';
 import '../../../routes/app_pages.dart';
 import '../../create_bet/models/md_round.dart';
 import '../../failed_round/repositories/failed_round_api_repo.dart';
+import '../../winner/models/md_round_details.dart';
+import '../../winner/repositories/winner_api_repo.dart';
 import '../models/md_ai_result.dart';
 
 /// AiChoosingController
@@ -49,6 +53,11 @@ class AiChoosingController extends GetxController with WidgetsBindingObserver {
               _onResults(data);
             },
           );
+        Future<void>.microtask(
+          () {
+            getRoundDetails();
+          },
+        );
         break;
       case AppLifecycleState.paused:
         log(
@@ -79,6 +88,9 @@ class AiChoosingController extends GetxController with WidgetsBindingObserver {
   /// Observable for bet text
   RxString bet = ''.obs;
 
+  /// Observable for round details
+  RxString roundId = ''.obs;
+
   /// Observable for AI failure state
   RxBool isAiFailed = false.obs;
 
@@ -91,6 +103,12 @@ class AiChoosingController extends GetxController with WidgetsBindingObserver {
   /// On init
   void _onInit() {
     if (Get.arguments != null) {
+      if (Get.arguments['round_id'] != null) {
+        final String _roundId = Get.arguments['round_id'] as String;
+        roundId.value = _roundId;
+        roundId.refresh();
+      }
+
       if (Get.arguments['participants'] != null) {
         final List<MdParticipant> _participants =
             Get.arguments['participants'] as List<MdParticipant>;
@@ -178,7 +196,7 @@ class AiChoosingController extends GetxController with WidgetsBindingObserver {
     isWakingUp(true);
     try {
       final MdRound? _round = await FailedRoundApiRepo.reRun(
-        roundId: resultData.value.id ?? '',
+        roundId: roundId(),
       );
 
       if (_round != null) {
@@ -196,6 +214,62 @@ class AiChoosingController extends GetxController with WidgetsBindingObserver {
       }
     } finally {
       isWakingUp(false);
+    }
+  }
+
+  /// Get round details
+  Future<void> getRoundDetails() async {
+    try {
+      final MdRoundDetails? _roundDetails = await WinnerApiRepo.getRoundDetails(
+        roundId: roundId(),
+      );
+
+      if (_roundDetails != null) {
+        if (_roundDetails.round != null) {
+          if (_roundDetails.round!.status != null) {
+            final RoundStatus _status = _roundDetails.round!.status!;
+
+            final bool isComplete = _status == RoundStatus.completed;
+
+            final bool isFailed = _status == RoundStatus.failed;
+
+            if (isComplete) {
+              if (Get.currentRoute != Routes.WINNER) {
+                socketIoRepo.disconnect();
+                unawaited(
+                  Get.offNamedUntil(
+                    Routes.WINNER,
+                    (Route<dynamic> route) =>
+                        route.settings.name == Routes.CREATE_BET,
+                    arguments: <String, dynamic>{
+                      'result_data': MdAiResultData(
+                        isViewOnly: isViewOnly(),
+                        revealAt: _roundDetails.round?.revealAt,
+                        status: _roundDetails.round?.status,
+                        results: _roundDetails.round?.results,
+                        id: _roundDetails.round?.id,
+                        host: _roundDetails.round?.host,
+                        prompt: _roundDetails.round?.prompt,
+                        participants: _roundDetails.round?.participants,
+                      ),
+                    },
+                  ),
+                );
+              }
+
+              return;
+            }
+
+            if (isFailed) {
+              isAiFailed(true);
+              isAiFailed.refresh();
+              return;
+            }
+          }
+        }
+      }
+    } on DioException {
+      logWTF('Error fetching round details');
     }
   }
 }

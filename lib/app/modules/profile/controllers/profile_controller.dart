@@ -15,6 +15,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import '../../../utils/app_loader.dart';
 import '../../../utils/global_keys.dart';
+import '../../claim_phone/controllers/phone_claim_service.dart';
+import '../../claim_phone/repositories/phone_check_eligibility_checker.dart';
 import '../models/md_profile_args.dart';
 import '../repositories/edit_profile_sheet_repo.dart';
 
@@ -216,6 +218,25 @@ class ProfileController extends GetxController
             user: profile().user!,
             userAuthToken: userAuthToken ?? '',
           );
+
+          final int totalRounds = profile().round?.totalRound ?? 0;
+
+          final bool shouldShow =
+              await PhoneClaimChecker.shouldShowSheet(
+            totalRounds: totalRounds,
+          );
+
+          final bool hasClaimed = profile().user?.isClaim ?? false;
+
+          if (shouldShow && !hasClaimed) {
+            await PhoneClaimService.open().then(
+              (_) {
+                PhoneClaimChecker.markDeclined(
+                  currentRoundCount: totalRounds,
+                );
+              },
+            );
+          }
         }
       }
     } on Exception catch (e, st) {

@@ -165,6 +165,26 @@ class AppImages {
   /// Pen Icon
   static const String shadowPen = '$_path/shadow_pen.png';
 
+  /// Notification Allow Placeholder
+  static const String notificationAllowPlaceholder =
+      '$_path/notificaton_allow_placeholder.png';
+
   /// Otp one two three
   static const String otp123 = '$_svgPath/otp_123.svg';
+
+  /// Notification App Logo
+  static const String notificationAppLogo =
+      '$_svgPath/notification_app_logo.svg';
+
+  /// Report Flag Icon
+  static const String reportFlag = '$_svgPath/report_flag.svg';
+
+  /// Log Out Icon
+  static const String logOutIcon = '$_svgPath/log_out.svg';
+
+  /// Person Icon
+  static const String personIcon = '$_svgPath/person_icon.svg';
+
+  /// Chat Icon
+  static const String chatIcon = '$_svgPath/chat_icon.svg';
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../data/local/store/local_store.dart';
 import '../../../utils/global_keys.dart';
 import '../views/phone_number_sheet.dart';
 import 'claim_phone_controller.dart';
@@ -9,14 +8,14 @@ import 'claim_phone_controller.dart';
 class PhoneClaimService {
   /// Opens the claim flow if criteria match
   static Future<void> open({
-    required int currentRound,
-    required bool hasSubmittedFirstRoundPhoto,
-    required String? userName,
+    bool fromLogin = false,
+    bool fromMenu = false,
   }) async {
-    // Basic eligibility check
-    if (!hasSubmittedFirstRoundPhoto ||
-        currentRound <= 1 ||
-        (userName?.isEmpty ?? true)) {
+    if (fromLogin) {
+      await _showPhoneSheet(
+        isFromLogin: true,
+        fromMenu: fromMenu,
+      );
       return;
     }
 
@@ -27,34 +26,27 @@ class PhoneClaimService {
     final bool isAlreadyClaimed =
         (phone != null && phone.isNotEmpty) && (isClaimed ?? false);
 
-    if(isAlreadyClaimed){
+    if (isAlreadyClaimed) {
       return;
     }
-
-    final int lastAttemptRound = LocalStore.phoneClaimLastRound() ?? 0;
-    final int attemptCount = LocalStore.phoneClaimAttempt() ?? 0;
-
-    final bool isFirstAttempt = attemptCount == 0;
-
-    if (!isFirstAttempt) {
-      final int minRoundsGap = 5 * (1 << (attemptCount - 1));
-      if (currentRound - lastAttemptRound < minRoundsGap) {
-        // Deceleration: wait until enough rounds have passed
-        return;
-      }
-    }
-
-    LocalStore.phoneClaimAttempt(attemptCount + 1);
-    LocalStore.phoneClaimLastRound(currentRound);
-    LocalStore.phoneClaimLastTime(DateTime.now().toIso8601String());
 
     // Show Phone Sheet
     await _showPhoneSheet();
   }
 
   /// Internal method to show phone sheet and OTP flow
-  static Future<bool> _showPhoneSheet() async {
+  static Future<void> _showPhoneSheet({
+    bool isFromLogin = false,
+    bool fromMenu = false,
+  }) async {
     final ClaimPhoneController controller = Get.put(ClaimPhoneController());
+
+    await controller.resetAllFields();
+
+    controller.isFromLogin(isFromLogin);
+    controller.isFromLogin.refresh();
+    controller.isFromMenu(fromMenu);
+    controller.isFromMenu.refresh();
 
     await showModalBottomSheet(
       context: Get.context!,
@@ -62,7 +54,5 @@ class PhoneClaimService {
       backgroundColor: Colors.transparent,
       builder: (_) => const PhoneNumberSheet(),
     );
-
-    return controller.isUserClaimLoading.isFalse;
   }
 }

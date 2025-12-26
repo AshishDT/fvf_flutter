@@ -1,5 +1,8 @@
 import 'dart:convert';
 import 'package:fvf_flutter/app/data/local/store/local_store.dart';
+import 'package:fvf_flutter/app/data/remote/supabse_service/supabse_service.dart';
+import 'package:fvf_flutter/app/routes/app_pages.dart';
+import 'package:get/get.dart';
 import '../../utils/global_keys.dart';
 import '../config/encryption.dart';
 import '../models/md_user.dart';
@@ -58,7 +61,8 @@ class UserProvider {
     _userEntity = null;
     _authToken = null;
     globalUser(MdUser());
-    LocalStore.user.erase();
-    LocalStore.authToken.erase();
+    LocalStore.erase();
+    SupaBaseService.logout();
+    Get.offAllNamed(Routes.AUTH);
   }
 }

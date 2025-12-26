@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/services/text_formatter.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fvf_flutter/app/modules/create_bet/controllers/create_bet_controller.dart';
 import 'package:fvf_flutter/app/ui/components/gradient_card.dart';
 import 'package:get/get.dart';
-
 import '../../../data/config/app_colors.dart';
 import '../../../data/config/app_images.dart';
 import '../../../utils/app_text_style.dart';
-import '../../../utils/app_text_formatter.dart';
 
 /// KeyboardAwareSheet widget that adapts to keyboard visibility
 class KeyboardAwareSheet extends GetView<CreateBetController> {
@@ -55,9 +52,6 @@ class KeyboardAwareSheet extends GetView<CreateBetController> {
                 maxLength: 80,
                 autofocus: true,
                 cursorColor: AppColors.kffffff,
-                inputFormatters: <TextInputFormatter>[
-                  AppTextFormatter(),
-                ],
                 onFieldSubmitted: (String value) {
                   if (value.isNotEmpty) {
                     controller.enteredBet(value);

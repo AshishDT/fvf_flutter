@@ -23,7 +23,7 @@ import '../../../data/remote/api_service/init_api_service.dart';
 import '../../../data/remote/deep_link/deep_link_service.dart';
 import '../../../ui/components/app_snackbar.dart';
 import '../../../utils/global_keys.dart';
-import '../../claim_phone/controllers/phone_claim_service.dart';
+import '../../notifications/repositories/allow_notification.dart';
 import '../models/md_socket_io_response.dart';
 import '../repositories/snap_selfie_api_repo.dart';
 
@@ -267,6 +267,25 @@ class SnapSelfiesController extends GetxController
     }
   }
 
+  /// Check and show allow notification
+  Future<void> _checkAndShowAllowNotification() async {
+    final bool hasUploadedSelfie = selfParticipant().selfieUrl != null &&
+        (selfParticipant().selfieUrl?.isNotEmpty ?? false);
+
+    if (hasUploadedSelfie) {
+      if (Get.currentRoute == Routes.SNAP_SELFIES) {
+        await 1.delay(
+          () async {
+            await AllowNotification.show(
+              roundId: joinedInvitationData().id ?? '',
+            );
+          },
+        );
+      }
+    }
+  }
+
+  /// Check and snap pick wiggle
   void _checkSnapPickWiggle() {
     if (selfParticipant().selfieUrl == null ||
         (selfParticipant().selfieUrl?.isEmpty ?? true)) {
@@ -349,15 +368,7 @@ class SnapSelfiesController extends GetxController
 
       _checkAddNameWiggle();
       _checkSnapPickWiggle();
-
-      unawaited(
-        PhoneClaimService.open(
-          currentRound: roundData().totalRound ?? 0,
-          hasSubmittedFirstRoundPhoto: selfParticipant().selfieUrl != null &&
-              (selfParticipant().selfieUrl?.isNotEmpty ?? false),
-          userName: selfParticipant().userData?.username,
-        ),
-      );
+      _checkAndShowAllowNotification();
     }
   }
 
